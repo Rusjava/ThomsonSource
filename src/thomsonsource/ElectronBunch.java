@@ -44,6 +44,14 @@ public class ElectronBunch {
     }
     
     /**
+     * Returning gamma
+     * @return gamma
+     */
+    public double getGamma() {
+        return gamma;
+    }
+    
+    /**
      * Returning the width of the electron bunch in x direction
      * @param z coordinate z
      * @return width in the x direction
