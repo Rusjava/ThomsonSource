@@ -1600,7 +1600,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.gamma=testValue(0, 100, energyvalue, "51.2")/0.512;
+        ebunch.setGamma(testValue(0, 100, energyvalue, "51.2")/0.512);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -1610,7 +1610,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.gamma=testValue(0, 100, energyvalue, "51.2")/0.512;
+        ebunch.setGamma(testValue(0, 100, energyvalue, "51.2")/0.512);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
@@ -2150,7 +2150,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             try {
                     PrintWriter pw=new PrintWriter(new FileWriter(file, false));
                     fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[0]+": ", ebunch.gamma*0.512);
+                    fm.format("%s %.2f", paramNames[0]+": ", ebunch.getGamma()*0.512);
                     pw.println(fm);
                     fm=new Formatter();
                     fm.format("%s %.2f", paramNames[1]+": ", ebunch.number*1.6e-10);
@@ -2236,7 +2236,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         if (ts.contains(paramNames[i])) {
                             String tss=ts.substring(ts.indexOf(':')+1);
                             switch (i) {
-                                case 0: ebunch.gamma=Float.parseFloat(tss)/0.512;
+                                case 0: ebunch.setGamma(Float.parseFloat(tss)/0.512);
                                         energyvalue.setText(tss);
                                         break;
                                 case 1: ebunch.number=Float.parseFloat(tss)/1.6e-19;

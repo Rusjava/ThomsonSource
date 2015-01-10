@@ -44,7 +44,7 @@ public class ElectronBunch {
     }
     
     /**
-     * sets electron gamma parameter
+     * sets electron's gamma parameter
      * @param gamma electron's gamma
      */
     public void setGamma(double gamma) {
@@ -156,7 +156,7 @@ public class ElectronBunch {
     /**
      * Mean electron bunch gamma
      */
-    public double gamma=100;
+    private double gamma=100;
 
     /**
      * Number of electrons in the bunch

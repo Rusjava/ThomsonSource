@@ -121,9 +121,9 @@ public class ThompsonSource {
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
         double u, K, th;
         th=(1-n.innerProduct(v))*2;
-        K=Math.pow((Math.sqrt(e/lp.getPhotonEnergy()/(1-e*th/lp.getPhotonEnergy()/4))-2*eb.gamma),2)
-                /4/Math.pow(eb.gamma*eb.delgamma,2);
-        u=totalflux*e*3.0/64/Math.PI/Math.sqrt(Math.PI)/eb.delgamma/eb.gamma/lp.getPhotonEnergy()*
+        K=Math.pow((Math.sqrt(e/lp.getPhotonEnergy()/(1-e*th/lp.getPhotonEnergy()/4))-2*eb.getGamma()),2)
+                /4/Math.pow(eb.getGamma()*eb.delgamma,2);
+        u=totalflux*e*3.0/64/Math.PI/Math.sqrt(Math.PI)/eb.delgamma/eb.getGamma()/lp.getPhotonEnergy()*
                 Math.sqrt(e/lp.getPhotonEnergy())*(Math.pow((1-e*th/lp.getPhotonEnergy()/2),2)+1)
                 /Math.sqrt(1-e*th/lp.getPhotonEnergy()/4)*Math.exp(-K);
         return u;
@@ -256,7 +256,7 @@ public class ThompsonSource {
     public double directionFlux(Vector n, Vector v) {
         double u, gamma2, th;
         th=(1-n.innerProduct(v))*2;
-        gamma2=eb.gamma*eb.gamma;
+        gamma2=eb.getGamma()*eb.getGamma();
         u=totalflux*3.0/2/Math.PI*gamma2*(1+Math.pow(th*gamma2,2))/
                 Math.pow((1+gamma2*th),4)*gf;
         return u;
@@ -272,7 +272,7 @@ public class ThompsonSource {
     
     public double directionEnergy(Vector n, Vector v) {
         double mv;
-        mv=Math.sqrt(1.0-1.0/eb.gamma/eb.gamma);
+        mv=Math.sqrt(1.0-1.0/eb.getGamma()/eb.getGamma());
         return 2*lp.getPhotonEnergy()/(1-n.innerProduct(v)*mv);
     }
     
@@ -394,8 +394,8 @@ public class ThompsonSource {
             r.set(0,ray[0]);
             r.set(1,ray[1]);
             r.set(2,ray[2]);
-            ray[3]=3*(2*Math.random()-1.0)/eb.gamma;
-            ray[4]=3*(2*Math.random()-1.0)/eb.gamma;
+            ray[3]=3*(2*Math.random()-1.0)/eb.getGamma();
+            ray[4]=3*(2*Math.random()-1.0)/eb.getGamma();
             n.set(0,ray[3]);
             n.set(1,ray[4]);
             n.set(2,1.0);
