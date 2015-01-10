@@ -44,6 +44,14 @@ public class ElectronBunch {
     }
     
     /**
+     * sets gamma parameter
+     * @param gamma electron's gamma
+     */
+    public void setGamma(double gamma) {
+        this.gamma=gamma;
+    }
+    
+    /**
      * Returning gamma
      * @return gamma
      */
