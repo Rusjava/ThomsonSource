@@ -14,7 +14,7 @@ import org.la4j.vector.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * A class for the electron bunch properties
+ * A class for the electron bunch properties. All properties are in the SI system of units
  * @author Ruslan Feshchenko
  */
 public class ElectronBunch {
@@ -28,7 +28,7 @@ public class ElectronBunch {
     
     /**
      * Copies parameters of this object to tm object
-     * @param tm
+     * @param tm object to clone to
      */
     public void duplicate (ElectronBunch tm) {
         tm.gamma=this.gamma;
@@ -45,8 +45,8 @@ public class ElectronBunch {
     
     /**
      * Returning the width of the electron bunch in x direction
-     * @param z
-     * @return
+     * @param z coordinate z
+     * @return width in the x direction
      */
     public double getxWidth(double z) {
         return Math.sqrt((betax+z*z/betax)*eps/gamma);
@@ -54,7 +54,7 @@ public class ElectronBunch {
     
     /**
      * Setting the width of the electron bunch in x direction
-     * @param w
+     * @param w width
      */
     public void setxWidth(double w) {
         betax=w*w/eps*gamma;
@@ -62,8 +62,8 @@ public class ElectronBunch {
     
     /**
      * Returning the width squared of the electron bunch in x direction
-     * @param z
-     * @return
+     * @param z coordinate z
+     * @return width in the x direction squared
      */
     public double getxWidth2(double z) {
         return (betax+z*z/betax)*eps/gamma;
@@ -71,7 +71,7 @@ public class ElectronBunch {
     
     /**
      * Returning the velocity spread of the electron bunch in x direction
-     * @return
+     * @return velocity spread in the x direction
      */
     public double getxSpread() {
         return Math.sqrt(eps/gamma/betax);
@@ -79,8 +79,8 @@ public class ElectronBunch {
     
     /**
      * Returning the width of the electron bunch in y direction
-     * @param z
-     * @return
+     * @param z coordinate z
+     * @return width in the y direction
      */
     public double getyWidth(double z) {
         return Math.sqrt((betay+z*z/betay)*eps/gamma);
@@ -88,7 +88,7 @@ public class ElectronBunch {
     
     /**
      * Setting the width of the electron bunch in y direction
-     * @param w
+     * @param w width
      */
     public void setyWidth(double w) {
         betay=w*w/eps*gamma;
@@ -96,8 +96,8 @@ public class ElectronBunch {
     
     /**
      * Returning the width squared of the electron bunch in y direction
-     * @param z
-     * @return
+     * @param z coordinate z
+     * @return width in the x direction squared
      */
     public double getyWidth2(double z) {
         return (betay+z*z/betay)*eps/gamma;
@@ -105,7 +105,7 @@ public class ElectronBunch {
     
     /**
      * Returning the velocity spread of the electron bunch in y direction
-     * @return
+     * @return velocity spread in the y direction
      */
     public double getySpread() {
         return Math.sqrt(eps/gamma/betay);
@@ -113,8 +113,8 @@ public class ElectronBunch {
     
     /**
      * Returning the average width of the electron bunch
-     * @param z
-     * @return
+     * @param z coordinate z
+     * @return average width
      */
     public double getWidth(double z) {
         return Math.sqrt(getxWidth(z)*getyWidth(z));
@@ -123,7 +123,7 @@ public class ElectronBunch {
     /**
      * Returning the average squared width of the electron bunch
      * @param z coordinate z
-     * @return
+     * @return average width squared
      */
     public double getWidth2(double z) {
         return Math.sqrt(getxWidth2(z)*getyWidth2(z));
@@ -131,7 +131,7 @@ public class ElectronBunch {
     
     /**
      * Returning the average velocity spread of the electron bunch
-     * @return
+     * @return average velocity spread
      */
     public double getSpread() {
         return Math.sqrt(getxSpread()*getySpread());
