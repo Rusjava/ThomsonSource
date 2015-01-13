@@ -565,7 +565,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 80));
         ProgressFrame.setPreferredSize(new java.awt.Dimension(400, 80));
         ProgressFrame.setResizable(false);
-        ProgressFrame.setType(java.awt.Window.Type.UTILITY);
 
         javax.swing.GroupLayout ProgressFrameLayout = new javax.swing.GroupLayout(ProgressFrame.getContentPane());
         ProgressFrame.getContentPane().setLayout(ProgressFrameLayout);
@@ -587,7 +586,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TSource");
         setMinimumSize(new java.awt.Dimension(750, 0));
-        setPreferredSize(new java.awt.Dimension(750, 660));
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setDoubleBuffered(true);
@@ -734,7 +732,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(ebetaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ebetaxunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
+                        .addContainerGap(30, Short.MAX_VALUE))
                     .addGroup(jPanel_elLayout.createSequentialGroup()
                         .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -904,7 +902,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_phLayout.setHorizontalGroup(
             jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_phLayout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+                .addContainerGap(24, Short.MAX_VALUE)
                 .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(puslelengthlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1044,15 +1042,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xfluxLayout.setHorizontalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_xfluxLayout.createSequentialGroup()
-                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
                 .addGap(4, 4, 4))
         );
         jPanel_xfluxLayout.setVerticalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Flux", jPanel_xflux);
@@ -1292,8 +1290,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel_ph, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                    .addComponent(jPanel_el, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))
+                    .addComponent(jPanel_ph, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                    .addComponent(jPanel_el, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -2302,62 +2300,62 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
         JFileChooser fo=new JFileChooser ();
-            fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +tsource.ray_number);
-            int ans=fo.showOpenDialog(this);
+        fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +tsource.ray_number);
+        int ans=fo.showOpenDialog(this);   
+        if (ans==JFileChooser.APPROVE_OPTION) {
             File file=fo.getSelectedFile();
             if (file.exists ()) {
-                    int n=JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
+                int n=JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if (n==JOptionPane.NO_OPTION) {
-                        return;
-                    }
+                if (n==JOptionPane.NO_OPTION) {
+                    return;
+                }
             }
-            if (ans==JFileChooser.APPROVE_OPTION) {
-                ProgressFrame.setVisible(true);
-                (new SwingWorker<Void, Void> () {
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        Formatter fm;
-                        try {
-                            PrintWriter pw=new PrintWriter(new FileWriter(file, false));
-                            for (int i=0; i<tsource.ray_number; i++) {
-                                fm=new Formatter();
-                                double [] ray=tsource.getRay(false);
-                                fm.format("%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
+            ProgressFrame.setVisible(true);
+            (new SwingWorker<Void, Void> () {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    Formatter fm;
+                    try {
+                        PrintWriter pw=new PrintWriter(new FileWriter(file, false));
+                        for (int i=0; i<tsource.ray_number; i++) {
+                            fm=new Formatter();
+                            double [] ray=tsource.getRay(false);
+                            fm.format("%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
                                         new Double(ray[0]), new Double(ray[1]), new Double(ray[2]),
                                         new Double(ray[3]), new Double(ray[4]), new Double(ray[5]), 
                                         new Double(0),new Double(0),new Double(0),new Double(1),
                                         new Double(2*Math.PI*3.201e-26/ray[6]*1e9),new Double(0),new Double(0),new Double(0),
                                         new Double(0),new Double(0),new Double(0),new Double(0));
-                                pw.println(fm); 
-                                setStatusBar((int)100*i/tsource.ray_number);
-                            }
-                            pw.close();
-                        } catch (IOException e) {
+                            pw.println(fm); 
+                            setStatusBar((int)100*i/tsource.ray_number);
+                        }
+                        pw.close();
+                    } catch (IOException e) {
                             JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                                 JOptionPane.ERROR_MESSAGE);
-                        }
-                        return null;
                     }
+                    return null;
+                }
                     
-                    @Override
-                    protected void done() {
+                @Override
+                protected void done() {
                         ProgressFrame.setVisible(false);
-                    }
+                }
                     /**
                     * Updating progress bar
                     * @param status 
                     */
-                    public void setStatusBar(final int status) {
-                        SwingUtilities.invokeLater(new Runnable(){
-                            @Override
-                            public void run() {
-                                jRayProgressBar.setValue(status);
-                            }
-                        });
-                    }
-                }).execute();
-            }
+                public void setStatusBar(final int status) {
+                    SwingUtilities.invokeLater(new Runnable(){
+                        @Override
+                        public void run() {
+                            jRayProgressBar.setValue(status);
+                        }
+                    });
+                }
+            }).execute();
+        }
     }//GEN-LAST:event_jMenuItemSourceActionPerformed
 
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
