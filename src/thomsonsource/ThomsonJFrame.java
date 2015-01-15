@@ -237,6 +237,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xenergy_right = new javax.swing.JPanel();
         jPanel_slider = new javax.swing.JPanel();
         jSlider_pickup = new javax.swing.JSlider();
+        totalFluxLabel = new javax.swing.JLabel();
         jPanel_sh = new javax.swing.JPanel();
         eshiftxlabel = new javax.swing.JLabel();
         eshiftylabel = new javax.swing.JLabel();
@@ -563,7 +564,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ProgressFrame.setTitle("Ray generation progress");
         ProgressFrame.setAlwaysOnTop(true);
         ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 80));
-        ProgressFrame.setPreferredSize(new java.awt.Dimension(400, 80));
         ProgressFrame.setResizable(false);
 
         javax.swing.GroupLayout ProgressFrameLayout = new javax.swing.GroupLayout(ProgressFrame.getContentPane());
@@ -902,7 +902,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_phLayout.setHorizontalGroup(
             jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_phLayout.createSequentialGroup()
-                .addContainerGap(24, Short.MAX_VALUE)
+                .addContainerGap(28, Short.MAX_VALUE)
                 .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(puslelengthlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1042,15 +1042,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xfluxLayout.setHorizontalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_xfluxLayout.createSequentialGroup()
-                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                 .addGap(4, 4, 4))
         );
         jPanel_xfluxLayout.setVerticalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Flux", jPanel_xflux);
@@ -1119,6 +1119,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
+        totalFluxLabel.setText("Total flux:");
+
         javax.swing.GroupLayout jPanel_sliderLayout = new javax.swing.GroupLayout(jPanel_slider);
         jPanel_slider.setLayout(jPanel_sliderLayout);
         jPanel_sliderLayout.setHorizontalGroup(
@@ -1126,14 +1128,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
                 .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(94, 94, 94)
+                .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(43, Short.MAX_VALUE))
         );
         jPanel_sliderLayout.setVerticalGroup(
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSlider_pickup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(totalFluxLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         jPanel_sh.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Relative position", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1439,7 +1445,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 572, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
                 .addContainerGap(56, Short.MAX_VALUE))
         );
 
@@ -1728,8 +1734,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                
                 xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
-                /*int plotwidth = (int)fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
-                jSlider_pickup.setSize(new Dimension(plotwidth, (int)jSlider_pickup.getSize().getHeight()));*/
+                totalFluxLabel.setText("Total flux: "+
+                        (new DecimalFormat("########.##")).format(tsource.totalflux*tsource.gf*1e-13)+
+                        "\u00B710\u00B9\u00B3\u00B7ph\u00B7s\u207B\u00B9");
+                int plotwidth = (int)fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
+                jSlider_pickup.setPreferredSize(new Dimension(plotwidth, (int)jSlider_pickup.getSize().getHeight()));
                 working=false;
             }
 
@@ -3080,5 +3089,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel spreadlabel;
     private javax.swing.JTextField spreadvalue;
     private javax.swing.JButton startbutton;
+    private javax.swing.JLabel totalFluxLabel;
     // End of variables declaration//GEN-END:variables
 }

@@ -425,9 +425,6 @@
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[400, 80]"/>
         </Property>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[400, 80]"/>
-        </Property>
         <Property name="resizable" type="boolean" value="false"/>
       </Properties>
 
@@ -637,7 +634,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" pref="572" max="-2" attributes="0"/>
+              <Component id="jScrollPane1" pref="572" max="32767" attributes="0"/>
               <EmptySpace pref="56" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -992,7 +989,7 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="24" max="32767" attributes="0"/>
+                          <EmptySpace pref="28" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                   <Component id="puslelengthlabel" max="32767" attributes="0"/>
@@ -1282,17 +1279,17 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jPanel_xflux_left" pref="336" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_left" pref="338" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jPanel_xflux_right" pref="291" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_right" pref="293" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel_xflux_left" pref="225" max="32767" attributes="0"/>
-                          <Component id="jPanel_xflux_right" alignment="0" pref="225" max="32767" attributes="0"/>
+                          <Component id="jPanel_xflux_left" pref="226" max="32767" attributes="0"/>
+                          <Component id="jPanel_xflux_right" alignment="0" pref="226" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
@@ -1460,7 +1457,9 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
                           <Component id="jSlider_pickup" min="-2" pref="214" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
+                          <Component id="totalFluxLabel" min="-2" pref="240" max="-2" attributes="0"/>
+                          <EmptySpace pref="43" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1468,8 +1467,11 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jSlider_pickup" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="jSlider_pickup" max="32767" attributes="0"/>
+                              <Component id="totalFluxLabel" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace pref="13" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1479,6 +1481,11 @@
                   <Events>
                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jSlider_pickupStateChanged"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="totalFluxLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Total flux:"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
