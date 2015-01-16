@@ -1001,6 +1001,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jTabbedPane1.setName(""); // NOI18N
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(713, 500));
         jTabbedPane1.setRequestFocusEnabled(false);
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane1StateChanged(evt);
+            }
+        });
 
         jPanel_xflux.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "X-ray photon flux", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel_xflux.setAutoscrolls(true);
@@ -1127,10 +1132,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
-                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(94, 94, 94)
+                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(108, 108, 108)
                 .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel_sliderLayout.setVerticalGroup(
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1279,7 +1284,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1472,6 +1477,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public double [] udata;
         public boolean espread=false;
         public boolean working=false;
+        public SwingWorker<Void, Void> worker;
         String savetext;
         
         public void initialize () {
@@ -1600,6 +1606,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private CalcBoxParam BrilForm, GFForm;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
     private boolean working=false;
+    public SwingWorker<Void, Void> mainWorker;
     
     
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
@@ -1919,15 +1926,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         BrilProgressBar.setValue(0);
         BrilProgressBar.setStringPainted(true);
-        if (BrilForm.working) { // Checking if already running
+        // Checking if already running
+        if (BrilForm.working) { 
+            BrilForm.worker.cancel(true);
+            BrillianceCalcStart.setText("Calculate");
             return;
         }
+        BrilForm.working=true;
+        BrillianceCalcStart.setText("Terminate");
         if (BrilCalc==null) {
             BrilForm.ebunchclone=new ElectronBunch();
             BrilForm.lpulseclone=new LaserPulse();
             BrilForm.tsourceclone=new ThompsonSource (BrilForm.lpulseclone, BrilForm.ebunchclone);
         }
-        BrilForm.working=true;
+        
         ebunch.duplicate(BrilForm.ebunchclone);
         lpulse.duplicate(BrilForm.lpulseclone);
         BrilForm.tsourceclone.np_gf=tsource.np_gf;
@@ -1941,7 +1953,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Calculating data array. Using SwingWorker class
          */ 
-        (new SwingWorker<Void, Void> () {
+        BrilForm.worker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception {
                 BrilForm.initialize();
@@ -2062,7 +2074,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     BrilCalcChart.getXYPlot().getDomainAxis().setLabel(BrilForm.plotLabels[BrilForm.selectedItemIndexClone]);
                     BrilCalcChart.fireChartChanged(); 
                 }
-            BrilForm.working=false;      
+            BrilForm.working=false;
+            BrillianceCalcStart.setText("Calculate");
             }
             /**
              * Updating progress bar
@@ -2076,7 +2089,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                 });
             }
-        }).execute();    
+        };
+     BrilForm.worker.execute();    
     }//GEN-LAST:event_BrillianceCalcStartActionPerformed
 
     private void BrillianceCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcSaveActionPerformed
@@ -2416,15 +2430,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         GFProgressBar.setValue(0);
         GFProgressBar.setStringPainted(true);
-        if (GFForm.working) { // Checking if already running
+        // Checking if already running
+        if (GFForm.working) { 
+            GFForm.worker.cancel(true);
+            GFCalcStart.setText("Calculate");
             return;
         }
+        GFForm.working=true;
+        GFCalcStart.setText("Terminate");
         if (GFCalc==null) {
             GFForm.ebunchclone=new ElectronBunch();
             GFForm.lpulseclone=new LaserPulse();
             GFForm.tsourceclone=new ThompsonSource (GFForm.lpulseclone, GFForm.ebunchclone);
         }
-        GFForm.working=true;
+        
         ebunch.duplicate(GFForm.ebunchclone);
         lpulse.duplicate(GFForm.lpulseclone);
         GFForm.tsourceclone.np_gf=tsource.np_gf;
@@ -2438,7 +2457,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Calculating data array. Using SwingWorker class
          */
-        (new SwingWorker<Void, Void> () {
+        GFForm.worker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception {
                 GFForm.initialize();
@@ -2554,7 +2573,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     GFCalcChart.getXYPlot().getDomainAxis().setLabel(GFForm.plotLabels[GFForm.selectedItemIndexClone]);
                     GFCalcChart.fireChartChanged(); 
                 }
-            GFForm.working=false;      
+            GFForm.working=false; 
+            GFCalcStart.setText("Calculate");
             }
             /**
              * Updating progress bar
@@ -2568,7 +2588,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                 });
             }
-        }).execute();           
+        };
+        GFForm.worker.execute();           
     }//GEN-LAST:event_GFCalcStartActionPerformed
 
     private void GFCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFCalcSaveActionPerformed
@@ -2675,6 +2696,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         tsource.espread=jCheckBoxMenuItemSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
+
+    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTabbedPane1StateChanged
 
     /**
      * @param args the command line arguments
