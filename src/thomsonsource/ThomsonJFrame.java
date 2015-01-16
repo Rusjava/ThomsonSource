@@ -1001,11 +1001,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jTabbedPane1.setName(""); // NOI18N
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(713, 500));
         jTabbedPane1.setRequestFocusEnabled(false);
-        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jTabbedPane1StateChanged(evt);
-            }
-        });
 
         jPanel_xflux.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "X-ray photon flux", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel_xflux.setAutoscrolls(true);
@@ -1132,8 +1127,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
-                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(108, 108, 108)
+                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(94, 94, 94)
                 .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1284,7 +1279,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1481,6 +1476,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         String savetext;
         
         public void initialize () {
+            tsourceclone.espread=espread;
+            minValueClone=minValue;
+            maxValueClone=maxValue;
+            selectedItemIndexClone=selectedItemIndex;
             step=(maxValue-minValue)/(size-1);
             offset=minValue;   
             udata=new double[size];
@@ -1682,27 +1681,37 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void startbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startbuttonActionPerformed
         // TODO add your handling code here:  
         if (working) {
+            mainWorker.cancel(true);
+            working=false;
+            startbutton.setText("Start");
             return;
         }
         MainProgressBar.setValue(0);
         MainProgressBar.setStringPainted(true);
-        
-        (new SwingWorker<Void, Void> () {
+        startbutton.setText("Stop ");
+        mainWorker=new SwingWorker<Void, Void> () {
             @Override
-            protected Void doInBackground() throws Exception {  
-                working=true;
-                tsource.calculateTotalFlux();
-                tsource.calculateGeometricFactor();
-                fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
-                setStatusBar((int)100/3);
-                xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
-                setStatusBar((int)100*2/3);
-                fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);  
-                setStatusBar((int)100);
+            protected Void doInBackground() throws Exception { 
+                try {
+                    working=true;
+                    tsource.calculateTotalFlux();
+                    tsource.calculateGeometricFactor();
+                    fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
+                    setStatusBar((int)100/3);
+                    xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
+                    setStatusBar((int)100*2/3);
+                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);  
+                    setStatusBar((int)100);
+                } catch (InterruptedException e) {
+                    
+                }
                 return null;
             }
             @Override
             protected void done() {
+                if (isCancelled()&&fluxChart==null) {
+                    return;
+                }
                 if (fluxChart!=null) {
                     fluxChart.fullupdate(fluxdata);
                 } else {
@@ -1747,6 +1756,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 int plotwidth = (int)fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
                 jSlider_pickup.setPreferredSize(new Dimension(plotwidth, (int)jSlider_pickup.getSize().getHeight()));
                 working=false;
+                startbutton.setText("Start");
             }
 
             /**
@@ -1761,7 +1771,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                 });
             }
-        }).execute();      
+        };
+       mainWorker.execute();      
     }//GEN-LAST:event_startbuttonActionPerformed
 
     private void eemitvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitvalueFocusLost
@@ -1798,10 +1809,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             hoffset=xsize*xstep*(sliderposition-50)/100;
             (new SwingWorker<Void, Void> () {
                 @Override
-                protected Void doInBackground() throws Exception {  
-                    working=true;
-                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);
-                    setStatusBar((int)100);
+                protected Void doInBackground() throws Exception { 
+                    try {
+                        working=true;
+                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);
+                        setStatusBar((int)100);
+                    } catch (InterruptedException e) {
+                      
+                    }
                     return null;
                 }
                 @Override
@@ -1924,16 +1939,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void BrillianceCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcStartActionPerformed
         // TODO add your handling code here:
-        BrilProgressBar.setValue(0);
-        BrilProgressBar.setStringPainted(true);
         // Checking if already running
         if (BrilForm.working) { 
-            BrilForm.worker.cancel(true);
+            BrilForm.working=false;
+            BrilForm.worker.cancel(false);
             BrillianceCalcStart.setText("Calculate");
+            BrillianceCalcSave.setEnabled(true);
             return;
         }
+        BrilProgressBar.setValue(0);
+        BrilProgressBar.setStringPainted(true);
         BrilForm.working=true;
         BrillianceCalcStart.setText("Terminate");
+        BrillianceCalcSave.setEnabled(false);
         if (BrilCalc==null) {
             BrilForm.ebunchclone=new ElectronBunch();
             BrilForm.lpulseclone=new LaserPulse();
@@ -1944,11 +1962,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         lpulse.duplicate(BrilForm.lpulseclone);
         BrilForm.tsourceclone.np_gf=tsource.np_gf;
         BrilForm.tsourceclone.np_bril=tsource.np_bril;
-        BrilForm.tsourceclone.espread=BrilForm.espread;
-        BrilForm.minValueClone=BrilForm.minValue;
-        BrilForm.maxValueClone=BrilForm.maxValue;
-        BrilForm.selectedItemIndexClone=BrilForm.selectedItemIndex;
         BrilForm.size=xsize;
+        BrilForm.initialize();
           
         /**
          * Calculating data array. Using SwingWorker class
@@ -1956,10 +1971,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilForm.worker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception {
-                BrilForm.initialize();
                 double x;
                 
                 for (int j=0; j<BrilForm.size; j++) {
+                    if (isCancelled()) {
+                        System.out.println("Cancelled!");
+                        break;
+                    }
                     x=(BrilForm.offset+BrilForm.step*j)*BrilForm.conversionValues[BrilForm.selectedItemIndexClone];  
                     switch (BrilForm.selectedItemIndexClone) {
                         case 0: 
@@ -2076,6 +2094,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             BrilForm.working=false;
             BrillianceCalcStart.setText("Calculate");
+            BrillianceCalcSave.setEnabled(true);
             }
             /**
              * Updating progress bar
@@ -2428,16 +2447,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void GFCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFCalcStartActionPerformed
         // TODO add your handling code here:
-        GFProgressBar.setValue(0);
-        GFProgressBar.setStringPainted(true);
         // Checking if already running
         if (GFForm.working) { 
-            GFForm.worker.cancel(true);
+            GFForm.working=false;
+            GFForm.worker.cancel(false);
             GFCalcStart.setText("Calculate");
+            GFCalcSave.setEnabled(true);
             return;
         }
+        GFProgressBar.setValue(0);
+        GFProgressBar.setStringPainted(true);
         GFForm.working=true;
         GFCalcStart.setText("Terminate");
+        GFCalcSave.setEnabled(false);
         if (GFCalc==null) {
             GFForm.ebunchclone=new ElectronBunch();
             GFForm.lpulseclone=new LaserPulse();
@@ -2448,11 +2470,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         lpulse.duplicate(GFForm.lpulseclone);
         GFForm.tsourceclone.np_gf=tsource.np_gf;
         GFForm.tsourceclone.np_bril=tsource.np_bril;
-        GFForm.tsourceclone.espread=GFForm.espread;
-        GFForm.minValueClone=GFForm.minValue;
-        GFForm.maxValueClone=GFForm.maxValue;
-        GFForm.selectedItemIndexClone=GFForm.selectedItemIndex;
         GFForm.size=xsize;
+        GFForm.initialize();
           
         /**
          * Calculating data array. Using SwingWorker class
@@ -2460,10 +2479,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFForm.worker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception {
-                GFForm.initialize();
                 double x;
                 
                 for (int j=0; j<GFForm.size; j++) {
+                    if (isCancelled()) {
+                        break;
+                    }
                     x=(GFForm.offset+GFForm.step*j)*GFForm.conversionValues[GFForm.selectedItemIndexClone];  
                     switch (GFForm.selectedItemIndexClone) {
                         case 0: 
@@ -2575,6 +2596,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             GFForm.working=false; 
             GFCalcStart.setText("Calculate");
+            GFCalcSave.setEnabled(true);
             }
             /**
              * Updating progress bar
@@ -2696,10 +2718,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         tsource.espread=jCheckBoxMenuItemSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
-
-    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTabbedPane1StateChanged
 
     /**
      * @param args the command line arguments
