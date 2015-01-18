@@ -212,7 +212,7 @@ public class ThompsonSource {
     }
     
     /**
-     * An auxialiry method calculating volume density of the X-ray source
+     * An auxiliary method calculating volume density of the X-ray source
      * @param r
      * @return 
      */
