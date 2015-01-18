@@ -31,13 +31,17 @@ public abstract class ChartParam {
      * @param ystep
      * @param xoffset
      * @param yoffset
+     * @throws java.lang.InterruptedException
      */
-    public void setup (int xsize, int ysize, double xstep, double ystep, 
-            double xoffset, double yoffset) {
+    public void setup(int xsize, int ysize, double xstep, double ystep, 
+            double xoffset, double yoffset)  throws InterruptedException {
         this.udata=new double[xsize][ysize];
         double x, y;
         for (int j=0; j<xsize; j++) {
             for (int p=0; p<ysize; p++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
+                }
                 x=xoffset+xstep*(j-xsize/2);
                 y=yoffset+ystep*(p-ysize/2);
                 this.udata[j][p]=func(x, y);
