@@ -174,7 +174,7 @@ public class ElectronBunch {
     public double length=0.0045;
 
     /**
-     * Electron transversial bunch emittance, m*rad
+     * Electron transversal bunch emittance, m*rad
      */
     public double eps=5e-6;
 

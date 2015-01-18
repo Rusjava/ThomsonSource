@@ -13,7 +13,7 @@ import org.la4j.vector.Vectors;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * A class for the X-ray source with assouciated electron bunch and laser pulse
+ * A class for the X-ray source with associated electron bunch and laser pulse
  * @author Ruslan Feshchenko
  */
 
@@ -131,7 +131,7 @@ public class ThompsonSource {
     
     /**
      * A method calculating the flux density in a given direction for a given 
-     * X-ray photon energy taking into account electron transversial pulse spread
+     * X-ray photon energy taking into account electron transversal pulse spread
      * 
      * @param n
      * @param v
