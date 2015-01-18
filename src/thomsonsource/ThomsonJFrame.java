@@ -1127,7 +1127,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
-                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(94, 94, 94)
                 .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1139,7 +1139,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGroup(jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jSlider_pickup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(totalFluxLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel_sh.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Relative position", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1279,7 +1279,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1604,8 +1604,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     
     private CalcBoxParam BrilForm, GFForm;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
-    private boolean working=false;
-    public SwingWorker<Void, Void> mainWorker;
+    private boolean working=false, rayWorking=false;
+    public SwingWorker<Void, Void> mainWorker, rayWorker;
     
     
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
@@ -1684,16 +1684,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             mainWorker.cancel(true);
             working=false;
             startbutton.setText("Start");
+            jSlider_pickup.setEnabled(true);
             return;
         }
         MainProgressBar.setValue(0);
         MainProgressBar.setStringPainted(true);
+        jSlider_pickup.setEnabled(false);
         startbutton.setText("Stop ");
+        working=true;
+        
         mainWorker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception { 
                 try {
-                    working=true;
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
@@ -1748,15 +1751,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     jPanel_xenergy_right.revalidate();
                     jPanel_xenergy_right.repaint();
                 }
-               
+                working=false;
+                startbutton.setText("Start");
+                jSlider_pickup.setEnabled(true);
+                double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
+                jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
                 xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
                 totalFluxLabel.setText("Total flux: "+
                         (new DecimalFormat("########.##")).format(tsource.totalflux*tsource.gf*1e-13)+
                         "\u00B710\u00B9\u00B3\u00B7ph\u00B7s\u207B\u00B9");
-                int plotwidth = (int)fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
-                jSlider_pickup.setPreferredSize(new Dimension(plotwidth, (int)jSlider_pickup.getSize().getHeight()));
-                working=false;
-                startbutton.setText("Start");
             }
 
             /**
@@ -1798,20 +1801,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
         // TODO add your handling code here:
         JSlider source = (JSlider)evt.getSource();   
-        if (working) {
-            return;
-        }
-        MainProgressBar.setValue(0);
-        MainProgressBar.setStringPainted(true);
-        
         if (!source.getValueIsAdjusting()) {
+            if (working) {
+                return;
+            }
+            MainProgressBar.setValue(0);
+            MainProgressBar.setStringPainted(true);
+            startbutton.setText("Stop");
+            working=true;
+        
             sliderposition = (int)source.getValue();
             hoffset=xsize*xstep*(sliderposition-50)/100;
-            (new SwingWorker<Void, Void> () {
+            mainWorker=new SwingWorker<Void, Void> () {
                 @Override
                 protected Void doInBackground() throws Exception { 
                     try {
-                        working=true;
                         fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);
                         setStatusBar((int)100);
                     } catch (InterruptedException e) {
@@ -1841,6 +1845,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         xenergycrosschart.fireChartChanged(); 
                     }
                     working=false;
+                    startbutton.setText("Start");
                 }
                 /**
                 * Updating progress bar
@@ -1854,7 +1859,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                     });
                 }
-            }).execute();       
+            };
+            mainWorker.execute();       
         }
     }//GEN-LAST:event_jSlider_pickupStateChanged
 
@@ -1975,7 +1981,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 
                 for (int j=0; j<BrilForm.size; j++) {
                     if (isCancelled()) {
-                        System.out.println("Cancelled!");
                         break;
                     }
                     x=(BrilForm.offset+BrilForm.step*j)*BrilForm.conversionValues[BrilForm.selectedItemIndexClone];  
