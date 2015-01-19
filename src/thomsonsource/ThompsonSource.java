@@ -111,7 +111,7 @@ public class ThompsonSource {
     
     /**
      * A method calculating the flux density in a given direction for a given 
-     * X-ray photon energy without taking into account electron transversial pulse spread
+     * X-ray photon energy without taking into account electron transversal pulse spread
      * 
      * @param n
      * @param v
@@ -170,7 +170,6 @@ public class ThompsonSource {
                     u=spreadflux.integrate(ni_bril, func, 0.0, 2*eb.getSpread());
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
-                    System.out.println("TooManyEvaluations");
                     return 0;
                 }
             }

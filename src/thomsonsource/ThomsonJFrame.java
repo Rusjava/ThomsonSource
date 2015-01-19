@@ -856,7 +856,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("2.7");
+        pulserelvalue.setText("5.4");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);
@@ -2347,6 +2347,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
+        if (rayWorking) {
+            ProgressFrame.setVisible(true);
+            return;
+        }
         JFileChooser fo=new JFileChooser ();
         fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +tsource.ray_number);
         int ans=fo.showOpenDialog(this);   
@@ -2360,13 +2364,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             }
             ProgressFrame.setVisible(true);
-            (new SwingWorker<Void, Void> () {
+            rayWorker=new SwingWorker<Void, Void> () {
                 @Override
                 protected Void doInBackground() throws Exception {
                     Formatter fm;
                     try {
                         PrintWriter pw=new PrintWriter(new FileWriter(file, false));
                         for (int i=0; i<tsource.ray_number; i++) {
+                            if (isCancelled()) {
+                                break;
+                            }
                             fm=new Formatter();
                             double [] ray=tsource.getRay(false);
                             fm.format("%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
@@ -2389,6 +2396,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 @Override
                 protected void done() {
                         ProgressFrame.setVisible(false);
+                        rayWorking=false;
                 }
                     /**
                     * Updating progress bar
@@ -2402,7 +2410,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                     });
                 }
-            }).execute();
+            };
+            rayWorker.execute();
         }
     }//GEN-LAST:event_jMenuItemSourceActionPerformed
 

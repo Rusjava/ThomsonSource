@@ -34,15 +34,15 @@ public class LaserPulse {
         tm.direction.set(2,this.direction.get(2));
     }
     public double getWidth(double z) {
-        return Math.sqrt((rlength+z*z/rlength)*rk);
+        return Math.sqrt((rlength+z*z/rlength)*rk/2);
     }
     
     public void setWidth(double w) {
-        rlength=w*w/rk;
+        rlength=2*w*w/rk;
     }
     
     public double getWidth2(double z) {
-        return (rlength+z*z/rlength)*rk;
+        return (rlength+z*z/rlength)*rk/2;
     }
     
     public void setPhotonEnergy (double e) {
@@ -74,7 +74,7 @@ public class LaserPulse {
     private double number; /* Number of photon in the laser pulse */
     public double length=4.5e-3; /* Laser pulse semi-length, m */  
     public Vector direction; /* Mean direction of the laser pulse */
-    public double rlength=2.7e-3; /* Laser pulse Reyley length, m */
+    public double rlength=5.4e-3; /* Laser pulse Reyley length, m */
     public double fq=7.9e7; /* Pusle frequency, 1/s */
     public double delay=0; /* Laser pulse delay, m */
     private double rk;
