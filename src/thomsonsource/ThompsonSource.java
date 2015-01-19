@@ -38,7 +38,7 @@ public class ThompsonSource {
     /**
      *Number of points in Monte Carlo calculation of the brilliance
      */
-    public int ni_bril=1000000;
+    public int ni_bril=30000;
 
     /**
      * Normalized total flux from the source
@@ -145,7 +145,7 @@ public class ThompsonSource {
             UnivariateFrequencyFluxSpreadOuter func=
                         new UnivariateFrequencyFluxSpreadOuter (e, v, n);
             try {
-                u=spreadflux.integrate(30000, func, 0.0, 2*Math.PI);
+                u=spreadflux.integrate(ni_bril, func, 0.0, 2*Math.PI);
                 return u;
             } catch (TooManyEvaluationsException ex) {
                 return 0; 
@@ -167,7 +167,7 @@ public class ThompsonSource {
                 UnivariateFrequencyFluxSpreadInner func=
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
-                    u=spreadflux.integrate(30000, func, 0.0, thetamax);
+                    u=spreadflux.integrate(ni_bril, func, 0.0, thetamax);
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     System.out.println("TooManyEvaluations");
@@ -374,7 +374,7 @@ public class ThompsonSource {
         RombergIntegrator intvolumeflux=new RombergIntegrator(); 
         UnivariateVolumeFlux func=new UnivariateVolumeFlux (r0, n);
         try {
-            u=intvolumeflux.integrate(30000, func,
+            u=intvolumeflux.integrate(ni_bril, func,
                r0.fold(Vectors.mkEuclideanNormAccumulator())-3*eb.length,
                r0.fold(Vectors.mkEuclideanNormAccumulator())+3*eb.length);
             u=u*directionFrequencyFluxSpread(n, v, e);
