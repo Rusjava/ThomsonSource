@@ -62,7 +62,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.estep=2000/xsize;
         
         /**
-        * An auxialiry method giving the flux density in a given direction 
+        * An auxiliary method giving the flux density in a given direction 
         * 
         */     
         this.fluxdata=new ChartParam() {
@@ -76,7 +76,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         };
         /**
-        * An auxialiry method calculating the flux density in a given direction for a given 
+        * An auxiliary method calculating the flux density in a given direction for a given 
         * X-ray photon energy
         * 
         */ 
@@ -110,16 +110,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * Objects for the brilliance calculation
          */
         this.BrilForm=new CalcBoxParam ();
-        this.BrilForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>", ""};
+        this.BrilForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>", "", "keV"};
         this.BrilForm.plotLabels=new String [] {"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
-            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3"};
+            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3", "X-ray energy, keV"};
         this.BrilForm.comboBoxValues=new String [] {"Laser-electron angle", "Delay", "Z-shift", 
-            "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread"};
-        this.BrilForm.conversionValues=new double [] {1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0};
-        this.BrilForm.minValues=new String [] {"0", "0", "0", "10", "3", "2.7", "20", "0.001"};
-        this.BrilForm.maxValues=new String [] {"35", "100", "10", "50", "10", "10", "100", "0.01"};
+            "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy"};
+        this.BrilForm.conversionValues=new double [] {1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.6e-16};
+        this.BrilForm.minValues=new String [] {"0", "0", "0", "10", "3", "5.4", "20", "0.001", "43"};
+        this.BrilForm.maxValues=new String [] {"35", "100", "10", "50", "10", "10", "100", "0.01", "45"};
         this.BrilForm.savetext="Choose file to save spectral brilliance data";
-        this.BrilForm.numberOfItems=8;
+        this.BrilForm.numberOfItems=9;
         
         /**
          * Objects for the GF calculation
@@ -278,7 +278,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
-        BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread" }));
+        BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy" }));
         BrillianceCalcBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BrillianceCalcBoxActionPerformed(evt);
@@ -1280,7 +1280,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1978,8 +1978,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilForm.worker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception {
-                double x;
-                
+                double x, e;
+                e=xenergydata.func(0.0, 0.0)*1.6e-16;
                 for (int j=0; j<BrilForm.size; j++) {
                     if (isCancelled()) {
                         break;
@@ -2014,11 +2014,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         case 7:
                             BrilForm.ebunchclone.delgamma=x;
                         break;
+                        case 8:
+                            e=x;
+                        break;    
                         }
                     BrilForm.tsourceclone.calculateTotalFlux();
                     BrilForm.udata[j]=BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double []{0.0, 0.0, 0.0}),
                             new BasicVector(new double []{0.0, 0.0, 1.0}), new BasicVector(new double []{0.0, 0.0, 1.0}),
-                                    xenergydata.func(0.0, 0.0)*1.6e-16)*1e-15*1e-13;
+                                    e)*1e-15*1e-13;
                     setStatusBar((int)100*(j+1)/BrilForm.size);
                 } 
                 BrilForm.umax=(new BasicVector (BrilForm.udata)).max();
