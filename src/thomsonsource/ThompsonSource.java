@@ -38,10 +38,10 @@ public class ThompsonSource {
     /**
      *Number of points in Monte Carlo calculation of the brilliance
      */
-    public int np_bril=1000000;
+    public int ni_bril=1000000;
 
     /**
-     * Normalized total flux fron the source
+     * Normalized total flux from the source
      */
     public double totalflux;
 
@@ -51,7 +51,7 @@ public class ThompsonSource {
     public double gf=1;
 
     /**
-     * Flag - whether or not the electron beam tranvsersial velocity spread 
+     * Flag - whether or not the electron beam transversal velocity spread 
      * is taken into account
      */
     public boolean espread=false;
@@ -140,27 +140,7 @@ public class ThompsonSource {
      */
     
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
-        double sum=0, dpx, dpy, x, y, tm, mult, u;
-        /*Vector dv;
-        mult=Math.sqrt(eb.delgamma*1e2);
-        mult=3;
-        dpx=eb.getxSpread();
-        dpy=eb.getySpread();
-        Vector iter=new BasicVector (new double []{0.0,0.0,0.0});
-        for (int i=0; i<np_bril; i++) {
-            x=(2*Math.random()-1.0)*dpx*mult;
-            y=(2*Math.random()-1.0)*dpy*mult;
-            iter.set(0, x);
-            iter.set(1, y);
-            iter.set(2, Math.sqrt(1.0-x*x-y*y));
-            dv=iter.subtract(v);
-            tm=directionFrequencyFluxNoSpread(n, iter, e)*
-                    Math.exp(-Math.pow(dv.get(0)/dpx, 2)-Math.pow(dv.get(1)/dpy, 2));
-            if (!(new Double (tm)).isNaN()) {
-                sum+=tm;
-            }
-        }
-        return 4*sum/np_bril/Math.PI;*/
+        double u;
         RombergIntegrator spreadflux=new RombergIntegrator(); 
             UnivariateFrequencyFluxSpreadOuter func=
                         new UnivariateFrequencyFluxSpreadOuter (e, v, n);
@@ -168,7 +148,6 @@ public class ThompsonSource {
                 u=spreadflux.integrate(30000, func, 0.0, 2*Math.PI);
                 return u;
             } catch (TooManyEvaluationsException ex) {
-                System.out.println("TooManyEvaluations");
                 return 0; 
             }
     }    
@@ -189,7 +168,7 @@ public class ThompsonSource {
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
                     u=spreadflux.integrate(30000, func, 0.0, thetamax);
-                    return u;
+                    return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     System.out.println("TooManyEvaluations");
                     throw ex;

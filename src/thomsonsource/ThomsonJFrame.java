@@ -1967,7 +1967,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ebunch.duplicate(BrilForm.ebunchclone);
         lpulse.duplicate(BrilForm.lpulseclone);
         BrilForm.tsourceclone.np_gf=tsource.np_gf;
-        BrilForm.tsourceclone.np_bril=tsource.np_bril;
+        BrilForm.tsourceclone.ni_bril=tsource.ni_bril;
         BrilForm.size=xsize;
         BrilForm.initialize();
           
@@ -2474,7 +2474,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ebunch.duplicate(GFForm.ebunchclone);
         lpulse.duplicate(GFForm.lpulseclone);
         GFForm.tsourceclone.np_gf=tsource.np_gf;
-        GFForm.tsourceclone.np_bril=tsource.np_bril;
+        GFForm.tsourceclone.ni_bril=tsource.ni_bril;
         GFForm.size=xsize;
         GFForm.initialize();
           
@@ -2693,16 +2693,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         JTextField gfmontecarlonumberbox = new JTextField();
         gfmontecarlonumberbox.setText("5000000");
-        JTextField brilmontecarlonumberbox = new JTextField();
-        brilmontecarlonumberbox.setText("1000000");
+        JTextField briliternumberbox = new JTextField();
+        briliternumberbox.setText("30000");
         Object[] message = {
                         "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfmontecarlonumberbox,
-                        "<html>Number of points in Monte Carlo<br/> calculation of the brilliance:</html>", brilmontecarlonumberbox
+                        "<html>Max number of iterrations in<br/> calculation of the brilliance:</html>", briliternumberbox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.np_gf=Integer.parseInt(gfmontecarlonumberbox.getText());
-            tsource.np_bril=Integer.parseInt(brilmontecarlonumberbox.getText());
+            tsource.np_gf=(int)Math.round(testValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
+            tsource.ni_bril=(int)Math.round(testValue(1, 1e5, briliternumberbox, "30000"));
         }
     }//GEN-LAST:event_jMenuItemMonteCarloActionPerformed
 
@@ -2715,7 +2715,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.ray_number=Integer.parseInt(xraynumberbox.getText());
+            tsource.ray_number=(int)Math.round(testValue(1, 1e6, xraynumberbox, "1000"));
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 
