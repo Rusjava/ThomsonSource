@@ -112,7 +112,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.BrilForm=new CalcBoxParam ();
         this.BrilForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>", "", "keV"};
         this.BrilForm.plotLabels=new String [] {"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
-            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3", "X-ray energy, keV"};
+            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3", "X-ray energy, keV"};
         this.BrilForm.comboBoxValues=new String [] {"Laser-electron angle", "Delay", "Z-shift", 
             "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy"};
         this.BrilForm.conversionValues=new double [] {1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.6e-16};
@@ -1683,9 +1683,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:  
         if (working) {
             mainWorker.cancel(true);
-            working=false;
-            startbutton.setText("Start");
-            jSlider_pickup.setEnabled(true);
             return;
         }
         MainProgressBar.setValue(0);
@@ -1713,54 +1710,54 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
             @Override
             protected void done() {
-                if (isCancelled()&&fluxChart==null) {
-                    return;
-                }
-                if (fluxChart!=null) {
-                    fluxChart.fullupdate(fluxdata);
-                } else {
-                    fluxChart=new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
-                            jPanel_xflux_left, 0.75, true);
-                }
+                if (!isCancelled()||fluxChart!=null) {
+                   
+                    if (fluxChart!=null) {
+                        fluxChart.fullupdate(fluxdata);
+                    } else {
+                        fluxChart=new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
+                                jPanel_xflux_left, 0.75, true);
+                    }
          
-                if (fluxCrossChart!=null) {
-                    fluxCrossChart.fullupdate(fluxcrossdata);
-                } else {
-                    fluxCrossChart=new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
-                            "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
-                }
+                    if (fluxCrossChart!=null) {
+                                fluxCrossChart.fullupdate(fluxcrossdata);
+                    } else {
+                        fluxCrossChart=new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
+                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
+                    }
         
-                if (xEnergyChart!=null) {
-                    xEnergyChart.fullupdate(xenergydata);
-                } else {
-                    xEnergyChart=new ColorChart(xenergydata, "theta_x, mrad", "theta_y, mrad", "kev", jPanel_xenergy_left, 0.75, true);
-                }
+                    if (xEnergyChart!=null) {
+                        xEnergyChart.fullupdate(xenergydata);
+                    } else {
+                        xEnergyChart=new ColorChart(xenergydata, "theta_x, mrad", "theta_y, mrad", "kev", jPanel_xenergy_left, 0.75, true);
+                    }
         
-                if (xenergycrosschart!=null) {
-                    xenergycrosschart.getXYPlot().getDomainAxis().
-                                setRange(xenergydata.getudata()[(int)(xenergydata.getxsize()-1)*sliderposition/100][0],
-                                        xenergydata.getudata()[(int)(xenergydata.getxsize()-1)*sliderposition/100][xenergydata.getxsize()/2]);
-                    xenergycrosschart.fireChartChanged(); 
-                } else {
-                    xenergycrosschart=createLineChart(createLineDataset(xenergydata), "Energy, keV", "theta_y, mrad");
-                    ChartPanel chartpanel = new ChartPanel(xenergycrosschart, 
-                            (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
-                            (int) (10*jPanel_xenergy_right.getWidth()), (int) (10*jPanel_xenergy_right.getHeight()),
-                            false, true, true, true, true, true);    
-                    jPanel_xenergy_right.setLayout(new BorderLayout(10,10));
-                    jPanel_xenergy_right.add(chartpanel, BorderLayout.CENTER);
-                    jPanel_xenergy_right.revalidate();
-                    jPanel_xenergy_right.repaint();
+                    if (xenergycrosschart!=null) {
+                        xenergycrosschart.getXYPlot().getDomainAxis().
+                                    setRange(xenergydata.getudata()[(int)(xenergydata.getxsize()-1)*sliderposition/100][0],
+                                            xenergydata.getudata()[(int)(xenergydata.getxsize()-1)*sliderposition/100][xenergydata.getxsize()/2]);
+                        xenergycrosschart.fireChartChanged(); 
+                    } else {
+                        xenergycrosschart=createLineChart(createLineDataset(xenergydata), "Energy, keV", "theta_y, mrad");
+                        ChartPanel chartpanel = new ChartPanel(xenergycrosschart, 
+                                (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
+                                (int) (10*jPanel_xenergy_right.getWidth()), (int) (10*jPanel_xenergy_right.getHeight()),
+                                false, true, true, true, true, true);    
+                        jPanel_xenergy_right.setLayout(new BorderLayout(10,10));
+                        jPanel_xenergy_right.add(chartpanel, BorderLayout.CENTER);
+                        jPanel_xenergy_right.revalidate();
+                        jPanel_xenergy_right.repaint();
+                    }
+                    double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
+                    jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
+                    xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
+                    totalFluxLabel.setText("Total flux: "+
+                            (new DecimalFormat("########.##")).format(tsource.totalflux*tsource.gf*1e-15)+
+                            "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B3");
                 }
-                working=false;
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
-                double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
-                jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
-                xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
-                totalFluxLabel.setText("Total flux: "+
-                        (new DecimalFormat("########.##")).format(tsource.totalflux*tsource.gf*1e-13)+
-                        "\u00B710\u00B9\u00B3\u00B7ph\u00B7s\u207B\u00B9");
+                working=false;
             }
 
             /**
@@ -1845,8 +1842,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     xenergydata.getudata()[sliderindex][xenergydata.getxsize()/2]);
                         xenergycrosschart.fireChartChanged(); 
                     }
-                    working=false;
                     startbutton.setText("Start");
+                    working=false;
                 }
                 /**
                 * Updating progress bar
