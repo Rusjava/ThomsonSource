@@ -140,9 +140,10 @@ public class ThompsonSource {
      */
     
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
-        double sum=0, dpx, dpy, x, y, tm, mult;
-        Vector dv;
+        double sum=0, dpx, dpy, x, y, tm, mult, u;
+        /*Vector dv;
         mult=Math.sqrt(eb.delgamma*1e2);
+        mult=3;
         dpx=eb.getxSpread();
         dpy=eb.getySpread();
         Vector iter=new BasicVector (new double []{0.0,0.0,0.0});
@@ -159,8 +160,69 @@ public class ThompsonSource {
                 sum+=tm;
             }
         }
-        return 4*sum/np_bril/Math.PI;
-    }
+        return 4*sum/np_bril/Math.PI;*/
+        RombergIntegrator spreadflux=new RombergIntegrator(); 
+            UnivariateFrequencyFluxSpreadOuter func=
+                        new UnivariateFrequencyFluxSpreadOuter (e, v, n);
+            try {
+                u=spreadflux.integrate(30000, func, 0.0, 2*Math.PI);
+                return u;
+            } catch (TooManyEvaluationsException ex) {
+                System.out.println("TooManyEvaluations");
+                return 0; 
+            }
+    }    
+        class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
+            double e;
+            Vector n, v0;
+            public UnivariateFrequencyFluxSpreadOuter (double e, Vector v0, Vector n) {
+                this.e=e;
+                this.v0=v0;
+                this.n=n;
+            }
+            @Override
+            public double value(double phi) {
+                double u, thetamax;
+                thetamax=2*eb.getSpread();
+                RombergIntegrator spreadflux=new RombergIntegrator(); 
+                UnivariateFrequencyFluxSpreadInner func=
+                        new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
+                try {
+                    u=spreadflux.integrate(30000, func, 0.0, thetamax);
+                    return u;
+                } catch (TooManyEvaluationsException ex) {
+                    System.out.println("TooManyEvaluations");
+                    throw ex;
+                }
+            }
+        }
+        
+        class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
+            double phi, e;
+            Vector n, v0;
+            public UnivariateFrequencyFluxSpreadInner (double phi, double e, Vector v0, Vector n) {
+                this.phi=phi;
+                this.e=e;
+                this.n=n;
+                this.v0=v0;
+            }
+            @Override
+            public double value(double theta) {
+                double u, dpx, dpy;
+                dpx=eb.getxSpread();
+                dpy=eb.getySpread();
+                Vector dv;
+                Vector v=new BasicVector (new double []{Math.sin(theta)*Math.cos(phi),
+                    Math.sin(theta)*Math.sin(phi), Math.cos(theta)});
+                dv=v.subtract(v0);
+                u=theta*directionFrequencyFluxNoSpread(n, v, e)*
+                        Math.exp(-Math.pow(dv.get(0)/dpx, 2)-Math.pow(dv.get(1)/dpy, 2));
+                if ((new Double (u)).isNaN()) {
+                    return 0;
+                } 
+                return u;
+            }
+        }
     
     /**
      * A method calculating the flux density in a given direction for a given 
@@ -320,7 +382,7 @@ public class ThompsonSource {
     
     /**
      * A method calculating spectral brilliance in a given direction
-     * taking into account electron transversial pulse spread
+     * taking into account electron transversal pulse spread
      * @param r0
      * @param n
      * @param v
