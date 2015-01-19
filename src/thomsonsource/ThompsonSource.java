@@ -15,6 +15,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  * A class for the X-ray source with associated electron bunch and laser pulse
  * @author Ruslan Feshchenko
+ * @version 0.3
  */
 
 public class ThompsonSource {
@@ -142,7 +143,7 @@ public class ThompsonSource {
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
         double u;
         RombergIntegrator spreadflux=new RombergIntegrator(); 
-            UnivariateFrequencyFluxSpreadOuter func=
+            UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadOuter (e, v, n);
             try {
                 u=spreadflux.integrate(ni_bril, func, 0.0, 2*Math.PI);
@@ -161,17 +162,16 @@ public class ThompsonSource {
             }
             @Override
             public double value(double phi) {
-                double u, thetamax;
-                thetamax=2*eb.getSpread();
+                double u;
                 RombergIntegrator spreadflux=new RombergIntegrator(); 
-                UnivariateFrequencyFluxSpreadInner func=
+                UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
-                    u=spreadflux.integrate(ni_bril, func, 0.0, thetamax);
+                    u=spreadflux.integrate(ni_bril, func, 0.0, 2*eb.getSpread());
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     System.out.println("TooManyEvaluations");
-                    throw ex;
+                    return 0;
                 }
             }
         }

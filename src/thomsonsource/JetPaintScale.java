@@ -14,6 +14,7 @@ import org.jfree.chart.renderer.PaintScale;
 /**
  * A jet paint scale 
  * @author Ruslan Feshchenko
+ * @version 1.0
  */
 
   public class JetPaintScale 

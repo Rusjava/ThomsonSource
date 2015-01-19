@@ -41,6 +41,7 @@ import org.la4j.vector.dense.*;
 /**
  *
  * @author Ruslan Feshchenko
+ * @version 0.3
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 

@@ -8,6 +8,7 @@ package thomsonsource;
 /**
  * The package for the laser-electron source simulation
  * @author Ruslan Feshchenko
+ * @version 0.3
  */
 
 import org.la4j.vector.Vector;
