@@ -2351,6 +2351,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             ProgressFrame.setVisible(true);
             return;
         }
+        
         JFileChooser fo=new JFileChooser ();
         fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +tsource.ray_number);
         int ans=fo.showOpenDialog(this);   
@@ -2364,6 +2365,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             }
             ProgressFrame.setVisible(true);
+            rayWorking=true;
             rayWorker=new SwingWorker<Void, Void> () {
                 @Override
                 protected Void doInBackground() throws Exception {

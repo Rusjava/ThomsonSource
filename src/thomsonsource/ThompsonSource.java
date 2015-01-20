@@ -424,13 +424,14 @@ public class ThompsonSource {
         double [] ray=new double [7];
         Vector n=new BasicVector(new double []{0.0,0.0,1.0});
         Vector r=new BasicVector(new double []{0.0,0.0,0.0});
-        double prob0, prob;
+        double prob0, prob, spreadRange;
+        spreadRange=Math.pow(eb.getSpread()*eb.getGamma(), 2);
         prob0=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), 
                 directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0})));
         do {
-            ray[0]=3*(2*Math.random()-1.0)*eb.getWidth(0.0);
-            ray[1]=3*(2*Math.random()-1.0)*eb.getWidth(0.0);
-            ray[2]=3*(2*Math.random()-1.0)*eb.getWidth(0.0);
+            ray[0]=3*(2*Math.random()-1.0)*Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
+            ray[1]=3*(2*Math.random()-1.0)*Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
+            ray[2]=3*(2*Math.random()-1.0)*Math.max(eb.length, lp.length);
             r.set(0,ray[0]);
             r.set(1,ray[1]);
             r.set(2,ray[2]);
@@ -441,13 +442,14 @@ public class ThompsonSource {
             n.set(2,1.0);
             n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
             ray[5]=n.get(2);
-            ray[6]=((2*Math.random()-1.0)*3*eb.delgamma+1.0)*directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
+            ray[6]=(3*Math.random()*(2*eb.delgamma+spreadRange)+1.0-3*spreadRange)*
+                    directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
             if (espread) {
                 prob=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
             } else {
                 prob=directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
             }
-        } while ( prob < Math.random() );    
+        } while ( prob < Math.random() || (new Double(prob)).isNaN());    
         return ray;
     }
 }
