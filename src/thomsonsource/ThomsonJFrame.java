@@ -2408,11 +2408,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         A=n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
                         T=I.subtract(D).multiply(1-innerProduct).add(A);
                         As=T.multiply(new BasicVector(new double [] {1.0, 0.0, 0.0}));
-                        fm.format("%f %f %f %f %f %f %f %f %f %f %f.1 %d %f %f %f %f %f %f", 
+                        fm.format("%f %f %f %f %f %f %f %f %f %f %.1f %d %f %f %f %f %f %f", 
                                         new Double(ray[0]*1e2), new Double(ray[2]*1e2), new Double(ray[3]*1e2),
                                         new Double(ray[3]), new Double(ray[5]), new Double(ray[4]), 
                                         new Double(As.get(0)),new Double(As.get(1)),new Double(As.get(2)),new Double(1),
-                                        new Double(1e-2*ray[6]/3.201e-26),new Integer(i),new Double(0),new Double(0),
+                                        new Double(1e-2*ray[6]/3.201e-26),new Integer(i+1),new Double(0),new Double(0),
                                         new Double(0),new Double(0),new Double(0),new Double(0));
                         pw.println(fm); 
                         setStatusBar((int)100*i/tsource.ray_number);
