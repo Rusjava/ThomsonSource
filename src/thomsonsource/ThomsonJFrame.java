@@ -21,6 +21,9 @@ import java.util.Locale;
 import javax.swing.border.TitledBorder;
 import java.awt.geom.Rectangle2D;
 import javax.swing.text.*;
+import java.util.concurrent.ExecutionException;
+import java.util.IllegalFormatException;
+import java.util.concurrent.CancellationException;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -37,6 +40,8 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import org.la4j.vector.*;
 import org.la4j.vector.dense.*;
+import org.la4j.matrix.*;
+import org.la4j.matrix.dense.*;
 
 /**
  *
@@ -184,6 +189,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFCalcGraph = new javax.swing.JPanel();
         ProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
+        jRayStopButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel_el = new javax.swing.JPanel();
@@ -567,20 +573,32 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 80));
         ProgressFrame.setResizable(false);
 
+        jRayStopButton.setText("Stop");
+        jRayStopButton.setToolTipText("");
+        jRayStopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRayStopButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ProgressFrameLayout = new javax.swing.GroupLayout(ProgressFrame.getContentPane());
         ProgressFrame.getContentPane().setLayout(ProgressFrameLayout);
         ProgressFrameLayout.setHorizontalGroup(
             ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ProgressFrameLayout.createSequentialGroup()
+            .addGroup(ProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jRayStopButton)
+                .addGap(21, 21, 21))
         );
         ProgressFrameLayout.setVerticalGroup(
             ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jRayProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jRayStopButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -2370,35 +2388,60 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 @Override
                 protected Void doInBackground() throws Exception {
                     Formatter fm;
-                    try {
-                        PrintWriter pw=new PrintWriter(new FileWriter(file, false));
-                        for (int i=0; i<tsource.ray_number; i++) {
-                            if (isCancelled()) {
-                                break;
-                            }
-                            fm=new Formatter();
-                            double [] ray=tsource.getRay(false);
-                            fm.format("%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", 
-                                        new Double(ray[0]), new Double(ray[1]), new Double(ray[2]),
-                                        new Double(ray[3]), new Double(ray[4]), new Double(ray[5]), 
-                                        new Double(0),new Double(0),new Double(0),new Double(1),
-                                        new Double(2*Math.PI*3.201e-26/ray[6]*1e9),new Double(0),new Double(0),new Double(0),
-                                        new Double(0),new Double(0),new Double(0),new Double(0));
-                            pw.println(fm); 
-                            setStatusBar((int)100*i/tsource.ray_number);
+                    double innerProduct;
+                    Vector n0=new BasicVector(new double [] {0.0, 1.0, 0.0}), n, As;
+                    Matrix M, D, T, A, I=new Basic1DMatrix(3,3);
+                    I.set(0,0,1.0);
+                    I.set(1,1,1.0);
+                    I.set(2,2,1.0);
+                    PrintWriter pw=new PrintWriter(new FileWriter(file, false));
+                    for (int i=0; i<tsource.ray_number; i++) {
+                        if (isCancelled()) {
+                            break;
                         }
-                        pw.close();
-                    } catch (IOException e) {
-                            JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
+                        fm=new Formatter();
+                        double [] ray=tsource.getRay(false);
+                        n=new BasicVector(new double [] {ray[3], ray[5], ray[4]});
+                        innerProduct=n.innerProduct(n0);
+                        D=n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).
+                                    add(n0.outerProduct(n0)).divide(innerProduct*innerProduct-1.0));
+                        A=n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
+                        T=I.subtract(D).multiply(1-innerProduct).add(A);
+                        As=T.multiply(new BasicVector(new double [] {1.0, 0.0, 0.0}));
+                        fm.format("%f %f %f %f %f %f %f %f %f %f %f.1 %d %f %f %f %f %f %f", 
+                                        new Double(ray[0]*1e2), new Double(ray[2]*1e2), new Double(ray[3]*1e2),
+                                        new Double(ray[3]), new Double(ray[5]), new Double(ray[4]), 
+                                        new Double(As.get(0)),new Double(As.get(1)),new Double(As.get(2)),new Double(1),
+                                        new Double(1e-2*ray[6]/3.201e-26),new Integer(i),new Double(0),new Double(0),
+                                        new Double(0),new Double(0),new Double(0),new Double(0));
+                        pw.println(fm); 
+                        setStatusBar((int)100*i/tsource.ray_number);
+                        }
+                    pw.close();  
                     return null;
                 }
                     
                 @Override
                 protected void done() {
-                        ProgressFrame.setVisible(false);
-                        rayWorking=false;
+                    ProgressFrame.setVisible(false);
+                    rayWorking=false;
+                    try {
+                        get();
+                    } catch (InterruptedException e) {
+                            
+                    } catch (ExecutionException e) {
+                        if (e.getCause() instanceof IOException) {
+                                JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                        }
+                        if (e.getCause() instanceof IllegalFormatException) {
+                                JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (CancellationException e) {
+                        
+                    }
+                    
                 }
                     /**
                     * Updating progress bar
@@ -2735,6 +2778,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         tsource.espread=jCheckBoxMenuItemSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
+
+    private void jRayStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRayStopButtonActionPerformed
+        // TODO add your handling code here:
+        rayWorker.cancel(false);
+    }//GEN-LAST:event_jRayStopButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -3120,6 +3168,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
     private javax.swing.JProgressBar jRayProgressBar;
+    private javax.swing.JButton jRayStopButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
