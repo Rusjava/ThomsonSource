@@ -1770,7 +1770,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
                     xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
                     totalFluxLabel.setText("Total flux: "+
-                            (new DecimalFormat("########.##")).format(tsource.totalflux*tsource.gf*1e-15)+
+                            (new DecimalFormat("########.##")).format(tsource.totalFlux*tsource.gf*1e-15)+
                             "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B3");
                 }
                 startbutton.setText("Start");
@@ -2400,7 +2400,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             break;
                         }
                         fm=new Formatter();
-                        double [] ray=tsource.getRay(false);
+                        double [] ray=tsource.getRay();
                         n=new BasicVector(new double [] {ray[3], ray[5], ray[4]});
                         innerProduct=n.innerProduct(n0);
                         D=n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).

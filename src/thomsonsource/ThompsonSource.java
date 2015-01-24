@@ -44,7 +44,7 @@ public class ThompsonSource {
     /**
      * Normalized total flux from the source
      */
-    public double totalflux;
+    public double totalFlux;
 
     /**
      * Geometric factor. Assumes values from 0 to 1
@@ -66,7 +66,7 @@ public class ThompsonSource {
      */
     
     public void calculateTotalFlux () {
-       this.totalflux=sigma*eb.number*lp.getPhotonNumber()*
+       this.totalFlux=sigma*eb.number*lp.getPhotonNumber()*
                 lp.fq/Math.PI/Math.sqrt((lp.getWidth2(0.0)+eb.getxWidth2(0.0))*
                         (lp.getWidth2(0.0)+eb.getyWidth2(0.0)));
     }
@@ -124,7 +124,7 @@ public class ThompsonSource {
         th=(1-n.innerProduct(v))*2;
         K=Math.pow((Math.sqrt(e/lp.getPhotonEnergy()/(1-e*th/lp.getPhotonEnergy()/4))-2*eb.getGamma()),2)
                 /4/Math.pow(eb.getGamma()*eb.delgamma,2);
-        u=totalflux*e*3.0/64/Math.PI/Math.sqrt(Math.PI)/eb.delgamma/eb.getGamma()/lp.getPhotonEnergy()*
+        u=totalFlux*e*3.0/64/Math.PI/Math.sqrt(Math.PI)/eb.delgamma/eb.getGamma()/lp.getPhotonEnergy()*
                 Math.sqrt(e/lp.getPhotonEnergy())*(Math.pow((1-e*th/lp.getPhotonEnergy()/2),2)+1)
                 /Math.sqrt(1-e*th/lp.getPhotonEnergy()/4)*Math.exp(-K);
         return u;
@@ -167,7 +167,7 @@ public class ThompsonSource {
                 UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
-                    u=spreadflux.integrate(ni_bril, func, 0.0, 2*eb.getSpread());
+                    u=spreadflux.integrate(ni_bril, func, 0.0, 3*eb.getSpread());
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     return 0;
@@ -297,7 +297,7 @@ public class ThompsonSource {
         double u, gamma2, th;
         th=(1-n.innerProduct(v))*2;
         gamma2=eb.getGamma()*eb.getGamma();
-        u=totalflux*3.0/2/Math.PI*gamma2*(1+Math.pow(th*gamma2,2))/
+        u=totalFlux*3.0/2/Math.PI*gamma2*(1+Math.pow(th*gamma2,2))/
                 Math.pow((1+gamma2*th),4)*gf;
         return u;
     }
@@ -335,7 +335,7 @@ public class ThompsonSource {
     
     /**
      * A method calculating spectral brilliance in a given direction
-     * without taking into account electron transversial pulse spread
+     * without taking into account electron transversal pulse spread
      * @param r0
      * @param n
      * @param v
@@ -417,36 +417,38 @@ public class ThompsonSource {
     
     /**
      * Returning a random ray
-     * @param espread
-     * @return 
+     * @return an array with ray parameters
      */
-    public double [] getRay (boolean espread) {
+    public double [] getRay () {
         double [] ray=new double [7];
         Vector n=new BasicVector(new double []{0.0,0.0,1.0});
         Vector r=new BasicVector(new double []{0.0,0.0,0.0});
-        double prob0, prob, spreadRange;
-        spreadRange=Math.pow(eb.getSpread()*eb.getGamma(), 2);
-        prob0=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), 
+        double prob0, prob, TrSpreadRange, ESpreadRange, EMax, EMin, mult=0.5;
+        TrSpreadRange=Math.pow(eb.getSpread()*eb.getGamma(), 2);
+        prob0=directionFrequencyVolumeFlux(r, n, new BasicVector(new double []{0.0,0.0,1.0}), 
                 directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0})));
         do {
-            ray[0]=3*(2*Math.random()-1.0)*Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
-            ray[1]=3*(2*Math.random()-1.0)*Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
-            ray[2]=3*(2*Math.random()-1.0)*Math.max(eb.length, lp.length);
+            ray[0]=2*(2*Math.random()-1.0)*Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
+            ray[1]=2*(2*Math.random()-1.0)*Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
+            ray[2]=2*(2*Math.random()-1.0)*Math.max(eb.length, lp.length);
             r.set(0,ray[0]);
             r.set(1,ray[1]);
             r.set(2,ray[2]);
-            ray[3]=3*(2*Math.random()-1.0)/eb.getGamma();
-            ray[4]=3*(2*Math.random()-1.0)/eb.getGamma();
+            ray[3]=mult*(2*Math.random()-1.0)/eb.getGamma();
+            ray[4]=mult*(2*Math.random()-1.0)/eb.getGamma();
             n.set(0,ray[3]);
             n.set(1,ray[4]);
             n.set(2,1.0);
             n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-            ray[5]=n.get(2);
-            ray[6]=(3*Math.random()*(2*eb.delgamma+spreadRange)+1.0-3*spreadRange)*
-                    directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
+            ray[5]=n.get(2); 
             if (espread) {
+                EMax=directionEnergy(n, n);
+                ray[6]=(Math.random()*(TrSpreadRange)+1.0-TrSpreadRange)*
+                    directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
                 prob=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
             } else {
+                ESpreadRange=2*eb.delgamma/(1+eb.getGamma()*eb.getGamma()*(ray[3]*ray[3]+ray[4]*ray[4]));
+                ray[6]=(3*(2*Math.random()-1.0)*ESpreadRange+1.0)*directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
                 prob=directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
             }
         } while ( prob < Math.random() || (new Double(prob)).isNaN());    
