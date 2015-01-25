@@ -51,8 +51,7 @@ import org.jfree.chart.renderer.PaintScale;
   
       @Override
       public Paint getPaint(double value) {
-          double v = Math.max(value, this.lowerBound);
-          v = Math.min(v, this.upperBound);
+          double v = Math.min(Math.max(value, this.lowerBound), this.upperBound);
           float h = (float)(1.0f-(v - this.lowerBound) / (this.upperBound 
                   - this.lowerBound));
           return Color.getHSBColor(h, 1f, 0.8f);
