@@ -46,7 +46,7 @@ import org.la4j.matrix.dense.*;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 0.3
+ * @version 0.5
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -272,7 +272,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemSourceParam = new javax.swing.JMenuItem();
         jMenuOptions = new javax.swing.JMenu();
         jMenuItemSize = new javax.swing.JMenuItem();
-        jMenuItemMonteCarlo = new javax.swing.JMenuItem();
+        jMenuItemNumerical = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
         jMenuHelp = new javax.swing.JMenu();
@@ -1408,14 +1408,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuOptions.add(jMenuItemSize);
 
-        jMenuItemMonteCarlo.setText("Monte Carlo parameters...");
-        jMenuItemMonteCarlo.setToolTipText("");
-        jMenuItemMonteCarlo.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItemNumerical.setText("Numerical parameters...");
+        jMenuItemNumerical.setToolTipText("");
+        jMenuItemNumerical.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemMonteCarloActionPerformed(evt);
+                jMenuItemNumericalActionPerformed(evt);
             }
         });
-        jMenuOptions.add(jMenuItemMonteCarlo);
+        jMenuOptions.add(jMenuItemNumerical);
         jMenuOptions.add(jSeparator2);
 
         jCheckBoxMenuItemSpread.setText("Velocity spread");
@@ -2745,7 +2745,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ebunch.betay=testValue(1, 100, ebetayvalue, "10")*1e-3;
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
-    private void jMenuItemMonteCarloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMonteCarloActionPerformed
+    private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
         // TODO add your handling code here:
         JTextField gfmontecarlonumberbox = new JTextField();
         gfmontecarlonumberbox.setText("5000000");
@@ -2760,7 +2760,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             tsource.npGeometricFactor=(int)Math.round(testValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
             tsource.precision=Math.round(testValue(1e-6, 1e-2, brilPrecisionBox, "0.0001"));
         }
-    }//GEN-LAST:event_jMenuItemMonteCarloActionPerformed
+    }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
     private void jMenuItemSourceParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceParamActionPerformed
         // TODO add your handling code here:
@@ -3149,7 +3149,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemExit;
     private javax.swing.JMenuItem jMenuItemGeometricFactor;
     private javax.swing.JMenuItem jMenuItemLoadParam;
-    private javax.swing.JMenuItem jMenuItemMonteCarlo;
+    private javax.swing.JMenuItem jMenuItemNumerical;
     private javax.swing.JMenuItem jMenuItemSaveParam;
     private javax.swing.JMenuItem jMenuItemSize;
     private javax.swing.JMenuItem jMenuItemSource;
