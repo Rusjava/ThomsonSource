@@ -380,10 +380,11 @@ public class ThompsonSource {
     
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
         double u;
-        RombergIntegrator intvolumeflux=new RombergIntegrator(); 
+        RombergIntegrator integrator=new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                        RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT); 
         UnivariateVolumeFlux func=new UnivariateVolumeFlux (r0, n);
         try {
-            u=intvolumeflux.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
+            u=integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                r0.fold(Vectors.mkEuclideanNormAccumulator())-3*eb.length,
                r0.fold(Vectors.mkEuclideanNormAccumulator())+3*eb.length);
             u=u*directionFrequencyFluxSpread(n, v, e);
