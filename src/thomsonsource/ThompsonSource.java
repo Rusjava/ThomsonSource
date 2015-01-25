@@ -37,10 +37,16 @@ public class ThompsonSource {
     public int npGeometricFactor=5000000;
 
     /**
-     *Number of points in Monte Carlo calculation of the brilliance
+     * Maximal number of evaluations in calculations of the brilliance
      */
-    public int nEvalIntegration=30000;
-
+    static final public int MAXIMAL_NUMBER_OF_EVALUATIONS=30000;
+    
+    /**
+     * Precision in calculations of the brilliance
+     */
+        
+    public double precision=0.0001;
+    
     /**
      * Normalized total flux from the source
      */
@@ -142,12 +148,12 @@ public class ThompsonSource {
     
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
         double u;
-        BaseAbstractUnivariateIntegrator integrator=new RombergIntegrator(1e-4, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        BaseAbstractUnivariateIntegrator integrator=new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                         RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT); 
         UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadOuter (e, v, n);
         try {
-            u=integrator.integrate(nEvalIntegration, func, 0.0, 2*Math.PI);
+            u=integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2*Math.PI);
             return u;
         } catch (TooManyEvaluationsException ex) {
             return 0; 
@@ -161,7 +167,7 @@ public class ThompsonSource {
                 this.e=e;
                 this.v0=v0;
                 this.n=n;
-                inergrator=new RombergIntegrator(1e-4, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                inergrator=new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                         RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
             }
             @Override
@@ -170,7 +176,7 @@ public class ThompsonSource {
                 UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
-                    u=inergrator.integrate(nEvalIntegration, func, 0.0, 3*eb.getSpread());
+                    u=inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 3*eb.getSpread());
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     return 0;
@@ -348,10 +354,11 @@ public class ThompsonSource {
     
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
        double u;
-       RombergIntegrator intvolumeflux=new RombergIntegrator(); 
+       RombergIntegrator integrator=new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                        RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT); 
        UnivariateVolumeFlux func=new UnivariateVolumeFlux (r0, n);
        try {
-            u=intvolumeflux.integrate(30000, func,
+            u=integrator.integrate(30000, func,
                r0.fold(Vectors.mkEuclideanNormAccumulator())-3*eb.length,
                r0.fold(Vectors.mkEuclideanNormAccumulator())+3*eb.length);
             u=u*directionFrequencyFluxNoSpread(n, v, e);
@@ -376,7 +383,7 @@ public class ThompsonSource {
         RombergIntegrator intvolumeflux=new RombergIntegrator(); 
         UnivariateVolumeFlux func=new UnivariateVolumeFlux (r0, n);
         try {
-            u=intvolumeflux.integrate(nEvalIntegration, func,
+            u=intvolumeflux.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                r0.fold(Vectors.mkEuclideanNormAccumulator())-3*eb.length,
                r0.fold(Vectors.mkEuclideanNormAccumulator())+3*eb.length);
             u=u*directionFrequencyFluxSpread(n, v, e);
@@ -426,7 +433,7 @@ public class ThompsonSource {
         double [] ray=new double [7];
         Vector n=new BasicVector(new double []{0.0,0.0,1.0});
         Vector r=new BasicVector(new double []{0.0,0.0,0.0});
-        double prob0, prob, ESpreadRange, EMax, EMin, mult=0.5, emult=3;
+        double prob0, prob, ESpreadRange, EMax, EMin, mult=0.5, emult=2;
         EMax=directionEnergy(n, n);
         prob0=directionFrequencyVolumeFlux(r, n, new BasicVector(new double []{0.0,0.0,1.0}), EMax);
         do {

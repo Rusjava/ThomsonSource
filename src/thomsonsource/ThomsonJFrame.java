@@ -1765,7 +1765,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jPanel_xenergy_right.add(chartpanel, BorderLayout.CENTER);
                         jPanel_xenergy_right.revalidate();
                         jPanel_xenergy_right.repaint();
-                    }
+                }
                     double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
                     jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
                     xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
@@ -1983,7 +1983,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ebunch.duplicate(BrilForm.ebunchclone);
         lpulse.duplicate(BrilForm.lpulseclone);
         BrilForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
-        BrilForm.tsourceclone.nEvalIntegration=tsource.nEvalIntegration;
+        BrilForm.tsourceclone.precision=tsource.precision;
         BrilForm.size=xsize;
         BrilForm.initialize();
           
@@ -2530,7 +2530,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ebunch.duplicate(GFForm.ebunchclone);
         lpulse.duplicate(GFForm.lpulseclone);
         GFForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
-        GFForm.tsourceclone.nEvalIntegration=tsource.nEvalIntegration;
+        GFForm.tsourceclone.precision=tsource.precision;
         GFForm.size=xsize;
         GFForm.initialize();
           
@@ -2749,16 +2749,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         JTextField gfmontecarlonumberbox = new JTextField();
         gfmontecarlonumberbox.setText("5000000");
-        JTextField briliternumberbox = new JTextField();
-        briliternumberbox.setText("30000");
+        JTextField brilPrecisionBox = new JTextField();
+        brilPrecisionBox.setText("0.0001");
         Object[] message = {
                         "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfmontecarlonumberbox,
-                        "<html>Max number of iterrations in<br/> calculation of the brilliance:</html>", briliternumberbox
+                        "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             tsource.npGeometricFactor=(int)Math.round(testValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
-            tsource.nEvalIntegration=(int)Math.round(testValue(1, 1e5, briliternumberbox, "30000"));
+            tsource.precision=Math.round(testValue(1e-6, 1e-2, brilPrecisionBox, "0.0001"));
         }
     }//GEN-LAST:event_jMenuItemMonteCarloActionPerformed
 
