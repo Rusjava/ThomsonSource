@@ -92,7 +92,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v=new BasicVector(new double []{0.0,0.0,1.0});
                 n=new BasicVector(new double []{hoffset*1e-3,theta*1e-3,1.0});
                 n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9*tsource.gf*tsource.directionFrequencyFlux(n, v, e*1.6e-19)/1e10;
+                return 1e-9*tsource.geometricFactor*tsource.directionFrequencyFlux(n, v, e*1.6e-19)/1e10;
             }
         };
         
@@ -1495,7 +1495,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         String savetext;
         
         public void initialize () {
-            tsourceclone.espread=espread;
+            tsourceclone.eSpread=espread;
             minValueClone=minValue;
             maxValueClone=maxValue;
             selectedItemIndexClone=selectedItemIndex;
@@ -1770,7 +1770,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
                     xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
                     totalFluxLabel.setText("Total flux: "+
-                            (new DecimalFormat("########.##")).format(tsource.totalFlux*tsource.gf*1e-15)+
+                            (new DecimalFormat("########.##")).format(tsource.totalFlux*tsource.geometricFactor*1e-15)+
                             "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B3");
                 }
                 startbutton.setText("Start");
@@ -1982,8 +1982,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         
         ebunch.duplicate(BrilForm.ebunchclone);
         lpulse.duplicate(BrilForm.lpulseclone);
-        BrilForm.tsourceclone.np_gf=tsource.np_gf;
-        BrilForm.tsourceclone.ni_bril=tsource.ni_bril;
+        BrilForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
+        BrilForm.tsourceclone.nEvalIntegration=tsource.nEvalIntegration;
         BrilForm.size=xsize;
         BrilForm.initialize();
           
@@ -2372,7 +2372,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         }
         
         JFileChooser fo=new JFileChooser ();
-        fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +tsource.ray_number);
+        fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +tsource.rayNumber);
         int ans=fo.showOpenDialog(this);   
         if (ans==JFileChooser.APPROVE_OPTION) {
             File file=fo.getSelectedFile();
@@ -2396,7 +2396,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     I.set(1,1,1.0);
                     I.set(2,2,1.0);
                     PrintWriter pw=new PrintWriter(new FileWriter(file, false));
-                    for (int i=0; i<tsource.ray_number; i++) {
+                    for (int i=0; i<tsource.rayNumber; i++) {
                         if (isCancelled()) {
                             break;
                         }
@@ -2416,7 +2416,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                         new Double(1e-2*ray[6]/3.201e-26),new Integer(i+1),new Double(0),new Double(0),
                                         new Double(0),new Double(0),new Double(0),new Double(0));
                         pw.println(fm); 
-                        setStatusBar((int)100*i/tsource.ray_number);
+                        setStatusBar((int)100*i/tsource.rayNumber);
                         }
                     pw.close();  
                     return null;
@@ -2529,8 +2529,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         
         ebunch.duplicate(GFForm.ebunchclone);
         lpulse.duplicate(GFForm.lpulseclone);
-        GFForm.tsourceclone.np_gf=tsource.np_gf;
-        GFForm.tsourceclone.ni_bril=tsource.ni_bril;
+        GFForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
+        GFForm.tsourceclone.nEvalIntegration=tsource.nEvalIntegration;
         GFForm.size=xsize;
         GFForm.initialize();
           
@@ -2576,7 +2576,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                     GFForm.tsourceclone.calculateTotalFlux();
                     GFForm.tsourceclone.calculateGeometricFactor();
-                    GFForm.udata[j]=GFForm.tsourceclone.gf;  
+                    GFForm.udata[j]=GFForm.tsourceclone.geometricFactor;  
                     setStatusBar((int)100*(j+1)/GFForm.size);
                 } 
                 GFForm.umax=(new BasicVector (GFForm.udata)).max();
@@ -2757,8 +2757,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.np_gf=(int)Math.round(testValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
-            tsource.ni_bril=(int)Math.round(testValue(1, 1e5, briliternumberbox, "30000"));
+            tsource.npGeometricFactor=(int)Math.round(testValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
+            tsource.nEvalIntegration=(int)Math.round(testValue(1, 1e5, briliternumberbox, "30000"));
         }
     }//GEN-LAST:event_jMenuItemMonteCarloActionPerformed
 
@@ -2771,13 +2771,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.ray_number=(int)Math.round(testValue(1, 1e6, xraynumberbox, "1000"));
+            tsource.rayNumber=(int)Math.round(testValue(1, 1e6, xraynumberbox, "1000"));
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 
     private void jCheckBoxMenuItemSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemSpreadActionPerformed
         // TODO add your handling code here:
-        tsource.espread=jCheckBoxMenuItemSpread.isSelected();
+        tsource.eSpread=jCheckBoxMenuItemSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
 
     private void jRayStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRayStopButtonActionPerformed

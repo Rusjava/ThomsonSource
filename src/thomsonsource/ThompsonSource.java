@@ -29,17 +29,17 @@ public class ThompsonSource {
     /**
      * Number of rays exported for Shadow
      */
-    public int ray_number=1000;
+    public int rayNumber=1000;
 
     /**
      *Number of points in Monte Carlo calculation of the geometric factor
      */
-    public int np_gf=5000000;
+    public int npGeometricFactor=5000000;
 
     /**
      *Number of points in Monte Carlo calculation of the brilliance
      */
-    public int ni_bril=30000;
+    public int nEvalIntegration=30000;
 
     /**
      * Normalized total flux from the source
@@ -49,24 +49,24 @@ public class ThompsonSource {
     /**
      * Geometric factor. Assumes values from 0 to 1
      */
-    public double gf=1;
+    public double geometricFactor=1;
 
     /**
      * Flag - whether or not the electron beam transversal velocity spread 
      * is taken into account
      */
-    public boolean espread=false;
+    public boolean eSpread=false;
     
     private LaserPulse lp;
     private ElectronBunch eb;
-    private final static double sigma=6.65e-29; /* Thompson cross-section, m2 */
+    private final static double SIGMA_T=6.65e-29; /* Thompson cross-section, m2 */
     
     /**
      * A method calculating normalized total flux
      */
     
     public void calculateTotalFlux () {
-       this.totalFlux=sigma*eb.number*lp.getPhotonNumber()*
+       this.totalFlux=SIGMA_T*eb.number*lp.getPhotonNumber()*
                 lp.fq/Math.PI/Math.sqrt((lp.getWidth2(0.0)+eb.getxWidth2(0.0))*
                         (lp.getWidth2(0.0)+eb.getyWidth2(0.0)));
     }
@@ -82,13 +82,13 @@ public class ThompsonSource {
         wdy=mult*Math.max(eb.getyWidth(0.0)+Math.abs(eb.shift.get(1))/2, lp.getWidth(0.0)+Math.abs(eb.shift.get(1))/2);
         len=mult*Math.max(eb.length+Math.abs(eb.shift.get(2))/2, lp.length+Math.abs(eb.shift.get(2))/2);
         
-        for (int i=0; i<np_gf; i++) {
+        for (int i=0; i<npGeometricFactor; i++) {
             iter.set(0, eb.shift.get(0)/2+wdx*(2*Math.random()-1.0));
             iter.set(1, eb.shift.get(1)/2+wdy*(2*Math.random()-1.0));
             iter.set(2, eb.shift.get(2)/2+len*(2*Math.random()-1.0));
             sum+=volumeFlux(iter);
         }
-        this.gf=8*wdx*wdy*len*sum/np_gf;
+        this.geometricFactor=8*wdx*wdy*len*sum/npGeometricFactor;
     }
     
     /**
@@ -102,7 +102,7 @@ public class ThompsonSource {
      */
     
     public double directionFrequencyFlux(Vector n, Vector v, double e) {
-        if (espread) {
+        if (eSpread) {
             return directionFrequencyFluxSpread(n, v, e);
         } else {
             return directionFrequencyFluxNoSpread(n, v, e);
@@ -147,7 +147,7 @@ public class ThompsonSource {
         UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadOuter (e, v, n);
         try {
-            u=integrator.integrate(ni_bril, func, 0.0, 2*Math.PI);
+            u=integrator.integrate(nEvalIntegration, func, 0.0, 2*Math.PI);
             return u;
         } catch (TooManyEvaluationsException ex) {
             return 0; 
@@ -170,7 +170,7 @@ public class ThompsonSource {
                 UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
-                    u=inergrator.integrate(ni_bril, func, 0.0, 3*eb.getSpread());
+                    u=inergrator.integrate(nEvalIntegration, func, 0.0, 3*eb.getSpread());
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     return 0;
@@ -217,7 +217,7 @@ public class ThompsonSource {
      */
     
     public double directionFrequencyVolumeFlux(Vector r, Vector n, Vector v, double e) {
-        if (espread) {
+        if (eSpread) {
             return directionFrequencyVolumeFluxSpread(r, n, v, e);
         } else {
             return directionFrequencyVolumeFluxNoSpread(r, n, v, e);
@@ -301,7 +301,7 @@ public class ThompsonSource {
         th=(1-n.innerProduct(v))*2;
         gamma2=eb.getGamma()*eb.getGamma();
         u=totalFlux*3.0/2/Math.PI*gamma2*(1+Math.pow(th*gamma2,2))/
-                Math.pow((1+gamma2*th),4)*gf;
+                Math.pow((1+gamma2*th),4)*geometricFactor;
         return u;
     }
     
@@ -329,7 +329,7 @@ public class ThompsonSource {
      */
     
     public double directionFrequencyBrilliance(Vector r0, Vector n, Vector v, double e) {
-        if (espread) {
+        if (eSpread) {
             return directionFrequencyBrillianceSpread(r0, n, v, e);
         } else {
             return directionFrequencyBrillianceNoSpread(r0, n, v, e);
@@ -376,7 +376,7 @@ public class ThompsonSource {
         RombergIntegrator intvolumeflux=new RombergIntegrator(); 
         UnivariateVolumeFlux func=new UnivariateVolumeFlux (r0, n);
         try {
-            u=intvolumeflux.integrate(ni_bril, func,
+            u=intvolumeflux.integrate(nEvalIntegration, func,
                r0.fold(Vectors.mkEuclideanNormAccumulator())-3*eb.length,
                r0.fold(Vectors.mkEuclideanNormAccumulator())+3*eb.length);
             u=u*directionFrequencyFluxSpread(n, v, e);
@@ -445,7 +445,7 @@ public class ThompsonSource {
             n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
             ray[5]=n.get(2);
             ESpreadRange=2*eb.delgamma/(1+eb.getGamma()*eb.getGamma()*(ray[3]*ray[3]+ray[4]*ray[4]));
-            if (espread) {
+            if (eSpread) {
                 nprime.set(0, -ray[3]);
                 nprime.set(1, -ray[4]);
                 nprime.multiply(emult*eb.getSpread()/(ray[3]*ray[3]+ray[4]*ray[4]));
