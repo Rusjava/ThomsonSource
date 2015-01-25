@@ -142,32 +142,35 @@ public class ThompsonSource {
     
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
         double u;
-        RombergIntegrator spreadflux=new RombergIntegrator(); 
-            UnivariateFunction func=
+        BaseAbstractUnivariateIntegrator integrator=new RombergIntegrator(1e-4, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                        RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT); 
+        UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadOuter (e, v, n);
-            try {
-                u=spreadflux.integrate(ni_bril, func, 0.0, 2*Math.PI);
-                return u;
-            } catch (TooManyEvaluationsException ex) {
-                return 0; 
-            }
+        try {
+            u=integrator.integrate(ni_bril, func, 0.0, 2*Math.PI);
+            return u;
+        } catch (TooManyEvaluationsException ex) {
+            return 0; 
+        }
     }    
         class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
-            double e;
-            Vector n, v0;
+            private final double e;
+            private final Vector n, v0;
+            private final BaseAbstractUnivariateIntegrator inergrator;
             public UnivariateFrequencyFluxSpreadOuter (double e, Vector v0, Vector n) {
                 this.e=e;
                 this.v0=v0;
                 this.n=n;
+                inergrator=new RombergIntegrator(1e-4, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                        RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
             }
             @Override
             public double value(double phi) {
                 double u;
-                RombergIntegrator spreadflux=new RombergIntegrator(); 
                 UnivariateFunction func=
                         new UnivariateFrequencyFluxSpreadInner (phi, e, v0, n);
                 try {
-                    u=spreadflux.integrate(ni_bril, func, 0.0, 3*eb.getSpread());
+                    u=inergrator.integrate(ni_bril, func, 0.0, 3*eb.getSpread());
                     return u/Math.PI/eb.getxSpread()/eb.getySpread();
                 } catch (TooManyEvaluationsException ex) {
                     return 0;
@@ -176,8 +179,8 @@ public class ThompsonSource {
         }
         
         class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
-            double phi, e;
-            Vector n, v0;
+            private final double phi, e;
+            private final Vector n, v0;
             public UnivariateFrequencyFluxSpreadInner (double phi, double e, Vector v0, Vector n) {
                 this.phi=phi;
                 this.e=e;
@@ -238,7 +241,7 @@ public class ThompsonSource {
     
     /**
      * A method calculating the flux density in a given direction for a given 
-     * X-ray photon energy for a given volume element taking into account electron transversial pulse spread
+     * X-ray photon energy for a given volume element taking into account electron transversal pulse spread
      * 
      * @param r
      * @param n
@@ -423,11 +426,11 @@ public class ThompsonSource {
         double [] ray=new double [7];
         Vector n=new BasicVector(new double []{0.0,0.0,1.0});
         Vector r=new BasicVector(new double []{0.0,0.0,0.0});
-        double prob0, prob, TrSpreadRange, ESpreadRange, EMax, EMin, mult=0.5;
-        TrSpreadRange=Math.pow(eb.getSpread()*eb.getGamma(), 2);
-        prob0=directionFrequencyVolumeFlux(r, n, new BasicVector(new double []{0.0,0.0,1.0}), 
-                directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0})));
+        double prob0, prob, ESpreadRange, EMax, EMin, mult=0.5, emult=3;
+        EMax=directionEnergy(n, n);
+        prob0=directionFrequencyVolumeFlux(r, n, new BasicVector(new double []{0.0,0.0,1.0}), EMax);
         do {
+            Vector nprime=new BasicVector(new double []{0.0,0.0,0.0});
             ray[0]=2*(2*Math.random()-1.0)*Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
             ray[1]=2*(2*Math.random()-1.0)*Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
             ray[2]=2*(2*Math.random()-1.0)*Math.max(eb.length, lp.length);
@@ -440,15 +443,19 @@ public class ThompsonSource {
             n.set(1,ray[4]);
             n.set(2,1.0);
             n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-            ray[5]=n.get(2); 
+            ray[5]=n.get(2);
+            ESpreadRange=2*eb.delgamma/(1+eb.getGamma()*eb.getGamma()*(ray[3]*ray[3]+ray[4]*ray[4]));
             if (espread) {
-                EMax=directionEnergy(n, n);
-                ray[6]=(Math.random()*(TrSpreadRange)+1.0-TrSpreadRange)*
-                    directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
+                nprime.set(0, -ray[3]);
+                nprime.set(1, -ray[4]);
+                nprime.multiply(emult*eb.getSpread()/(ray[3]*ray[3]+ray[4]*ray[4]));
+                nprime.set(2, 1.0);
+                nprime=nprime.divide(nprime.fold(Vectors.mkEuclideanNormAccumulator()));
+                EMin=directionEnergy(n, nprime);
+                ray[6]=(Math.random()*(EMax*(1.0+emult*ESpreadRange)-EMin)+EMin);
                 prob=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
             } else {
-                ESpreadRange=2*eb.delgamma/(1+eb.getGamma()*eb.getGamma()*(ray[3]*ray[3]+ray[4]*ray[4]));
-                ray[6]=(3*(2*Math.random()-1.0)*ESpreadRange+1.0)*directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
+                ray[6]=(emult*(2*Math.random()-1.0)*ESpreadRange+1.0)*directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
                 prob=directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
             }
         } while ( prob < Math.random() || (new Double(prob)).isNaN());    
