@@ -97,7 +97,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         
         /**
-        * An auxialiry method calculating X-ray energy in a given direction 
+        * An auxiliary method calculating X-ray energy in a given direction 
         * 
         */   
         this.xenergydata=new ChartParam() {
@@ -1993,8 +1993,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilForm.worker=new SwingWorker<Void, Void> () {
             @Override
             protected Void doInBackground() throws Exception {
-                double x, e;
-                e=xenergydata.func(0.0, 0.0)*1.6e-16;
+                double x, e, an;
+                an=0.005;
+                e=xenergydata.func(an*1e3, 0.0)*1.6e-16;
                 for (int j=0; j<BrilForm.size; j++) {
                     if (isCancelled()) {
                         break;
@@ -2035,7 +2036,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                     BrilForm.tsourceclone.calculateTotalFlux();
                     BrilForm.udata[j]=BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double []{0.0, 0.0, 0.0}),
-                            new BasicVector(new double []{0.0, 0.0, 1.0}), new BasicVector(new double []{0.0, 0.0, 1.0}),
+                            new BasicVector(new double []{an, 0.0, Math.sqrt(1.0-an*an)}), new BasicVector(new double []{0.0, 0.0, 1.0}),
                                     e)*1e-15*1e-13;
                     setStatusBar((int)100*(j+1)/BrilForm.size);
                 } 
