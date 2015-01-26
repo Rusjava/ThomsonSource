@@ -30,6 +30,18 @@ public class ThompsonSource {
      * Number of rays exported for Shadow
      */
     public int rayNumber=1000;
+    
+    /**
+     * Angle range for rays exported for Shadow in the X-direction
+     */
+     
+    private double rayXAnglerange=0.05;
+    
+    /**
+     * Angle range for rays exported for Shadow in the Y-direction
+     */
+     
+    private double rayYAnglerange=0.05;
 
     /**
      *Number of points in Monte Carlo calculation of the geometric factor
@@ -434,7 +446,7 @@ public class ThompsonSource {
         double [] ray=new double [7];
         Vector n=new BasicVector(new double []{0.0,0.0,1.0});
         Vector r=new BasicVector(new double []{0.0,0.0,0.0});
-        double prob0, prob, ESpreadRange, EMax, EMin, mult=0.5, emult=2;
+        double prob0, prob, ESpreadRange, EMax, EMin, emult=2;
         EMax=directionEnergy(n, n);
         prob0=directionFrequencyVolumeFlux(r, n, new BasicVector(new double []{0.0,0.0,1.0}), EMax);
         do {
@@ -445,8 +457,8 @@ public class ThompsonSource {
             r.set(0,ray[0]);
             r.set(1,ray[1]);
             r.set(2,ray[2]);
-            ray[3]=mult*(2*Math.random()-1.0)/eb.getGamma();
-            ray[4]=mult*(2*Math.random()-1.0)/eb.getGamma();
+            ray[3]=rayXAnglerange*(2*Math.random()-1.0);
+            ray[4]=rayYAnglerange*(2*Math.random()-1.0);
             n.set(0,ray[3]);
             n.set(1,ray[4]);
             n.set(2,1.0);
@@ -468,5 +480,15 @@ public class ThompsonSource {
             }
         } while ( prob < Math.random() || (new Double(prob)).isNaN());    
         return ray;
+    }
+    
+    /**
+     * Setting angle range for the Shadow ray generation
+     * @param xangle angle in the X direction
+     * @param yangle angle in the Y direction
+     */
+    public void setAngleRange(double xangle, double yangle) {
+        rayXAnglerange=xangle;
+        rayYAnglerange=yangle;
     }
 }

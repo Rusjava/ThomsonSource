@@ -2193,7 +2193,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(null, 
-                "<html>Thompson source parameter calculation. <br>Version: 0.3 <br>Date: January 2014. <br>Author: Ruslan Feshchenko</html>",
+                "<html>Thompson source parameter calculation. <br>Version: 0.5 <br>Date: February 2014. <br>Author: Ruslan Feshchenko</html>",
                 "About TSource", 1);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
@@ -2764,14 +2764,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSourceParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceParamActionPerformed
         // TODO add your handling code here:
-        JTextField xraynumberbox = new JTextField();
-        xraynumberbox.setText("1000");
+        JTextField rayNumberBox = new JTextField();
+        rayNumberBox.setText("1000");
+        JTextField rayXAngleRangeBox = new JTextField();
+        rayXAngleRangeBox.setText("5");
+        JTextField rayYAngleRangeBox = new JTextField();
+        rayYAngleRangeBox.setText("5");
         Object[] message = {
-                        "Numner of rays:", xraynumberbox,
+                        "Numner of rays:", rayNumberBox,
+                        "X-range, mrad", rayXAngleRangeBox,
+                        "Y-range, mrad", rayYAngleRangeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.rayNumber=(int)Math.round(testValue(1, 1e6, xraynumberbox, "1000"));
+            tsource.rayNumber=(int)Math.round(testValue(1, 1e6, rayNumberBox, "1000"));
+            tsource.setAngleRange(testValue(0, 30, rayXAngleRangeBox, "5")*1e-3, 
+                    testValue(0, 30, rayYAngleRangeBox, "5")*1e-3);
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 
