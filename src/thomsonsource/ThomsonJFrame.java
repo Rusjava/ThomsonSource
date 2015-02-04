@@ -2406,7 +2406,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 ProgressFrame.setVisible(false);
                 rayWorking=false;
                 try {
-                        get();
+                     get();
                 } catch (InterruptedException e) {
                             
                 } catch (ExecutionException e) {
@@ -2417,9 +2417,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     if (e.getCause() instanceof IllegalFormatException) {
                                 JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
                                         JOptionPane.ERROR_MESSAGE);
-                    } if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
+                    }   
+                    if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
                         
-                    } if (e.getCause() instanceof Exception) {
+                    }   
+                    if (e.getCause() instanceof Exception) {
                         
                     }
                 } catch (CancellationException e) {
