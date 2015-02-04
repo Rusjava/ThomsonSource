@@ -43,6 +43,10 @@ public class LaserPulse {
         return Math.sqrt((rlength+z*z/rlength)*rk/2);
     }
     
+    /**
+     * Sets the laser bunch width
+     * @param w width
+     */
     public void setWidth(double w) {
         rlength=2*w*w/rk;
     }
