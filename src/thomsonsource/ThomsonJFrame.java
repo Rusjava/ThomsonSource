@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import javax.swing.border.TitledBorder;
 import java.awt.geom.Rectangle2D;
+import java.io.EOFException;
 import javax.swing.text.*;
 import java.util.concurrent.ExecutionException;
 import java.util.IllegalFormatException;
@@ -44,6 +45,7 @@ import org.la4j.matrix.*;
 import org.la4j.matrix.dense.*;
 
 import shadowfileconverter.MyTextUtilities;
+import shadowfileconverter.ShadowFiles;
 
 /**
  *
@@ -2391,37 +2393,30 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             rayWorker=new SwingWorker<Void, Void> () {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    Formatter fm;
-                    double innerProduct;
-                    Vector n0=new BasicVector(new double [] {0.0, 1.0, 0.0}), n, As;
-                    Matrix M, D, T, A, I=new Basic1DMatrix(3,3);
-                    I.set(0,0,1.0);
-                    I.set(1,1,1.0);
-                    I.set(2,2,1.0);
-                    PrintWriter pw=new PrintWriter(new FileWriter(file, false));
-                    for (int i=0; i<numberOfRays; i++) {
-                        if (isCancelled()) {
-                            break;
+                    ShadowFiles shadowFile;
+                    try {
+                        shadowFile=new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, numberOfRays);
+                        for (int i=0; i<numberOfRays; i++) {
+                            if (isCancelled()) {
+                                break;
+                            }
+                            //Getting a ray
+                            double [] ray=tsource.getRay();
+                            //Units conversions
+                            ray[0]=1e2*ray[0];
+                            ray[1]=1e2*ray[0];
+                            ray[2]=1e2*ray[0];
+                            ray[10]=1e-2*ray[10]/3.201e-26;
+                            shadowFile.write(ray);
+                            setStatusBar((int)100*i/numberOfRays);
                         }
-                        fm=new Formatter();
-                        double [] ray=tsource.getRay();
-                        n=new BasicVector(new double [] {ray[3], ray[5], ray[4]});
-                        innerProduct=n.innerProduct(n0);
-                        D=n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).
-                                    add(n0.outerProduct(n0)).divide(innerProduct*innerProduct-1.0));
-                        A=n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
-                        T=I.subtract(D).multiply(1-innerProduct).add(A);
-                        As=T.multiply(new BasicVector(new double [] {1.0, 0.0, 0.0}));
-                        fm.format("%f %f %f %f %f %f %f %f %f %f %.1f %d %f %f %f %f %f %f", 
-                                        new Double(ray[0]*1e2), new Double(ray[2]*1e2), new Double(ray[3]*1e2),
-                                        new Double(ray[3]), new Double(ray[5]), new Double(ray[4]), 
-                                        new Double(As.get(0)),new Double(As.get(1)),new Double(As.get(2)),new Double(1),
-                                        new Double(1e-2*ray[6]/3.201e-26),new Integer(i+1),new Double(0),new Double(0),
-                                        new Double(0),new Double(0),new Double(0),new Double(0));
-                        pw.println(fm); 
-                        setStatusBar((int)100*i/numberOfRays);
-                        }
-                    pw.close();  
+                        shadowFile.close(); 
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(null, "I/O error during file conversion!", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                    } catch (ShadowFiles.FileNotOpenedException e) {
+            
+                    }
                     return null;
                 }
                     

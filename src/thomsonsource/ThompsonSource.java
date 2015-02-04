@@ -9,6 +9,8 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.vector.Vector;
 import org.apache.commons.math3.analysis.integration.*;
+import org.la4j.matrix.Matrix;
+import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.Vectors;
 import org.la4j.vector.dense.BasicVector;
 
@@ -25,6 +27,11 @@ public class ThompsonSource {
         calculateTotalFlux ();
         calculateGeometricFactor ();
     }
+    
+    /**
+     * The number of columns in Shadow files
+     */
+    public static final int NUMBER_OF_COLUMNS=18;
     
     /**
      * Angle range for rays exported for Shadow in the X-direction
@@ -72,7 +79,11 @@ public class ThompsonSource {
     
     private LaserPulse lp;
     private ElectronBunch eb;
-    private final static double SIGMA_T=6.65e-29; /* Thompson cross-section, m2 */
+
+    /**
+     * The full Thompson cross-section
+     */
+    public  final static double SIGMA_T=6.65e-29; /* Thompson cross-section, m2 */
     
     /**
      * A method calculating normalized total flux
@@ -108,9 +119,9 @@ public class ThompsonSource {
      * A method calculating the flux density in a given direction for a given 
      * X-ray photon energy
      * 
-     * @param n
-     * @param v
-     * @param e
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -126,9 +137,9 @@ public class ThompsonSource {
      * A method calculating the flux density in a given direction for a given 
      * X-ray photon energy without taking into account electron transversal pulse spread
      * 
-     * @param n
-     * @param v
-     * @param e
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -147,9 +158,9 @@ public class ThompsonSource {
      * A method calculating the flux density in a given direction for a given 
      * X-ray photon energy taking into account electron transversal pulse spread
      * 
-     * @param n
-     * @param v
-     * @param e
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -222,10 +233,10 @@ public class ThompsonSource {
      * A method calculating the flux density in a given direction for a given 
      * X-ray photon energy for a given volume element
      * 
-     * @param r
-     * @param n
-     * @param v
-     * @param e
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -241,10 +252,10 @@ public class ThompsonSource {
      * A method calculating the flux density in a given direction for a given 
      * X-ray photon energy for a given volume element without taking into account electron transversial pulse spread
      * 
-     * @param r
-     * @param n
-     * @param v
-     * @param e
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -256,10 +267,10 @@ public class ThompsonSource {
      * A method calculating the flux density in a given direction for a given 
      * X-ray photon energy for a given volume element taking into account electron transversal pulse spread
      * 
-     * @param r
-     * @param n
-     * @param v
-     * @param e
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -269,7 +280,7 @@ public class ThompsonSource {
     
     /**
      * An auxiliary method calculating volume density of the X-ray source
-     * @param r
+     * @param r spatial position
      * @return 
      */
     
@@ -304,8 +315,8 @@ public class ThompsonSource {
     /**
      * A method giving the flux density in a given direction 
      * 
-     * @param n
-     * @param v
+     * @param n direction
+     * @param v normalized electron velocity
      * @return 
      */   
     
@@ -321,8 +332,8 @@ public class ThompsonSource {
     /**
      * A method calculating X-ray energy in a given direction 
      * 
-     * @param n
-     * @param v
+     * @param n direction
+     * @param v normalized electron velocity
      * @return 
      */    
     
@@ -334,10 +345,10 @@ public class ThompsonSource {
     
     /**
      * A method calculating spectral brilliance in a given direction
-     * @param r0
-     * @param n
-     * @param v
-     * @param e
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -352,10 +363,10 @@ public class ThompsonSource {
     /**
      * A method calculating spectral brilliance in a given direction
      * without taking into account electron transversal pulse spread
-     * @param r0
-     * @param n
-     * @param v
-     * @param e
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -378,10 +389,10 @@ public class ThompsonSource {
     /**
      * A method calculating spectral brilliance in a given direction
      * taking into account electron transversal pulse spread
-     * @param r0
-     * @param n
-     * @param v
-     * @param e
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
      * @return 
      */
     
@@ -438,42 +449,66 @@ public class ThompsonSource {
      * @return an array with ray parameters
      */
     public double [] getRay () {
-        double [] ray=new double [7];
+        double [] ray=new double [NUMBER_OF_COLUMNS];
+        Matrix M, D, T, A, I=new Basic1DMatrix(3,3);
+        I.set(0,0,1.0);
+        I.set(1,1,1.0);
+        I.set(2,2,1.0);
         Vector n=new BasicVector(new double []{0.0,0.0,1.0});
         Vector r=new BasicVector(new double []{0.0,0.0,0.0});
-        double prob0, prob, ESpreadRange, EMax, EMin, emult=2;
+        Vector n0=new BasicVector(new double [] {0.0, 1.0, 0.0}), As;
+        double prob0, prob, ESpreadRange, EMax, EMin, emult=2, innerProduct;
         EMax=directionEnergy(n, n);
         prob0=directionFrequencyVolumeFlux(r, n, new BasicVector(new double []{0.0,0.0,1.0}), EMax);
         do {
             Vector nprime=new BasicVector(new double []{0.0,0.0,0.0});
             ray[0]=2*(2*Math.random()-1.0)*Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
-            ray[1]=2*(2*Math.random()-1.0)*Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
-            ray[2]=2*(2*Math.random()-1.0)*Math.max(eb.length, lp.length);
+            ray[2]=2*(2*Math.random()-1.0)*Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
+            ray[1]=2*(2*Math.random()-1.0)*Math.max(eb.length, lp.length);
             r.set(0,ray[0]);
-            r.set(1,ray[1]);
-            r.set(2,ray[2]);
+            r.set(1,ray[2]);
+            r.set(2,ray[1]);
             ray[3]=rayXAnglerange*(2*Math.random()-1.0);
-            ray[4]=rayYAnglerange*(2*Math.random()-1.0);
+            ray[5]=rayYAnglerange*(2*Math.random()-1.0);
             n.set(0,ray[3]);
-            n.set(1,ray[4]);
+            n.set(1,ray[5]);
             n.set(2,1.0);
             n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-            ray[5]=n.get(2);
-            ESpreadRange=2*eb.delgamma/(1+eb.getGamma()*eb.getGamma()*(ray[3]*ray[3]+ray[4]*ray[4]));
+            ray[4]=n.get(2);
+            ESpreadRange=2*eb.delgamma/(1+eb.getGamma()*eb.getGamma()*(ray[3]*ray[3]+ray[5]*ray[5]));
             if (eSpread) {
                 nprime.set(0, -ray[3]);
-                nprime.set(1, -ray[4]);
-                nprime.multiply(emult*eb.getSpread()/(ray[3]*ray[3]+ray[4]*ray[4]));
-                nprime.set(2, 1.0);
-                nprime=nprime.divide(nprime.fold(Vectors.mkEuclideanNormAccumulator()));
+                nprime.set(1, -ray[5]);
+                nprime.multiply(emult*eb.getSpread()/Math.sqrt(ray[3]*ray[3]+ray[5]*ray[5]));
+                nprime.add(new BasicVector(new double []{0.0,0.0,1.0})).divide(nprime.fold(Vectors.mkEuclideanNormAccumulator()));
                 EMin=directionEnergy(n, nprime);
-                ray[6]=(Math.random()*(EMax*(1.0+emult*ESpreadRange)-EMin)+EMin);
-                prob=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
+                ray[10]=(Math.random()*(EMax*(1.0+emult*ESpreadRange)-EMin)+EMin);
+                prob=directionFrequencyVolumeFluxSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[10])/prob0;
             } else {
-                ray[6]=(emult*(2*Math.random()-1.0)*ESpreadRange+1.0)*directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
-                prob=directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[6])/prob0;
+                ray[10]=(emult*(2*Math.random()-1.0)*ESpreadRange+1.0)*directionEnergy(n, new BasicVector(new double []{0.0,0.0,1.0}));
+                prob=directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double []{0.0,0.0,1.0}), ray[10])/prob0;
             }
-        } while ( prob < Math.random() || (new Double(prob)).isNaN());    
+        } while ( prob < Math.random() || (new Double(prob)).isNaN());
+        // Calculation of the rotated polarization vector
+        n=new BasicVector(new double [] {ray[3], ray[4], ray[5]});
+        innerProduct=n.innerProduct(n0);
+        D=n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).
+                             add(n0.outerProduct(n0)).divide(innerProduct*innerProduct-1.0));
+        A=n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
+        T=I.subtract(D).multiply(1-innerProduct).add(A);
+        As=T.multiply(new BasicVector(new double [] {1.0, 0.0, 0.0}));
+        ray[6]=As.get(0);
+        ray[7]=As.get(1);
+        ray[8]=As.get(2);
+        //Setting other columns
+        ray[9]=1.0;
+        ray[11]=0;
+        ray[12]=0;
+        ray[13]=0;
+        ray[14]=0;
+        ray[15]=0;
+        ray[16]=0;
+        ray[17]=0;
         return ray;
     }
     
