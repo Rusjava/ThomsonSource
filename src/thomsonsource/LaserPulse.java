@@ -5,8 +5,6 @@
  */
 package thomsonsource;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.la4j.vector.Vector;
 import org.la4j.vector.dense.BasicVector;
 
@@ -16,7 +14,7 @@ import org.la4j.vector.dense.BasicVector;
  * @version 0.3
  */
 
-public class LaserPulse implements Cloneable {
+public class LaserPulse {
     public LaserPulse () {
         this.photonenergy=1.1*1.6e-19;
         this.setPulseEnergy(2.0e-2);
@@ -24,34 +22,21 @@ public class LaserPulse implements Cloneable {
         this.direction=new BasicVector(new double []{0.0,0.0,1.0});
     }
     
-    @Override
-    public LaserPulse clone() {
-        LaserPulse tm;
-        try {
-            tm=(LaserPulse)super.clone();
-            tm.direction.set(0,this.direction.get(0));
-            tm.direction.set(1,this.direction.get(1));
-            tm.direction.set(2,this.direction.get(2));
-            return tm;
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(LaserPulse.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        return null;
+    public void duplicate (LaserPulse tm) {
+        tm.setPhotonEnergy(this.photonenergy);
+        tm.setPhotonNumber(this.number);
+        tm.length=this.length;
+        tm.rlength=this.rlength;
+        tm.fq=this.fq;
+        tm.delay=this.delay;
+        tm.direction.set(0,this.direction.get(0));
+        tm.direction.set(1,this.direction.get(1));
+        tm.direction.set(2,this.direction.get(2));
     }
-    
-    /**
-     * Returns the laser beam's width at position z
-     * @param z coordinate
-     * @return
-     */
     public double getWidth(double z) {
         return Math.sqrt((rlength+z*z/rlength)*rk/2);
     }
     
-    /**
-     * Sets beam's width
-     * @param w width
-     */
     public void setWidth(double w) {
         rlength=2*w*w/rk;
     }
