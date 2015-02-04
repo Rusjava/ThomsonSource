@@ -1986,7 +1986,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         }
         
         ebunch.duplicate(BrilForm.ebunchclone);
-        lpulse.duplicate(BrilForm.lpulseclone);
+        BrilForm.lpulseclone=lpulse.clone();
         BrilForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
         BrilForm.tsourceclone.precision=tsource.precision;
         BrilForm.size=xsize;
@@ -2512,7 +2512,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         }
         
         ebunch.duplicate(GFForm.ebunchclone);
-        lpulse.duplicate(GFForm.lpulseclone);
+        GFForm.lpulseclone=lpulse.clone();
         GFForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
         GFForm.tsourceclone.precision=tsource.precision;
         GFForm.size=xsize;
