@@ -17,7 +17,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  * A class for the X-ray source with associated electron bunch and laser pulse
  * @author Ruslan Feshchenko
- * @version 0.5
+ * @version 0.7
  */
 
 public class ThompsonSource {
