@@ -25,11 +25,6 @@ public class ThompsonSource {
         calculateTotalFlux ();
         calculateGeometricFactor ();
     }
-   
-    /**
-     * Number of rays exported for Shadow
-     */
-    public int rayNumber=1000;
     
     /**
      * Angle range for rays exported for Shadow in the X-direction
