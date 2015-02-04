@@ -2371,92 +2371,76 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
+        final int number=numberOfRays;
         if (rayWorking) {
             ProgressFrame.setVisible(true);
             return;
         }
         
-        JFileChooser fo=new JFileChooser ();
-        fo.setDialogTitle("Choose file to save a ray set: number of rays \u2013 " +numberOfRays);
-        int ans=fo.showOpenDialog(this);   
-        if (ans==JFileChooser.APPROVE_OPTION) {
-            File file=fo.getSelectedFile();
-            if (file.exists ()) {
-                int n=JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (n==JOptionPane.NO_OPTION) {
-                    return;
-                }
-            }
-            ProgressFrame.setVisible(true);
-            rayWorking=true;
-            rayWorker=new SwingWorker<Void, Void> () {
-                @Override
-                protected Void doInBackground() throws Exception {
-                    ShadowFiles shadowFile;
-                    try {
-                        shadowFile=new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, numberOfRays);
-                        for (int i=0; i<numberOfRays; i++) {
-                            if (isCancelled()) {
-                                break;
-                            }
-                            //Getting a ray
-                            double [] ray=tsource.getRay();
-                            //Units conversions
-                            ray[0]=1e2*ray[0];
-                            ray[1]=1e2*ray[0];
-                            ray[2]=1e2*ray[0];
-                            ray[10]=1e-2*ray[10]/3.201e-26;
-                            shadowFile.write(ray);
-                            setStatusBar((int)100*i/numberOfRays);
-                        }
-                        shadowFile.close(); 
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(null, "I/O error during file conversion!", "Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                    } catch (ShadowFiles.FileNotOpenedException e) {
-            
+        ProgressFrame.setVisible(true);
+        rayWorking=true;
+        rayWorker=new SwingWorker<Void, Void> () {
+            @Override
+            protected Void doInBackground() throws Exception {
+                ShadowFiles shadowFile=new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, number);
+                for (int i=0; i<number; i++) {
+                    if (isCancelled()) {
+                        break;
                     }
-                    return null;
+                    //Getting a ray
+                    double [] ray=tsource.getRay();
+                    //Units conversions
+                    ray[0]=1e2*ray[0];
+                    ray[1]=1e2*ray[0];
+                    ray[2]=1e2*ray[0];
+                    ray[10]=1e-2*ray[10]/3.201e-26;
+                    shadowFile.write(ray);
+                    setStatusBar((int)100*i/number);
                 }
+                shadowFile.close(); 
+                return null;
+            }
                     
-                @Override
-                protected void done() {
-                    ProgressFrame.setVisible(false);
-                    rayWorking=false;
-                    try {
+            @Override
+            protected void done() {
+                ProgressFrame.setVisible(false);
+                rayWorking=false;
+                try {
                         get();
-                    } catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                             
-                    } catch (ExecutionException e) {
-                        if (e.getCause() instanceof IOException) {
-                                JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
+                } catch (ExecutionException e) {
+                    if (e.getCause() instanceof IOException) {
+                            JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                                         JOptionPane.ERROR_MESSAGE);
-                        }
-                        if (e.getCause() instanceof IllegalFormatException) {
+                    }
+                    if (e.getCause() instanceof IllegalFormatException) {
                                 JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
                                         JOptionPane.ERROR_MESSAGE);
-                        }
-                    } catch (CancellationException e) {
+                    } if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
+                        
+                    } if (e.getCause() instanceof Exception) {
                         
                     }
+                } catch (CancellationException e) {
+                        
+                }
                     
-                }
-                    /**
-                    * Updating progress bar
-                    * @param status 
-                    */
-                public void setStatusBar(final int status) {
-                    SwingUtilities.invokeLater(new Runnable(){
-                        @Override
-                        public void run() {
-                            jRayProgressBar.setValue(status);
-                        }
-                    });
-                }
-            };
-            rayWorker.execute();
-        }
+            }
+                /**
+                * Updating progress bar
+                 * @param status 
+                */
+            public void setStatusBar(final int status) {
+                SwingUtilities.invokeLater(new Runnable(){
+                    @Override
+                    public void run() {
+                        jRayProgressBar.setValue(status);
+                    }
+                });
+            }
+        };
+        rayWorker.execute();
     }//GEN-LAST:event_jMenuItemSourceActionPerformed
 
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
