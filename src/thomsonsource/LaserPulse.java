@@ -33,6 +33,12 @@ public class LaserPulse {
         tm.direction.set(1,this.direction.get(1));
         tm.direction.set(2,this.direction.get(2));
     }
+
+    /**
+     * Returns the laser bunch width at position z
+     * @param z coordinate
+     * @return
+     */
     public double getWidth(double z) {
         return Math.sqrt((rlength+z*z/rlength)*rk/2);
     }
