@@ -11,7 +11,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  * A class for laser pulse properties
  * @author Ruslan feshchenko
- * @version 0.3
+ * @version 0.7
  */
 
 public class LaserPulse {

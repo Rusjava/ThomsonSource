@@ -2208,7 +2208,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(null, 
-                "<html>Thompson source parameter calculation. <br>Version: 0.5 <br>Date: February 2014. <br>Author: Ruslan Feshchenko</html>",
+                "<html>Thompson source parameter calculation. <br>Version: 0.7 <br>Date: February 2014. <br>Author: Ruslan Feshchenko</html>",
                 "About TSource", 1);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
