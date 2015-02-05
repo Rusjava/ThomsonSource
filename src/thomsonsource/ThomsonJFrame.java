@@ -1735,6 +1735,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
             @Override
             protected void done() {
+                double plotwidth=0;
                 if (!isCancelled()||fluxChart!=null) {
                    
                     if (fluxChart!=null) {
@@ -1772,9 +1773,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jPanel_xenergy_right.add(chartpanel, BorderLayout.CENTER);
                         jPanel_xenergy_right.revalidate();
                         jPanel_xenergy_right.repaint();
-                }
-                    double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().getPlotInfo().getDataArea().getWidth();
-                    jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth, (int)jSlider_pickup.getSize().getHeight()));
+                    }
+                    plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
+                            getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
                     totalFluxLabel.setText("Total flux: "+
                             (new DecimalFormat("########.##")).format(tsource.totalFlux*tsource.geometricFactor*1e-15)+
@@ -1782,6 +1783,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
+                if (plotwidth!=0){
+                    jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth,
+                                (int)jSlider_pickup.getSize().getHeight()));
+                }
                 working=false;
             }
 
