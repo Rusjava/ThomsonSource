@@ -1513,7 +1513,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public void save() {
             JFileChooser fo=new JFileChooser ();
             fo.setDialogTitle(savetext);
-            int ans=fo.showOpenDialog(null);
+            int ans=fo.showSaveDialog(null);
             if (ans==JFileChooser.APPROVE_OPTION) { 
                 File file=fo.getSelectedFile();
                 if (file.exists ()) {
@@ -2216,7 +2216,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         JFileChooser fo=new JFileChooser ();
         fo.setDialogTitle("Choose file to save Thompson source parameters");
-        int ans=fo.showOpenDialog(this);
+        int ans=fo.showSaveDialog(this);
         if (ans==JFileChooser.APPROVE_OPTION) { 
             File file=fo.getSelectedFile();
             if (file.exists ()) {
