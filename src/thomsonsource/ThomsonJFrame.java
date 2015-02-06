@@ -611,6 +611,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TSource");
         setMinimumSize(new java.awt.Dimension(750, 0));
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                formMouseMoved(evt);
+            }
+        });
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setDoubleBuffered(true);
@@ -1774,12 +1779,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jPanel_xenergy_right.revalidate();
                         jPanel_xenergy_right.repaint();
                     }
+                    fluxChart.getchartpanel().revalidate();
+                    fluxChart.getchartpanel().repaint();
                     plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
                     totalFluxLabel.setText("Total flux: "+
                             (new DecimalFormat("########.##")).format(tsource.totalFlux*tsource.geometricFactor*1e-15)+
-                            "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B3");
+                            "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
@@ -2791,6 +2798,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         rayWorker.cancel(false);
     }//GEN-LAST:event_jRayStopButtonActionPerformed
+
+    private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
+        // TODO add your handling code here:
+        if (fluxChart!=null) {
+            double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
+                                getPlotInfo().getDataArea().getWidth();
+            if (plotwidth!=0){
+                jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth,
+                                (int)jSlider_pickup.getSize().getHeight()));
+            }
+        }
+    }//GEN-LAST:event_formMouseMoved
 
     /**
      * @param args the command line arguments
