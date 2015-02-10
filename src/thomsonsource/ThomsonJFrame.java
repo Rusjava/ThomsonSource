@@ -2717,16 +2717,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         File file=new File("help.html");
         if (!file.exists()) {
-            JOptionPane.showConfirmDialog(null, "The help file does not exist!", "Error",
-                        JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "The help file does not exist!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             return;
         } 
         JTextPane textArea=new JTextPane();
         try {
             textArea.setPage(file.toURI().toURL());
         } catch (IOException e) {
-            JOptionPane.showConfirmDialog(null, "Error in the help file!", "Error",
-                        JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error in the help file!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             return;
         }
         textArea.setPreferredSize(new Dimension(600, 400)); 
