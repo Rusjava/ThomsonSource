@@ -2764,7 +2764,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             tsource.npGeometricFactor=(int)Math.round(MyTextUtilities.TestValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
-            tsource.precision=Math.round(MyTextUtilities.TestValue(1e-6, 1e-2, brilPrecisionBox, "0.0001"));
+            tsource.precision=MyTextUtilities.TestValue(1e-6, 1e-2, brilPrecisionBox, "0.0001");
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 

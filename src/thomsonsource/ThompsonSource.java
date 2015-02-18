@@ -431,7 +431,7 @@ public class ThompsonSource {
         }
     }
     
-    private class LocalException extends RuntimeException {
+    private static class LocalException extends RuntimeException {
      // The x value that caused the problem.
         private final double x;
 
