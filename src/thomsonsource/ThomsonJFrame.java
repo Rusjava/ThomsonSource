@@ -1508,6 +1508,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         String savetext;
         
         public void initialize () {
+            size=xsize;
+            try {
+                tsourceclone=(ThompsonSource)tsource.clone();
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
             ebunchclone=tsourceclone.getElectronBunch();
             lpulseclone=tsourceclone.getLaserPulse();
             tsourceclone.eSpread=espread;
@@ -1516,7 +1522,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             selectedItemIndexClone=selectedItemIndex;
             step=(maxValue-minValue)/(size-1);
             offset=minValue;   
-            udata=new double[size];
+            udata=new double[size];  
         }
         
         public void save() {
@@ -1992,13 +1998,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceCalcStart.setText("Terminate");
         BrillianceCalcSave.setEnabled(false);
         
-        try {
-            BrilForm.tsourceclone=(ThompsonSource)tsource.clone();
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        BrilForm.size=xsize;
         BrilForm.initialize();
           
         /**
@@ -2512,13 +2511,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFCalcStart.setText("Terminate");
         GFCalcSave.setEnabled(false);
         
-        try {
-            GFForm.tsourceclone=(ThompsonSource)tsource.clone();
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        GFForm.size=xsize;
         GFForm.initialize();
           
         /**
