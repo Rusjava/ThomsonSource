@@ -14,7 +14,7 @@ import org.la4j.vector.dense.BasicVector;
  * @version 0.7
  */
 
-public class LaserPulse {
+public class LaserPulse implements Cloneable {
     public LaserPulse () {
         this.photonenergy=1.1*1.6e-19;
         this.setPulseEnergy(2.0e-2);
@@ -22,16 +22,14 @@ public class LaserPulse {
         this.direction=new BasicVector(new double []{0.0,0.0,1.0});
     }
     
-    public void duplicate (LaserPulse tm) {
-        tm.setPhotonEnergy(this.photonenergy);
-        tm.setPhotonNumber(this.number);
-        tm.length=this.length;
-        tm.rlength=this.rlength;
-        tm.fq=this.fq;
-        tm.delay=this.delay;
-        tm.direction.set(0,this.direction.get(0));
-        tm.direction.set(1,this.direction.get(1));
-        tm.direction.set(2,this.direction.get(2));
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object tm=super.clone();
+        ((LaserPulse)tm).direction=new BasicVector(new double []{0.0,0.0,0.0});
+        ((LaserPulse)tm).direction.set(0,this.direction.get(0));
+        ((LaserPulse)tm).direction.set(1,this.direction.get(1));
+        ((LaserPulse)tm).direction.set(2,this.direction.get(2)); 
+        return tm;
     }
 
     /**

@@ -18,7 +18,7 @@ import org.la4j.vector.dense.BasicVector;
  * A class for the electron bunch properties. All properties are in the SI system of units
  * @author Ruslan Feshchenko
  */
-public class ElectronBunch {
+public class ElectronBunch implements Cloneable {
     
     /**
      * Constructor creating vector shift
@@ -27,21 +27,14 @@ public class ElectronBunch {
         shift=new BasicVector(new double []{0.0,0.0,0.0});
     }
     
-    /**
-     * Copies parameters of this object to tm object
-     * @param tm object to clone to
-     */
-    public void duplicate (ElectronBunch tm) {
-        tm.gamma=this.gamma;
-        tm.number=this.number;
-        tm.delgamma=this.delgamma;
-        tm.length=this.length;
-        tm.eps=this.eps;
-        tm.betax=this.betax;
-        tm.betay=this.betay;
-        tm.shift.set(0,this.shift.get(0));
-        tm.shift.set(1,this.shift.get(1));
-        tm.shift.set(2,this.shift.get(2));    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object tm=super.clone();
+        ((ElectronBunch)tm).shift=new BasicVector(new double []{0.0,0.0,0.0});
+        ((ElectronBunch)tm).shift.set(0,this.shift.get(0));
+        ((ElectronBunch)tm).shift.set(1,this.shift.get(1));
+        ((ElectronBunch)tm).shift.set(2,this.shift.get(2)); 
+        return tm;
     }
     
     /**

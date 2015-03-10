@@ -25,6 +25,8 @@ import javax.swing.text.*;
 import java.util.concurrent.ExecutionException;
 import java.util.IllegalFormatException;
 import java.util.concurrent.CancellationException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -1506,6 +1508,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         String savetext;
         
         public void initialize () {
+            ebunchclone=tsourceclone.getElectronBunch();
+            lpulseclone=tsourceclone.getLaserPulse();
             tsourceclone.eSpread=espread;
             minValueClone=minValue;
             maxValueClone=maxValue;
@@ -1987,16 +1991,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilForm.working=true;
         BrillianceCalcStart.setText("Terminate");
         BrillianceCalcSave.setEnabled(false);
-        if (BrilCalc==null) {
-            BrilForm.ebunchclone=new ElectronBunch();
-            BrilForm.lpulseclone=new LaserPulse();
-            BrilForm.tsourceclone=new ThompsonSource (BrilForm.lpulseclone, BrilForm.ebunchclone);
+        
+        try {
+            BrilForm.tsourceclone=(ThompsonSource)tsource.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        ebunch.duplicate(BrilForm.ebunchclone);
-        lpulse.duplicate(BrilForm.lpulseclone);
-        BrilForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
-        BrilForm.tsourceclone.precision=tsource.precision;
         BrilForm.size=xsize;
         BrilForm.initialize();
           
@@ -2510,16 +2511,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFForm.working=true;
         GFCalcStart.setText("Terminate");
         GFCalcSave.setEnabled(false);
-        if (GFCalc==null) {
-            GFForm.ebunchclone=new ElectronBunch();
-            GFForm.lpulseclone=new LaserPulse();
-            GFForm.tsourceclone=new ThompsonSource (GFForm.lpulseclone, GFForm.ebunchclone);
+        
+        try {
+            GFForm.tsourceclone=(ThompsonSource)tsource.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        ebunch.duplicate(GFForm.ebunchclone);
-        lpulse.duplicate(GFForm.lpulseclone);
-        GFForm.tsourceclone.npGeometricFactor=tsource.npGeometricFactor;
-        GFForm.tsourceclone.precision=tsource.precision;
         GFForm.size=xsize;
         GFForm.initialize();
           

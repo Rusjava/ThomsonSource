@@ -20,7 +20,7 @@ import org.la4j.vector.dense.BasicVector;
  * @version 0.7
  */
 
-public class ThompsonSource {
+public class ThompsonSource implements Cloneable {
     ThompsonSource (LaserPulse l, ElectronBunch b) {
         this.lp=l;
         this.eb=b;
@@ -79,16 +79,32 @@ public class ThompsonSource {
     
     private LaserPulse lp;
     private ElectronBunch eb;
+    
+    @Override
+    public Object clone () throws CloneNotSupportedException {
+        Object tm=super.clone();
+        ((ThompsonSource)tm).eb=(ElectronBunch)this.eb.clone();
+        ((ThompsonSource)tm).lp=(LaserPulse)this.lp.clone();
+        return tm;
+    }
+    
+    public ElectronBunch getElectronBunch () {
+        return eb;
+    }
+    
+    public LaserPulse getLaserPulse () {
+        return lp;
+    }
 
     /**
      * The full Thompson cross-section
      */
     public  final static double SIGMA_T=6.65e-29; /* Thompson cross-section, m2 */
     
+    
     /**
      * A method calculating normalized total flux
      */
-    
     public void calculateTotalFlux () {
        this.totalFlux=SIGMA_T*eb.number*lp.getPhotonNumber()*
                 lp.fq/Math.PI/Math.sqrt((lp.getWidth2(0.0)+eb.getxWidth2(0.0))*
