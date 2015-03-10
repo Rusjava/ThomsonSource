@@ -1529,8 +1529,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                 }
                 Formatter fm;
-                try {
-                    PrintWriter pw=new PrintWriter(new FileWriter(file, false));
+                try (PrintWriter pw=new PrintWriter(new FileWriter(file, false))) { 
                     for (int i=0; i<size; i++) {
                         fm=new Formatter();
                         fm.format("%f %f", new Double(i*step+offset), new Double(udata[i]));
@@ -1802,12 +1801,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              * @param status 
              */
              public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(new Runnable(){
-                    @Override
-                    public void run() {
-                        MainProgressBar.setValue(status);
-                    }
-                });
+                SwingUtilities.invokeLater(()->MainProgressBar.setValue(status));
             }
         };
        mainWorker.execute();      
@@ -2153,12 +2147,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              * @param status 
              */
              public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(new Runnable(){
-                    @Override
-                    public void run() {
-                        BrilProgressBar.setValue(status);
-                    }
-                });
+                SwingUtilities.invokeLater(()->BrilProgressBar.setValue(status));
             }
         };
      BrilForm.worker.execute();    
@@ -2239,8 +2228,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
             }
             Formatter fm;
-            try {
-                    PrintWriter pw=new PrintWriter(new FileWriter(file, false));
+            try (PrintWriter pw=new PrintWriter(new FileWriter(file, false))){  
                     fm=new Formatter();
                     fm.format("%s %.2f", paramNames[0]+": ", ebunch.getGamma()*0.512);
                     pw.println(fm);
@@ -2308,8 +2296,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         if (ans==JFileChooser.APPROVE_OPTION) {
             File file=fo.getSelectedFile();
             ArrayList<String> inputList=new ArrayList<>();
-            try {
-                BufferedReader pr=new BufferedReader(new FileReader(file));
+            try (BufferedReader pr=new BufferedReader(new FileReader(file))) { 
                 String ts;
                 do {
                    ts=pr.readLine(); 
@@ -2437,11 +2424,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                         JOptionPane.ERROR_MESSAGE);
                     }
                     if (e.getCause() instanceof IllegalFormatException) {
-                                JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
+                            JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
                                         JOptionPane.ERROR_MESSAGE);
                     }   
                     if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
-                        
+                            JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
+                                        JOptionPane.ERROR_MESSAGE);
                     }   
                     if (e.getCause() instanceof Exception) {
                         
@@ -2456,12 +2444,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                  * @param status 
                 */
             public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(new Runnable(){
-                    @Override
-                    public void run() {
-                        jRayProgressBar.setValue(status);
-                    }
-                });
+                SwingUtilities.invokeLater(()->jRayProgressBar.setValue(status));
             }
         };
         rayWorker.execute();
@@ -2670,12 +2653,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              * @param status 
              */
             public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(new Runnable(){
-                    @Override
-                    public void run() {
-                        GFProgressBar.setValue(status);
-                    }
-                });
+                SwingUtilities.invokeLater(()->GFProgressBar.setValue(status));
             }
         };
         GFForm.worker.execute();           
