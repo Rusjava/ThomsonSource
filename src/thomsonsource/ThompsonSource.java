@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The main class contating all physics of LEXG
  */
 package thomsonsource;
 
@@ -17,7 +15,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  * A class for the X-ray source with associated electron bunch and laser pulse
  * @author Ruslan Feshchenko
- * @version 0.7
+ * @version 1.0
  */
 
 public class ThompsonSource implements Cloneable {
@@ -88,10 +86,18 @@ public class ThompsonSource implements Cloneable {
         return tm;
     }
     
+    /**
+     * Returns Electron Bunch reference
+     * @return
+     */
     public ElectronBunch getElectronBunch () {
         return eb;
     }
     
+    /**
+     * Returns Laser Pulse reference
+     * @return
+     */
     public LaserPulse getLaserPulse () {
         return lp;
     }
