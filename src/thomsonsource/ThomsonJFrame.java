@@ -52,7 +52,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 0.7
+ * @version 1.0
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
