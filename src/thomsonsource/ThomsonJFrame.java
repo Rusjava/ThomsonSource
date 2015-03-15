@@ -120,7 +120,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the brilliance calculation
          */
-        this.BrilForm=new CalcBoxParam ();
+        this.BrilForm=new CalcBoxParam ("Brilliance");
         this.BrilForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>", "", "keV", "keV", "keV"};
         this.BrilForm.plotLabels=new String [] {"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3", "X-ray energy, keV", "X-ray energy, keV", "X-ray energy, keV"};
@@ -137,7 +137,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the GF calculation
          */ 
-        this.GFForm=new CalcBoxParam ();
+        this.GFForm=new CalcBoxParam ("Geometric factor");
         this.GFForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
         this.GFForm.plotLabels=new String [] {"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
@@ -1501,11 +1501,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public ElectronBunch ebunchclone;
         public LaserPulse lpulseclone;
         public ThompsonSource tsourceclone;
-        public double [] udata;
+        public double [] data;
         public boolean espread=false;
         public boolean working=false;
         public SwingWorker<Void, Void> worker;
-        String savetext;
+        public String savetext;
+        private String key;
+        
+        public CalcBoxParam (String key) {
+            super();
+            this.key=key;
+        }
         
         public void initialize () {
             size=xsize;
@@ -1522,7 +1528,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             selectedItemIndexClone=selectedItemIndex;
             step=(maxValue-minValue)/(size-1);
             offset=minValue;   
-            udata=new double[size];  
+            data=new double[size];  
         }
         
         public void save() {
@@ -1542,7 +1548,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try (PrintWriter pw=new PrintWriter(new FileWriter(file, false))) { 
                     for (int i=0; i<size; i++) {
                         fm=new Formatter();
-                        fm.format("%f %f", new Double(i*step+offset), new Double(udata[i]));
+                        fm.format("%f %f", new Double(i*step+offset), new Double(data[i]));
                         pw.println(fm); 
                     }
                     pw.close();
@@ -2056,13 +2062,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         break; 
                         }
                     BrilForm.tsourceclone.calculateTotalFlux();
-                    BrilForm.udata[j]=BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double []{0.0, 0.0, 0.0}),
+                    BrilForm.data[j]=BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double []{0.0, 0.0, 0.0}),
                             new BasicVector(new double []{an, 0.0, Math.sqrt(1.0-an*an)}), new BasicVector(new double []{0.0, 0.0, 1.0}),
                                     e)*1e-15*1e-13;
                     setStatusBar((int)100*(j+1)/BrilForm.size);
                 } 
-                BrilForm.umax=(new BasicVector (BrilForm.udata)).max();
-                BrilForm.umin=(new BasicVector (BrilForm.udata)).min();
+                BrilForm.umax=(new BasicVector (BrilForm.data)).max();
+                BrilForm.umin=(new BasicVector (BrilForm.data)).min();
                 return null;  
             } 
             
@@ -2072,48 +2078,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 * Creating plot dataset
                 */
                 if (BrilCalc==null) {
-                    XYDataset plotdataset = new XYDataset() {
-             
-                        public int getSeriesCount() {
-                            return 1;
-                        }
-                        public int getItemCount(int series) {
-                            return BrilForm.size;
-                        }
-                        public Number getY(int series, int item) {
-                            return new Double(getYValue(series, item));
-                        }
-                        public double getYValue(int series, int item) {
-                            return BrilForm.udata[item];
-                        }
-                        public Number getX(int series, int item) {
-                            return new Double(getXValue(series, item));
-                        }
-                        public double getXValue(int series, int item) {
-                            return item*BrilForm.step+BrilForm.offset;
-                        }
-                        public void addChangeListener(DatasetChangeListener listener) {
-                        // ignore - this dataset never changes
-                        }
-                        public void removeChangeListener(DatasetChangeListener listener) {
-                        // ignore
-                        }
-                        public DatasetGroup getGroup() {
-                            return null;
-                        }
-                        public void setGroup(DatasetGroup group) {
-                        // ignore
-                        }
-                        public Comparable getSeriesKey(int series) {
-                            return "BrillianceCalculation";
-                        }
-                        public int indexOf(Comparable seriesKey) {
-                            return 0;
-                        }
-                        public DomainOrder getDomainOrder() {
-                            return DomainOrder.ASCENDING;
-                        }        
-                    };
+                    XYDataset plotdataset = createLineDataset2(BrilForm);
+                            
                     /**
                     * Creating chart
                      */
@@ -2555,11 +2521,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                     GFForm.tsourceclone.calculateTotalFlux();
                     GFForm.tsourceclone.calculateGeometricFactor();
-                    GFForm.udata[j]=GFForm.tsourceclone.geometricFactor;  
+                    GFForm.data[j]=GFForm.tsourceclone.geometricFactor;  
                     setStatusBar((int)100*(j+1)/GFForm.size);
                 } 
-                GFForm.umax=(new BasicVector (GFForm.udata)).max();
-                GFForm.umin=(new BasicVector (GFForm.udata)).min();
+                GFForm.umax=(new BasicVector (GFForm.data)).max();
+                GFForm.umin=(new BasicVector (GFForm.data)).min();
                 return null;  
             } 
             
@@ -2569,48 +2535,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 * Creating plot dataset
                 */
                 if (GFCalc==null) {
-                    XYDataset plotdataset = new XYDataset() {
-             
-                        public int getSeriesCount() {
-                            return 1;
-                        }
-                        public int getItemCount(int series) {
-                            return GFForm.size;
-                        }
-                        public Number getY(int series, int item) {
-                            return new Double(getYValue(series, item));
-                        }
-                        public double getYValue(int series, int item) {
-                            return GFForm.udata[item];
-                        }
-                        public Number getX(int series, int item) {
-                            return new Double(getXValue(series, item));
-                        }
-                        public double getXValue(int series, int item) {
-                            return item*GFForm.step+GFForm.offset;
-                        }
-                        public void addChangeListener(DatasetChangeListener listener) {
-                        // ignore - this dataset never changes
-                        }
-                        public void removeChangeListener(DatasetChangeListener listener) {
-                        // ignore
-                        }
-                        public DatasetGroup getGroup() {
-                            return null;
-                        }
-                        public void setGroup(DatasetGroup group) {
-                        // ignore
-                        }
-                        public Comparable getSeriesKey(int series) {
-                            return "GeometricFactorCalculation";
-                        }
-                        public int indexOf(Comparable seriesKey) {
-                            return 0;
-                        }
-                        public DomainOrder getDomainOrder() {
-                            return DomainOrder.ASCENDING;
-                        }        
-                    };
+                    XYDataset plotdataset = createLineDataset2(GFForm);
+                    
                     /**
                     * Creating chart
                      */
@@ -3048,6 +2974,50 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
             public Comparable getSeriesKey(int series) {
                 return "EnergyCrossSection";
+            }
+            public int indexOf(Comparable seriesKey) {
+                return 0;
+            }
+            public DomainOrder getDomainOrder() {
+                return DomainOrder.ASCENDING;
+            }        
+        };
+    } 
+    
+    private XYDataset createLineDataset2(final CalcBoxParam data) {
+        return new XYDataset() {
+            public int getSeriesCount() {
+                return 1;
+            }
+            public int getItemCount(int series) {
+                return data.size;
+            }
+            public Number getY(int series, int item) {
+                return new Double(getYValue(series, item));
+            }
+            public double getYValue(int series, int item) {
+                return item*data.step+data.offset;
+            }
+            public Number getX(int series, int item) {
+                return new Double(getXValue(series, item));
+            }
+            public double getXValue(int series, int item) {
+                return data.data[item];
+            }
+            public void addChangeListener(DatasetChangeListener listener) {
+            // ignore - this dataset never changes
+            }
+            public void removeChangeListener(DatasetChangeListener listener) {
+                // ignore
+            }
+            public DatasetGroup getGroup() {
+                return null;
+            }
+            public void setGroup(DatasetGroup group) {
+                // ignore
+            }
+            public Comparable getSeriesKey(int series) {
+                return data.key;
             }
             public int indexOf(Comparable seriesKey) {
                 return 0;
