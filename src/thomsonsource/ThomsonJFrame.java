@@ -2074,15 +2074,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             
             @Override
             protected void done() {
-                /**
-                * Creating plot dataset
-                */
+                
                 if (BrilCalc==null) {
+                    /**
+                    * Creating plot dataset
+                    */
                     XYDataset plotdataset = createLineDataset2(BrilForm);
                             
                     /**
                     * Creating chart
-                     */
+                    */
                     BrilCalcChart=createLineChart(plotdataset, BrilForm.plotLabels[BrilForm.selectedItemIndexClone],
                             "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u00B3");
                     
@@ -2531,15 +2532,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             
             @Override
             protected void done() {
-                /**
-                * Creating plot dataset
-                */
+                
                 if (GFCalc==null) {
+                    /**
+                    * Creating plot dataset
+                    */
                     XYDataset plotdataset = createLineDataset2(GFForm);
                     
                     /**
                     * Creating chart
-                     */
+                    */
                     GFCalcChart=createLineChart(plotdataset, GFForm.plotLabels[GFForm.selectedItemIndexClone], "");
                     
                     /**
