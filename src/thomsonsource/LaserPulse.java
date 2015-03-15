@@ -9,7 +9,7 @@ import org.la4j.vector.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * A class for laser pulse properties
+ * A class for laser pulse properties. All properties are in the SI system of units
  * @author Ruslan feshchenko
  * @version 0.7
  */
@@ -49,41 +49,98 @@ public class LaserPulse implements Cloneable {
         rlength=2*w*w/rk;
     }
     
+    /**
+     * Sets the laser bunch width squared
+     * @param z coordinate z
+     * @return
+     */
     public double getWidth2(double z) {
         return (rlength+z*z/rlength)*rk/2;
     }
     
+    /**
+     * Sets the energy of laser photons
+     * @param e photon energy
+     */
     public void setPhotonEnergy (double e) {
         this.photonenergy=e;
         this.rk=3.201e-26/this.photonenergy;
     }
     
+    /**
+     * Return the energy of laser photons
+     * @return
+     */
     public double getPhotonEnergy () {
         return this.photonenergy;
     }
     
+    /**
+     * Sets the number of photons in laser pulse
+     * @param n number of photons
+     */
     public void setPhotonNumber (double n) {
         this.number=n;
     }
     
+    /**
+     * Returns the number of photons in laser pulse
+     * @return
+     */
     public double getPhotonNumber () {
         return this.number;
     }
     
-    public void setPulseEnergy (double e) {
+    /**
+     * Sets the energy of laser pulse (by setting the photon number)
+     * @param e energy of laser pulse
+     */
+    public final void setPulseEnergy (double e) {
         this.number=e/this.photonenergy;
     }
     
+    /**
+     * Returns the energy of laser pulse
+     * @return
+     */
     public double getPulseEnergy () {
         return this.number*this.photonenergy;
     }
     
-    private double photonenergy; /* Photon energy, J */
-    private double number; /* Number of photon in the laser pulse */
-    public double length=4.5e-3; /* Laser pulse semi-length, m */  
-    public Vector direction; /* Mean direction of the laser pulse */
-    public double rlength=5.4e-3; /* Laser pulse Reyley length, m */
-    public double fq=7.9e7; /* Pusle frequency, 1/s */
-    public double delay=0; /* Laser pulse delay, m */
+    /**
+     * Photon energy, J 
+     */
+    private double photonenergy; 
+    
+    /**
+     * Number of photon in laser pulse  
+     */
+    private double number;
+
+    /**
+     * Laser pulse semi-length, m 
+     */
+    public double length=4.5e-3;
+
+    /**
+     * Mean direction of the laser pulse
+     */
+    public Vector direction;
+
+    /**
+     * Laser pulse Rayleigh length, m 
+     */
+    public double rlength=5.4e-3; 
+
+    /**
+     * Pulse frequency, 1/s 
+     */
+    public double fq=7.9e7;
+
+    /**
+     * Laser pulse delay, m 
+     */
+    public double delay=0;
+    
     private double rk;
 }
