@@ -2986,25 +2986,25 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
     } 
     
-    private XYDataset createLineDataset2(final CalcBoxParam data) {
+    private XYDataset createLineDataset2(final CalcBoxParam form) {
         return new XYDataset() {
             public int getSeriesCount() {
                 return 1;
             }
             public int getItemCount(int series) {
-                return data.size;
+                return form.size;
             }
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
-            public double getYValue(int series, int item) {
-                return item*data.step+data.offset;
+            public double getXValue(int series, int item) {
+                return item*form.step+form.offset;
             }
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
-            public double getXValue(int series, int item) {
-                return data.data[item];
+            public double getYValue(int series, int item) {
+                return form.data[item];
             }
             public void addChangeListener(DatasetChangeListener listener) {
             // ignore - this dataset never changes
@@ -3019,7 +3019,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 // ignore
             }
             public Comparable getSeriesKey(int series) {
-                return data.key;
+                return form.key;
             }
             public int indexOf(Comparable seriesKey) {
                 return 0;
