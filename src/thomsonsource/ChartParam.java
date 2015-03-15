@@ -8,7 +8,7 @@ package thomsonsource;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 0.3
+ * @version 0.7
  */
 public abstract class ChartParam {
     /**

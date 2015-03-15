@@ -1,14 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * A class for electron bunch parameters
  */
 package thomsonsource;
 
 /**
  * The package for the laser-electron source simulation
  * @author Ruslan Feshchenko
- * @version 0.3
+ * @version 0.7
  */
 
 import org.la4j.vector.Vector;
@@ -17,6 +15,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  * A class for the electron bunch properties. All properties are in the SI system of units
  * @author Ruslan Feshchenko
+ * @version 1.0
  */
 public class ElectronBunch implements Cloneable {
     
