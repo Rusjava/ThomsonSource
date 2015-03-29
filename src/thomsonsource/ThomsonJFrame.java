@@ -19,9 +19,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 import javax.swing.border.TitledBorder;
-import java.awt.geom.Rectangle2D;
-import java.io.EOFException;
-import javax.swing.text.*;
 import java.util.concurrent.ExecutionException;
 import java.util.IllegalFormatException;
 import java.util.concurrent.CancellationException;
@@ -43,8 +40,6 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import org.la4j.vector.*;
 import org.la4j.vector.dense.*;
-import org.la4j.matrix.*;
-import org.la4j.matrix.dense.*;
 
 import shadowfileconverter.MyTextUtilities;
 import shadowfileconverter.ShadowFiles;
