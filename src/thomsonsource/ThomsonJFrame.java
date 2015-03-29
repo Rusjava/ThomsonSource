@@ -46,7 +46,7 @@ import org.la4j.vector.dense.*;
 import org.la4j.matrix.*;
 import org.la4j.matrix.dense.*;
 
-import TextUtilities.MyTextUtilities;
+import shadowfileconverter.MyTextUtilities;
 import shadowfileconverter.ShadowFiles;
 
 /**
