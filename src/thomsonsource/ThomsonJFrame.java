@@ -71,7 +71,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ebunch = new ElectronBunch();
         this.lpulse = new LaserPulse();
         this.tsource = new ThompsonSource(lpulse, ebunch);
-        this.xsize = 200;
+        this.xsize = 300;
         this.ysize = 200;
         this.xstep = 20.0 / xsize;
         this.ystep = 20.0 / ysize;
@@ -1765,12 +1765,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
                     setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(),
-                            (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
-                            false, ysize, ystep, 0);
+                            (int) (xenergydata.getxsize() - 1) * sliderposition / 100, false, ysize, ystep, 0);
                     setStatusBar((int) 100);
                 } catch (InterruptedException e) {
-                    System.out.println("Interrupted");
-                }
+                    
+                } 
                 return null;
             }
 
@@ -2954,7 +2953,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 if (!linemark) {
                     return data.getudata()[x][y];
                 } else {
-                    if (x == (int) (data.getysize() - 1) * sliderposition / 100) {
+                    if (x == (int) (data.getxsize() - 1) * sliderposition / 100) {
                         return data.getumax() / 2;
                     } else {
                         return data.getudata()[x][y];

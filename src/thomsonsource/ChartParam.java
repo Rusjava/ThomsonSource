@@ -18,25 +18,27 @@ package thomsonsource;
 
 /**
  * Class for color chart parameters
+ *
  * @author Ruslan Feshchenko
  * @version 1.0
  */
 public abstract class ChartParam {
+
     /**
      * Constructor
      */
-    public ChartParam () {
-            
+    public ChartParam() {
+
     }
-    
-    public ChartParam (double [][] u, double um) {
-        this.udata=u;
-        this.umax=um;
+
+    public ChartParam(double[][] u, double um) {
+        this.udata = u;
+        this.umax = um;
     }
-    
+
     /**
      * Method generating matrices for Z data and determining the max value
-     * 
+     *
      * @param xsize
      * @param ysize
      * @param xstep
@@ -45,99 +47,107 @@ public abstract class ChartParam {
      * @param yoffset
      * @throws java.lang.InterruptedException
      */
-    public void setup(int xsize, int ysize, double xstep, double ystep, 
-            double xoffset, double yoffset)  throws InterruptedException {
-        this.udata=new double[xsize][ysize];
+    public void setup(int xsize, int ysize, double xstep, double ystep,
+            double xoffset, double yoffset) throws InterruptedException {
+        this.udata = new double[xsize][ysize];
         double x, y;
-        for (int j=0; j<xsize; j++) {
-            for (int p=0; p<ysize; p++) {
+        for (int j = 0; j < xsize; j++) {
+            for (int p = 0; p < ysize; p++) {
                 if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
                 }
-                x=xoffset+xstep*(j-xsize/2);
-                y=yoffset+ystep*(p-ysize/2);
-                this.udata[j][p]=func(x, y);
+                x = xoffset + xstep * (j - xsize / 2);
+                y = yoffset + ystep * (p - ysize / 2);
+                this.udata[j][p] = func(x, y);
             }
-        } 
-        this.umax=this.udata[xsize/2][ysize/2];
-        this.xoffset=xoffset;
-        this.yoffset=yoffset;
-        this.xstep=xstep;
-        this.ystep=ystep;
-        this.xsize=xsize;
-        this.ysize=ysize;
+        }
+        this.umax = this.udata[xsize / 2][ysize / 2];
+        this.xoffset = xoffset;
+        this.yoffset = yoffset;
+        this.xstep = xstep;
+        this.ystep = ystep;
+        this.xsize = xsize;
+        this.ysize = ysize;
     }
-    
+
     /**
      * Returning the array with data
-     * @return 
+     *
+     * @return
      */
-    public double [][] getudata () {
+    public double[][] getudata() {
         return this.udata;
     }
-    
+
     /**
      * Returning the maximal value
-     * @return 
-     */   
-    public double getumax () {
+     *
+     * @return
+     */
+    public double getumax() {
         return this.umax;
     }
-    
+
     /**
      * Returning the x offset
-     * @return 
+     *
+     * @return
      */
-    public double getxoffset () {
+    public double getxoffset() {
         return this.xoffset;
     }
-    
-     /**
+
+    /**
      * Returning the y offset
-     * @return 
+     *
+     * @return
      */
-    public double getyoffset () {
+    public double getyoffset() {
         return this.yoffset;
     }
-    
+
     /**
      * Returning the x step
-     * @return 
+     *
+     * @return
      */
-    public double getxstep () {
+    public double getxstep() {
         return this.xstep;
     }
-    
+
     /**
      * Returning the y step
-     * @return 
+     *
+     * @return
      */
-    public double getystep () {
+    public double getystep() {
         return this.ystep;
     }
-    
+
     /**
      * Returning the x size
-     * @return 
+     *
+     * @return
      */
-    public int getxsize () {
+    public int getxsize() {
         return this.xsize;
     }
-    
+
     /**
      * Returning the y size
-     * @return 
+     *
+     * @return
      */
-    public int getysize () {
+    public int getysize() {
         return this.ysize;
     }
-    
-    public abstract double func (double x, double y);
-    
-    private double [][] udata;
+
+    public abstract double func(double x, double y);
+
+    private double[][] udata;
     private double umax;
-    private double xoffset=0.0;
-    private double yoffset=0.0;
+    private double xoffset = 0.0;
+    private double yoffset = 0.0;
     private double xstep;
     private double ystep;
     private int xsize;

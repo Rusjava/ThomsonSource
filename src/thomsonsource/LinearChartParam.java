@@ -17,7 +17,7 @@
 package thomsonsource;
 
 import java.util.function.BiFunction;
-import java.util.stream.Stream;
+import org.la4j.vector.dense.BasicVector;
 
 /**
  * Class for linear chart parameters
@@ -125,12 +125,12 @@ public class LinearChartParam {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
         }
-        int length = row ? data[0].length : data.length;
+        int length = row ? data.length : data[0].length;
         this.data = new double [length];
         for (int i = 0; i < length; i++) {
-            this.data[i] = row ? data[index][i] : data[i][index];
+            this.data[i] = row ? data[i][index] : data[index][i];
         }
-        umax = Stream.of(data).max(null).get()[0];
+        this.umax = (new BasicVector (this.data)).max();
         this.size = size;
         this.step = step;
         this.offset = offset;
