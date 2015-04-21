@@ -17,7 +17,7 @@
 package thomsonsource;
 
 /**
- *
+ * Class for color chart parameters
  * @author Ruslan Feshchenko
  * @version 1.0
  */
