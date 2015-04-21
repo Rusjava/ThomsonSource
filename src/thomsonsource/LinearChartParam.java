@@ -126,6 +126,7 @@ public class LinearChartParam {
             throw new InterruptedException();
         }
         int length = row ? data[0].length : data.length;
+        this.data = new double [length];
         for (int i = 0; i < length; i++) {
             this.data[i] = row ? data[index][i] : data[i][index];
         }

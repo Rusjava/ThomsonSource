@@ -1759,16 +1759,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
-                    setStatusBar((int) 100 / 3);
+                    setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
-                    setStatusBar((int) 100 * 2 / 3);
+                    setStatusBar((int) 100 * 2 / 4);
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
-                    setStatusBar((int) 100);
+                    setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(),
                             (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
                             false, ysize, ystep, 0);
+                    setStatusBar((int) 100);
                 } catch (InterruptedException e) {
-
+                    System.out.println("Interrupted");
                 }
                 return null;
             }
