@@ -37,7 +37,7 @@ public class LinearChartParam {
     /**
      * Size of the plot
      */
-    protected double size;
+    protected int size;
 
     /**
      * Plot step
@@ -69,7 +69,7 @@ public class LinearChartParam {
      *
      * @return
      */
-    public double getSize() {
+    public int getSize() {
         return size;
     }
 
@@ -111,15 +111,27 @@ public class LinearChartParam {
 
     /**
      * Setting up the data based on 2D array
+     *
      * @param data 2D data array
      * @param index index of row/column
      * @param row row or column
+     * @param size plot size
+     * @param step plotting step
+     * @param offset plotting offset
+     * @throws java.lang.InterruptedException
      */
-    public void setup(double[][] data, int index, boolean row) {
+    public void setup(double[][] data, int index, boolean row,
+            int size, double step, double offset) throws InterruptedException {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException();
+        }
         int length = row ? data[0].length : data.length;
         for (int i = 0; i < length; i++) {
             this.data[i] = row ? data[index][i] : data[i][index];
         }
-        umax=Stream.of(data).max(null).get()[0];
+        umax = Stream.of(data).max(null).get()[0];
+        this.size = size;
+        this.step = step;
+        this.offset = offset;
     }
 }
