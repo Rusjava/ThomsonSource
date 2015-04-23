@@ -16,7 +16,7 @@
  */
 package thomsonsource;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
 
 /**
@@ -60,9 +60,14 @@ public class LinearChartParam {
     protected double umax;
 
     /**
+     * Minimum value
+     */
+    protected double umin;
+
+    /**
      * Function for calculation values
      */
-    protected BiFunction<Double, ThompsonSource, Double> func;
+    protected Function<Double, Double> func;
 
     /**
      * Returning plot size
@@ -125,14 +130,41 @@ public class LinearChartParam {
         if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException();
         }
-        int length = row ? data.length : data[0].length;
-        this.data = new double [length];
-        for (int i = 0; i < length; i++) {
+        this.data = new double[size];
+        for (int i = 0; i < size; i++) {
             this.data[i] = row ? data[i][index] : data[index][i];
         }
-        this.umax = (new BasicVector (this.data)).max();
+        setExtr();
         this.size = size;
         this.step = step;
         this.offset = offset;
+    }
+
+    /**
+     * Setting up data based on a given function
+     *
+     * @param f function to get data from
+     * @param size
+     * @param step
+     * @param offset
+     */
+    public void setup(Function<Double, Double> f, int size,
+            double step, double offset) {
+        for (int i = 0; i < size; i++) {
+            this.data[i] = f.apply(step * i + offset);
+        }
+        setExtr();
+        this.size = size;
+        this.step = step;
+        this.offset = offset;
+        this.func = f;
+    }
+
+    /**
+     * Calculating min and max values of data
+     */
+    protected void setExtr() {
+        this.umax = (new BasicVector(this.data)).max();
+        this.umin = (new BasicVector(this.data)).min();
     }
 }
