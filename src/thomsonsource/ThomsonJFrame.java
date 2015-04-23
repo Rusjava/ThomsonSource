@@ -35,6 +35,7 @@ import java.util.IllegalFormatException;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.function.Function;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -1503,19 +1504,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         public String[] valueUnitLabels, comboBoxValues, plotLabels;
         public String[] minValues, maxValues;
-        public int selectedItemIndex = 0, selectedItemIndexClone = 0, size;
+        public int selectedItemIndex = 0, selectedItemIndexClone = 0;
         public int numberOfItems = 7;
-        public double minValue = 0, maxValue = 35, minValueClone = 0, maxValueClone = 35, step, offset, umax, umin;
+        public double minValue = 0, maxValue = 35, minValueClone = 0, maxValueClone = 35;
         public double[] conversionValues;
         public ElectronBunch ebunchclone;
         public LaserPulse lpulseclone;
         public ThompsonSource tsourceclone;
-        public double[] data;
         public boolean espread = false;
         public boolean working = false;
         public SwingWorker<Void, Void> worker;
         public String savetext;
-        private String key;
+        final private String key;
+        public LinearChartParam chartParam;
 
         public CalcBoxParam(String key) {
             super();
@@ -1523,7 +1524,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         }
 
         public void initialize() {
-            size = xsize;
             try {
                 tsourceclone = (ThompsonSource) tsource.clone();
             } catch (CloneNotSupportedException ex) {
@@ -1535,9 +1535,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             minValueClone = minValue;
             maxValueClone = maxValue;
             selectedItemIndexClone = selectedItemIndex;
-            step = (maxValue - minValue) / (size - 1);
-            offset = minValue;
-            data = new double[size];
         }
 
         public void save() {
@@ -1555,9 +1552,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 Formatter fm;
                 try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
-                    for (int i = 0; i < size; i++) {
+                    for (int i = 0; i < chartParam.getSize(); i++) {
                         fm = new Formatter();
-                        fm.format("%f %f", new Double(i * step + offset), new Double(data[i]));
+                        fm.format("%f %f", new Double(i * chartParam.getStep() 
+                                + chartParam.getOffset()), new Double(chartParam.getData()[i]));
                         pw.println(fm);
                     }
                     pw.close();
@@ -1922,11 +1920,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                  * @param status
                  */
                 public void setStatusBar(final int status) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            MainProgressBar.setValue(status);
-                        }
+                    SwingUtilities.invokeLater(() -> {
+                        MainProgressBar.setValue(status);
                     });
                 }
             };
@@ -2037,63 +2032,122 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                double x, e, an;
+                final double e, an, ang;
                 an = 0;
                 e = xenergydata.func(an * 1e3, 0.0) * 1.6e-16;
-                for (int j = 0; j < BrilForm.size; j++) {
-                    if (isCancelled()) {
-                        break;
-                    }
-                    x = (BrilForm.offset + BrilForm.step * j) * BrilForm.conversionValues[BrilForm.selectedItemIndexClone];
-                    switch (BrilForm.selectedItemIndexClone) {
-                        case 0:
-                            BrilForm.lpulseclone.direction.set(2, Math.cos(x));
-                            BrilForm.lpulseclone.direction.set(1, Math.sin(x));
-                            break;
-                        case 1:
-                            BrilForm.lpulseclone.delay = x;
-                            break;
-                        case 2:
-                            BrilForm.ebunchclone.shift.set(2, x);
-                            break;
-                        case 3:
-                            BrilForm.ebunchclone.betax = x;
-                            BrilForm.ebunchclone.betay = x;
-                            break;
-                        case 4:
-                            BrilForm.ebunchclone.eps = x;
-                            break;
-                        case 5:
-                            BrilForm.lpulseclone.rlength = x;
-                            break;
-                        case 6:
-                            BrilForm.lpulseclone.setWidth(x);
-                            BrilForm.ebunchclone.setxWidth(x);
-                            BrilForm.ebunchclone.setyWidth(x);
-                            break;
-                        case 7:
-                            BrilForm.ebunchclone.delgamma = x;
-                            break;
-                        case 8:
-                            e = x;
-                            break;
-                        case 9:
-                            an = 0.16 * Math.PI / 180;
-                            e = x;
-                            break;
-                        case 10:
-                            an = 0.32 * Math.PI / 180;
-                            e = x;
-                            break;
-                    }
-                    BrilForm.tsourceclone.calculateTotalFlux();
-                    BrilForm.data[j] = BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                            new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                            e) * 1e-15 * 1e-13;
-                    setStatusBar((int) 100 * (j + 1) / BrilForm.size);
+                double step=(BrilForm.maxValue-BrilForm.minValue)/(xsize-1)
+                        * BrilForm.conversionValues[BrilForm.selectedItemIndexClone];
+                double offset=BrilForm.minValue 
+                        * BrilForm.conversionValues[BrilForm.selectedItemIndexClone];
+                if (isCancelled()) {
+                    return null;
                 }
-                BrilForm.umax = (new BasicVector(BrilForm.data)).max();
-                BrilForm.umin = (new BasicVector(BrilForm.data)).min();
+                switch (BrilForm.selectedItemIndexClone) {
+                    case 0:
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.lpulseclone.direction.set(2, Math.cos(x));
+                                BrilForm.lpulseclone.direction.set(1, Math.sin(x));
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 1:
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.lpulseclone.delay = x;
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 2:
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.shift.set(2, x);
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 3:   
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.betax = x;
+                                BrilForm.ebunchclone.betay = x;
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 4:          
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.eps = x;
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 5:  
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.lpulseclone.rlength = x;
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 6:      
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.lpulseclone.setWidth(x);
+                                BrilForm.ebunchclone.setxWidth(x);
+                                BrilForm.ebunchclone.setyWidth(x);
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 7:           
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.delgamma = x;
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                e) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 8:
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.delgamma = x;
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{an, 0.0, Math.sqrt(1.0 - an * an)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                x) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 9:
+                        ang = 0.16 * Math.PI / 180;
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.delgamma = x;
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{ang, 0.0, Math.sqrt(1.0 - ang * ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                x) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                    case 10:
+                        ang = 0.32 * Math.PI / 180;
+                        BrilForm.chartParam.setup(x -> {
+                                BrilForm.ebunchclone.delgamma = x;
+                                BrilForm.tsourceclone.calculateTotalFlux();
+                                return BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                new BasicVector(new double[]{ang, 0.0, Math.sqrt(1.0 - ang * ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                x) * 1e-15 * 1e-13;
+                            }, xsize, step, offset);    
+                        break;
+                }
+                //setStatusBar((int) 100 * (j + 1) / BrilForm.size);
                 return null;
             }
 
@@ -2104,7 +2158,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     /**
                      * Creating plot dataset
                      */
-                    XYDataset plotdataset = createLineDataset2(BrilForm);
+                    XYDataset plotdataset = createLineDataset(BrilForm.chartParam);
 
                     /**
                      * Creating chart
@@ -2126,7 +2180,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 } else {
                     BrilCalcChart.getXYPlot().getDomainAxis().setRange(BrilForm.minValueClone, BrilForm.maxValueClone);
                     BrilCalcChart.getXYPlot().getDomainAxis().setLabel(BrilForm.plotLabels[BrilForm.selectedItemIndexClone]);
-                    BrilCalcChart.getXYPlot().getRangeAxis().setRange(BrilForm.umin, BrilForm.umax);
+                    BrilCalcChart.getXYPlot().getRangeAxis().setRange(BrilForm.chartParam.getUMin(), 
+                            BrilForm.chartParam.getUMax());
                     BrilCalcChart.getXYPlot().getDomainAxis().setLabel(BrilForm.plotLabels[BrilForm.selectedItemIndexClone]);
                     BrilCalcChart.fireChartChanged();
                 }
@@ -2534,47 +2589,76 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                double x;
-
-                for (int j = 0; j < GFForm.size; j++) {
-                    if (isCancelled()) {
+                if (isCancelled()) {
+                        return null;
+                }
+                double step=(BrilForm.maxValue-BrilForm.minValue)/(xsize-1)
+                        * BrilForm.conversionValues[BrilForm.selectedItemIndexClone];
+                double offset=BrilForm.minValue 
+                        * BrilForm.conversionValues[BrilForm.selectedItemIndexClone];
+                switch (GFForm.selectedItemIndexClone) {
+                    case 0:      
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.lpulseclone.direction.set(2, Math.cos(x));
+                                GFForm.lpulseclone.direction.set(1, Math.sin(x));
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
+                        break;
+                    case 1: 
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.lpulseclone.delay = x;
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
+                        break;
+                    case 2: 
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.ebunchclone.shift.set(2, x);
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
+                        break;
+                    case 3:       
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.ebunchclone.betax = x;
+                                GFForm.ebunchclone.betay = x;
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
+                        break;
+                    case 4:                     
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.ebunchclone.eps = x;
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
+                        break;
+                    case 5:  
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.lpulseclone.rlength = x;
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
+                        break;
+                    case 6:    
+                        GFForm.chartParam.setup(x -> {
+                                GFForm.lpulseclone.setWidth(x);
+                                GFForm.ebunchclone.setxWidth(x);
+                                GFForm.ebunchclone.setyWidth(x);
+                                GFForm.tsourceclone.calculateTotalFlux();
+                                GFForm.tsourceclone.calculateGeometricFactor();
+                                return GFForm.tsourceclone.geometricFactor;
+                            }, xsize, step, offset); 
                         break;
                     }
-                    x = (GFForm.offset + GFForm.step * j) * GFForm.conversionValues[GFForm.selectedItemIndexClone];
-                    switch (GFForm.selectedItemIndexClone) {
-                        case 0:
-                            GFForm.lpulseclone.direction.set(2, Math.cos(x));
-                            GFForm.lpulseclone.direction.set(1, Math.sin(x));
-                            break;
-                        case 1:
-                            GFForm.lpulseclone.delay = x;
-                            break;
-                        case 2:
-                            GFForm.ebunchclone.shift.set(2, x);
-                            break;
-                        case 3:
-                            GFForm.ebunchclone.betax = x;
-                            GFForm.ebunchclone.betay = x;
-                            break;
-                        case 4:
-                            GFForm.ebunchclone.eps = x;
-                            break;
-                        case 5:
-                            GFForm.lpulseclone.rlength = x;
-                            break;
-                        case 6:
-                            GFForm.lpulseclone.setWidth(x);
-                            GFForm.ebunchclone.setxWidth(x);
-                            GFForm.ebunchclone.setyWidth(x);
-                            break;
-                    }
-                    GFForm.tsourceclone.calculateTotalFlux();
-                    GFForm.tsourceclone.calculateGeometricFactor();
-                    GFForm.data[j] = GFForm.tsourceclone.geometricFactor;
-                    setStatusBar((int) 100 * (j + 1) / GFForm.size);
-                }
-                GFForm.umax = (new BasicVector(GFForm.data)).max();
-                GFForm.umin = (new BasicVector(GFForm.data)).min();
+                    //setStatusBar((int) 100 * (j + 1) / GFForm.size);
                 return null;
             }
 
@@ -2585,7 +2669,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     /**
                      * Creating plot dataset
                      */
-                    XYDataset plotdataset = createLineDataset2(GFForm);
+                    XYDataset plotdataset = createLineDataset(GFForm.chartParam);
 
                     /**
                      * Creating chart
@@ -2606,7 +2690,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 } else {
                     GFCalcChart.getXYPlot().getDomainAxis().setRange(GFForm.minValueClone, GFForm.maxValueClone);
                     GFCalcChart.getXYPlot().getDomainAxis().setLabel(GFForm.plotLabels[GFForm.selectedItemIndexClone]);
-                    GFCalcChart.getXYPlot().getRangeAxis().setRange(GFForm.umin, GFForm.umax);
+                    GFCalcChart.getXYPlot().getRangeAxis().setRange(BrilForm.chartParam.getUMin(), 
+                            BrilForm.chartParam.getUMax());
                     GFCalcChart.getXYPlot().getDomainAxis().setLabel(GFForm.plotLabels[GFForm.selectedItemIndexClone]);
                     GFCalcChart.fireChartChanged();
                 }
@@ -3072,62 +3157,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
 
             @Override
-            public int indexOf(Comparable seriesKey) {
-                return 0;
-            }
-
-            public DomainOrder getDomainOrder() {
-                return DomainOrder.ASCENDING;
-            }
-        };
-    }
-
-    private XYDataset createLineDataset2(final CalcBoxParam form) {
-        return new XYDataset() {
-            public int getSeriesCount() {
-                return 1;
-            }
-
-            public int getItemCount(int series) {
-                return form.size;
-            }
-
-            public Number getY(int series, int item) {
-                return new Double(getYValue(series, item));
-            }
-
-            public double getXValue(int series, int item) {
-                return item * form.step + form.offset;
-            }
-
-            public Number getX(int series, int item) {
-                return new Double(getXValue(series, item));
-            }
-
-            public double getYValue(int series, int item) {
-                return form.data[item];
-            }
-
-            public void addChangeListener(DatasetChangeListener listener) {
-                // ignore - this dataset never changes
-            }
-
-            public void removeChangeListener(DatasetChangeListener listener) {
-                // ignore
-            }
-
-            public DatasetGroup getGroup() {
-                return null;
-            }
-
-            public void setGroup(DatasetGroup group) {
-                // ignore
-            }
-
-            public Comparable getSeriesKey(int series) {
-                return form.key;
-            }
-
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }

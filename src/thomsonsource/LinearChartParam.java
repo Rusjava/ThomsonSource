@@ -113,6 +113,15 @@ public class LinearChartParam {
     public double getUMax() {
         return umax;
     }
+    
+    /**
+     * Returning minimum plot value
+     *
+     * @return
+     */
+    public double getUMin() {
+        return umin;
+    }
 
     /**
      * Setting up the data based on 2D array
