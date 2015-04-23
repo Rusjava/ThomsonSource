@@ -147,10 +147,14 @@ public class LinearChartParam {
      * @param size
      * @param step
      * @param offset
+     * @throws java.lang.InterruptedException
      */
     public void setup(Function<Double, Double> f, int size,
-            double step, double offset) {
+            double step, double offset) throws InterruptedException {
         for (int i = 0; i < size; i++) {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
+            }
             this.data[i] = f.apply(step * i + offset);
         }
         setExtr();
