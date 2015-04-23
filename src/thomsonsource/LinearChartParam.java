@@ -136,17 +136,17 @@ public class LinearChartParam {
      */
     public void setup(double[][] data, int index, boolean row,
             int size, double step, double offset) throws InterruptedException {
-        if (Thread.currentThread().isInterrupted()) {
-            throw new InterruptedException();
-        }
-        this.data = new double[size];
-        for (int i = 0; i < size; i++) {
-            this.data[i] = row ? data[i][index] : data[index][i];
-        }
-        setExtr();
         this.size = size;
         this.step = step;
         this.offset = offset;
+        this.data = new double[size];
+        for (int i = 0; i < size; i++) {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
+            }
+            this.data[i] = row ? data[i][index] : data[index][i];
+        }
+        setExtr();
     }
 
     /**
@@ -160,16 +160,18 @@ public class LinearChartParam {
      */
     public void setup(Function<Double, Double> f, int size,
             double step, double offset) throws InterruptedException {
-        for (int i = 0; i < size; i++) {
+        this.size = size;
+        this.step = step;
+        this.offset = offset;
+        this.data = new double[size];
+        for (int i = 0; i < size; i++) {   
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
             this.data[i] = f.apply(step * i + offset);
         }
         setExtr();
-        this.size = size;
-        this.step = step;
-        this.offset = offset;
+        
         this.func = f;
     }
 
