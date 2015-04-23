@@ -1764,7 +1764,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
                     setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(),
-                            (int) (xenergydata.getxsize() - 1) * sliderposition / 100, false, ysize, ystep, 0);
+                            (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                            false, ysize, ystep, -ystep * ysize / 2);
                     setStatusBar((int) 100);
                 } catch (InterruptedException e) {
 
@@ -1798,12 +1799,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
 
                     if (xenergycrosschart != null) {
+                        xenergycrosschart.getXYPlot().getRangeAxis().
+                                setRange(xenergycrossdata.getData()[0], xenergycrossdata.getUMax());
                         xenergycrosschart.getXYPlot().getDomainAxis().
-                                setRange(xenergydata.getudata()[(int) (xenergydata.getxsize() - 1) * sliderposition / 100][0],
-                                        xenergydata.getudata()[(int) (xenergydata.getxsize() - 1) * sliderposition / 100][xenergydata.getxsize() / 2]);
+                                setRangeAboutValue(xenergycrossdata.getOffset() + 
+                                        xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
                         xenergycrosschart.fireChartChanged();
                     } else {
-                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata), "Energy, keV", "theta_y, mrad");
+                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata), "theta_y, mrad", "Energy, keV");
                         ChartPanel chartpanel = new ChartPanel(xenergycrosschart,
                                 (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
                                 (int) (10 * jPanel_xenergy_right.getWidth()), (int) (10 * jPanel_xenergy_right.getHeight()),
@@ -1885,7 +1888,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         setStatusBar((int) 100);
                         xenergycrossdata.setup(xenergydata.getudata(),
                                 (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
-                                false, ysize, ystep, 0);
+                                false, ysize, ystep, -ystep * ysize / 2);
                     } catch (InterruptedException e) {
 
                     }
@@ -1907,7 +1910,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
 
                     if (xenergycrosschart != null) {
-                        xenergycrosschart.getXYPlot().getDomainAxis().
+                        xenergycrosschart.getXYPlot().getRangeAxis().
                                 setRange(xenergycrossdata.getData()[0], xenergycrossdata.getUMax());
                         xenergycrosschart.fireChartChanged();
                     }
@@ -3169,7 +3172,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
 
             public Number getX(int series, int item) {
-                return new Double(getYValue(series, item));
+                return new Double(getXValue(series, item));
             }
 
             public double getXValue(int series, int item) {
@@ -3178,7 +3181,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             public Number getY(int series, int item) {
-                return new Double(getXValue(series, item));
+                return new Double(getYValue(series, item));
             }
 
             public double getYValue(int series, int item) {

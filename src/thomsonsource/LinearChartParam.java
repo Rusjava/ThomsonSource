@@ -178,7 +178,7 @@ public class LinearChartParam {
      * Calculating min and max values of data
      */
     protected void setExtr() {
-        this.umax = (new BasicVector(this.data)).max();
-        this.umin = (new BasicVector(this.data)).min();
+        this.umax = (new BasicVector(data)).max();
+        this.umin = (new BasicVector(data)).min();
     }
 }
