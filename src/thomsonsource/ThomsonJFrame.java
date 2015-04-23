@@ -2143,7 +2143,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 8:
                         BrilForm.chartParam.setup(xp -> {
                             double x = xp * BrilForm.conversionValues[BrilForm.selectedItemIndexClone];
-                            BrilForm.ebunchclone.delgamma = x;
                             BrilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * ((xp - BrilForm.chartParam.getOffset())
                                     / BrilForm.chartParam.getStep() + 1) / BrilForm.chartParam.getSize()));
@@ -3169,20 +3168,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return data.getSize();
             }
 
-            public Number getY(int series, int item) {
+            public Number getX(int series, int item) {
                 return new Double(getYValue(series, item));
             }
 
-            public double getYValue(int series, int item) {
-                return (item - data.getSize() / 2) * data.getStep() + data.getOffset();
+            public double getXValue(int series, int item) {
+                return item * data.getStep() + data.getOffset();
             }
 
             @Override
-            public Number getX(int series, int item) {
+            public Number getY(int series, int item) {
                 return new Double(getXValue(series, item));
             }
 
-            public double getXValue(int series, int item) {
+            public double getYValue(int series, int item) {
                 return data.getData()[item];
             }
 

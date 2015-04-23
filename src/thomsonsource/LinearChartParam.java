@@ -163,6 +163,7 @@ public class LinearChartParam {
         this.size = size;
         this.step = step;
         this.offset = offset;
+        this.func = f;
         this.data = new double[size];
         for (int i = 0; i < size; i++) {   
             if (Thread.currentThread().isInterrupted()) {
@@ -171,8 +172,6 @@ public class LinearChartParam {
             this.data[i] = f.apply(step * i + offset);
         }
         setExtr();
-        
-        this.func = f;
     }
 
     /**
