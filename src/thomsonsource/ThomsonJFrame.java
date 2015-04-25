@@ -83,6 +83,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayNumberBox = new JTextField("1000");
         rayXAngleRangeBox = new JTextField("0.3");
         rayYAngleRangeBox = new JTextField("0.3");
+        gfmontecarlonumberbox = new JTextField("5000000");
+        brilPrecisionBox = new JTextField("0.0001");
+        xsizebox = new JTextField("300");
+        ysizebox = new JTextField("200");
+        xrangebox = new JTextField("20");
+        yrangebox = new JTextField("20");
+        xenergyrangebox = new JTextField("2000");
 
         /**
          * An auxiliary method giving the flux density in a given direction
@@ -1543,7 +1550,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             maxValueClone = maxValue;
             selectedItemIndexClone = selectedItemIndex;
         }
-
+        /*
+        * Saving the results into the text file
+        */
         public void save() {
             JFileChooser fo = new JFileChooser();
             fo.setDialogTitle(savetext);
@@ -1674,7 +1683,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private boolean working = false, rayWorking = false;
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
-    JTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox;
+    JTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox,
+            gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox, yrangebox, xenergyrangebox;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
@@ -2566,11 +2576,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
         // TODO add your handling code here:
-        JTextField xsizebox = new JTextField("300");
-        JTextField ysizebox = new JTextField("200");
-        JTextField xrangebox = new JTextField("20");
-        JTextField yrangebox = new JTextField("20");
-        JTextField xenergyrangebox = new JTextField("2000");
         Object[] message = {
             "x-size:", xsizebox,
             "y-size:", ysizebox,
@@ -2580,11 +2585,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            xsize = Integer.parseInt(xsizebox.getText());
-            ysize = Integer.parseInt(ysizebox.getText());
-            xstep = Float.parseFloat(xrangebox.getText()) / xsize;
-            ystep = Float.parseFloat(yrangebox.getText()) / ysize;
-            estep = Float.parseFloat(xenergyrangebox.getText()) / xsize;
+            xsize = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1000, xsizebox, "300", oldStrings));
+            ysize = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1000, ysizebox, "200", oldStrings));
+            xstep = MyTextUtilities.TestValueWithMemory(0, 100, xrangebox, "20", oldStrings) / xsize;
+            ystep = MyTextUtilities.TestValueWithMemory(0, 100, yrangebox, "20", oldStrings) / ysize;
+            estep = MyTextUtilities.TestValueWithMemory(0, 10000, xenergyrangebox, "2000", oldStrings) / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
@@ -2834,16 +2839,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
         // TODO add your handling code here:
-        JTextField gfmontecarlonumberbox = new JTextField("5000000");
-        JTextField brilPrecisionBox = new JTextField("0.0001");
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfmontecarlonumberbox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.npGeometricFactor = (int) Math.round(MyTextUtilities.TestValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
-            tsource.precision = MyTextUtilities.TestValue(1e-6, 1e-2, brilPrecisionBox, "0.0001");
+            tsource.npGeometricFactor = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1e7, gfmontecarlonumberbox, "5000000", oldStrings));
+            tsource.precision = MyTextUtilities.TestValueWithMemory(1e-6, 1e-2, brilPrecisionBox, "0.0001", oldStrings);
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
