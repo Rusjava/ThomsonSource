@@ -2200,7 +2200,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected void done() {
 
                 if (BrilCalc == null) {
-                    
+
                     /**
                      * Creating chart and plot dataset
                      */
@@ -2253,16 +2253,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void BrillianceCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcBoxActionPerformed
         // TODO add your handling code here:
-        String selectedItem = (String) BrillianceCalcBox.getSelectedItem();
-        for (int i = 0; i < BrilForm.numberOfItems; i++) {
-            if (selectedItem.equals(BrilForm.comboBoxValues[i])) {
-                BrilForm.selectedItemIndex = i;
-            }
-        }
-        Brilminvalueunitlabel.setText(BrilForm.valueUnitLabels[BrilForm.selectedItemIndex]);
-        Brilmaxvalueunitlabel.setText(BrilForm.valueUnitLabels[BrilForm.selectedItemIndex]);
-        Brilminvalue.setText(BrilForm.minValues[BrilForm.selectedItemIndex]);
-        Brilmaxvalue.setText(BrilForm.maxValues[BrilForm.selectedItemIndex]);
+        int sInd = BrillianceCalcBox.getSelectedIndex();
+        BrilForm.selectedItemIndex = sInd;
+        Brilminvalueunitlabel.setText(BrilForm.valueUnitLabels[sInd]);
+        Brilmaxvalueunitlabel.setText(BrilForm.valueUnitLabels[sInd]);
+        Brilminvalue.setText(BrilForm.minValues[sInd]);
+        Brilmaxvalue.setText(BrilForm.maxValues[sInd]);
         BrilForm.minValue = Float.parseFloat(Brilminvalue.getText());
         BrilForm.maxValue = Float.parseFloat(Brilmaxvalue.getText());
     }//GEN-LAST:event_BrillianceCalcBoxActionPerformed
@@ -2593,16 +2589,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void GFCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFCalcBoxActionPerformed
         // TODO add your handling code here:
-        String selectedItem = (String) GFCalcBox.getSelectedItem();
-        for (int i = 0; i < GFForm.numberOfItems; i++) {
-            if (selectedItem.equals(GFForm.comboBoxValues[i])) {
-                GFForm.selectedItemIndex = i;
-            }
-        }
-        GFminvalueunitlabel.setText(GFForm.valueUnitLabels[GFForm.selectedItemIndex]);
-        GFmaxvalueunitlabel.setText(GFForm.valueUnitLabels[GFForm.selectedItemIndex]);
-        GFminvalue.setText(GFForm.minValues[GFForm.selectedItemIndex]);
-        GFmaxvalue.setText(GFForm.maxValues[GFForm.selectedItemIndex]);
+        int sInd = GFCalcBox.getSelectedIndex();
+        GFForm.selectedItemIndex = sInd;
+        GFminvalueunitlabel.setText(GFForm.valueUnitLabels[sInd]);
+        GFmaxvalueunitlabel.setText(GFForm.valueUnitLabels[sInd]);
+        GFminvalue.setText(GFForm.minValues[sInd]);
+        GFmaxvalue.setText(GFForm.maxValues[sInd]);
         GFForm.minValue = Float.parseFloat(GFminvalue.getText());
         GFForm.maxValue = Float.parseFloat(GFmaxvalue.getText());
     }//GEN-LAST:event_GFCalcBoxActionPerformed
@@ -2726,7 +2718,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected void done() {
 
                 if (GFCalc == null) {
-                    
+
                     /**
                      * Creating chart and plot dataset
                      */
