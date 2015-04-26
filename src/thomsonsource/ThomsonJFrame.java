@@ -1517,9 +1517,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         public String[] valueUnitLabels, comboBoxValues, plotLabels;
         public String[] minValues, maxValues;
-        public int selectedItemIndex = 0, selectedItemIndexClone = 0;
-        public int numberOfItems = 7;
-        public double minValue = 0, maxValue = 35, minValueClone = 0, maxValueClone = 35;
+        public int selectedItemIndex, selectedItemIndexClone;
+        public int numberOfItems;
+        public double minValue, maxValue, minValueClone, maxValueClone;
         public double[] conversionValues;
         public ElectronBunch ebunchclone;
         public LaserPulse lpulseclone;
