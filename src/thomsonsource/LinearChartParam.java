@@ -23,7 +23,7 @@ import org.la4j.vector.dense.BasicVector;
  * Class for linear chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 0.1
+ * @version 1.0
  */
 public class LinearChartParam {
 
