@@ -521,13 +521,15 @@ public class ThompsonSource implements Cloneable {
             if (eSpread) {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
+                Vector v = new BasicVector(new double[]{thetax,
+                    thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
                 nprime.set(0, -ray[3]);
                 nprime.set(1, -ray[5]);
                 nprime.multiply(emult * eb.getSpread() / Math.sqrt(ray[3] * ray[3] + ray[5] * ray[5]));
                 nprime.add(new BasicVector(new double[]{0.0, 0.0, 1.0})).divide(nprime.fold(Vectors.mkEuclideanNormAccumulator()));
                 EMin = directionEnergy(n, nprime);
                 ray[10] = (Math.random() * (EMax * (1.0 + emult * ESpreadRange) - EMin) + EMin);
-                prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10])
+                prob = directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10])
                         * eb.angleDistribution(thetax, thetay) / prob0;
             } else {
                 ray[10] = (emult * (2 * Math.random() - 1.0) * ESpreadRange + 1.0) * directionEnergy(n, new BasicVector(new double[]{0.0, 0.0, 1.0}));
