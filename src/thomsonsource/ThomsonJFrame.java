@@ -2236,12 +2236,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            double e = x;
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
                                     / brilForm.chartParam.getStep() + 1) / brilForm.chartParam.getSize()));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    x) * 1e-15 * 1e-13;
+                                    e) * 1e-15 * 1e-13;
                         }, xsize, step, offset);
                         break;
                 }
