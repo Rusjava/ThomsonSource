@@ -14,7 +14,7 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Component id="BrillianceParam" max="32767" attributes="0"/>
-              <Component id="BrillianceCalcGraph" alignment="0" pref="746" max="32767" attributes="0"/>
+              <Component id="BrillianceCalcGraph" alignment="0" pref="753" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -73,12 +73,23 @@
                           <Component id="BrilProgressBar" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jAngleLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="angleValue" min="-2" pref="33" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="angleValueUnitLable" min="-2" pref="36" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jAngleLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="angleValue" min="-2" pref="33" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="angleValueUnitLable" min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="jEnergyLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="energyValue" min="-2" pref="33" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="energyValueUnitLable" min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace pref="16" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -95,17 +106,29 @@
                           <Component id="angleValueUnitLable" alignment="3" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="Brilminvaluelabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Brilminvalue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Brilminvalueunitlabel" alignment="3" max="32767" attributes="0"/>
-                          <Component id="Brilmaxvaluelabel" alignment="3" max="32767" attributes="0"/>
-                          <Component id="Brilmaxvalue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Brilmaxvalueunitlabel" alignment="3" max="32767" attributes="0"/>
-                          <Component id="jCheckBoxSpread" alignment="3" max="32767" attributes="0"/>
-                          <Component id="BrilProgressBar" pref="34" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="Brilminvaluelabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="Brilminvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="Brilminvalueunitlabel" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="Brilmaxvaluelabel" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="Brilmaxvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="Brilmaxvalueunitlabel" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="jCheckBoxSpread" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="BrilProgressBar" pref="34" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="energyValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="energyValueUnitLable" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="jEnergyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -114,7 +137,7 @@
             <Component class="javax.swing.JComboBox" name="BrillianceCalcBox">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="9">
+                  <StringArray count="10">
                     <StringItem index="0" value="Laser-electron angle"/>
                     <StringItem index="1" value="Delay"/>
                     <StringItem index="2" value="Z-shift"/>
@@ -124,6 +147,7 @@
                     <StringItem index="6" value="Waist semi-width"/>
                     <StringItem index="7" value="Energy spread"/>
                     <StringItem index="8" value="X-ray energy"/>
+                    <StringItem index="9" value="Observation angle"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -212,6 +236,26 @@
             <Component class="javax.swing.JLabel" name="angleValueUnitLable">
               <Properties>
                 <Property name="text" type="java.lang.String" value="mrad"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jEnergyLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Energy"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="energyValue">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="44"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="energyValueFocusLost"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="energyValueActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="energyValueUnitLable">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="kev"/>
               </Properties>
             </Component>
           </SubComponents>

@@ -144,17 +144,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * Objects for the brilliance calculation
          */
         this.brilForm = new CalcBoxParam("Brilliance");
-        this.brilForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>", "", "keV"};
-        this.brilForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
-            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3", "X-ray energy, keV"};
-        this.brilForm.comboBoxValues = new String[]{"Laser-electron angle", "Delay", "Z-shift",
-            "Beta function", "Emittance", "Rayleigh length", "Waist semi-width",
-            "Energy spread", "X-ray energy"};
-        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.6e-16};
-        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30"};
-        this.brilForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46"};
+        this.brilForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad",
+            "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
+        this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
+            "X-ray energy, keV", "Observation angle, mrad"};
+        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.6e-16, 1e-3};
+        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30", "0"};
+        this.brilForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
-        this.brilForm.numberOfItems = 9;
+        this.brilForm.numberOfItems = 10;
 
         /**
          * Objects for the GF calculation
@@ -163,8 +162,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
-        this.gfForm.comboBoxValues = new String[]{"Laser-electron angle", "Delay", "Z-shift",
-            "Beta function", "Emittance", "Rayleigh length", "Waist semi-width"};
         this.gfForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6};
         this.gfForm.minValues = new String[]{"0", "0", "0", "10", "3", "2.7", "20"};
         this.gfForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100"};
@@ -206,6 +203,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jAngleLabel = new javax.swing.JLabel();
         angleValue = new javax.swing.JTextField();
         angleValueUnitLable = new javax.swing.JLabel();
+        jEnergyLabel = new javax.swing.JLabel();
+        energyValue = new javax.swing.JTextField();
+        energyValueUnitLable = new javax.swing.JLabel();
         BrillianceCalcGraph = new javax.swing.JPanel();
         GfCalc = new javax.swing.JFrame();
         GFParam = new javax.swing.JPanel();
@@ -317,7 +317,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
-        BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy" }));
+        BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
         BrillianceCalcBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BrillianceCalcBoxActionPerformed(evt);
@@ -393,6 +393,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         angleValueUnitLable.setText("mrad");
 
+        jEnergyLabel.setText("Energy");
+
+        energyValue.setText("44");
+        energyValue.setEnabled(false);
+        energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                energyValueFocusLost(evt);
+            }
+        });
+        energyValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                energyValueActionPerformed(evt);
+            }
+        });
+
+        energyValueUnitLable.setText("kev");
+
         javax.swing.GroupLayout BrillianceParamLayout = new javax.swing.GroupLayout(BrillianceParam);
         BrillianceParam.setLayout(BrillianceParamLayout);
         BrillianceParamLayout.setHorizontalGroup(
@@ -425,12 +442,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(BrillianceCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(BrilProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addComponent(jAngleLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(angleValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(angleValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addComponent(jAngleLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(angleValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(angleValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addComponent(jEnergyLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(energyValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(energyValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         BrillianceParamLayout.setVerticalGroup(
             BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -444,16 +469,24 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     .addComponent(angleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(angleValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Brilminvaluelabel)
-                    .addComponent(Brilminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Brilminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Brilmaxvaluelabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Brilmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Brilmaxvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jCheckBoxSpread, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(BrilProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
-                .addGap(8, 8, 8))
+                .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Brilminvaluelabel)
+                            .addComponent(Brilminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Brilminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Brilmaxvaluelabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Brilmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Brilmaxvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jCheckBoxSpread, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(BrilProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+                        .addGap(8, 8, 8))
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(energyValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(energyValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jEnergyLabel))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         BrillianceCalcGraph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Spectral brilliance", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -476,7 +509,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceCalcLayout.setHorizontalGroup(
             BrillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(BrillianceParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 746, Short.MAX_VALUE)
+            .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
         );
         BrillianceCalcLayout.setVerticalGroup(
             BrillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1542,7 +1575,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
      */
     class CalcBoxParam {
 
-        public String[] valueUnitLabels, comboBoxValues, plotLabels;
+        public String[] valueUnitLabels, plotLabels;
         public String[] minValues, maxValues;
         public int selectedItemIndex, selectedItemIndexClone;
         public int numberOfItems;
@@ -1559,7 +1592,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public LinearChartParam chartParam;
         ChartPanel chartPanel = null;
         JFreeChart chart = null;
-        double angle = 0, angleclone;
+        double angle = 0, angleclone, energy = 44, energyclone;
 
         public CalcBoxParam(String key) {
             super();
@@ -1580,6 +1613,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             minValueClone = minValue;
             maxValueClone = maxValue;
             angleclone = angle;
+            energyclone = energy;
             selectedItemIndexClone = selectedItemIndex;
         }
         /*
@@ -2235,8 +2269,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 8:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            double e = x;
+                            double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
+                                    / brilForm.chartParam.getStep() + 1) / brilForm.chartParam.getSize()));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e) * 1e-15 * 1e-13;
+                        }, xsize, step, offset);
+                        break;
+                    case 9:
+                        brilForm.chartParam.setup(xp -> {
+                            double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            double e = brilForm.energyclone * 1.6e-16;
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
                                     / brilForm.chartParam.getStep() + 1) / brilForm.chartParam.getSize()));
@@ -2286,6 +2331,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         Brilmaxvalue.setText(brilForm.maxValues[sInd]);
         brilForm.minValue = Float.parseFloat(Brilminvalue.getText());
         brilForm.maxValue = Float.parseFloat(Brilmaxvalue.getText());
+        if (sInd == 9) {
+            angleValue.setEnabled(false);
+            energyValue.setEnabled(true);
+        } else {
+            angleValue.setEnabled(true);
+            energyValue.setEnabled(false);
+        }
     }//GEN-LAST:event_BrillianceCalcBoxActionPerformed
 
     private void BrilmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilmaxvalueActionPerformed
@@ -2876,6 +2928,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         brilForm.angle = MyTextUtilities.TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
     }//GEN-LAST:event_angleValueActionPerformed
 
+    private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
+        // TODO add your handling code here:
+        brilForm.energy = MyTextUtilities.TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+    }//GEN-LAST:event_energyValueFocusLost
+
+    private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
+        // TODO add your handling code here:
+        brilForm.energy = MyTextUtilities.TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+    }//GEN-LAST:event_energyValueActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -3248,6 +3310,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel elengthlabel;
     private javax.swing.JLabel elengthunitlabel;
     private javax.swing.JTextField elengthvalue;
+    private javax.swing.JTextField energyValue;
+    private javax.swing.JLabel energyValueUnitLable;
     private javax.swing.JLabel energylabel;
     private javax.swing.JLabel energyunitlabel;
     private javax.swing.JTextField energyvalue;
@@ -3263,6 +3327,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jAngleLabel;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
+    private javax.swing.JLabel jEnergyLabel;
     private javax.swing.JMenuBar jMenuBarMain;
     private javax.swing.JMenu jMenuCalc;
     private javax.swing.JMenu jMenuFile;
