@@ -2148,9 +2148,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 double step = (brilForm.maxValueClone - brilForm.minValueClone) / (xsize - 1);
                 double offset = brilForm.minValueClone;
-                if (isCancelled()) {
-                    return null;
-                }
                 switch (brilForm.selectedItemIndexClone) {
                     case 0:
                         brilForm.chartParam.setup(xp -> {
@@ -2688,9 +2685,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         gfForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                if (isCancelled()) {
-                    return null;
-                }
                 double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
                 double offset = brilForm.minValueClone;
                 switch (gfForm.selectedItemIndexClone) {
