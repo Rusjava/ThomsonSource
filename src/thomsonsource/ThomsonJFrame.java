@@ -1628,7 +1628,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Saving the results into the text file
          */
-
         public void save() {
             JFileChooser fo = new JFileChooser();
             fo.setDialogTitle(savetext);
@@ -1660,7 +1659,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Updatin or creating chart and chartpanel
          */
-
         public void updateGraph(JPanel panel, String label) {
             if (chartPanel == null) {
                 /**
@@ -1685,6 +1683,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 chart.fireChartChanged();
             }
             working = false;
+        }
+        /*
+        * Canceling worker
+        */
+        public void cancel () {
+            working = false;
+            worker.cancel(true);
         }
     }
 
@@ -2137,8 +2142,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         // Checking if already running
         if (brilForm.working) {
-            brilForm.working = false;
-            brilForm.worker.cancel(true);
+            brilForm.cancel();
             BrillianceCalcStart.setText("Calculate");
             BrillianceCalcSave.setEnabled(true);
             return;
@@ -2299,7 +2303,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 return null;
             }
-
             @Override
             protected void done() {
                 brilForm.updateGraph(BrillianceCalcGraph,
@@ -2307,7 +2310,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 BrillianceCalcStart.setText("Calculate");
                 BrillianceCalcSave.setEnabled(true);
             }
-
             /**
              * Updating progress bar
              *
@@ -2676,8 +2678,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         // Checking if already running
         if (gfForm.working) {
-            gfForm.working = false;
-            gfForm.worker.cancel(true);
+            gfForm.cancel();
             GFCalcStart.setText("Calculate");
             GFCalcSave.setEnabled(true);
             return;
@@ -2687,7 +2688,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFCalcStart.setText("Terminate");
         GFCalcSave.setEnabled(false);
         gfForm.initialize();
-
         /**
          * Calculating data array. Using SwingWorker class
          */
@@ -2781,14 +2781,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 return null;
             }
-
             @Override
             protected void done() {
                 gfForm.updateGraph(GFCalcGraph, "");
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
             }
-
             /**
              * Updating progress bar
              *
