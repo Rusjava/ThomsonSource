@@ -22,7 +22,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  * A class for laser pulse properties. All properties are in the SI system of units
  * @author Ruslan feshchenko
- * @version 1.0
+ * @version 1.1
  */
 
 public class LaserPulse implements Cloneable {
