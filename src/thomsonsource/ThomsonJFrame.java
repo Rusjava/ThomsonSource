@@ -2942,7 +2942,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
-        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            Runtime.getRuntime().exec("\\lib\\ShadowFileConverter.jar");
+        } catch (IOException ex) {
+            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItemConvActionPerformed
 
     /**
