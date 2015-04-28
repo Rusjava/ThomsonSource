@@ -303,6 +303,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuShadow = new javax.swing.JMenu();
         jMenuItemSource = new javax.swing.JMenuItem();
         jMenuItemSourceParam = new javax.swing.JMenuItem();
+        jMenuItemConv = new javax.swing.JMenuItem();
         jMenuOptions = new javax.swing.JMenu();
         jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemNumerical = new javax.swing.JMenuItem();
@@ -1394,7 +1395,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1491,6 +1492,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuShadow.add(jMenuItemSourceParam);
+
+        jMenuItemConv.setText("Converter...");
+        jMenuItemConv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemConvActionPerformed(evt);
+            }
+        });
+        jMenuShadow.add(jMenuItemConv);
 
         jMenuBarMain.add(jMenuShadow);
 
@@ -2932,6 +2941,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         brilForm.energy = MyTextUtilities.TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
+    private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItemConvActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -3328,6 +3341,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItemAbout;
     private javax.swing.JMenuItem jMenuItemBrilliance;
+    private javax.swing.JMenuItem jMenuItemConv;
     private javax.swing.JMenuItem jMenuItemExit;
     private javax.swing.JMenuItem jMenuItemGeometricFactor;
     private javax.swing.JMenuItem jMenuItemLoadParam;
