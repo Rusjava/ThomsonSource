@@ -913,7 +913,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     .addComponent(ebetayunitlabel)))
         );
 
-        jPanel_ph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Laser bunch parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        jPanel_ph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Laser pulse parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel_ph.setToolTipText("Input parameters of the laser bunch");
         jPanel_ph.setPreferredSize(new java.awt.Dimension(223, 350));
 

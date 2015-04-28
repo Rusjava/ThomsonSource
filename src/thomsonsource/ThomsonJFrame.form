@@ -1074,7 +1074,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder justification="2" title="Laser bunch parameters"/>
+                    <TitledBorder justification="2" title="Laser pulse parameters"/>
                   </Border>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="Input parameters of the laser bunch"/>
