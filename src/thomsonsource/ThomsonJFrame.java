@@ -90,6 +90,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         xrangebox = new JTextField("20");
         yrangebox = new JTextField("20");
         xenergyrangebox = new JTextField("2000");
+        rayMinEnergyBox = new JTextField("36");
+        rayEnergyRangeBox = new JTextField("10");
 
         /**
          * An auxiliary method giving the flux density in a given direction
@@ -1628,6 +1630,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Saving the results into the text file
          */
+
         public void save() {
             JFileChooser fo = new JFileChooser();
             fo.setDialogTitle(savetext);
@@ -1659,6 +1662,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Updatin or creating chart and chartpanel
          */
+
         public void updateGraph(JPanel panel, String label) {
             if (chartPanel == null) {
                 /**
@@ -1685,9 +1689,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             working = false;
         }
         /*
-        * Canceling worker
-        */
-        public void cancel () {
+         * Canceling worker
+         */
+
+        public void cancel() {
             working = false;
             worker.cancel(true);
         }
@@ -1792,8 +1797,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private boolean working = false, rayWorking = false;
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
-    JTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox,
-            gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox, yrangebox, xenergyrangebox;
+    JTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
+            gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox,
+            yrangebox, xenergyrangebox;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
@@ -2303,6 +2309,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 return null;
             }
+
             @Override
             protected void done() {
                 brilForm.updateGraph(BrillianceCalcGraph,
@@ -2310,6 +2317,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 BrillianceCalcStart.setText("Calculate");
                 BrillianceCalcSave.setEnabled(true);
             }
+
             /**
              * Updating progress bar
              *
@@ -2781,12 +2789,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 return null;
             }
+
             @Override
             protected void done() {
                 gfForm.updateGraph(GFCalcGraph, "");
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
             }
+
             /**
              * Updating progress bar
              *
@@ -2887,13 +2897,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         Object[] message = {
             "Numner of rays:", rayNumberBox,
             "X-range, mrad", rayXAngleRangeBox,
-            "Y-range, mrad", rayYAngleRangeBox
+            "Y-range, mrad", rayYAngleRangeBox,
+            "Minimal energy, kev", rayMinEnergyBox,
+            "Energy range, kev", rayEnergyRangeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
+            double eMin = MyTextUtilities.TestValueWithMemory(10, 50, rayMinEnergyBox, "35", oldStrings) * 1.6e-16;
             numberOfRays = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1e6, rayNumberBox, "1000", oldStrings));
-            tsource.setAngleRange(MyTextUtilities.TestValueWithMemory(0, 30, rayXAngleRangeBox, "5", oldStrings) * 1e-3,
-                    MyTextUtilities.TestValueWithMemory(0, 30, rayYAngleRangeBox, "5", oldStrings) * 1e-3);
+            tsource.setRayRanges(MyTextUtilities.TestValueWithMemory(0, 30, rayXAngleRangeBox, "5", oldStrings) * 1e-3,
+                    MyTextUtilities.TestValueWithMemory(0, 30, rayYAngleRangeBox, "5", oldStrings) * 1e-3, eMin,
+                    eMin + MyTextUtilities.TestValueWithMemory(0, 30, rayEnergyRangeBox, "10", oldStrings) * 1.6e-16);
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 

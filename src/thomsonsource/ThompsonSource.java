@@ -54,6 +54,16 @@ public class ThompsonSource implements Cloneable {
      * Angle range for rays exported for Shadow in the Y-direction
      */
     private double rayYAnglerange = 0.05;
+    
+    /**
+     * Min ray energy
+     */
+    private double minEnergy = 36*1e-16;
+    
+    /**
+     * Max ray energy
+     */
+    private double maxEnergy = 46*1e-16;
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
@@ -496,14 +506,13 @@ public class ThompsonSource implements Cloneable {
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
-        double prob0, prob, ESpreadRange, EMax, EMin, emult = 2, mult = 2, innerProduct;
+        double prob0, prob, EMax, mult = 2, innerProduct;
         EMax = directionEnergy(n, n);
         prob0 = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax);
         if (eSpread) {
             prob0 *= eb.angleDistribution(0, 0);
         }
         do {
-            Vector nprime = new BasicVector(new double[]{0.0, 0.0, 0.0});
             ray[0] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
             ray[2] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
             ray[1] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.length, lp.length);
@@ -517,22 +526,13 @@ public class ThompsonSource implements Cloneable {
             n.set(2, 1.0);
             n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
             ray[4] = n.get(2);
-            ESpreadRange = 2 * eb.delgamma / (1 + eb.getGamma() * eb.getGamma() * (ray[3] * ray[3] + ray[5] * ray[5]));
+            ray[10] = Math.random() * (maxEnergy  - minEnergy) + minEnergy;
             if (eSpread) {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
-                Vector v = new BasicVector(new double[]{thetax,
-                    thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
-                nprime.set(0, -ray[3]);
-                nprime.set(1, -ray[5]);
-                nprime.multiply(emult * eb.getSpread() / Math.sqrt(ray[3] * ray[3] + ray[5] * ray[5]));
-                nprime.add(new BasicVector(new double[]{0.0, 0.0, 1.0})).divide(nprime.fold(Vectors.mkEuclideanNormAccumulator()));
-                EMin = directionEnergy(n, nprime);
-                ray[10] = (Math.random() * (EMax * (1.0 + emult * ESpreadRange) - EMin) + EMin);
-                prob = directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10])
-                        * eb.angleDistribution(thetax, thetay) / prob0;
+                Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
+                prob = directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]) * eb.angleDistribution(thetax, thetay) / prob0;
             } else {
-                ray[10] = (emult * (2 * Math.random() - 1.0) * ESpreadRange + 1.0) * directionEnergy(n, new BasicVector(new double[]{0.0, 0.0, 1.0}));
                 prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]) / prob0;
             }
         } while (prob < Math.random() || (new Double(prob)).isNaN());
@@ -560,13 +560,17 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Setting angle range for the Shadow ray generation
+     * Setting ranges for the Shadow ray generation
      *
      * @param xangle angle in the X direction
      * @param yangle angle in the Y direction
+     * @param minEn minimum ray energy
+     * @param maxEn maximum ray energy
      */
-    public void setAngleRange(double xangle, double yangle) {
+    public void setRayRanges(double xangle, double yangle, double minEn, double maxEn) {
         rayXAnglerange = xangle;
         rayYAnglerange = yangle;
+        minEnergy = minEn;
+        maxEnergy = maxEn;
     }
 }
