@@ -2598,10 +2598,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     //Getting a ray
                     double[] ray = tsource.getRay();
                     //Units conversions
-                    ray[0] = 1e2 * ray[0];
-                    ray[1] = 1e2 * ray[1];
-                    ray[2] = 1e2 * ray[2];
-                    ray[10] = 1e-2 * ray[10] / 3.201e-26;
+                    ray[0] *= 1e2;
+                    ray[1] *= 1e2;
+                    ray[2] *= 1e2;
+                    ray[10] *= 1e-2 / 3.201e-26;
+                    ray[18] *= 1e10;
+                    ray[19] *= 1e2;
+                    ray[25] *= 1e-2 / 3.201e-26;
+                    ray[26] *= 1e-2 / 3.201e-26;
+                    ray[27] *= 1e-2 / 3.201e-26;
+                    ray[28] *= 1e-2 / 3.201e-26;
                     shadowFile.write(ray);
                     setStatusBar((int) 100 * i / number);
                 }

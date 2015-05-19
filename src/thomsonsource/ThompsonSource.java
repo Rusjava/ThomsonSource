@@ -43,7 +43,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * The number of columns in Shadow files
      */
-    public static final int NUMBER_OF_COLUMNS = 18;
+    public static final int NUMBER_OF_COLUMNS = 33;
 
     /**
      * Angle range for rays exported for Shadow in the X-direction
@@ -556,6 +556,19 @@ public class ThompsonSource implements Cloneable {
         ray[15] = 0;
         ray[16] = 0;
         ray[17] = 0;
+        ray[18] = 2 * Math.PI / ray[10];
+        ray[19] = Math.sqrt(ray[0] * ray[0] + ray[2] * ray[2]);
+        ray[20] = Math.sqrt(ray[3] * ray[3] + ray[5] * ray[5]);
+        ray[21] = 1;
+        ray[22] = 1;
+        ray[23] = 1;
+        ray[24] = 0;
+        ray[25] = ray[10];
+        ray[26] = ray[10] * ray[3];
+        ray[27] = ray[10] * ray[4];
+        ray[28] = ray[10] * ray[5];
+        ray[29] = 1;
+        ray[30] = 1;
         return ray;
     }
 
