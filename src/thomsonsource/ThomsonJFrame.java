@@ -2607,8 +2607,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     ray[25] *= 1e-2 / 3.201e-26;
                     ray[26] *= 1e-2 / 3.201e-26;
                     ray[27] *= 1e-2 / 3.201e-26;
-                    ray[28] *= 1e-2 / 3.201e-26;
-                    shadowFile.write(ray);*/
+                    ray[28] *= 1e-2 / 3.201e-26;*/
+                    shadowFile.write(ray);
                     setStatusBar((int) 100 * i / number);
                 }
                 shadowFile.close();
