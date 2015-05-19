@@ -119,7 +119,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9 * tsource.geometricFactor * tsource.directionFrequencyFlux(n, v, e * 1.6e-19) / 1e10;
+                return 1e-9 * tsource.geometricFactor * tsource.directionFrequencyFlux(n, v, e * 1.602e-19) / 1e10;
             }
         };
 
@@ -134,7 +134,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return tsource.directionEnergy(n, v) / 1.6e-16;
+                return tsource.directionEnergy(n, v) / 1.602e-16;
             }
         };
         /**
@@ -151,7 +151,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
-        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.6e-16, 1e-3};
+        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.602e-16, 1e-3};
         this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30", "0"};
         this.brilForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
@@ -1808,7 +1808,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(MyTextUtilities.TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * 1.6e-19);
+        lpulse.setPhotonEnergy(MyTextUtilities.TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * 1.602e-19);
     }//GEN-LAST:event_phenergyvalueActionPerformed
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
@@ -1818,17 +1818,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(MyTextUtilities.TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * 1.6e-19);
+        lpulse.setPhotonEnergy(MyTextUtilities.TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * 1.602e-19);
     }//GEN-LAST:event_phenergyvalueFocusLost
 
     private void chargevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargevalueActionPerformed
         // TODO add your handling code here:
-        ebunch.number = MyTextUtilities.TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / 1.6e-10;
+        ebunch.number = MyTextUtilities.TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / 1.602e-10;
     }//GEN-LAST:event_chargevalueActionPerformed
 
     private void chargevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_chargevalueFocusLost
         // TODO add your handling code here:
-        ebunch.number = MyTextUtilities.TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / 1.6e-10;
+        ebunch.number = MyTextUtilities.TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / 1.602e-10;
     }//GEN-LAST:event_chargevalueFocusLost
 
     private void spreadvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spreadvalueActionPerformed
@@ -2171,7 +2171,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 0:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.lpulseclone.direction.set(2, Math.cos(x));
                             brilForm.lpulseclone.direction.set(1, Math.sin(x));
@@ -2186,7 +2186,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 1:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.lpulseclone.delay = x;
                             setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
@@ -2199,7 +2199,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 2:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.shift.set(2, x);
                             brilForm.tsourceclone.calculateTotalFlux();
@@ -2213,7 +2213,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 3:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.betax = x;
                             brilForm.ebunchclone.betay = x;
@@ -2228,7 +2228,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 4:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.eps = x;
                             brilForm.tsourceclone.calculateTotalFlux();
@@ -2242,7 +2242,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 5:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.lpulseclone.rlength = x;
                             brilForm.tsourceclone.calculateTotalFlux();
@@ -2256,7 +2256,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 6:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.lpulseclone.setWidth(x);
                             brilForm.ebunchclone.setxWidth(x);
@@ -2272,7 +2272,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 7:
                         brilForm.chartParam.setup(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.6e-16;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * 1.602e-16;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.delgamma = x;
                             setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
@@ -2297,7 +2297,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 9:
                         brilForm.chartParam.setup(xp -> {
                             double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            double e = brilForm.energyclone * 1.6e-16;
+                            double e = brilForm.energyclone * 1.602e-16;
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
                                     / brilForm.chartParam.getStep() + 1) / brilForm.chartParam.getSize()));
@@ -2413,7 +2413,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 fm.format("%s %.2f", paramNames[0] + ": ", ebunch.getGamma() * 0.512);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[1] + ": ", ebunch.number * 1.6e-10);
+                fm.format("%s %.2f", paramNames[1] + ": ", ebunch.number * 1.602e-10);
                 pw.println(fm);
                 fm = new Formatter();
                 fm.format("%s %.2f", paramNames[2] + ": ", ebunch.delgamma);
@@ -2431,7 +2431,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 fm.format("%s %.2f", paramNames[6] + ": ", ebunch.betay * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[7] + ": ", lpulse.getPhotonEnergy() / 1.6e-19);
+                fm.format("%s %.2f", paramNames[7] + ": ", lpulse.getPhotonEnergy() / 1.602e-19);
                 pw.println(fm);
                 fm = new Formatter();
                 fm.format("%s %.2f", paramNames[8] + ": ", lpulse.getPulseEnergy() * 1e3);
@@ -2502,7 +2502,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     energyvalue.setText(tss);
                                     break;
                                 case 1:
-                                    ebunch.number = Float.parseFloat(tss) / 1.6e-19;
+                                    ebunch.number = Float.parseFloat(tss) / 1.602e-19;
                                     chargevalue.setText(tss);
                                     break;
                                 case 2:
@@ -2526,7 +2526,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     ebetayvalue.setText(tss);
                                     break;
                                 case 7:
-                                    lpulse.setPhotonEnergy(Float.parseFloat(tss) * 1.6e-19);
+                                    lpulse.setPhotonEnergy(Float.parseFloat(tss) * 1.602e-19);
                                     phenergyvalue.setText(tss);
                                     break;
                                 case 8:
@@ -2601,14 +2601,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     ray[0] *= 1e2;
                     ray[1] *= 1e2;
                     ray[2] *= 1e2;
-                    ray[10] *= 1e-2 / 3.201e-26;
-                    ray[18] *= 1e10;
+                    ray[10] *= 1e-2 / LaserPulse.HC;
+                    /*ray[18] *= 1e10;
                     ray[19] *= 1e2;
                     ray[25] *= 1e-2 / 3.201e-26;
                     ray[26] *= 1e-2 / 3.201e-26;
                     ray[27] *= 1e-2 / 3.201e-26;
                     ray[28] *= 1e-2 / 3.201e-26;
-                    shadowFile.write(ray);
+                    shadowFile.write(ray);*/
                     setStatusBar((int) 100 * i / number);
                 }
                 shadowFile.close();
@@ -2909,11 +2909,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            double eMin = MyTextUtilities.TestValueWithMemory(10, 50, rayMinEnergyBox, "35", oldStrings) * 1.6e-16;
+            double eMin = MyTextUtilities.TestValueWithMemory(10, 50, rayMinEnergyBox, "35", oldStrings) * 1.602e-16;
             numberOfRays = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1e6, rayNumberBox, "1000", oldStrings));
             tsource.setRayRanges(MyTextUtilities.TestValueWithMemory(0, 30, rayXAngleRangeBox, "5", oldStrings) * 1e-3,
                     MyTextUtilities.TestValueWithMemory(0, 30, rayYAngleRangeBox, "5", oldStrings) * 1e-3, eMin,
-                    eMin + MyTextUtilities.TestValueWithMemory(0, 30, rayEnergyRangeBox, "10", oldStrings) * 1.6e-16);
+                    eMin + MyTextUtilities.TestValueWithMemory(0, 30, rayEnergyRangeBox, "10", oldStrings) * 1.602e-16);
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 

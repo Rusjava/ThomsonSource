@@ -196,7 +196,7 @@ public class ElectronBunch implements Cloneable {
     /**
      * Number of electrons in the bunch
      */
-    public double number = 1 / 1.6e-10;
+    public double number = 1 / 1.602e-10;
 
     /**
      * Relative electron bunch energy spread

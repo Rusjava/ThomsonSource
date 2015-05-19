@@ -43,7 +43,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * The number of columns in Shadow files
      */
-    public static final int NUMBER_OF_COLUMNS = 33;
+    public static final int NUMBER_OF_COLUMNS = 18;
 
     /**
      * Angle range for rays exported for Shadow in the X-direction
@@ -58,12 +58,12 @@ public class ThompsonSource implements Cloneable {
     /**
      * Min ray energy
      */
-    private double minEnergy = 36 * 1e-16;
+    private double minEnergy = 36 * 1.602e-16;
 
     /**
      * Max ray energy
      */
-    private double maxEnergy = 46 * 1e-16;
+    private double maxEnergy = 46 * 1.602e-16;
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
@@ -556,7 +556,7 @@ public class ThompsonSource implements Cloneable {
         ray[15] = 0;
         ray[16] = 0;
         ray[17] = 0;
-        ray[18] = 2 * Math.PI / ray[10];
+        /*ray[18] = 2 * Math.PI / ray[10];
         ray[19] = Math.sqrt(ray[0] * ray[0] + ray[2] * ray[2]);
         ray[20] = Math.sqrt(ray[3] * ray[3] + ray[5] * ray[5]);
         ray[21] = 1;
@@ -568,7 +568,7 @@ public class ThompsonSource implements Cloneable {
         ray[27] = ray[10] * ray[4];
         ray[28] = ray[10] * ray[5];
         ray[29] = 1;
-        ray[30] = 1;
+        ray[30] = 1;*/
         return ray;
     }
 
