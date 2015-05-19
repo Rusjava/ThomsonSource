@@ -54,16 +54,16 @@ public class ThompsonSource implements Cloneable {
      * Angle range for rays exported for Shadow in the Y-direction
      */
     private double rayYAnglerange = 0.05;
-    
+
     /**
      * Min ray energy
      */
-    private double minEnergy = 36*1e-16;
-    
+    private double minEnergy = 36 * 1e-16;
+
     /**
      * Max ray energy
      */
-    private double maxEnergy = 46*1e-16;
+    private double maxEnergy = 46 * 1e-16;
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
@@ -526,7 +526,7 @@ public class ThompsonSource implements Cloneable {
             n.set(2, 1.0);
             n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
             ray[4] = n.get(2);
-            ray[10] = Math.random() * (maxEnergy  - minEnergy) + minEnergy;
+            ray[10] = Math.random() * (maxEnergy - minEnergy) + minEnergy;
             if (eSpread) {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);

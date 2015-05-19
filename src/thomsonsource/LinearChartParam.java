@@ -113,7 +113,7 @@ public class LinearChartParam {
     public double getUMax() {
         return umax;
     }
-    
+
     /**
      * Returning minimum plot value
      *
@@ -165,7 +165,7 @@ public class LinearChartParam {
         this.offset = offset;
         this.func = f;
         this.data = new double[size];
-        for (int i = 0; i < size; i++) {   
+        for (int i = 0; i < size; i++) {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }

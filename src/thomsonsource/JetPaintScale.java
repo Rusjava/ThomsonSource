@@ -23,69 +23,73 @@ import org.jfree.util.PublicCloneable;
 import org.jfree.chart.renderer.PaintScale;
 
 /**
- * A jet paint scale 
+ * A jet paint scale
+ *
  * @author Ruslan Feshchenko
  * @version 1.0
  */
+public class JetPaintScale
+        implements PaintScale, PublicCloneable, Serializable {
 
-  public class JetPaintScale 
-          implements PaintScale, PublicCloneable, Serializable {
- 
-       /** The lower bound. */
-      private double lowerBound;
-      
-       /** The upper bound. */
-      private double upperBound;
-      
-       public JetPaintScale() {
-           this(0.0, 1.0);
-      }
-       
-       public JetPaintScale(double lowerBound, double upperBound) {
-          if (lowerBound >= upperBound) {
-              throw new IllegalArgumentException(
-                       "Requires lowerBound < upperBound.");
-           }
-           this.lowerBound = lowerBound;
-           this.upperBound = upperBound;
-       }
-       
-      @Override
-       public double getLowerBound() {
-           return this.lowerBound;
-       }
-   
-      @Override
-      public double getUpperBound() {
-          return this.upperBound;
-      }
-  
-      @Override
-      public Paint getPaint(double value) {
-          double v = Math.min(Math.max(value, this.lowerBound), this.upperBound);
-          float h = (float)(1.0f-(v - this.lowerBound) / (this.upperBound 
-                  - this.lowerBound));
-          return Color.getHSBColor(h, 1f, 0.8f);
-      }
-      
-      @Override
-      public boolean equals(Object obj) {
-          if (obj == this) {
-              return true;
-          }
-          
-          JetPaintScale that = (JetPaintScale) obj;
-          
-          if (!(obj instanceof JetPaintScale) | (this.lowerBound != that.lowerBound) | (this.upperBound != that.upperBound)) {
-              return false;
-          }
-          
-          return true;    
-     }
- 
-      @Override
-      public Object clone() throws CloneNotSupportedException {
-          return super.clone();
-      }
-      
-  }
+    /**
+     * The lower bound.
+     */
+    private double lowerBound;
+
+    /**
+     * The upper bound.
+     */
+    private double upperBound;
+
+    public JetPaintScale() {
+        this(0.0, 1.0);
+    }
+
+    public JetPaintScale(double lowerBound, double upperBound) {
+        if (lowerBound >= upperBound) {
+            throw new IllegalArgumentException(
+                    "Requires lowerBound < upperBound.");
+        }
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
+
+    @Override
+    public double getLowerBound() {
+        return this.lowerBound;
+    }
+
+    @Override
+    public double getUpperBound() {
+        return this.upperBound;
+    }
+
+    @Override
+    public Paint getPaint(double value) {
+        double v = Math.min(Math.max(value, this.lowerBound), this.upperBound);
+        float h = (float) (1.0f - (v - this.lowerBound) / (this.upperBound
+                - this.lowerBound));
+        return Color.getHSBColor(h, 1f, 0.8f);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        JetPaintScale that = (JetPaintScale) obj;
+
+        if (!(obj instanceof JetPaintScale) | (this.lowerBound != that.lowerBound) | (this.upperBound != that.upperBound)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+}
