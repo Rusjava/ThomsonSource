@@ -95,6 +95,11 @@ public class ThompsonSource implements Cloneable {
      * taken into account
      */
     public boolean eSpread = false;
+    
+    /**
+     * Flux in the phase space volume of ray generation
+     */
+    public double partialFlux;
 
     private LaserPulse lp;
     private ElectronBunch eb;
@@ -506,11 +511,15 @@ public class ThompsonSource implements Cloneable {
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
-        double prob0, prob, EMax, mult = 2, innerProduct;
+        double prob0, prob, EMax, mult = 2, innerProduct, factor, sum=0;
         EMax = directionEnergy(n, n);
+        factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
+                * Math.max(eb.length, lp.length) * 4 * rayXAnglerange * rayYAnglerange
+                * (maxEnergy - minEnergy);
         prob0 = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax);
         if (eSpread) {
             prob0 *= eb.angleDistribution(0, 0);
+            factor *= 4 * mult * mult * eb.getXSpread() * eb.getYSpread();
         }
         do {
             ray[0] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
@@ -531,11 +540,12 @@ public class ThompsonSource implements Cloneable {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
                 Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
-                prob = directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]) * eb.angleDistribution(thetax, thetay) / prob0;
+                prob = directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]) * eb.angleDistribution(thetax, thetay);
             } else {
-                prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]) / prob0;
+                prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
             }
-        } while (prob < Math.random() || (new Double(prob)).isNaN());
+            sum += prob;
+        } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         innerProduct = n.innerProduct(n0);
@@ -550,6 +560,7 @@ public class ThompsonSource implements Cloneable {
         //Setting other columns
         ray[9] = 1.0;
         ray[13] = Math.random() * 2 * Math.PI;
+        partialFlux = sum * factor;
         return ray;
     }
 

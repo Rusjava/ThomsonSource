@@ -151,7 +151,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
-        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0,  ElectronBunch.E * 1e3, 1e-3};
+        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
         this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30", "0"};
         this.brilForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
@@ -1590,7 +1590,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public String[] minValues, maxValues;
         public int selectedItemIndex, selectedItemIndexClone;
         public int numberOfItems;
-        public double minValue, maxValue, minValueClone, maxValueClone;
+        public double minValue, maxValue = 35, minValueClone, maxValueClone;
         public double[] conversionValues;
         public ElectronBunch ebunchclone;
         public LaserPulse lpulseclone;
@@ -1784,6 +1784,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private double xstep, ystep, estep, hoffset = 0; /* Step in x or y direction */
 
     private int numberOfRays = 1000; /* Number of rays exported for Shadow */
+
+    private double flux = 0;
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -2502,7 +2504,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     energyvalue.setText(tss);
                                     break;
                                 case 1:
-                                    ebunch.number = Float.parseFloat(tss) / ElectronBunch.E;
+                                    ebunch.number = Float.parseFloat(tss) / ElectronBunch.E * 1e-9;
                                     chargevalue.setText(tss);
                                     break;
                                 case 2:
@@ -2580,6 +2582,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
         final int number = numberOfRays;
+        flux = 0;
         if (rayWorking) {
             ProgressFrame.setVisible(true);
             return;
@@ -2605,6 +2608,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     ray[11] = i;
                     shadowFile.write(ray);
                     setStatusBar((int) 100 * i / number);
+                    flux += tsource.partialFlux;
                 }
                 shadowFile.close();
                 return null;
@@ -2614,6 +2618,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected void done() {
                 ProgressFrame.setVisible(false);
                 rayWorking = false;
+                flux /= number;
+                System.out.println(flux);
                 try {
                     get();
                 } catch (InterruptedException e) {
