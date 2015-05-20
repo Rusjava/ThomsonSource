@@ -196,7 +196,7 @@ public class ElectronBunch implements Cloneable {
     /**
      * Number of electrons in the bunch
      */
-    public double number = 1 / 1.602e-10;
+    public double number = 1 / E * 1e-9;
 
     /**
      * Relative electron bunch energy spread
@@ -227,4 +227,9 @@ public class ElectronBunch implements Cloneable {
      * Electron bunch shift relative to the laser pulse, m
      */
     public Vector shift;
+    
+    /**
+     * The charge of electron
+     */
+    public static final double E = 1.602e-19;
 }

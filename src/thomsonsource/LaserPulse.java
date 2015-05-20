@@ -29,7 +29,7 @@ import org.la4j.vector.dense.BasicVector;
 public class LaserPulse implements Cloneable {
 
     public LaserPulse() {
-        this.photonenergy = 1.1 * 1.602e-19;
+        this.photonenergy = 1.1 * ElectronBunch.E;
         this.setPulseEnergy(2.0e-2);
         this.rk = HC / this.photonenergy;
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});

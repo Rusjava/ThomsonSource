@@ -58,12 +58,12 @@ public class ThompsonSource implements Cloneable {
     /**
      * Min ray energy
      */
-    private double minEnergy = 36 * 1.602e-16;
+    private double minEnergy = 36 * 1e3 * ElectronBunch.E;
 
     /**
      * Max ray energy
      */
-    private double maxEnergy = 46 * 1.602e-16;
+    private double maxEnergy = 46 * 1e3 * ElectronBunch.E;
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
