@@ -100,6 +100,8 @@ public class ThompsonSource implements Cloneable {
      * Flux in the phase space volume of ray generation
      */
     public double partialFlux;
+    
+    public int counter;
 
     private LaserPulse lp;
     private ElectronBunch eb;
@@ -545,6 +547,7 @@ public class ThompsonSource implements Cloneable {
                 prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
             }
             sum += prob;
+            counter++;
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
@@ -560,7 +563,7 @@ public class ThompsonSource implements Cloneable {
         //Setting other columns
         ray[9] = 1.0;
         ray[13] = Math.random() * 2 * Math.PI;
-        partialFlux = sum * factor;
+        partialFlux += sum * factor;
         return ray;
     }
 

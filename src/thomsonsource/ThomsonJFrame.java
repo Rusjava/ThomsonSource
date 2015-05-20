@@ -1785,8 +1785,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private int numberOfRays = 1000; /* Number of rays exported for Shadow */
 
-    private double flux = 0;
-
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
     private JFreeChart xenergycrosschart = null;
@@ -2582,7 +2580,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
         final int number = numberOfRays;
-        flux = 0;
+        tsource.partialFlux = 0;
+        tsource.counter = 0;
         if (rayWorking) {
             ProgressFrame.setVisible(true);
             return;
@@ -2608,7 +2607,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     ray[11] = i;
                     shadowFile.write(ray);
                     setStatusBar((int) 100 * i / number);
-                    flux += tsource.partialFlux;
                 }
                 shadowFile.close();
                 return null;
@@ -2618,8 +2616,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected void done() {
                 ProgressFrame.setVisible(false);
                 rayWorking = false;
-                flux /= number;
-                System.out.println(flux);
+                System.out.println(tsource.partialFlux / tsource.counter);
+                 System.out.println(tsource.counter);
                 try {
                     get();
                 } catch (InterruptedException e) {
