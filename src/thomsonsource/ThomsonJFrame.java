@@ -2602,12 +2602,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     ray[1] *= 1e2;
                     ray[2] *= 1e2;
                     ray[10] *= 1e-2 / LaserPulse.HC;
-                    /*ray[18] *= 1e10;
-                    ray[19] *= 1e2;
-                    ray[25] *= 1e-2 / 3.201e-26;
-                    ray[26] *= 1e-2 / 3.201e-26;
-                    ray[27] *= 1e-2 / 3.201e-26;
-                    ray[28] *= 1e-2 / 3.201e-26;*/
+                    ray[11] = i;
                     shadowFile.write(ray);
                     setStatusBar((int) 100 * i / number);
                 }

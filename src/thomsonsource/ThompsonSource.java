@@ -549,26 +549,7 @@ public class ThompsonSource implements Cloneable {
         ray[8] = As.get(2);
         //Setting other columns
         ray[9] = 1.0;
-        ray[11] = 0;
-        ray[12] = 0;
-        ray[13] = 0;
-        ray[14] = 0;
-        ray[15] = 0;
-        ray[16] = 0;
-        ray[17] = 0;
-        /*ray[18] = 2 * Math.PI / ray[10];
-        ray[19] = Math.sqrt(ray[0] * ray[0] + ray[2] * ray[2]);
-        ray[20] = Math.sqrt(ray[3] * ray[3] + ray[5] * ray[5]);
-        ray[21] = 1;
-        ray[22] = 1;
-        ray[23] = 1;
-        ray[24] = 0;
-        ray[25] = ray[10];
-        ray[26] = ray[10] * ray[3];
-        ray[27] = ray[10] * ray[4];
-        ray[28] = ray[10] * ray[5];
-        ray[29] = 1;
-        ray[30] = 1;*/
+        ray[13] = Math.random() * 2 * Math.PI;
         return ray;
     }
 
