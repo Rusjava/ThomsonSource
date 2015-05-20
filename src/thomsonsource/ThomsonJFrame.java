@@ -225,6 +225,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
+        jLabelPartialFlux = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel_el = new javax.swing.JPanel();
@@ -664,7 +665,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         ProgressFrame.setTitle("Ray generation progress");
         ProgressFrame.setAlwaysOnTop(true);
-        ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 80));
+        ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 100));
+        ProgressFrame.setPreferredSize(new java.awt.Dimension(377, 100));
         ProgressFrame.setResizable(false);
 
         jRayStopButton.setText("Stop");
@@ -675,13 +677,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabelPartialFlux.setText("Flux: ");
+
         javax.swing.GroupLayout ProgressFrameLayout = new javax.swing.GroupLayout(ProgressFrame.getContentPane());
         ProgressFrame.getContentPane().setLayout(ProgressFrameLayout);
         ProgressFrameLayout.setHorizontalGroup(
             ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ProgressFrameLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                .addGroup(ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabelPartialFlux, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jRayStopButton)
                 .addGap(21, 21, 21))
@@ -693,7 +699,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGroup(ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jRayStopButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addComponent(jLabelPartialFlux)
+                .addContainerGap())
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -1397,7 +1405,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2614,10 +2622,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             protected void done() {
-                ProgressFrame.setVisible(false);
                 rayWorking = false;
-                System.out.println(tsource.partialFlux / tsource.counter);
-                 System.out.println(tsource.counter);
+                jLabelPartialFlux.setText("Flux: "+tsource.partialFlux / tsource.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException e) {
@@ -3357,6 +3363,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
     private javax.swing.JLabel jEnergyLabel;
+    private javax.swing.JLabel jLabelPartialFlux;
     private javax.swing.JMenuBar jMenuBarMain;
     private javax.swing.JMenu jMenuCalc;
     private javax.swing.JMenu jMenuFile;
