@@ -2591,11 +2591,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         final int number = numberOfRays;
         try {
             tsourceRayClone = (ThompsonSource) tsource.clone();
-            tsourceRayClone.calculateTotalFlux();
         } catch (CloneNotSupportedException ex) {
             
         }
-        
+        tsourceRayClone.calculateTotalFlux();
         if (rayWorking) {
             ProgressFrame.setVisible(true);
             return;
@@ -2648,10 +2647,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                 JOptionPane.ERROR_MESSAGE);
                     }
                     else if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
-                        JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
-                                JOptionPane.ERROR_MESSAGE);
+                        
                     }
-                    else if (e.getCause() instanceof Exception) {
+                    else {
 
                     }
                 } 
