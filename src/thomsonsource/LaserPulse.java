@@ -24,7 +24,7 @@ import org.la4j.vector.dense.BasicVector;
  * units
  *
  * @author Ruslan feshchenko
- * @version 1.1
+ * @version 1.2
  */
 public class LaserPulse implements Cloneable {
 
