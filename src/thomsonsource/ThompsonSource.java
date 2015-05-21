@@ -101,6 +101,9 @@ public class ThompsonSource implements Cloneable {
      */
     public double partialFlux;
     
+    /**
+     * Counter of ray iterations
+     */
     public int counter;
 
     private LaserPulse lp;

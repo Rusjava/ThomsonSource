@@ -1585,9 +1585,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    ElectronBunch ebunch;
-    LaserPulse lpulse;
-    ThompsonSource tsource;
+    private ElectronBunch ebunch;
+    private LaserPulse lpulse;
+    private ThompsonSource tsource, tsourceRayClone = null;
 
     /**
      * Parameters for the calculation boxes
@@ -2283,6 +2283,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.delgamma = x;
+                            brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * ((xp - brilForm.chartParam.getOffset())
                                     / brilForm.chartParam.getStep() + 1) / brilForm.chartParam.getSize()));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2588,66 +2589,72 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
         final int number = numberOfRays;
-        tsource.partialFlux = 0;
-        tsource.counter = 0;
+        try {
+            tsourceRayClone = (ThompsonSource) tsource.clone();
+            tsourceRayClone.calculateTotalFlux();
+        } catch (CloneNotSupportedException ex) {
+            
+        }
+        
         if (rayWorking) {
             ProgressFrame.setVisible(true);
             return;
         }
-
         rayWorking = true;
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, number);
-                SwingUtilities.invokeLater(() -> ProgressFrame.setVisible(true));
-                for (int i = 0; i < number; i++) {
-                    if (isCancelled()) {
-                        break;
+                try (ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, number)) {
+                    SwingUtilities.invokeLater(() -> ProgressFrame.setVisible(true));
+                    for (int i = 0; i < number; i++) {
+                        if (isCancelled()) {
+                            break;
+                        }
+                        //Getting a ray
+                        double[] ray = tsourceRayClone.getRay();
+                        //Units conversions
+                        ray[0] *= 1e2;
+                        ray[1] *= 1e2;
+                        ray[2] *= 1e2;
+                        ray[10] *= 1e-2 / LaserPulse.HC;
+                        ray[11] = i;
+                        shadowFile.write(ray);
+                        setStatusBar((int) 100 * i / number);
                     }
-                    //Getting a ray
-                    double[] ray = tsource.getRay();
-                    //Units conversions
-                    ray[0] *= 1e2;
-                    ray[1] *= 1e2;
-                    ray[2] *= 1e2;
-                    ray[10] *= 1e-2 / LaserPulse.HC;
-                    ray[11] = i;
-                    shadowFile.write(ray);
-                    setStatusBar((int) 100 * i / number);
+                } catch (Exception ex) {
+                    throw ex;
                 }
-                shadowFile.close();
                 return null;
             }
 
             @Override
             protected void done() {
                 rayWorking = false;
-                jLabelPartialFlux.setText("Flux: "+tsource.partialFlux / tsource.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
+                jLabelPartialFlux.setText("Flux: "+tsourceRayClone.partialFlux / 
+                        tsourceRayClone.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
                     get();
-                } catch (InterruptedException e) {
-
+                } catch (InterruptedException | CancellationException e) {
+                    /* If the thread is interrupted or cancelled */
+                    
                 } catch (ExecutionException e) {
+                    /* If an exception is thrown during execution */
                     if (e.getCause() instanceof IOException) {
                         JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                     }
-                    if (e.getCause() instanceof IllegalFormatException) {
+                    else if (e.getCause() instanceof IllegalFormatException) {
                         JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                     }
-                    if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
+                    else if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
                         JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                     }
-                    if (e.getCause() instanceof Exception) {
+                    else if (e.getCause() instanceof Exception) {
 
                     }
-                } catch (CancellationException e) {
-
-                }
-
+                } 
             }
 
             /**
