@@ -2603,7 +2603,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                try (ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, number)) {
+                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, number)) {
                     SwingUtilities.invokeLater(() -> ProgressFrame.setVisible(true));
                     for (int i = 0; i < number; i++) {
                         if (isCancelled()) {
