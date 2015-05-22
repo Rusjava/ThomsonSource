@@ -539,6 +539,8 @@ public class ThompsonSource implements Cloneable {
             n.set(1, ray[5]);
             n.set(2, 1.0);
             n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
+            ray[3] = n.get(0);
+            ray[5] = n.get(1);
             ray[4] = n.get(2);
             ray[10] = Math.random() * (maxEnergy - minEnergy) + minEnergy;
             if (eSpread) {
