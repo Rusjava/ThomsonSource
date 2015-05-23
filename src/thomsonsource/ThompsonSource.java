@@ -509,7 +509,7 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] getRay() {
         double[] ray = new double[NUMBER_OF_COLUMNS];
-        Matrix M, D, T, A, I = new Basic1DMatrix(3, 3);
+        Matrix M, D, T, A, I = new Basic1DMatrix(3, 3), D1;
         I.set(0, 0, 1.0);
         I.set(1, 1, 1.0);
         I.set(2, 2, 1.0);
@@ -557,14 +557,15 @@ public class ThompsonSource implements Cloneable {
         // Calculation of the rotated polarization vector
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         innerProduct = n.innerProduct(n0);
-        D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).
-                add(n0.outerProduct(n0)).divide(innerProduct * innerProduct - 1.0));
+        D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n)
+                .add(n0.outerProduct(n0))).divide(innerProduct * innerProduct - 1.0);
         A = n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
         T = I.subtract(D).multiply(1 - innerProduct).add(A);
         As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0}));
         ray[6] = As.get(0);
         ray[7] = As.get(1);
         ray[8] = As.get(2);
+        System.out.println(As.fold(Vectors.mkEuclideanNormAccumulator()));
         //Setting other columns
         ray[9] = 1.0;
         ray[13] = Math.random() * 2 * Math.PI;

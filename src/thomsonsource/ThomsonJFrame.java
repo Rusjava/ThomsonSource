@@ -2588,6 +2588,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
+        jRayProgressBar.setStringPainted(true);
         final int number = numberOfRays;
         try {
             tsourceRayClone = (ThompsonSource) tsource.clone();
