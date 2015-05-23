@@ -227,7 +227,7 @@ public class ElectronBunch implements Cloneable {
      * Electron bunch shift relative to the laser pulse, m
      */
     public Vector shift;
-    
+
     /**
      * The charge of electron
      */

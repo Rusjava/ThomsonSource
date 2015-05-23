@@ -165,7 +165,7 @@ public class LaserPulse implements Cloneable {
     public double delay = 0;
 
     private double rk;
-    
+
     /**
      * hc constant
      */

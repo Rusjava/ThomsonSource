@@ -29,7 +29,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class contating all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 1.2
+ * @version 1.21
  */
 public class ThompsonSource implements Cloneable {
 
@@ -95,12 +95,12 @@ public class ThompsonSource implements Cloneable {
      * taken into account
      */
     public boolean eSpread = false;
-    
+
     /**
      * Flux in the phase space volume of ray generation
      */
     public double partialFlux;
-    
+
     /**
      * Counter of ray iterations
      */
@@ -516,7 +516,7 @@ public class ThompsonSource implements Cloneable {
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
-        double prob0, prob, EMax, mult = 2, innerProduct, factor, sum=0;
+        double prob0, prob, EMax, mult = 2, innerProduct, factor, sum = 0;
         EMax = directionEnergy(n, n);
         factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
                 * Math.max(eb.length, lp.length) * 4 * rayXAnglerange * rayYAnglerange

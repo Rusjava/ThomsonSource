@@ -61,7 +61,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.5
+ * @version 1.51
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2593,7 +2593,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         try {
             tsourceRayClone = (ThompsonSource) tsource.clone();
         } catch (CloneNotSupportedException ex) {
-            
+
         }
         tsourceRayClone.calculateTotalFlux();
         if (rayWorking) {
@@ -2630,30 +2630,27 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 rayWorking = false;
-                jLabelPartialFlux.setText("Flux: "+tsourceRayClone.partialFlux / 
-                        tsourceRayClone.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
+                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.partialFlux
+                        / tsourceRayClone.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException | CancellationException e) {
                     /* If the thread is interrupted or cancelled */
-                    
+
                 } catch (ExecutionException e) {
                     /* If an exception is thrown during execution */
                     if (e.getCause() instanceof IOException) {
                         JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                                 JOptionPane.ERROR_MESSAGE);
-                    }
-                    else if (e.getCause() instanceof IllegalFormatException) {
+                    } else if (e.getCause() instanceof IllegalFormatException) {
                         JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
                                 JOptionPane.ERROR_MESSAGE);
-                    }
-                    else if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
-                        
-                    }
-                    else {
+                    } else if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
+
+                    } else {
 
                     }
-                } 
+                }
             }
 
             /**
