@@ -2589,6 +2589,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
         jRayProgressBar.setStringPainted(true);
+        jRayProgressBar.setValue(0);
         final int number = numberOfRays;
         try {
             tsourceRayClone = (ThompsonSource) tsource.clone();
@@ -2619,7 +2620,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         ray[10] *= 1e-2 / LaserPulse.HC;
                         ray[11] = i;
                         shadowFile.write(ray);
-                        setStatusBar((int) 100 * i / number);
+                        setStatusBar((int) 100 * (i + 1) / number);
                     }
                 } catch (Exception ex) {
                     throw ex;
