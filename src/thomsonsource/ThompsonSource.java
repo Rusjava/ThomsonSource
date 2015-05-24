@@ -565,7 +565,6 @@ public class ThompsonSource implements Cloneable {
         ray[6] = As.get(0);
         ray[7] = As.get(1);
         ray[8] = As.get(2);
-        System.out.println(As.fold(Vectors.mkEuclideanNormAccumulator()));
         //Setting other columns
         ray[9] = 1.0;
         ray[13] = Math.random() * 2 * Math.PI;
