@@ -35,7 +35,6 @@ import java.util.IllegalFormatException;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.function.Function;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1612,6 +1611,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ChartPanel chartPanel = null;
         JFreeChart chart = null;
         double angle = 0, angleclone, energy = 44, energyclone;
+        private File file = null;
 
         public CalcBoxParam(String key) {
             super();
@@ -1640,11 +1640,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          */
 
         public void save() {
-            JFileChooser fo = new JFileChooser();
+            JFileChooser fo = new JFileChooser(file);
             fo.setDialogTitle(savetext);
             int ans = fo.showSaveDialog(null);
             if (ans == JFileChooser.APPROVE_OPTION) {
-                File file = fo.getSelectedFile();
+                file = fo.getSelectedFile();
                 if (file.exists()) {
                     int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
                             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -1809,7 +1809,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox,
             yrangebox, xenergyrangebox;
     
-    private File bFile = null;
+    private File bFile = null, pFile = null;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
@@ -2406,12 +2406,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
         // TODO add your handling code here:
-        JFileChooser fo = new JFileChooser();
+        JFileChooser fo = new JFileChooser(pFile);
         fo.setDialogTitle("Choose file to save Thompson source parameters");
         int ans = fo.showSaveDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
-            File file = fo.getSelectedFile();
-            if (file.exists()) {
+            pFile = fo.getSelectedFile();
+            if (pFile.exists()) {
                 int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (n == JOptionPane.NO_OPTION) {
@@ -2419,7 +2419,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             }
             Formatter fm;
-            try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+            try (PrintWriter pw = new PrintWriter(new FileWriter(pFile, false))) {
                 fm = new Formatter();
                 fm.format("%s %.2f", paramNames[0] + ": ", ebunch.getGamma() * 0.512);
                 pw.println(fm);
@@ -2485,9 +2485,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         fo.setDialogTitle("Choose file to load Thompson source parameters from");
         int ans = fo.showOpenDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
-            File file = fo.getSelectedFile();
+            pFile = fo.getSelectedFile();
             ArrayList<String> inputList = new ArrayList<>();
-            try (BufferedReader pr = new BufferedReader(new FileReader(file))) {
+            try (BufferedReader pr = new BufferedReader(new FileReader(pFile))) {
                 String ts;
                 do {
                     ts = pr.readLine();
