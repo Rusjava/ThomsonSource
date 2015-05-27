@@ -1808,6 +1808,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     JTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
             gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox,
             yrangebox, xenergyrangebox;
+    
+    private File bFile = null;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
@@ -2605,7 +2607,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, number)) {
+                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, number, bFile)) {
+                    bFile = shadowFile.getFile();
                     SwingUtilities.invokeLater(() -> ProgressFrame.setVisible(true));
                     for (int i = 0; i < number; i++) {
                         if (isCancelled()) {
