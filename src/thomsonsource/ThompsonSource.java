@@ -509,14 +509,11 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] getRay() {
         double[] ray = new double[NUMBER_OF_COLUMNS];
-        Matrix M, D, T, A, I = new Basic1DMatrix(3, 3), D1;
-        I.set(0, 0, 1.0);
-        I.set(1, 1, 1.0);
-        I.set(2, 2, 1.0);
+        Matrix T;
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
-        double prob0, prob, EMax, mult = 2, innerProduct, factor, sum = 0;
+        double prob0, prob, EMax, mult = 2, factor, sum = 0;
         EMax = directionEnergy(n, n);
         factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
                 * Math.max(eb.length, lp.length) * 4 * rayXAnglerange * rayYAnglerange
@@ -556,18 +553,19 @@ public class ThompsonSource implements Cloneable {
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
-        innerProduct = n.innerProduct(n0);
-        D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n)
-                .add(n0.outerProduct(n0))).divide(innerProduct * innerProduct - 1.0);
-        A = n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
-        T = I.subtract(D).multiply(1 - innerProduct).add(A);
+        T = getTransform(n, n0);
         As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0}));
         ray[6] = As.get(0);
         ray[7] = As.get(1);
         ray[8] = As.get(2);
+        As = T.multiply(new BasicVector(new double[]{0.0, 0.0, 1.0}));
+        ray[15] = As.get(0);
+        ray[16] = As.get(1);
+        ray[17] = As.get(2);
         //Setting other columns
         ray[9] = 1.0;
         ray[13] = Math.random() * 2 * Math.PI;
+        ray[14] = Math.random() * 2 * Math.PI;
         partialFlux += sum * factor;
         return ray;
     }
@@ -585,5 +583,25 @@ public class ThompsonSource implements Cloneable {
         rayYAnglerange = yangle;
         minEnergy = minEn;
         maxEnergy = maxEn;
+    }
+    
+    /**
+     * Returning the matrix of 3D rotation based on two unity vectors
+     * @param n
+     * @param n0
+     * @return transformation matrix
+     */
+    protected Matrix getTransform (Vector n, Vector n0) {
+        Matrix M, D, T, A, I = new Basic1DMatrix(3, 3);
+        I.set(0, 0, 1.0);
+        I.set(1, 1, 1.0);
+        I.set(2, 2, 1.0);
+        double innerProduct;
+        innerProduct = n.innerProduct(n0);
+        D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n)
+                .add(n0.outerProduct(n0))).divide(innerProduct * innerProduct - 1.0);
+        A = n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
+        T = I.subtract(D).multiply(1 - innerProduct).add(A);
+        return T;
     }
 }
