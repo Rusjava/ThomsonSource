@@ -589,7 +589,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFCalcBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(29, 29, 29))
+                        .addGap(42, 42, 42))
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFminvaluelabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -601,15 +601,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GFmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
-                        .addComponent(GFmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(GFmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFCalcStart)
-                        .addGap(31, 31, 31)
+                        .addGap(18, 18, 18)
                         .addComponent(GFCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(GFProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(59, Short.MAX_VALUE))
+                    .addComponent(GFProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         GFParamLayout.setVerticalGroup(
             GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -670,6 +670,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jRayStopButton.setText("Stop");
         jRayStopButton.setToolTipText("");
+        jRayStopButton.setEnabled(false);
         jRayStopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRayStopButtonActionPerformed(evt);
@@ -2582,6 +2583,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         jRayProgressBar.setStringPainted(true);
         jRayProgressBar.setValue(0);
+        jRayStopButton.setEnabled(true);
         final int number = numberOfRays;
         try {
             tsourceRayClone = (ThompsonSource) tsource.clone();
@@ -2623,6 +2625,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             protected void done() {
+                jRayStopButton.setEnabled(false);
                 rayWorking = false;
                 jLabelPartialFlux.setText("Flux: " + tsourceRayClone.partialFlux
                         / tsourceRayClone.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");

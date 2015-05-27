@@ -329,9 +329,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
                               <Component id="GFCalcBox" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="GFminvaluelabel" min="-2" max="-2" attributes="0"/>
@@ -344,19 +344,19 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="GFmaxvalue" min="-2" pref="43" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                              <Component id="GFmaxvalueunitlabel" min="-2" pref="35" max="-2" attributes="0"/>
+                              <Component id="GFmaxvalueunitlabel" min="-2" pref="56" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="GFCalcStart" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="GFCalcSave" min="-2" pref="77" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="GFProgressBar" max="32767" attributes="0"/>
+                          <Component id="GFProgressBar" min="-2" pref="172" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="59" max="32767" attributes="0"/>
+                      <EmptySpace pref="51" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -541,6 +541,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Stop"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRayStopButtonActionPerformed"/>
