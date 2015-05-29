@@ -554,11 +554,11 @@ public class ThompsonSource implements Cloneable {
         // Calculation of the rotated polarization vector
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
-        As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0}));
+        As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).divide(Math.sqrt(2));
         ray[6] = As.get(0);
         ray[7] = As.get(1);
         ray[8] = As.get(2);
-        As = T.multiply(new BasicVector(new double[]{0.0, 0.0, 1.0}));
+        As = T.multiply(new BasicVector(new double[]{0.0, 0.0, 1.0})).divide(Math.sqrt(2));
         ray[15] = As.get(0);
         ray[16] = As.get(1);
         ray[17] = As.get(2);
@@ -584,14 +584,15 @@ public class ThompsonSource implements Cloneable {
         minEnergy = minEn;
         maxEnergy = maxEn;
     }
-    
+
     /**
      * Returning the matrix of 3D rotation based on two unity vectors
+     *
      * @param n
      * @param n0
      * @return transformation matrix
      */
-    protected Matrix getTransform (Vector n, Vector n0) {
+    protected Matrix getTransform(Vector n, Vector n0) {
         Matrix M, D, T, A, I = new Basic1DMatrix(3, 3);
         I.set(0, 0, 1.0);
         I.set(1, 1, 1.0);

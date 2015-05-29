@@ -54,7 +54,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.la4j.vector.*;
 import org.la4j.vector.dense.*;
 
-import TextUtilities.MyTextUtilities;
+import static TextUtilities.MyTextUtilities.*;
 import shadowfileconverter.ShadowFiles;
 
 /**
@@ -1814,72 +1814,72 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(MyTextUtilities.TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(MyTextUtilities.TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
+        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
     }//GEN-LAST:event_phenergyvalueActionPerformed
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(MyTextUtilities.TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(MyTextUtilities.TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
+        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
     }//GEN-LAST:event_phenergyvalueFocusLost
 
     private void chargevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargevalueActionPerformed
         // TODO add your handling code here:
-        ebunch.number = MyTextUtilities.TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9;
+        ebunch.number = TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9;
     }//GEN-LAST:event_chargevalueActionPerformed
 
     private void chargevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_chargevalueFocusLost
         // TODO add your handling code here:
-        ebunch.number = MyTextUtilities.TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9;
+        ebunch.number = TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9;
     }//GEN-LAST:event_chargevalueFocusLost
 
     private void spreadvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spreadvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.delgamma = MyTextUtilities.TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings);
+        ebunch.delgamma = TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings);
     }//GEN-LAST:event_spreadvalueActionPerformed
 
     private void spreadvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spreadvalueFocusLost
         // TODO add your handling code here:
-        ebunch.delgamma = MyTextUtilities.TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings);
+        ebunch.delgamma = TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings);
     }//GEN-LAST:event_spreadvalueFocusLost
 
     private void elengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elengthvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.length = MyTextUtilities.TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2;
+        ebunch.length = TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2;
     }//GEN-LAST:event_elengthvalueActionPerformed
 
     private void elengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_elengthvalueFocusLost
         // TODO add your handling code here:
-        ebunch.length = MyTextUtilities.TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2;
+        ebunch.length = TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2;
     }//GEN-LAST:event_elengthvalueFocusLost
 
     private void pulseenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(MyTextUtilities.TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueActionPerformed
 
     private void pulseenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(MyTextUtilities.TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueFocusLost
 
     private void pulselengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulselengthvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.length = MyTextUtilities.TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2;
+        lpulse.length = TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2;
     }//GEN-LAST:event_pulselengthvalueActionPerformed
 
     private void pulselengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulselengthvalueFocusLost
         // TODO add your handling code here:
-        lpulse.length = MyTextUtilities.TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2;
+        lpulse.length = TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2;
     }//GEN-LAST:event_pulselengthvalueFocusLost
 
     private void startbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startbuttonActionPerformed
@@ -1991,22 +1991,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eemitvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitvalueFocusLost
         // TODO add your handling code here:
-        ebunch.eps = MyTextUtilities.TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6;
+        ebunch.eps = TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6;
     }//GEN-LAST:event_eemitvalueFocusLost
 
     private void eemitvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.eps = MyTextUtilities.TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6;
+        ebunch.eps = TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6;
     }//GEN-LAST:event_eemitvalueActionPerformed
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betax = MyTextUtilities.TestValueWithMemory(1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
+        ebunch.betax = TestValueWithMemory(1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betax = MyTextUtilities.TestValueWithMemory(1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
+        ebunch.betax = TestValueWithMemory(1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
@@ -2078,74 +2078,74 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.rlength = MyTextUtilities.TestValueWithMemory(1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.rlength = TestValueWithMemory(1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.rlength = MyTextUtilities.TestValueWithMemory(1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.rlength = TestValueWithMemory(1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.fq = MyTextUtilities.TestValueWithMemory(1, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
+        lpulse.fq = TestValueWithMemory(1, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.fq = MyTextUtilities.TestValueWithMemory(1, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
+        lpulse.fq = TestValueWithMemory(1, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
         // TODO add your handling code here:
-        lpulse.delay = MyTextUtilities.TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4;
+        lpulse.delay = TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4;
     }//GEN-LAST:event_pulsedelayvalueFocusLost
 
     private void pulsedelayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsedelayvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.delay = MyTextUtilities.TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4;
+        lpulse.delay = TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4;
     }//GEN-LAST:event_pulsedelayvalueActionPerformed
 
     private void eshiftxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(0, MyTextUtilities.TestValueWithMemory(0, 1, eshiftxvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(0, TestValueWithMemory(0, 1, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueFocusLost
 
     private void eshiftxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(0, MyTextUtilities.TestValueWithMemory(0, 1, eshiftxvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(0, TestValueWithMemory(0, 1, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueActionPerformed
 
     private void eshiftyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(1, MyTextUtilities.TestValueWithMemory(0, 1, eshiftyvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(1, TestValueWithMemory(0, 1, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueFocusLost
 
     private void eshiftyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(1, MyTextUtilities.TestValueWithMemory(0, 1, eshiftyvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(1, TestValueWithMemory(0, 1, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueActionPerformed
 
     private void eshiftzvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftzvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(2, MyTextUtilities.TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftzvalueFocusLost
 
     private void eshiftzvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftzvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(2, MyTextUtilities.TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftzvalueActionPerformed
 
     private void pulseanglevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseanglevalueFocusLost
         // TODO add your handling code here:
-        Double value = MyTextUtilities.TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
         lpulse.direction.set(2, Math.cos(value));
         lpulse.direction.set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueFocusLost
 
     private void pulseanglevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseanglevalueActionPerformed
         // TODO add your handling code here:
-        Double value = MyTextUtilities.TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
         lpulse.direction.set(2, Math.cos(value));
         lpulse.direction.set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueActionPerformed
@@ -2360,22 +2360,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void BrilmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilmaxvalueActionPerformed
         // TODO add your handling code here:
-        brilForm.maxValue = MyTextUtilities.TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.maxValue = TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueActionPerformed
 
     private void BrilminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilminvalueActionPerformed
         // TODO add your handling code here:
-        brilForm.minValue = MyTextUtilities.TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.minValue = TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueActionPerformed
 
     private void BrilminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilminvalueFocusLost
         // TODO add your handling code here:
-        brilForm.minValue = MyTextUtilities.TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.minValue = TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueFocusLost
 
     private void BrilmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilmaxvalueFocusLost
         // TODO add your handling code here:
-        brilForm.maxValue = MyTextUtilities.TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.maxValue = TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueFocusLost
 
     private void jMenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExitActionPerformed
@@ -2673,11 +2673,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            xsize = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1000, xsizebox, "300", oldStrings));
-            ysize = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1000, ysizebox, "200", oldStrings));
-            xstep = MyTextUtilities.TestValueWithMemory(0, 100, xrangebox, "20", oldStrings) / xsize;
-            ystep = MyTextUtilities.TestValueWithMemory(0, 100, yrangebox, "20", oldStrings) / ysize;
-            estep = MyTextUtilities.TestValueWithMemory(0, 10000, xenergyrangebox, "2000", oldStrings) / xsize;
+            xsize = (int) Math.round(TestValueWithMemory(1, 1000, xsizebox, "300", oldStrings));
+            ysize = (int) Math.round(TestValueWithMemory(1, 1000, ysizebox, "200", oldStrings));
+            xstep = TestValueWithMemory(0, 100, xrangebox, "20", oldStrings) / xsize;
+            ystep = TestValueWithMemory(0, 100, yrangebox, "20", oldStrings) / ysize;
+            estep = TestValueWithMemory(0, 10000, xenergyrangebox, "2000", oldStrings) / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
@@ -2815,22 +2815,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void GFminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFminvalueFocusLost
         // TODO add your handling code here:
-        gfForm.minValue = MyTextUtilities.TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.minValue = TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueFocusLost
 
     private void GFminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFminvalueActionPerformed
         // TODO add your handling code here:
-        gfForm.minValue = MyTextUtilities.TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.minValue = TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueActionPerformed
 
     private void GFmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFmaxvalueFocusLost
         // TODO add your handling code here:
-        gfForm.maxValue = MyTextUtilities.TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.maxValue = TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueFocusLost
 
     private void GFmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFmaxvalueActionPerformed
         // TODO add your handling code here:
-        gfForm.maxValue = MyTextUtilities.TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.maxValue = TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueActionPerformed
 
     private void jCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadActionPerformed
@@ -2868,12 +2868,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betay = MyTextUtilities.TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3;
+        ebunch.betay = TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3;
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betay = MyTextUtilities.TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3;
+        ebunch.betay = TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3;
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
@@ -2884,8 +2884,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.npGeometricFactor = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1e7, gfmontecarlonumberbox, "5000000", oldStrings));
-            tsource.precision = MyTextUtilities.TestValueWithMemory(1e-6, 1e-2, brilPrecisionBox, "0.0001", oldStrings);
+            tsource.npGeometricFactor = (int) Math.round(TestValueWithMemory(1, 1e7, gfmontecarlonumberbox, "5000000", oldStrings));
+            tsource.precision = TestValueWithMemory(1e-6, 1e-2, brilPrecisionBox, "0.0001", oldStrings);
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
@@ -2900,11 +2900,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            double eMin = MyTextUtilities.TestValueWithMemory(10, 50, rayMinEnergyBox, "35", oldStrings) * ElectronBunch.E * 1e3;
-            numberOfRays = (int) Math.round(MyTextUtilities.TestValueWithMemory(1, 1e6, rayNumberBox, "1000", oldStrings));
-            tsource.setRayRanges(MyTextUtilities.TestValueWithMemory(0, 30, rayXAngleRangeBox, "5", oldStrings) * 1e-3,
-                    MyTextUtilities.TestValueWithMemory(0, 30, rayYAngleRangeBox, "5", oldStrings) * 1e-3, eMin,
-                    eMin + MyTextUtilities.TestValueWithMemory(0, 30, rayEnergyRangeBox, "10", oldStrings) * ElectronBunch.E * 1e3);
+            double eMin = TestValueWithMemory(10, 50, rayMinEnergyBox, "35", oldStrings) * ElectronBunch.E * 1e3;
+            numberOfRays = (int) Math.round(TestValueWithMemory(1, 1e6, rayNumberBox, "1000", oldStrings));
+            tsource.setRayRanges(TestValueWithMemory(0, 30, rayXAngleRangeBox, "5", oldStrings) * 1e-3,
+                    TestValueWithMemory(0, 30, rayYAngleRangeBox, "5", oldStrings) * 1e-3, eMin,
+                    eMin + TestValueWithMemory(0, 30, rayEnergyRangeBox, "10", oldStrings) * ElectronBunch.E * 1e3);
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 
@@ -2932,22 +2932,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void angleValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_angleValueFocusLost
         // TODO add your handling code here:
-        brilForm.angle = MyTextUtilities.TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
+        brilForm.angle = TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
     }//GEN-LAST:event_angleValueFocusLost
 
     private void angleValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_angleValueActionPerformed
         // TODO add your handling code here:
-        brilForm.angle = MyTextUtilities.TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
+        brilForm.angle = TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
     }//GEN-LAST:event_angleValueActionPerformed
 
     private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
         // TODO add your handling code here:
-        brilForm.energy = MyTextUtilities.TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
     }//GEN-LAST:event_energyValueFocusLost
 
     private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
         // TODO add your handling code here:
-        brilForm.energy = MyTextUtilities.TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
