@@ -306,6 +306,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemSource = new javax.swing.JMenuItem();
         jMenuItemSourceParam = new javax.swing.JMenuItem();
         jMenuItemConv = new javax.swing.JMenuItem();
+        jMenuPolarization = new javax.swing.JMenu();
+        jRadioButtonMenuItemUnPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemSPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemPPolarized = new javax.swing.JRadioButtonMenuItem();
         jMenuOptions = new javax.swing.JMenu();
         jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemNumerical = new javax.swing.JMenuItem();
@@ -665,7 +669,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ProgressFrame.setTitle("Ray generation progress");
         ProgressFrame.setAlwaysOnTop(true);
         ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 100));
-        ProgressFrame.setPreferredSize(new java.awt.Dimension(377, 100));
         ProgressFrame.setResizable(false);
 
         jRayStopButton.setText("Stop");
@@ -1405,7 +1408,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1510,6 +1513,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuShadow.add(jMenuItemConv);
+
+        jMenuPolarization.setText("Polarization...");
+
+        jRadioButtonMenuItemUnPolarized.setSelected(true);
+        jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
+        jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
+
+        jRadioButtonMenuItemSPolarized.setSelected(true);
+        jRadioButtonMenuItemSPolarized.setText("S-polarized");
+        jMenuPolarization.add(jRadioButtonMenuItemSPolarized);
+
+        jRadioButtonMenuItemPPolarized.setSelected(true);
+        jRadioButtonMenuItemPPolarized.setText("P-polarized");
+        jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
+
+        jMenuShadow.add(jMenuPolarization);
 
         jMenuBarMain.add(jMenuShadow);
 
@@ -3113,42 +3132,50 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private XYZDataset createDataset(final ChartParam data, final boolean linemark) {
         return new XYZDataset() {
+            @Override
             public int getSeriesCount() {
                 return 1;
             }
 
+            @Override
             public int getItemCount(int series) {
                 return data.getxsize() * data.getysize();
             }
 
+            @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
 
+            @Override
             public double getXValue(int series, int item) {
                 return (getXindex(series, item) - data.getxsize() / 2) * data.getxstep() + data.getxoffset();
             }
 
-            private int getXindex(int series, int item) {
+            public int getXindex(int series, int item) {
                 return item / data.getysize();
             }
 
+            @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
 
+            @Override
             public double getYValue(int series, int item) {
                 return (getYindex(series, item) - data.getysize() / 2) * data.getystep() + data.getyoffset();
             }
 
-            private int getYindex(int series, int item) {
+            public int getYindex(int series, int item) {
                 return item - (item / data.getysize()) * data.getysize();
             }
 
+            @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
 
+            @Override
             public double getZValue(int series, int item) {
                 int x = getXindex(series, item);
                 int y = getYindex(series, item);
@@ -3163,30 +3190,37 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             }
 
+            @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
 
+            @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
 
+            @Override
             public DatasetGroup getGroup() {
                 return null;
             }
 
+            @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
 
+            @Override
             public Comparable getSeriesKey(int series) {
                 return "Flux";
             }
 
+            @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
 
+            @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
             }
@@ -3231,14 +3265,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return 1;
             }
 
+            @Override
             public int getItemCount(int series) {
                 return data.getSize();
             }
 
+            @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
 
+            @Override
             public double getXValue(int series, int item) {
                 return item * data.getStep() + data.getOffset();
             }
@@ -3248,22 +3285,27 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return new Double(getYValue(series, item));
             }
 
+            @Override
             public double getYValue(int series, int item) {
                 return data.getData()[item];
             }
 
+            @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
 
+            @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
 
+            @Override
             public DatasetGroup getGroup() {
                 return null;
             }
 
+            @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
@@ -3278,6 +3320,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return 0;
             }
 
+            @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
             }
@@ -3366,6 +3409,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemSource;
     private javax.swing.JMenuItem jMenuItemSourceParam;
     private javax.swing.JMenu jMenuOptions;
+    private javax.swing.JMenu jMenuPolarization;
     private javax.swing.JMenu jMenuShadow;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel_el;
@@ -3379,6 +3423,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux;
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemSPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemUnPolarized;
     private javax.swing.JProgressBar jRayProgressBar;
     private javax.swing.JButton jRayStopButton;
     private javax.swing.JScrollPane jScrollPane1;
