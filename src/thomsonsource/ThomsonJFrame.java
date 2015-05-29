@@ -305,11 +305,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuShadow = new javax.swing.JMenu();
         jMenuItemSource = new javax.swing.JMenuItem();
         jMenuItemSourceParam = new javax.swing.JMenuItem();
-        jMenuItemConv = new javax.swing.JMenuItem();
         jMenuPolarization = new javax.swing.JMenu();
         jRadioButtonMenuItemUnPolarized = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItemSPolarized = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItemPPolarized = new javax.swing.JRadioButtonMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemConv = new javax.swing.JMenuItem();
         jMenuOptions = new javax.swing.JMenu();
         jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemNumerical = new javax.swing.JMenuItem();
@@ -1506,14 +1507,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuShadow.add(jMenuItemSourceParam);
 
-        jMenuItemConv.setText("Converter...");
-        jMenuItemConv.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemConvActionPerformed(evt);
-            }
-        });
-        jMenuShadow.add(jMenuItemConv);
-
         jMenuPolarization.setText("Polarization...");
 
         jRadioButtonMenuItemUnPolarized.setSelected(true);
@@ -1529,6 +1522,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
 
         jMenuShadow.add(jMenuPolarization);
+        jMenuShadow.add(jSeparator3);
+
+        jMenuItemConv.setText("Converter...");
+        jMenuItemConv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemConvActionPerformed(evt);
+            }
+        });
+        jMenuShadow.add(jMenuItemConv);
 
         jMenuBarMain.add(jMenuShadow);
 
@@ -3431,6 +3433,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JSlider jSlider_pickup;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel phenergylabel;
