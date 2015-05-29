@@ -1513,11 +1513,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
-        jRadioButtonMenuItemSPolarized.setSelected(true);
         jRadioButtonMenuItemSPolarized.setText("S-polarized");
         jMenuPolarization.add(jRadioButtonMenuItemSPolarized);
 
-        jRadioButtonMenuItemPPolarized.setSelected(true);
         jRadioButtonMenuItemPPolarized.setText("P-polarized");
         jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
 

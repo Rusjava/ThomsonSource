@@ -644,13 +644,11 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemSPolarized">
                   <Properties>
-                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="S-polarized"/>
                   </Properties>
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemPPolarized">
                   <Properties>
-                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="P-polarized"/>
                   </Properties>
                 </MenuItem>
