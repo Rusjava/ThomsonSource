@@ -2039,12 +2039,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betax = TestValueWithMemory(1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
+        ebunch.betax = TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betax = TestValueWithMemory(1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
+        ebunch.betax = TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
@@ -2116,22 +2116,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.rlength = TestValueWithMemory(1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.rlength = TestValueWithMemory(0.1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.rlength = TestValueWithMemory(1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.rlength = TestValueWithMemory(0.1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.fq = TestValueWithMemory(1, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
+        lpulse.fq = TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.fq = TestValueWithMemory(1, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
+        lpulse.fq = TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
@@ -2146,22 +2146,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eshiftxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(0, TestValueWithMemory(0, 1, eshiftxvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueFocusLost
 
     private void eshiftxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(0, TestValueWithMemory(0, 1, eshiftxvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueActionPerformed
 
     private void eshiftyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(1, TestValueWithMemory(0, 1, eshiftyvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueFocusLost
 
     private void eshiftyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(1, TestValueWithMemory(0, 1, eshiftyvalue, "0", oldStrings) * 1e-3);
+        ebunch.shift.set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueActionPerformed
 
     private void eshiftzvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftzvalueFocusLost
