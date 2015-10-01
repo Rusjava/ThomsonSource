@@ -986,7 +986,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("5.4");
+        pulserelvalue.setText("2.7");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);
@@ -1033,7 +1033,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_phLayout.setHorizontalGroup(
             jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_phLayout.createSequentialGroup()
-                .addContainerGap(24, Short.MAX_VALUE)
+                .addContainerGap(28, Short.MAX_VALUE)
                 .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(puslelengthlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1173,15 +1173,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xfluxLayout.setHorizontalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_xfluxLayout.createSequentialGroup()
-                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                 .addGap(4, 4, 4))
         );
         jPanel_xfluxLayout.setVerticalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Flux", jPanel_xflux);
@@ -1409,7 +1409,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(jPanel_ph, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel_sh, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE)
+                            .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
                             .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -2116,12 +2116,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.rlength = TestValueWithMemory(0.1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.rlength = TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.rlength = TestValueWithMemory(0.1, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.rlength = TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
