@@ -2194,7 +2194,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemBrillianceActionPerformed
 
     private void BrillianceCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcStartActionPerformed
-        // TODO add your handling code here:
+        // Brilliance box calculations
         // Checking if already running
         if (brilForm.working) {
             brilForm.cancel();
@@ -2225,7 +2225,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.lpulseclone.direction.set(2, Math.cos(x));
                             brilForm.lpulseclone.direction.set(1, Math.sin(x));
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2237,7 +2237,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.lpulseclone.delay = x;
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2250,7 +2250,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.shift.set(2, x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2264,7 +2264,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.ebunchclone.betax = x;
                             brilForm.ebunchclone.betay = x;
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2277,7 +2277,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.eps = x;
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2290,7 +2290,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.lpulseclone.rlength = x;
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2305,7 +2305,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.ebunchclone.setxWidth(x);
                             brilForm.ebunchclone.setyWidth(x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2318,7 +2318,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.ebunchclone.delgamma = x;
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2329,7 +2329,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2340,7 +2340,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             double e = brilForm.energyclone * ElectronBunch.E * 1e3;
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
@@ -2760,7 +2760,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.lpulseclone.direction.set(2, Math.cos(x));
                             gfForm.lpulseclone.direction.set(1, Math.sin(x));
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
@@ -2769,7 +2769,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.lpulseclone.delay = x;
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
@@ -2778,7 +2778,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.ebunchclone.shift.set(2, x);
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
@@ -2788,7 +2788,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.ebunchclone.betax = x;
                             gfForm.ebunchclone.betay = x;
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
@@ -2797,7 +2797,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.ebunchclone.eps = x;
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
@@ -2806,7 +2806,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.lpulseclone.rlength = x;
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
@@ -2817,7 +2817,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.ebunchclone.setxWidth(x);
                             gfForm.ebunchclone.setyWidth(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step + 1) / xsize);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.geometricFactor;
                         }, xsize, step, offset);
                         break;
