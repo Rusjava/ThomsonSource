@@ -2878,17 +2878,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void HelpItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HelpItemActionPerformed
         // TODO add your handling code here:
-        File file = new File("help.html");
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(null, "The help file does not exist!", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         JTextPane textArea = new JTextPane();
+        //Reading the HTML help file
         try {
-            textArea.setPage(file.toURI().toURL());
+            textArea.setPage(ThomsonJFrame.class.
+                    getResource("/thomsonsourcehelp/thomsonsourcehelp.html"));
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error in the help file!", "Error",
+            JOptionPane.showMessageDialog(null, "The help file does not exist!", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }

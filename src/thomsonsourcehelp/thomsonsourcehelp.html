@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+Copyright (C) 2015 Ruslan Feshchenko
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+version: 1.0
+-->
+<html lang="en">
+   <head> 
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="thomsonsourcehelp.css" type="text/css" rel="stylesheet">
+        <title>TSource application user guide</title>
+  </head>
+  <body>
+    <div class="intro">
+        <h1>TSource application user guide</h1>
+        <p>The TSource application is intended as a tool to make fast estimates of the main Thompson source parameters such as:
+	the total photon flux, the X-ray photon flux in the given direction and spectral brilliance in a given direction.</p>
+    
+        <p>The application consists of the main window, where one can specify the parameters of the Thompson source as well as plot
+	photon flux, photon energy and spectral brilliance distributions in the form of 2D color plots and 1D line plots, and two calculation
+	boxes where one can obtain and plot estimates of the geometric factor and brilliance in in the specified direction and at the specified energy
+	as function of a number of parameters.</p>
+    
+	<p>The parameters from the main window can be saved to the file and loaded from the file. The plots from the calculation boxes 
+	can be saved to a file as well.</p>
+    </div>
+    <div class="content">
+	<h2>Parameters</h2>
+	<h3>Electron bunch parameters</h3>
+	<ul>
+    	<li>Electron energy &ndash; the average energy of the electrons in MeV</li>
+    	<li>Charge &ndash; the electric charge of the bunch in nQ</li>
+		<li>Spread &ndash; the relative energy spread of the electrons</li>
+		<li>Length &ndash; the length of the electron bunch in ps</li>
+		<li>Emittance &ndash; the emittance of the bunch in mm&times;mrad</li>
+		<li>Beta x &ndash; the beta function at the point of interaction in the x direction</li>
+		<li>Beta y &ndash; the beta function at the point of interaction in the y direction</li>
+	</ul> 
+	
+	<h3>Laser pulse parameters</h3>
+	<ul>
+    	<li>Photon energy &ndash; the average energy of the photons in eV</li>
+    	<li>Pulse energy &ndash; the energy of the laser pulse in mJ</li>
+		<li>Length &ndash; the length of the laser pulse in ps</li>
+		<li>Rayleigh length &ndash; the Rayleigh length of the laser pulse in mm</li>
+		<li>Pulse frequency &ndash; the number of laser pulses per second in MHz</li>
+		<li>Delay &ndash; the temporal delay of the laser pulse relative to the electron bunch in ps</li>
+	</ul> 
+	
+	<h3>Relative position</h3>
+	<ul>
+    	<li>X-shift &ndash; the spatial shift of the electron bunch relative to the laser pulse in x direction in mm</li>
+    	<li>Y-shift &ndash; the spatial shift of the electron bunch relative to the laser pulse in y direction in mm</li>
+		<li>Z-shift &ndash; the spatial shift of the electron bunch relative to the laser pulse in z direction in mm</li>
+		<li>Angle &ndash; the angle between direction of the electron bunch and the laser pulse in mrad. Rotation is thought to occur about x-axis</li>
+	</ul> 
+	
+	<h2>Graphs</h2>
+	<h3>X-ray flux tab</h3>
+	<p>The left color plot shows the X-ray photon flux (in mm<sup>&minus;2</sup>&times;s<sup>&minus;1</sup>) as a function of the X-ray photon direction relative
+	 to the direction of the electron bunch. The right color plot shows the X-ray photon spectral flux (in mm<sup>&minus;2</sup>&times;s<sup>&minus;1</sup>&times;0.1%)
+	 as a function of observation angle and energy at the angular position corresponding to the slider position below the left plot.</p>
+	 
+	<h3>X-ray energy tab</h3>
+	<p>The left color plot shows the X-ray photon energy (in keV) as a function of the X-ray photon direction relative to the direction of the electron bunch.
+	 The right plot shows the cross-section of X-ray photon energy (in keV) at the angular position corresponding to the slider position below 
+	 the left plot.</p>
+	 
+	 <h2>File menu</h2>
+	 <p>This menu allows one to save (<em>File</em> -> <em>Save parameters</em>) the source parameters from the main window to a file and load (<em>File</em> 
+	 -> <em>Load parameters</em>) them from a file.</p>
+	 
+	<h2>Calculation menu</h2>
+	<p>The <em>Calculation</em> menu provides access to two calculations boxes: for the spectral brilliance of the X-ray radiation and 
+	the geometric factor. These quantities are calculated by pressing <em>Calculate</em> button and can be plotted as a function of a number of parameters,
+	which can be chosen from a drop-down box. The desirable parameter range can be entered using two text fields. Other Thompson source parameters are taken 
+	from the main window of the program. The results of calculation can be saved as a text file using <em>Save</em> button.</p>
+	
+	<p>The brilliance calculation box also allows to choose whether the transversal velocity spread of the electrons is taken into account. The observation 
+	angle and X-ray energy may be also specified if necessary.</p>
+	
+	<h2>Shadow menu</h2>
+	<p>The <em>Shadow</em> menu allows one to generate a set of rays for the use as an X-ray source in Shadow ray-tracing software. 
+	To choose the number of generated rays, the angular and energy ranges use <em>Shadow</em> -> <em>Parameters</em> dialog. The ray set is saved in
+        binary Shadow format. A converter from binary to text format and from text to binary format can be launched from the <em>Shadow</em> as well.</p>
+	
+	<h2>Option menu</h2>
+	<p>Option menu provides access to additional graph parameters via <em>Options</em> -> <em>Graph parameters</em> as well as to the numerical integration precision and the number of points in Monte-Carlo
+	 calculation of the geometric factor via <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> specifies whether the transversal 
+	 velocity spread is taken into account in the main window calculations as well while generating a set of rays for Shadow.</p>
+    </div>
+  </body>
+</html>
