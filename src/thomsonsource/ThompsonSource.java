@@ -550,7 +550,7 @@ public class ThompsonSource implements Cloneable {
             } else {
                 prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
             }
-            sum += prob;
+            if (!new Double(prob).isNaN()) sum += prob;
             counter++;
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
