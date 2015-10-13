@@ -2619,6 +2619,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
+        if (rayWorking) {
+            ProgressFrame.setVisible(true);
+            return;
+        }
         jRayProgressBar.setStringPainted(true);
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
@@ -2628,11 +2632,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         } catch (CloneNotSupportedException ex) {
 
         }
-        tsourceRayClone.calculateTotalFlux();
-        if (rayWorking) {
-            ProgressFrame.setVisible(true);
-            return;
-        }
+        tsourceRayClone.calculateTotalFlux(); 
         rayWorking = true;
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
@@ -2664,7 +2664,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 jRayStopButton.setEnabled(false);
-                rayWorking = false;
                 jLabelPartialFlux.setText("Flux: " + tsourceRayClone.partialFlux
                         / tsourceRayClone.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
@@ -2686,6 +2685,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                     }
                 }
+                rayWorking = false;
             }
 
             /**
@@ -2949,7 +2949,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jRayStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRayStopButtonActionPerformed
         // TODO add your handling code here:
-        rayWorker.cancel(false);
+        rayWorker.cancel(true);
     }//GEN-LAST:event_jRayStopButtonActionPerformed
 
     private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved

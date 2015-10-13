@@ -509,7 +509,7 @@ public class ThompsonSource implements Cloneable {
      *
      * @return an array with ray parameters
      */
-    public double[] getRay() {
+    public double[] getRay() throws InterruptedException {
         double[] ray = new double[NUMBER_OF_COLUMNS];
         Matrix T;
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
@@ -526,6 +526,9 @@ public class ThompsonSource implements Cloneable {
             factor *= 4 * mult * mult * eb.getXSpread() * eb.getYSpread();
         }
         do {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
+            }
             ray[0] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
             ray[2] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
             ray[1] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.length, lp.length);
