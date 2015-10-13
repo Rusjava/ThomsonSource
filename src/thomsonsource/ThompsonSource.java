@@ -519,7 +519,7 @@ public class ThompsonSource implements Cloneable {
         EMax = directionEnergy(n, n);
         factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
                 * Math.max(eb.length, lp.length) * 4 * rayXAnglerange * rayYAnglerange
-                * (maxEnergy / minEnergy - 1);
+                * (maxEnergy - minEnergy);
         prob0 = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax);
         if (eSpread) {
             prob0 *= eb.angleDistribution(0, 0);
@@ -550,7 +550,7 @@ public class ThompsonSource implements Cloneable {
             } else {
                 prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
             }
-            if (!new Double(prob).isNaN()) sum += prob;
+            if (!new Double(prob).isNaN()) sum += prob / ray[10];
             counter++;
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
