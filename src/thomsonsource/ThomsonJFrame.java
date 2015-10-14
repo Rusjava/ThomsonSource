@@ -60,7 +60,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.65
+ * @version 1.7
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2877,7 +2877,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBoxSpreadActionPerformed
 
     private void HelpItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HelpItemActionPerformed
-        // TODO add your handling code here:
+        // Displaying help
         JTextPane textArea = new JTextPane();
         //Reading the HTML help file
         try {
@@ -2911,7 +2911,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
-        // TODO add your handling code here:
+        // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfmontecarlonumberbox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox
@@ -3048,11 +3048,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         //</editor-fold>
         Locale.setDefault(new Locale("en", "US"));
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ThomsonJFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ThomsonJFrame().setVisible(true);
         });
     }
 
@@ -3097,62 +3094,63 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         yAxis.setLowerMargin(0.0);
         yAxis.setUpperMargin(0.0);
         XYZDataset dataset = new XYZDataset() {
+            @Override
             public int getSeriesCount() {
                 return 1;
             }
-
+            @Override
             public int getItemCount(int series) {
                 return data.getysize();
             }
-
+            @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
-
+            @Override
             public double getXValue(int series, int item) {
                 return 0;
             }
-
+            @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
-
+            @Override
             public double getYValue(int series, int item) {
                 return item * data.getumax() / (data.getysize() - 1);
             }
-
+            @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
-
+            @Override
             public double getZValue(int series, int item) {
                 return getYValue(series, item);
             }
-
+            @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
-
+            @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
-
+            @Override
             public DatasetGroup getGroup() {
                 return null;
             }
-
+            @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
-
+            @Override
             public Comparable getSeriesKey(int series) {
                 return "colorbar";
             }
-
+            @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
-
+            @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
             }
@@ -3177,17 +3175,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getSeriesCount() {
                 return 1;
             }
-
             @Override
             public int getItemCount(int series) {
                 return data.getxsize() * data.getysize();
             }
-
             @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
-
             @Override
             public double getXValue(int series, int item) {
                 return (getXindex(series, item) - data.getxsize() / 2) * data.getxstep() + data.getxoffset();
@@ -3196,12 +3191,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getXindex(int series, int item) {
                 return item / data.getysize();
             }
-
             @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
-
             @Override
             public double getYValue(int series, int item) {
                 return (getYindex(series, item) - data.getysize() / 2) * data.getystep() + data.getyoffset();
@@ -3210,12 +3203,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getYindex(int series, int item) {
                 return item - (item / data.getysize()) * data.getysize();
             }
-
             @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
-
             @Override
             public double getZValue(int series, int item) {
                 int x = getXindex(series, item);
@@ -3235,32 +3226,26 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
-
             @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
-
             @Override
             public DatasetGroup getGroup() {
                 return null;
             }
-
             @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
-
             @Override
             public Comparable getSeriesKey(int series) {
                 return "Flux";
             }
-
             @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
-
             @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
@@ -3305,62 +3290,50 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getSeriesCount() {
                 return 1;
             }
-
             @Override
             public int getItemCount(int series) {
                 return data.getSize();
             }
-
             @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
-
             @Override
             public double getXValue(int series, int item) {
                 return item * data.getStep() + data.getOffset();
             }
-
             @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
-
             @Override
             public double getYValue(int series, int item) {
                 return data.getData()[item];
             }
-
             @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
-
             @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
-
             @Override
             public DatasetGroup getGroup() {
                 return null;
             }
-
             @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
-
             @Override
             public Comparable getSeriesKey(int series) {
                 return "EnergyCrossSection";
             }
-
             @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
-
             @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;

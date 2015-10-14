@@ -29,7 +29,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class contating all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 1.35
+ * @version 1.4
  */
 public class ThompsonSource implements Cloneable {
 
@@ -182,11 +182,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFlux(Vector n, Vector v, double e) {
-        if (eSpread) {
-            return directionFrequencyFluxSpread(n, v, e);
-        } else {
-            return directionFrequencyFluxNoSpread(n, v, e);
-        }
+        return eSpread ? directionFrequencyFluxSpread(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
     }
 
     /**
@@ -200,14 +196,13 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        double u, K, th;
+        double K, th;
         th = (1 - n.innerProduct(v)) * 2;
         K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
                 / 4 / Math.pow(eb.getGamma() * eb.delgamma, 2);
-        u = totalFlux * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.delgamma / eb.getGamma() / lp.getPhotonEnergy()
+        return totalFlux * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.delgamma / eb.getGamma() / lp.getPhotonEnergy()
                 * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
                 / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
-        return u;
     }
 
     /**
@@ -220,14 +215,12 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
-        double u;
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v, n);
         try {
-            u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
-            return u;
+            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -249,12 +242,10 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
-            double u;
             UnivariateFunction func
                     = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
             try {
-                u = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 3 * eb.getSpread());
-                return u;
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 3 * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -276,16 +267,12 @@ public class ThompsonSource implements Cloneable {
         @Override
         public double value(double theta) {
             double u;
-            Vector dv;
             Vector v = new BasicVector(new double[]{Math.sin(theta) * Math.cos(phi),
                 Math.sin(theta) * Math.sin(phi), Math.cos(theta)});
-            dv = v.subtract(v0);
+            Vector dv = v.subtract(v0);
             u = theta * directionFrequencyFluxNoSpread(n, v, e)
                     * eb.angleDistribution(dv.get(0), dv.get(1));
-            if ((new Double(u)).isNaN()) {
-                return 0;
-            }
-            return u;
+            return new Double(u).isNaN() ? 0 : u;
         }
     }
 
@@ -300,17 +287,13 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyVolumeFlux(Vector r, Vector n, Vector v, double e) {
-        if (eSpread) {
-            return directionFrequencyVolumeFluxSpread(r, n, v, e);
-        } else {
-            return directionFrequencyVolumeFluxNoSpread(r, n, v, e);
-        }
+        return eSpread ? directionFrequencyVolumeFluxSpread(r, n, v, e) : directionFrequencyVolumeFluxNoSpread(r, n, v, e);
     }
 
     /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy for a given volume element without taking into
-     * account electron transversial pulse spread
+     * account electron transversal pulse spread
      *
      * @param r spatial position
      * @param n direction
@@ -364,10 +347,7 @@ public class ThompsonSource implements Cloneable {
         u = 2.0 / Math.pow(Math.PI, 1.5) * Math.sqrt((lp.getWidth2(0.0)
                 + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0)
                 + eb.getyWidth2(0.0))) / len / lp.getWidth2(z1) / eb.getxWidth(z - z0) / eb.getyWidth(z - z0) * Math.exp(-K);
-        if ((new Double(u)).isNaN()) {
-            u = 0;
-        }
-        return u;
+        return new Double(u).isNaN() ? 0 : u;
     }
 
     /**
@@ -378,12 +358,11 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFlux(Vector n, Vector v) {
-        double u, gamma2, th;
+        double gamma2, th;
         th = (1 - n.innerProduct(v)) * 2;
         gamma2 = eb.getGamma() * eb.getGamma();
-        u = totalFlux * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
+        return totalFlux * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
                 / Math.pow((1 + gamma2 * th), 4) * geometricFactor;
-        return u;
     }
 
     /**
@@ -409,11 +388,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyBrilliance(Vector r0, Vector n, Vector v, double e) {
-        if (eSpread) {
-            return directionFrequencyBrillianceSpread(r0, n, v, e);
-        } else {
-            return directionFrequencyBrillianceNoSpread(r0, n, v, e);
-        }
+        return eSpread ? directionFrequencyBrillianceSpread(r0, n, v, e) : directionFrequencyBrillianceNoSpread(r0, n, v, e);
     }
 
     /**
@@ -435,8 +410,7 @@ public class ThompsonSource implements Cloneable {
             u = integrator.integrate(30000, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.length,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.length);
-            u = u * directionFrequencyFluxNoSpread(n, v, e);
-            return u;
+            return u * directionFrequencyFluxNoSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -461,8 +435,7 @@ public class ThompsonSource implements Cloneable {
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.length,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.length);
-            u = u * directionFrequencyFluxSpread(n, v, e);
-            return u;
+            return u * directionFrequencyFluxSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -483,7 +456,7 @@ public class ThompsonSource implements Cloneable {
             Vector r;
             r = r0.add(n0.multiply(x));
             double y = volumeFlux(r);
-            if (n0.get(0) + n0.get(1) + n0.get(2) == 0f) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
                 throw new LocalException(x);
             }
             return y;
@@ -508,6 +481,7 @@ public class ThompsonSource implements Cloneable {
      * Returning a random ray
      *
      * @return an array with ray parameters
+     * @throws java.lang.InterruptedException
      */
     public double[] getRay() throws InterruptedException {
         double[] ray = new double[NUMBER_OF_COLUMNS];
@@ -553,7 +527,9 @@ public class ThompsonSource implements Cloneable {
             } else {
                 prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
             }
-            if (!new Double(prob).isNaN()) sum += prob / ray[10];
+            if (!new Double(prob).isNaN()) {
+                sum += prob / ray[10];
+            }
             counter++;
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
@@ -598,7 +574,7 @@ public class ThompsonSource implements Cloneable {
      * @return transformation matrix
      */
     protected Matrix getTransform(Vector n, Vector n0) {
-        Matrix M, D, T, A, I = new Basic1DMatrix(3, 3);
+        Matrix M, D, A, I = new Basic1DMatrix(3, 3);
         I.set(0, 0, 1.0);
         I.set(1, 1, 1.0);
         I.set(2, 2, 1.0);
@@ -607,8 +583,7 @@ public class ThompsonSource implements Cloneable {
         D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n)
                 .add(n0.outerProduct(n0))).divide(innerProduct * innerProduct - 1.0);
         A = n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
-        T = I.subtract(D).multiply(1 - innerProduct).add(A);
-        return T;
+        return I.subtract(D).multiply(1 - innerProduct).add(A);
     }
 
     /**
