@@ -16,6 +16,7 @@
  */
 package thomsonsource;
 
+import TextUtilities.MyTextUtilities;
 import java.text.*;
 import java.awt.*;
 import javax.swing.*;
@@ -55,6 +56,10 @@ import org.la4j.vector.*;
 import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
+import java.net.URL;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
 import shadowfileconverter.ShadowFiles;
 
 /**
@@ -79,18 +84,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ystep = 20.0 / ysize;
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
-        rayNumberBox = new JTextField("1000");
-        rayXAngleRangeBox = new JTextField("0.3");
-        rayYAngleRangeBox = new JTextField("0.3");
-        gfmontecarlonumberbox = new JTextField("5000000");
-        brilPrecisionBox = new JTextField("0.0001");
-        xsizebox = new JTextField("300");
-        ysizebox = new JTextField("200");
-        xrangebox = new JTextField("20");
-        yrangebox = new JTextField("20");
-        xenergyrangebox = new JTextField("2000");
-        rayMinEnergyBox = new JTextField("36");
-        rayEnergyRangeBox = new JTextField("10");
+        rayNumberBox = MyTextUtilities.getIntegerFormattedTextField(1000, 1, 1000000);
+        rayXAngleRangeBox = MyTextUtilities.getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        rayYAngleRangeBox = MyTextUtilities.getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        gfmontecarlonumberbox = MyTextUtilities.getIntegerFormattedTextField(5000000, 1, 100000000);
+        brilPrecisionBox = MyTextUtilities.getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
+        xsizebox = MyTextUtilities.getIntegerFormattedTextField(300, 1, 10000);
+        ysizebox = MyTextUtilities.getIntegerFormattedTextField(200, 1, 10000);
+        xrangebox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        yrangebox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        xenergyrangebox = MyTextUtilities.getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
+        rayMinEnergyBox = MyTextUtilities.getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
+        rayEnergyRangeBox = MyTextUtilities.getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
 
         /**
          * An auxiliary method giving the flux density in a given direction
@@ -1844,10 +1849,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private boolean working = false, rayWorking = false;
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
-    JTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
+    JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
             gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox,
             yrangebox, xenergyrangebox;
-    
+
     private File bFile = null, pFile = null;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
@@ -2427,10 +2432,31 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemGeometricFactorActionPerformed
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
-        // TODO add your handling code here:
+        // Extracting the build date from the MANIFEST.MF file
+        Package pk = Package.getPackage("NonLinearImageFilter");
+        Date dt = new Date();
+        DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Enumeration<URL> mfs = this.getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (mfs.hasMoreElements()) {
+                Manifest mft = new Manifest(mfs.nextElement().openStream());
+                if (mft.getMainAttributes().getValue("Built-Date") != null) {
+                    dt = dtf.parse(mft.getMainAttributes().getValue("Built-Date"));
+                    break;
+                }
+            }
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Extracting vendor and version from the MANIFEST.MF file and showing up About popup window
         JOptionPane.showMessageDialog(null,
-                "<html>Thompson source parameter calculation. <br>Version: 1.65 <br>Date: May 2015. <br>Author: Ruslan Feshchenko</html>",
-                "About TSource", 1);
+                "<html>"
+                + pk.getImplementationTitle()
+                + " <br>Version: " + pk.getImplementationVersion()
+                + "Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
+                + "Author: " + pk.getImplementationVendor()
+                + "</html>",
+                "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
@@ -2632,7 +2658,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         } catch (CloneNotSupportedException ex) {
 
         }
-        tsourceRayClone.calculateTotalFlux(); 
+        tsourceRayClone.calculateTotalFlux();
         rayWorking = true;
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
@@ -2711,11 +2737,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            xsize = (int) Math.round(TestValueWithMemory(1, 1000, xsizebox, "300", oldStrings));
-            ysize = (int) Math.round(TestValueWithMemory(1, 1000, ysizebox, "200", oldStrings));
-            xstep = TestValueWithMemory(0, 100, xrangebox, "20", oldStrings) / xsize;
-            ystep = TestValueWithMemory(0, 100, yrangebox, "20", oldStrings) / ysize;
-            estep = TestValueWithMemory(0, 10000, xenergyrangebox, "2000", oldStrings) / xsize;
+            xsize = (int) xsizebox.getValue();
+            ysize = (int) ysizebox.getValue();
+            xstep = (int) xrangebox.getValue() / xsize;
+            ystep = (int) yrangebox.getValue() / ysize;
+            estep = (double) xenergyrangebox.getValue() / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
@@ -2918,8 +2944,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.npGeometricFactor = (int) Math.round(TestValueWithMemory(1, 1e7, gfmontecarlonumberbox, "5000000", oldStrings));
-            tsource.precision = TestValueWithMemory(1e-6, 1e-2, brilPrecisionBox, "0.0001", oldStrings);
+            tsource.npGeometricFactor = (int) gfmontecarlonumberbox.getValue();
+            tsource.precision = (double) brilPrecisionBox.getValue();
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
@@ -2934,11 +2960,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            double eMin = TestValueWithMemory(10, 50, rayMinEnergyBox, "35", oldStrings) * ElectronBunch.E * 1e3;
-            numberOfRays = (int) Math.round(TestValueWithMemory(1, 1e6, rayNumberBox, "1000", oldStrings));
-            tsource.setRayRanges(TestValueWithMemory(0, 30, rayXAngleRangeBox, "5", oldStrings) * 1e-3,
-                    TestValueWithMemory(0, 30, rayYAngleRangeBox, "5", oldStrings) * 1e-3, eMin,
-                    eMin + TestValueWithMemory(0, 30, rayEnergyRangeBox, "10", oldStrings) * ElectronBunch.E * 1e3);
+            double eMin = (double) rayMinEnergyBox.getValue() * ElectronBunch.E * 1e3;
+            numberOfRays = (int) rayNumberBox.getValue();
+            tsource.setRayRanges((double) rayXAngleRangeBox.getValue() * 1e-3,
+                    (double) rayYAngleRangeBox.getValue() * 1e-3, eMin,
+                    eMin + (double) rayEnergyRangeBox.getValue() * ElectronBunch.E * 1e3);
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 
@@ -2995,30 +3021,32 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jRadioButtonMenuItemUnPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
         // TODO add your handling code here:
-        pRadioButtons ();
+        pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
 
     private void jRadioButtonMenuItemSPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
         // TODO add your handling code here:
-        pRadioButtons ();
+        pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
 
     private void jRadioButtonMenuItemPPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
         // TODO add your handling code here:
-        pRadioButtons ();
+        pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
     /*
-    * Setting up polarization of X-ray radiation
-    */
-    private void pRadioButtons () {
+     * Setting up polarization of X-ray radiation
+     */
+
+    private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(0, 0, 0);
-        } else if (jRadioButtonMenuItemSPolarized.isSelected()){
+        } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
             tsource.setPolarization(-1, 0, 0);
         } else {
             tsource.setPolarization(1, 0, 0);
         }
     }
+
     /**
      * @param args the command line arguments
      */
@@ -3098,58 +3126,72 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getSeriesCount() {
                 return 1;
             }
+
             @Override
             public int getItemCount(int series) {
                 return data.getysize();
             }
+
             @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
             @Override
             public double getXValue(int series, int item) {
                 return 0;
             }
+
             @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
+
             @Override
             public double getYValue(int series, int item) {
                 return item * data.getumax() / (data.getysize() - 1);
             }
+
             @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
+
             @Override
             public double getZValue(int series, int item) {
                 return getYValue(series, item);
             }
+
             @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
+
             @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
             @Override
             public DatasetGroup getGroup() {
                 return null;
             }
+
             @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
             @Override
             public Comparable getSeriesKey(int series) {
                 return "colorbar";
             }
+
             @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
+
             @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
@@ -3175,14 +3217,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getSeriesCount() {
                 return 1;
             }
+
             @Override
             public int getItemCount(int series) {
                 return data.getxsize() * data.getysize();
             }
+
             @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
             @Override
             public double getXValue(int series, int item) {
                 return (getXindex(series, item) - data.getxsize() / 2) * data.getxstep() + data.getxoffset();
@@ -3191,10 +3236,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getXindex(int series, int item) {
                 return item / data.getysize();
             }
+
             @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
+
             @Override
             public double getYValue(int series, int item) {
                 return (getYindex(series, item) - data.getysize() / 2) * data.getystep() + data.getyoffset();
@@ -3203,10 +3250,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getYindex(int series, int item) {
                 return item - (item / data.getysize()) * data.getysize();
             }
+
             @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
+
             @Override
             public double getZValue(int series, int item) {
                 int x = getXindex(series, item);
@@ -3226,26 +3275,32 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
+
             @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
             @Override
             public DatasetGroup getGroup() {
                 return null;
             }
+
             @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
             @Override
             public Comparable getSeriesKey(int series) {
                 return "Flux";
             }
+
             @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
+
             @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
@@ -3290,50 +3345,62 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             public int getSeriesCount() {
                 return 1;
             }
+
             @Override
             public int getItemCount(int series) {
                 return data.getSize();
             }
+
             @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
             @Override
             public double getXValue(int series, int item) {
                 return item * data.getStep() + data.getOffset();
             }
+
             @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
+
             @Override
             public double getYValue(int series, int item) {
                 return data.getData()[item];
             }
+
             @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
+
             @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
             @Override
             public DatasetGroup getGroup() {
                 return null;
             }
+
             @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
             @Override
             public Comparable getSeriesKey(int series) {
                 return "EnergyCrossSection";
             }
+
             @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
+
             @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
