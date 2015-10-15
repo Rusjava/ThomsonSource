@@ -87,16 +87,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayNumberBox = MyTextUtilities.getIntegerFormattedTextField(1000, 1, 1000000);
         rayXAngleRangeBox = MyTextUtilities.getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         rayYAngleRangeBox = MyTextUtilities.getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        gfmontecarlonumberbox = MyTextUtilities.getIntegerFormattedTextField(5000000, 1, 100000000);
+        gfMonteCarloNumberBox = MyTextUtilities.getIntegerFormattedTextField(5000000, 1, 100000000);
         brilPrecisionBox = MyTextUtilities.getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
-        xsizebox = MyTextUtilities.getIntegerFormattedTextField(300, 1, 10000);
-        ysizebox = MyTextUtilities.getIntegerFormattedTextField(200, 1, 10000);
-        xrangebox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        yrangebox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        xenergyrangebox = MyTextUtilities.getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
+        xSizeBox = MyTextUtilities.getIntegerFormattedTextField(300, 1, 10000);
+        ySizeBox = MyTextUtilities.getIntegerFormattedTextField(200, 1, 10000);
+        xRangeBox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        yRangeBox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        xEnergyRangeBox = MyTextUtilities.getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
         rayMinEnergyBox = MyTextUtilities.getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
         rayEnergyRangeBox = MyTextUtilities.getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
-
+        threadsNumberBox = MyTextUtilities.getIntegerFormattedTextField(2, 1, 100);
         /**
          * An auxiliary method giving the flux density in a given direction
          *
@@ -1835,7 +1835,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private double xstep, ystep, estep, hoffset = 0; /* Step in x or y direction */
 
-    private int numberOfRays = 1000; /* Number of rays exported for Shadow */
+    private int numberOfRays = 1000, numberOfThreads = 2; /* Number of rays exported for Shadow and the number of threads used */
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -1850,8 +1850,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
-            gfmontecarlonumberbox, brilPrecisionBox, xsizebox, ysizebox, xrangebox,
-            yrangebox, xenergyrangebox;
+            gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
+            yRangeBox, xEnergyRangeBox, threadsNumberBox;
 
     private File bFile = null, pFile = null;
 
@@ -2433,7 +2433,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
         // Extracting the build date from the MANIFEST.MF file
-        Package pk = Package.getPackage("NonLinearImageFilter");
+        Package pk = Package.getPackage("thomsonsource");
         Date dt = new Date();
         DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -2450,11 +2450,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         }
         // Extracting vendor and version from the MANIFEST.MF file and showing up About popup window
         JOptionPane.showMessageDialog(null,
-                "<html>"
-                + pk.getImplementationTitle()
-                + " <br>Version: " + pk.getImplementationVersion()
-                + "Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
-                + "Author: " + pk.getImplementationVendor()
+                "<html>" + pk.getImplementationTitle()
+                + "<br>Version: " + pk.getImplementationVersion()
+                + "<br>Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
+                + "<br>Author: " + pk.getImplementationVendor()
                 + "</html>",
                 "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
@@ -2729,19 +2728,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
         // TODO add your handling code here:
         Object[] message = {
-            "x-size:", xsizebox,
-            "y-size:", ysizebox,
-            "x-range (mrad):", xrangebox,
-            "y-range (mrad):", yrangebox,
-            "xenergy-range (eV):", xenergyrangebox
+            "x-size:", xSizeBox,
+            "y-size:", ySizeBox,
+            "x-range (mrad):", xRangeBox,
+            "y-range (mrad):", yRangeBox,
+            "xenergy-range (eV):", xEnergyRangeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            xsize = (int) xsizebox.getValue();
-            ysize = (int) ysizebox.getValue();
-            xstep = (int) xrangebox.getValue() / xsize;
-            ystep = (int) yrangebox.getValue() / ysize;
-            estep = (double) xenergyrangebox.getValue() / xsize;
+            xsize = (int) xSizeBox.getValue();
+            ysize = (int) ySizeBox.getValue();
+            xstep = (int) xRangeBox.getValue() / xsize;
+            ystep = (int) yRangeBox.getValue() / ysize;
+            estep = (double) xEnergyRangeBox.getValue() / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
@@ -2939,13 +2938,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
         // Dispalying a window to enter numerical parameters
         Object[] message = {
-            "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfmontecarlonumberbox,
-            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox
+            "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
+            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox,
+            "<html>Number of threads</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.npGeometricFactor = (int) gfmontecarlonumberbox.getValue();
+            tsource.npGeometricFactor = (int) gfMonteCarloNumberBox.getValue();
             tsource.precision = (double) brilPrecisionBox.getValue();
+            numberOfThreads = (int) threadsNumberBox.getValue();
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
@@ -3036,7 +3037,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /*
      * Setting up polarization of X-ray radiation
      */
-
     private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(0, 0, 0);
