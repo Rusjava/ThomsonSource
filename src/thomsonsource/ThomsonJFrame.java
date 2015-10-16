@@ -56,6 +56,7 @@ import org.la4j.vector.*;
 import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
+import java.awt.event.ItemEvent;
 import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
@@ -182,6 +183,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "Y-shift, mm", "Z-shift, mm", "Laser-electron angle, mrad"};
 
         initComponents();
+        // Adding skin menua items to their button group
+        buttonGroupSkin.add(jRadioButtonMenuDefault);
+        buttonGroupSkin.add(jRadioButtonMenuSystem);
+        buttonGroupSkin.add(jRadioButtonMenuNimbus);
+        // Adding a listerner of the UI manager
+        UIManager.addPropertyChangeListener(e -> {
+            SwingUtilities.updateComponentTreeUI(this);
+            SwingUtilities.updateComponentTreeUI(gfCalc);
+            SwingUtilities.updateComponentTreeUI(brillianceCalc);
+            SwingUtilities.updateComponentTreeUI(rayProgressFrame);
+        });
     }
 
     /**
@@ -193,7 +205,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        BrillianceCalc = new javax.swing.JFrame();
+        brillianceCalc = new javax.swing.JFrame();
         BrillianceParam = new javax.swing.JPanel();
         BrillianceCalcBox = new javax.swing.JComboBox();
         BrillianceCalcStart = new javax.swing.JButton();
@@ -213,7 +225,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         energyValue = new javax.swing.JTextField();
         energyValueUnitLable = new javax.swing.JLabel();
         BrillianceCalcGraph = new javax.swing.JPanel();
-        GfCalc = new javax.swing.JFrame();
+        gfCalc = new javax.swing.JFrame();
         GFParam = new javax.swing.JPanel();
         GFCalcBox = new javax.swing.JComboBox();
         GFCalcStart = new javax.swing.JButton();
@@ -226,11 +238,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFmaxvaluelabel = new javax.swing.JLabel();
         GFProgressBar = new javax.swing.JProgressBar();
         GFCalcGraph = new javax.swing.JPanel();
-        ProgressFrame = new javax.swing.JFrame();
+        rayProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
         jLabelPartialFlux = new javax.swing.JLabel();
         buttonGroupPolarization = new javax.swing.ButtonGroup();
+        buttonGroupSkin = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel_el = new javax.swing.JPanel();
@@ -322,12 +335,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemNumerical = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jMenuSkin = new javax.swing.JMenu();
+        jRadioButtonMenuDefault = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuSystem = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuNimbus = new javax.swing.JRadioButtonMenuItem();
         jMenuHelp = new javax.swing.JMenu();
         HelpItem = new javax.swing.JMenuItem();
         jMenuItemAbout = new javax.swing.JMenuItem();
 
-        BrillianceCalc.setTitle("Brilliance box");
-        BrillianceCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+        brillianceCalc.setTitle("Brilliance box");
+        brillianceCalc.setMinimumSize(new java.awt.Dimension(760, 313));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -518,23 +536,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGap(0, 213, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout BrillianceCalcLayout = new javax.swing.GroupLayout(BrillianceCalc.getContentPane());
-        BrillianceCalc.getContentPane().setLayout(BrillianceCalcLayout);
-        BrillianceCalcLayout.setHorizontalGroup(
-            BrillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout brillianceCalcLayout = new javax.swing.GroupLayout(brillianceCalc.getContentPane());
+        brillianceCalc.getContentPane().setLayout(brillianceCalcLayout);
+        brillianceCalcLayout.setHorizontalGroup(
+            brillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(BrillianceParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
         );
-        BrillianceCalcLayout.setVerticalGroup(
-            BrillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(BrillianceCalcLayout.createSequentialGroup()
+        brillianceCalcLayout.setVerticalGroup(
+            brillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(brillianceCalcLayout.createSequentialGroup()
                 .addComponent(BrillianceParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         );
 
-        GfCalc.setTitle("Geometric factor box");
-        GfCalc.setMinimumSize(new java.awt.Dimension(586, 313));
+        gfCalc.setTitle("Geometric factor box");
+        gfCalc.setMinimumSize(new java.awt.Dimension(586, 313));
 
         GFParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -658,25 +676,25 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGap(0, 193, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout GfCalcLayout = new javax.swing.GroupLayout(GfCalc.getContentPane());
-        GfCalc.getContentPane().setLayout(GfCalcLayout);
-        GfCalcLayout.setHorizontalGroup(
-            GfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout gfCalcLayout = new javax.swing.GroupLayout(gfCalc.getContentPane());
+        gfCalc.getContentPane().setLayout(gfCalcLayout);
+        gfCalcLayout.setHorizontalGroup(
+            gfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(GFParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
         );
-        GfCalcLayout.setVerticalGroup(
-            GfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(GfCalcLayout.createSequentialGroup()
+        gfCalcLayout.setVerticalGroup(
+            gfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gfCalcLayout.createSequentialGroup()
                 .addComponent(GFParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        ProgressFrame.setTitle("Ray generation progress");
-        ProgressFrame.setAlwaysOnTop(true);
-        ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 100));
-        ProgressFrame.setResizable(false);
+        rayProgressFrame.setTitle("Ray generation progress");
+        rayProgressFrame.setAlwaysOnTop(true);
+        rayProgressFrame.setMinimumSize(new java.awt.Dimension(400, 100));
+        rayProgressFrame.setResizable(false);
 
         jRayStopButton.setText("Stop");
         jRayStopButton.setToolTipText("");
@@ -689,24 +707,24 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jLabelPartialFlux.setText("Flux: ");
 
-        javax.swing.GroupLayout ProgressFrameLayout = new javax.swing.GroupLayout(ProgressFrame.getContentPane());
-        ProgressFrame.getContentPane().setLayout(ProgressFrameLayout);
-        ProgressFrameLayout.setHorizontalGroup(
-            ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ProgressFrameLayout.createSequentialGroup()
+        javax.swing.GroupLayout rayProgressFrameLayout = new javax.swing.GroupLayout(rayProgressFrame.getContentPane());
+        rayProgressFrame.getContentPane().setLayout(rayProgressFrameLayout);
+        rayProgressFrameLayout.setHorizontalGroup(
+            rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rayProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabelPartialFlux, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jRayStopButton)
                 .addGap(21, 21, 21))
         );
-        ProgressFrameLayout.setVerticalGroup(
-            ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ProgressFrameLayout.createSequentialGroup()
+        rayProgressFrameLayout.setVerticalGroup(
+            rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rayProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jRayStopButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
@@ -1584,6 +1602,36 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuOptions.add(jCheckBoxMenuItemSpread);
+        jMenuOptions.add(jSeparator4);
+
+        jMenuSkin.setText("Look&Feel...");
+
+        jRadioButtonMenuDefault.setText("Default");
+        jRadioButtonMenuDefault.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuDefaultItemStateChanged(evt);
+            }
+        });
+        jMenuSkin.add(jRadioButtonMenuDefault);
+
+        jRadioButtonMenuSystem.setText("System");
+        jRadioButtonMenuSystem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuSystemItemStateChanged(evt);
+            }
+        });
+        jMenuSkin.add(jRadioButtonMenuSystem);
+
+        jRadioButtonMenuNimbus.setSelected(true);
+        jRadioButtonMenuNimbus.setText("Nimbus");
+        jRadioButtonMenuNimbus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuNimbusItemStateChanged(evt);
+            }
+        });
+        jMenuSkin.add(jRadioButtonMenuNimbus);
+
+        jMenuOptions.add(jMenuSkin);
 
         jMenuBarMain.add(jMenuOptions);
 
@@ -2195,7 +2243,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemBrillianceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceActionPerformed
         // TODO add your handling code here:  
-        BrillianceCalc.setVisible(true);
+        brillianceCalc.setVisible(true);
     }//GEN-LAST:event_jMenuItemBrillianceActionPerformed
 
     private void BrillianceCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcStartActionPerformed
@@ -2428,7 +2476,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemGeometricFactorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGeometricFactorActionPerformed
         // TODO add your handling code here:
-        GfCalc.setVisible(true);
+        gfCalc.setVisible(true);
     }//GEN-LAST:event_jMenuItemGeometricFactorActionPerformed
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
@@ -2645,7 +2693,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
         if (rayWorking) {
-            ProgressFrame.setVisible(true);
+            rayProgressFrame.setVisible(true);
             return;
         }
         jRayProgressBar.setStringPainted(true);
@@ -2664,7 +2712,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, number, bFile)) {
                     bFile = shadowFile.getFile();
-                    SwingUtilities.invokeLater(() -> ProgressFrame.setVisible(true));
+                    SwingUtilities.invokeLater(() -> rayProgressFrame.setVisible(true));
                     for (int i = 0; i < number; i++) {
                         if (isCancelled()) {
                             break;
@@ -3021,19 +3069,52 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemConvActionPerformed
 
     private void jRadioButtonMenuItemUnPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
-        // TODO add your handling code here:
+        // Selecting no polarization
         pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
 
     private void jRadioButtonMenuItemSPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
-        // TODO add your handling code here:
+        // Selecting s-polarization
         pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
 
     private void jRadioButtonMenuItemPPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
-        // TODO add your handling code here:
+        // Selecting p-polarization
         pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+
+    private void jRadioButtonMenuDefaultItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuDefaultItemStateChanged
+        // Selecting default look&feel
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuDefaultItemStateChanged
+
+    private void jRadioButtonMenuSystemItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuSystemItemStateChanged
+        // Selecting system look&feel
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuSystemItemStateChanged
+
+    private void jRadioButtonMenuNimbusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuNimbusItemStateChanged
+        // Selecting nimbus look&feel
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            try {
+                UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuNimbusItemStateChanged
     /*
      * Setting up polarization of X-ray radiation
      */
@@ -3410,7 +3491,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JProgressBar BrilProgressBar;
-    private javax.swing.JFrame BrillianceCalc;
     private javax.swing.JComboBox BrillianceCalcBox;
     private javax.swing.JPanel BrillianceCalcGraph;
     private javax.swing.JButton BrillianceCalcSave;
@@ -3434,13 +3514,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField GFminvalue;
     private javax.swing.JLabel GFminvaluelabel;
     private javax.swing.JLabel GFminvalueunitlabel;
-    private javax.swing.JFrame GfCalc;
     private javax.swing.JMenuItem HelpItem;
     private javax.swing.JProgressBar MainProgressBar;
-    private javax.swing.JFrame ProgressFrame;
     private javax.swing.JTextField angleValue;
     private javax.swing.JLabel angleValueUnitLable;
+    private javax.swing.JFrame brillianceCalc;
     private javax.swing.ButtonGroup buttonGroupPolarization;
+    private javax.swing.ButtonGroup buttonGroupSkin;
     private javax.swing.JLabel chargelabel;
     private javax.swing.JLabel chargeunitlabel;
     private javax.swing.JTextField chargevalue;
@@ -3470,6 +3550,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel eshiftzlabel;
     private javax.swing.JLabel eshiftzunitlabel;
     private javax.swing.JTextField eshiftzvalue;
+    private javax.swing.JFrame gfCalc;
     private javax.swing.JLabel jAngleLabel;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
@@ -3493,6 +3574,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuOptions;
     private javax.swing.JMenu jMenuPolarization;
     private javax.swing.JMenu jMenuShadow;
+    private javax.swing.JMenu jMenuSkin;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel_el;
     private javax.swing.JPanel jPanel_exec;
@@ -3505,15 +3587,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux;
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemSPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemUnPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuNimbus;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuSystem;
     private javax.swing.JProgressBar jRayProgressBar;
     private javax.swing.JButton jRayStopButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JSlider jSlider_pickup;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel phenergylabel;
@@ -3537,6 +3623,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel pulserelunitlable;
     private javax.swing.JTextField pulserelvalue;
     private javax.swing.JLabel puslelengthlabel;
+    private javax.swing.JFrame rayProgressFrame;
     private javax.swing.JLabel spreadlabel;
     private javax.swing.JTextField spreadvalue;
     private javax.swing.JButton startbutton;
