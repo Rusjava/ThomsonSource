@@ -16,10 +16,12 @@
  */
 package thomsonsource;
 
-import TextUtilities.MyTextUtilities;
 import java.text.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import java.util.Formatter;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
-import javax.swing.border.TitledBorder;
 import java.util.concurrent.ExecutionException;
 import java.util.IllegalFormatException;
 import java.util.concurrent.CancellationException;
@@ -38,6 +39,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -56,17 +60,13 @@ import org.la4j.vector.*;
 import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
-import java.awt.event.ItemEvent;
 import java.net.URL;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.jar.Manifest;
 import shadowfileconverter.ShadowFiles;
 
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.7
+ * @version 1.7.1
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -85,19 +85,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ystep = 20.0 / ysize;
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
-        rayNumberBox = MyTextUtilities.getIntegerFormattedTextField(1000, 1, 1000000);
-        rayXAngleRangeBox = MyTextUtilities.getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        rayYAngleRangeBox = MyTextUtilities.getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        gfMonteCarloNumberBox = MyTextUtilities.getIntegerFormattedTextField(5000000, 1, 100000000);
-        brilPrecisionBox = MyTextUtilities.getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
-        xSizeBox = MyTextUtilities.getIntegerFormattedTextField(300, 1, 10000);
-        ySizeBox = MyTextUtilities.getIntegerFormattedTextField(200, 1, 10000);
-        xRangeBox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        yRangeBox = MyTextUtilities.getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        xEnergyRangeBox = MyTextUtilities.getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        rayMinEnergyBox = MyTextUtilities.getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
-        rayEnergyRangeBox = MyTextUtilities.getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
-        threadsNumberBox = MyTextUtilities.getIntegerFormattedTextField(2, 1, 100);
+        rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
+        rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        gfMonteCarloNumberBox = getIntegerFormattedTextField(5000000, 1, 100000000);
+        brilPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
+        xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
+        ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
+        xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
+        rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
+        rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
+        threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
         /**
          * An auxiliary method giving the flux density in a given direction
          *
