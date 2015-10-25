@@ -66,7 +66,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.7.1
+ * @version 1.7.2
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -181,6 +181,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "Pulse energy, mJ", "Laser pulse length, ps", "Rayleigh length, mm",
             "Pulse frequency, MHz", "Delay, ps", "X-shift, mm",
             "Y-shift, mm", "Z-shift, mm", "Laser-electron angle, mrad"};
+        this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
         // Adding skin menua items to their button group
@@ -1883,7 +1884,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private double xstep, ystep, estep, hoffset = 0; /* Step in x or y direction */
 
-    private int numberOfRays = 1000, numberOfThreads = 2; /* Number of rays exported for Shadow and the number of threads used */
+    private int numberOfRays = 1000; /* Number of rays exported for Shadow */
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -2826,6 +2827,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
                 double offset = gfForm.minValueClone;
+                Long nt = System.nanoTime();
                 switch (gfForm.selectedItemIndexClone) {
                     case 0:
                         gfForm.chartParam.setup(xp -> {
@@ -2895,6 +2897,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }, xsize, step, offset);
                         break;
                 }
+                System.out.println(System.nanoTime() - nt);
                 return null;
             }
 
@@ -2994,7 +2997,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         if (option == JOptionPane.OK_OPTION) {
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsource.setPrecision((double) brilPrecisionBox.getValue());
-            numberOfThreads = (int) threadsNumberBox.getValue();
+            tsource.setThreadNumber((int) threadsNumberBox.getValue());
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
@@ -3118,6 +3121,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /*
      * Setting up polarization of X-ray radiation
      */
+
     private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(0, 0, 0);

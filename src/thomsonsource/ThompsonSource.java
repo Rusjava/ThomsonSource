@@ -16,6 +16,10 @@
  */
 package thomsonsource;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.DoubleAdder;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.vector.Vector;
@@ -25,15 +29,21 @@ import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.Vectors;
 import org.la4j.vector.dense.BasicVector;
 
-/*
- * The main class contating all physics of LEXG
+/**
+ * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 1.5
+ * @version 1.6
  */
 public class ThompsonSource implements Cloneable {
-
-    ThompsonSource(LaserPulse l, ElectronBunch b) {
+    
+    /**
+     * Constructor
+     * @param l
+     * @param b
+     */
+    public ThompsonSource(LaserPulse l, ElectronBunch b) {
+        this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
         calculateTotalFlux();
@@ -73,7 +83,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Maximal number of evaluations in calculations of the brilliance
      */
-    static final public int MAXIMAL_NUMBER_OF_EVALUATIONS = 30000;
+    public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 30000;
 
     /**
      * Precision in calculations of the brilliance
@@ -100,6 +110,11 @@ public class ThompsonSource implements Cloneable {
      * Flux in the phase space volume of ray generation
      */
     private double partialFlux;
+
+    /**
+     * Number of used threads
+     */
+    private int threadNumber;
 
     /**
      * Counter of ray iterations
@@ -154,22 +169,45 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating the geometric factor
+     *
      */
     public void calculateGeometricFactor() {
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        // We need to synchronize threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
+        // Atomic adder
+        DoubleAdder sum = new DoubleAdder();
         Vector iter = new BasicVector(new double[]{0.0, 0.0, 0.0});
-        double sum = 0, wdx, wdy, len;
+        double wdx, wdy, len;
         int mult = 2;
         wdx = mult * Math.max(eb.getxWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2);
         wdy = mult * Math.max(eb.getyWidth(0.0) + Math.abs(eb.getShift().get(1)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(1)) / 2);
         len = mult * Math.max(eb.getLength() + Math.abs(eb.getShift().get(2)) / 2, lp.getLength() + Math.abs(eb.getShift().get(2)) / 2);
-
-        for (int i = 0; i < getNpGeometricFactor(); i++) {
-            iter.set(0, eb.getShift().get(0) / 2 + wdx * (2 * Math.random() - 1.0));
-            iter.set(1, eb.getShift().get(1) / 2 + wdy * (2 * Math.random() - 1.0));
-            iter.set(2, eb.getShift().get(2) / 2 + len * (2 * Math.random() - 1.0));
-            sum += volumeFlux(iter);
+        final int itNumber = Math.round(getNpGeometricFactor() / threadNumber);
+        /*
+        Splitting the job into a number of threads
+        */
+        for (int m = 0; m < threadNumber; m++) {
+            execs.execute(() -> {
+                double psum = 0;
+                for (int i = 0; i < itNumber; i++) {
+                    iter.set(0, eb.getShift().get(0) / 2 + wdx * (2 * Math.random() - 1.0));
+                    iter.set(1, eb.getShift().get(1) / 2 + wdy * (2 * Math.random() - 1.0));
+                    iter.set(2, eb.getShift().get(2) / 2 + len * (2 * Math.random() - 1.0));
+                    psum += volumeFlux(iter);
+                }
+                sum.add(psum);
+                lt.countDown();
+            });
         }
-        this.geometricFactor = 8 * wdx * wdy * len * sum / getNpGeometricFactor();
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            execs.shutdownNow();
+            return;
+        }
+        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / getNpGeometricFactor();
+        execs.shutdown();
     }
 
     /**
@@ -601,6 +639,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
+     *
      * @return the npGeometricFactor
      */
     public int getNpGeometricFactor() {
@@ -609,6 +648,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
+     *
      * @param npGeometricFactor the npGeometricFactor to set
      */
     public void setNpGeometricFactor(int npGeometricFactor) {
@@ -617,6 +657,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Precision in calculations of the brilliance
+     *
      * @return the precision
      */
     public double getPrecision() {
@@ -625,6 +666,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Precision in calculations of the brilliance
+     *
      * @param precision the precision to set
      */
     public void setPrecision(double precision) {
@@ -633,6 +675,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Normalized total flux from the source
+     *
      * @return the totalFlux
      */
     public double getTotalFlux() {
@@ -641,6 +684,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Geometric factor. Assumes values from 0 to 1
+     *
      * @return the geometricFactor
      */
     public double getGeometricFactor() {
@@ -650,6 +694,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Flag - whether or not the electron beam transversal velocity spread is
      * taken into account
+     *
      * @return the eSpread
      */
     public boolean iseSpread() {
@@ -659,6 +704,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Flag - whether or not the electron beam transversal velocity spread is
      * taken into account
+     *
      * @param eSpread the eSpread to set
      */
     public void seteSpread(boolean eSpread) {
@@ -667,6 +713,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Flux in the phase space volume of ray generation
+     *
      * @return the partialFlux
      */
     public double getPartialFlux() {
@@ -675,9 +722,19 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Counter of ray iterations
+     *
      * @return the counter
      */
     public int getCounter() {
         return counter;
+    }
+
+    /**
+     * Number of used threads
+     *
+     * @param threadNumber the threadNumber to set
+     */
+    public void setThreadNumber(int threadNumber) {
+        this.threadNumber = threadNumber;
     }
 }
