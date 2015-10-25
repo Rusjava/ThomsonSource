@@ -144,7 +144,7 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Returns Laser Pulse reference
+     * Returns laser pulse reference
      *
      * @return
      */
@@ -153,10 +153,9 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * The full Thompson cross-section
+     * The full Thomson cross-section
      */
-    public final static double SIGMA_T = 6.65e-29; /* Thompson cross-section, m2 */
-
+    public final static double SIGMA_T = 6.65e-29;
 
     /**
      * A method calculating normalized total flux
@@ -177,7 +176,6 @@ public class ThompsonSource implements Cloneable {
         CountDownLatch lt = new CountDownLatch(threadNumber);
         // Atomic adder
         DoubleAdder sum = new DoubleAdder();
-        Vector iter = new BasicVector(new double[]{0.0, 0.0, 0.0});
         double wdx, wdy, len;
         int mult = 2;
         wdx = mult * Math.max(eb.getxWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2);
@@ -190,6 +188,7 @@ public class ThompsonSource implements Cloneable {
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
                 double psum = 0;
+                Vector iter = new BasicVector(new double[]{0.0, 0.0, 0.0});
                 for (int i = 0; i < itNumber; i++) {
                     iter.set(0, eb.getShift().get(0) / 2 + wdx * (2 * Math.random() - 1.0));
                     iter.set(1, eb.getShift().get(1) / 2 + wdy * (2 * Math.random() - 1.0));
@@ -206,7 +205,7 @@ public class ThompsonSource implements Cloneable {
             execs.shutdownNow();
             return;
         }
-        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / getNpGeometricFactor();
+        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / itNumber / threadNumber;
         execs.shutdown();
     }
 
