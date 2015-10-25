@@ -124,7 +124,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9 * tsource.geometricFactor * tsource.directionFrequencyFlux(n, v, e * ElectronBunch.E) / 1e10;
+                return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, e * ElectronBunch.E) / 1e10;
             }
         };
 
@@ -1720,7 +1720,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
             ebunchclone = tsourceclone.getElectronBunch();
             lpulseclone = tsourceclone.getLaserPulse();
-            tsourceclone.eSpread = espread;
+            tsourceclone.seteSpread(espread);
             minValueClone = minValue;
             maxValueClone = maxValue;
             angleclone = angle;
@@ -1925,32 +1925,32 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void chargevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargevalueActionPerformed
         // TODO add your handling code here:
-        ebunch.number = TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9;
+        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9);
     }//GEN-LAST:event_chargevalueActionPerformed
 
     private void chargevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_chargevalueFocusLost
         // TODO add your handling code here:
-        ebunch.number = TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9;
+        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9);
     }//GEN-LAST:event_chargevalueFocusLost
 
     private void spreadvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spreadvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.delgamma = TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings);
+        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings));
     }//GEN-LAST:event_spreadvalueActionPerformed
 
     private void spreadvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spreadvalueFocusLost
         // TODO add your handling code here:
-        ebunch.delgamma = TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings);
+        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings));
     }//GEN-LAST:event_spreadvalueFocusLost
 
     private void elengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elengthvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.length = TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2;
+        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_elengthvalueActionPerformed
 
     private void elengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_elengthvalueFocusLost
         // TODO add your handling code here:
-        ebunch.length = TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2;
+        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_elengthvalueFocusLost
 
     private void pulseenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseenergyvalueActionPerformed
@@ -1965,12 +1965,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulselengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulselengthvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.length = TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2;
+        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_pulselengthvalueActionPerformed
 
     private void pulselengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulselengthvalueFocusLost
         // TODO add your handling code here:
-        lpulse.length = TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2;
+        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_pulselengthvalueFocusLost
 
     private void startbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startbuttonActionPerformed
@@ -2056,7 +2056,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("########.##")).format(tsource.totalFlux * tsource.geometricFactor * 1e-15)
+                            + (new DecimalFormat("########.##")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -2082,22 +2082,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eemitvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitvalueFocusLost
         // TODO add your handling code here:
-        ebunch.eps = TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6;
+        ebunch.setEps(TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitvalueFocusLost
 
     private void eemitvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.eps = TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6;
+        ebunch.setEps(TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitvalueActionPerformed
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betax = TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
+        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betax = TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3;
+        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
@@ -2169,76 +2169,76 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.rlength = TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.rlength = TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3;
+        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.fq = TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
+        lpulse.setFq(TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6);
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.fq = TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6;
+        lpulse.setFq(TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6);
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
         // TODO add your handling code here:
-        lpulse.delay = TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4;
+        lpulse.setDelay(TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4);
     }//GEN-LAST:event_pulsedelayvalueFocusLost
 
     private void pulsedelayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsedelayvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.delay = TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4;
+        lpulse.setDelay(TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4);
     }//GEN-LAST:event_pulsedelayvalueActionPerformed
 
     private void eshiftxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
+        ebunch.getShift().set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueFocusLost
 
     private void eshiftxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
+        ebunch.getShift().set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueActionPerformed
 
     private void eshiftyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
+        ebunch.getShift().set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueFocusLost
 
     private void eshiftyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
+        ebunch.getShift().set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueActionPerformed
 
     private void eshiftzvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftzvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
+        ebunch.getShift().set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftzvalueFocusLost
 
     private void eshiftzvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftzvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
+        ebunch.getShift().set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftzvalueActionPerformed
 
     private void pulseanglevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseanglevalueFocusLost
         // TODO add your handling code here:
         Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
-        lpulse.direction.set(2, Math.cos(value));
-        lpulse.direction.set(1, Math.sin(value));
+        lpulse.getDirection().set(2, Math.cos(value));
+        lpulse.getDirection().set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueFocusLost
 
     private void pulseanglevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseanglevalueActionPerformed
         // TODO add your handling code here:
         Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
-        lpulse.direction.set(2, Math.cos(value));
-        lpulse.direction.set(1, Math.sin(value));
+        lpulse.getDirection().set(2, Math.cos(value));
+        lpulse.getDirection().set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueActionPerformed
 
     private void jMenuItemBrillianceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceActionPerformed
@@ -2275,8 +2275,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.direction.set(2, Math.cos(x));
-                            brilForm.lpulseclone.direction.set(1, Math.sin(x));
+                            brilForm.lpulseclone.getDirection().set(2, Math.cos(x));
+                            brilForm.lpulseclone.getDirection().set(1, Math.sin(x));
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2289,7 +2289,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.delay = x;
+                            brilForm.lpulseclone.setDelay(x);
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
@@ -2301,7 +2301,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.shift.set(2, x);
+                            brilForm.ebunchclone.getShift().set(2, x);
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2314,8 +2314,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.betax = x;
-                            brilForm.ebunchclone.betay = x;
+                            brilForm.ebunchclone.setBetax(x);
+                            brilForm.ebunchclone.setBetay(x);
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2328,7 +2328,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.eps = x;
+                            brilForm.ebunchclone.setEps(x);
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2341,7 +2341,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.rlength = x;
+                            brilForm.lpulseclone.setRlength(x);
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2369,7 +2369,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.delgamma = x;
+                            brilForm.ebunchclone.setDelgamma(x);
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
@@ -2526,22 +2526,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 fm.format("%s %.2f", paramNames[0] + ": ", ebunch.getGamma() * 0.512);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[1] + ": ", ebunch.number * ElectronBunch.E * 1e9);
+                fm.format("%s %.2f", paramNames[1] + ": ", ebunch.getNumber() * ElectronBunch.E * 1e9);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[2] + ": ", ebunch.delgamma);
+                fm.format("%s %.2f", paramNames[2] + ": ", ebunch.getDelgamma());
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[3] + ": ", ebunch.length * 2 / 3e-4);
+                fm.format("%s %.2f", paramNames[3] + ": ", ebunch.getLength() * 2 / 3e-4);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[4] + ": ", ebunch.eps * 1e6);
+                fm.format("%s %.2f", paramNames[4] + ": ", ebunch.getEps() * 1e6);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[5] + ": ", ebunch.betax * 1e3);
+                fm.format("%s %.2f", paramNames[5] + ": ", ebunch.getBetax() * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[6] + ": ", ebunch.betay * 1e3);
+                fm.format("%s %.2f", paramNames[6] + ": ", ebunch.getBetay() * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
                 fm.format("%s %.2f", paramNames[7] + ": ", lpulse.getPhotonEnergy() / ElectronBunch.E);
@@ -2550,28 +2550,28 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 fm.format("%s %.2f", paramNames[8] + ": ", lpulse.getPulseEnergy() * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[9] + ": ", lpulse.length * 2 / 3e-4);
+                fm.format("%s %.2f", paramNames[9] + ": ", lpulse.getLength() * 2 / 3e-4);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[10] + ": ", lpulse.rlength * 1e3);
+                fm.format("%s %.2f", paramNames[10] + ": ", lpulse.getRlength() * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[11] + ": ", lpulse.fq * 1e-6);
+                fm.format("%s %.2f", paramNames[11] + ": ", lpulse.getFq() * 1e-6);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[12] + ": ", lpulse.delay / 3e-4);
+                fm.format("%s %.2f", paramNames[12] + ": ", lpulse.getDelay() / 3e-4);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[13] + ": ", ebunch.shift.get(0) * 1e3);
+                fm.format("%s %.2f", paramNames[13] + ": ", ebunch.getShift().get(0) * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[14] + ": ", ebunch.shift.get(1) * 1e3);
+                fm.format("%s %.2f", paramNames[14] + ": ", ebunch.getShift().get(1) * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[15] + ": ", ebunch.shift.get(2) * 1e3);
+                fm.format("%s %.2f", paramNames[15] + ": ", ebunch.getShift().get(2) * 1e3);
                 pw.println(fm);
                 fm = new Formatter();
-                fm.format("%s %.2f", paramNames[16] + ": ", Math.acos(lpulse.direction.get(2)) * 1e3);
+                fm.format("%s %.2f", paramNames[16] + ": ", Math.acos(lpulse.getDirection().get(2)) * 1e3);
                 pw.println(fm);
                 pw.close();
             } catch (IOException e) {
@@ -2615,27 +2615,27 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     energyvalue.setText(tss);
                                     break;
                                 case 1:
-                                    ebunch.number = Float.parseFloat(tss) / ElectronBunch.E * 1e-9;
+                                    ebunch.setNumber(Float.parseFloat(tss) / ElectronBunch.E * 1e-9);
                                     chargevalue.setText(tss);
                                     break;
                                 case 2:
-                                    ebunch.delgamma = Float.parseFloat(tss);
+                                    ebunch.setDelgamma(Float.parseFloat(tss));
                                     spreadvalue.setText(tss);
                                     break;
                                 case 3:
-                                    ebunch.length = Float.parseFloat(tss) * 3e-4 / 2;
+                                    ebunch.setLength(Float.parseFloat(tss) * 3e-4 / 2);
                                     elengthvalue.setText(tss);
                                     break;
                                 case 4:
-                                    ebunch.eps = Float.parseFloat(tss) * 1e-6;
+                                    ebunch.setEps(Float.parseFloat(tss) * 1e-6);
                                     eemitvalue.setText(tss);
                                     break;
                                 case 5:
-                                    ebunch.betax = Float.parseFloat(tss) * 1e-3;
+                                    ebunch.setBetax(Float.parseFloat(tss) * 1e-3);
                                     ebetaxvalue.setText(tss);
                                     break;
                                 case 6:
-                                    ebunch.betay = Float.parseFloat(tss) * 1e-3;
+                                    ebunch.setBetay(Float.parseFloat(tss) * 1e-3);
                                     ebetayvalue.setText(tss);
                                     break;
                                 case 7:
@@ -2647,36 +2647,36 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     pulseenergyvalue.setText(tss);
                                     break;
                                 case 9:
-                                    lpulse.length = Float.parseFloat(tss) * 3e-4 / 2;
+                                    lpulse.setLength(Float.parseFloat(tss) * 3e-4 / 2);
                                     pulselengthvalue.setText(tss);
                                     break;
                                 case 10:
-                                    lpulse.rlength = Float.parseFloat(tss) * 1e-3;
+                                    lpulse.setRlength(Float.parseFloat(tss) * 1e-3);
                                     pulserelvalue.setText(tss);
                                     break;
                                 case 11:
-                                    lpulse.fq = Float.parseFloat(tss) * 1e6;
+                                    lpulse.setFq(Float.parseFloat(tss) * 1e6);
                                     pulsefreqvalue.setText(tss);
                                     break;
                                 case 12:
-                                    lpulse.delay = Float.parseFloat(tss) * 3e-4;
+                                    lpulse.setDelay(Float.parseFloat(tss) * 3e-4);
                                     pulsedelayvalue.setText(tss);
                                     break;
                                 case 13:
-                                    ebunch.shift.set(0, Float.parseFloat(tss) * 1e-3);
+                                    ebunch.getShift().set(0, Float.parseFloat(tss) * 1e-3);
                                     eshiftxvalue.setText(tss);
                                     break;
                                 case 14:
-                                    ebunch.shift.set(1, Float.parseFloat(tss) * 1e-3);
+                                    ebunch.getShift().set(1, Float.parseFloat(tss) * 1e-3);
                                     eshiftyvalue.setText(tss);
                                     break;
                                 case 15:
-                                    ebunch.shift.set(2, Float.parseFloat(tss) * 1e-3);
+                                    ebunch.getShift().set(2, Float.parseFloat(tss) * 1e-3);
                                     eshiftzvalue.setText(tss);
                                     break;
                                 case 16:
-                                    lpulse.direction.set(2, Math.cos(Float.parseFloat(tss) * 1e-3));
-                                    lpulse.direction.set(1, Math.sin(Float.parseFloat(tss) * 1e-3));
+                                    lpulse.getDirection().set(2, Math.cos(Float.parseFloat(tss) * 1e-3));
+                                    lpulse.getDirection().set(1, Math.sin(Float.parseFloat(tss) * 1e-3));
                                     pulseanglevalue.setText(tss);
                                     break;
                             }
@@ -2737,8 +2737,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 jRayStopButton.setEnabled(false);
-                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.partialFlux
-                        / tsourceRayClone.counter * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
+                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
+                        / tsourceRayClone.getCounter() * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException | CancellationException e) {
@@ -2830,57 +2830,57 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 0:
                         gfForm.chartParam.setup(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.direction.set(2, Math.cos(x));
-                            gfForm.lpulseclone.direction.set(1, Math.sin(x));
+                            gfForm.lpulseclone.getDirection().set(2, Math.cos(x));
+                            gfForm.lpulseclone.getDirection().set(1, Math.sin(x));
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                     case 1:
                         gfForm.chartParam.setup(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.delay = x;
+                            gfForm.lpulseclone.setDelay(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                     case 2:
                         gfForm.chartParam.setup(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.ebunchclone.shift.set(2, x);
+                            gfForm.ebunchclone.getShift().set(2, x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                     case 3:
                         gfForm.chartParam.setup(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.ebunchclone.betax = x;
-                            gfForm.ebunchclone.betay = x;
+                            gfForm.ebunchclone.setBetax(x);
+                            gfForm.ebunchclone.setBetay(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                     case 4:
                         gfForm.chartParam.setup(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.ebunchclone.eps = x;
+                            gfForm.ebunchclone.setEps(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                     case 5:
                         gfForm.chartParam.setup(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.rlength = x;
+                            gfForm.lpulseclone.setRlength(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                     case 6:
@@ -2891,7 +2891,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.ebunchclone.setyWidth(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.geometricFactor;
+                            return gfForm.tsourceclone.getGeometricFactor();
                         }, xsize, step, offset);
                         break;
                 }
@@ -2975,12 +2975,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betay = TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3;
+        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betay = TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3;
+        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
@@ -2992,8 +2992,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.npGeometricFactor = (int) gfMonteCarloNumberBox.getValue();
-            tsource.precision = (double) brilPrecisionBox.getValue();
+            tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
+            tsource.setPrecision((double) brilPrecisionBox.getValue());
             numberOfThreads = (int) threadsNumberBox.getValue();
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
@@ -3019,7 +3019,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jCheckBoxMenuItemSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemSpreadActionPerformed
         // TODO add your handling code here:
-        tsource.eSpread = jCheckBoxMenuItemSpread.isSelected();
+        tsource.seteSpread(jCheckBoxMenuItemSpread.isSelected());
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
 
     private void jRayStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRayStopButtonActionPerformed

@@ -30,7 +30,7 @@ import org.la4j.vector.dense.BasicVector;
  * system of units
  *
  * @author Ruslan Feshchenko
- * @version 1.1
+ * @version 1.2
  */
 public class ElectronBunch implements Cloneable {
 
@@ -44,10 +44,10 @@ public class ElectronBunch implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((ElectronBunch) tm).shift = new BasicVector(new double[]{0.0, 0.0, 0.0});
-        ((ElectronBunch) tm).shift.set(0, this.shift.get(0));
-        ((ElectronBunch) tm).shift.set(1, this.shift.get(1));
-        ((ElectronBunch) tm).shift.set(2, this.shift.get(2));
+        ((ElectronBunch) tm).setShift(new BasicVector(new double[]{0.0, 0.0, 0.0}));
+        ((ElectronBunch) tm).getShift().set(0, this.getShift().get(0));
+        ((ElectronBunch) tm).getShift().set(1, this.getShift().get(1));
+        ((ElectronBunch) tm).getShift().set(2, this.getShift().get(2));
         return tm;
     }
 
@@ -70,13 +70,111 @@ public class ElectronBunch implements Cloneable {
     }
 
     /**
+     * @return the number
+     */
+    public double getNumber() {
+        return number;
+    }
+
+    /**
+     * @param number the number to set
+     */
+    public void setNumber(double number) {
+        this.number = number;
+    }
+
+    /**
+     * @return the delgamma
+     */
+    public double getDelgamma() {
+        return delgamma;
+    }
+
+    /**
+     * @param delgamma the delgamma to set
+     */
+    public void setDelgamma(double delgamma) {
+        this.delgamma = delgamma;
+    }
+
+    /**
+     * @return the length
+     */
+    public double getLength() {
+        return length;
+    }
+
+    /**
+     * @param length the length to set
+     */
+    public void setLength(double length) {
+        this.length = length;
+    }
+
+    /**
+     * @return the eps
+     */
+    public double getEps() {
+        return eps;
+    }
+
+    /**
+     * @param eps the eps to set
+     */
+    public void setEps(double eps) {
+        this.eps = eps;
+    }
+
+    /**
+     * @return the betax
+     */
+    public double getBetax() {
+        return betax;
+    }
+
+    /**
+     * @param betax the betax to set
+     */
+    public void setBetax(double betax) {
+        this.betax = betax;
+    }
+
+    /**
+     * @return the betay
+     */
+    public double getBetay() {
+        return betay;
+    }
+
+    /**
+     * @param betay the betay to set
+     */
+    public void setBetay(double betay) {
+        this.betay = betay;
+    }
+
+    /**
+     * @return the shift
+     */
+    public Vector getShift() {
+        return shift;
+    }
+
+    /**
+     * @param shift the shift to set
+     */
+    public void setShift(Vector shift) {
+        this.shift = shift;
+    }
+
+    /**
      * Returning the width of the electron bunch in x direction
      *
      * @param z coordinate z
      * @return width in the x direction
      */
     public double getxWidth(double z) {
-        return Math.sqrt((betax + z * z / betax) * eps / gamma);
+        return Math.sqrt((getBetax() + z * z / getBetax()) * getEps() / getGamma());
     }
 
     /**
@@ -85,7 +183,7 @@ public class ElectronBunch implements Cloneable {
      * @param w width
      */
     public void setxWidth(double w) {
-        betax = w * w / eps * gamma;
+        setBetax(w * w / getEps() * getGamma());
     }
 
     /**
@@ -95,7 +193,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the x direction squared
      */
     public double getxWidth2(double z) {
-        return (betax + z * z / betax) * eps / gamma;
+        return (getBetax() + z * z / getBetax()) * getEps() / getGamma();
     }
 
     /**
@@ -104,7 +202,7 @@ public class ElectronBunch implements Cloneable {
      * @return velocity spread in the x direction
      */
     public double getXSpread() {
-        return Math.sqrt(eps / gamma / betax);
+        return Math.sqrt(getEps() / getGamma() / getBetax());
     }
 
     /**
@@ -114,7 +212,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the y direction
      */
     public double getyWidth(double z) {
-        return Math.sqrt((betay + z * z / betay) * eps / gamma);
+        return Math.sqrt((getBetay() + z * z / getBetay()) * getEps() / getGamma());
     }
 
     /**
@@ -123,7 +221,7 @@ public class ElectronBunch implements Cloneable {
      * @param w width
      */
     public void setyWidth(double w) {
-        betay = w * w / eps * gamma;
+        setBetay(w * w / getEps() * getGamma());
     }
 
     /**
@@ -133,7 +231,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the x direction squared
      */
     public double getyWidth2(double z) {
-        return (betay + z * z / betay) * eps / gamma;
+        return (getBetay() + z * z / getBetay()) * getEps() / getGamma();
     }
 
     /**
@@ -142,7 +240,7 @@ public class ElectronBunch implements Cloneable {
      * @return velocity spread in the y direction
      */
     public double getYSpread() {
-        return Math.sqrt(eps / gamma / betay);
+        return Math.sqrt(getEps() / getGamma() / getBetay());
     }
 
     /**
@@ -196,37 +294,37 @@ public class ElectronBunch implements Cloneable {
     /**
      * Number of electrons in the bunch
      */
-    public double number = 1 / E * 1e-9;
+    private double number = 1 / E * 1e-9;
 
     /**
      * Relative electron bunch energy spread
      */
-    public double delgamma = 1e-2;
+    private double delgamma = 1e-2;
 
     /**
      * Electron bunch semi-length, m
      */
-    public double length = 0.0045;
+    private double length = 0.0045;
 
     /**
      * Electron transversal bunch emittance, m*rad
      */
-    public double eps = 5e-6;
+    private double eps = 5e-6;
 
     /**
      * Electron bunch beta function in x direction, m
      */
-    public double betax = 0.01;
+    private double betax = 0.01;
 
     /**
      * Electron bunch beta function in y direction, m
      */
-    public double betay = 0.01;
+    private double betay = 0.01;
 
     /**
      * Electron bunch shift relative to the laser pulse, m
      */
-    public Vector shift;
+    private Vector shift;
 
     /**
      * The charge of electron

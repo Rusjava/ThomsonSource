@@ -24,7 +24,7 @@ import org.la4j.vector.dense.BasicVector;
  * units
  *
  * @author Ruslan feshchenko
- * @version 1.2
+ * @version 1.3
  */
 public class LaserPulse implements Cloneable {
 
@@ -38,10 +38,10 @@ public class LaserPulse implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((LaserPulse) tm).direction = new BasicVector(new double[]{0.0, 0.0, 0.0});
-        ((LaserPulse) tm).direction.set(0, this.direction.get(0));
-        ((LaserPulse) tm).direction.set(1, this.direction.get(1));
-        ((LaserPulse) tm).direction.set(2, this.direction.get(2));
+        ((LaserPulse) tm).setDirection(new BasicVector(new double[]{0.0, 0.0, 0.0}));
+        ((LaserPulse) tm).getDirection().set(0, this.getDirection().get(0));
+        ((LaserPulse) tm).getDirection().set(1, this.getDirection().get(1));
+        ((LaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
         return tm;
     }
 
@@ -52,7 +52,7 @@ public class LaserPulse implements Cloneable {
      * @return
      */
     public double getWidth(double z) {
-        return Math.sqrt((rlength + z * z / rlength) * rk / 2);
+        return Math.sqrt((getRlength() + z * z / getRlength()) * rk / 2);
     }
 
     /**
@@ -61,7 +61,7 @@ public class LaserPulse implements Cloneable {
      * @param w width
      */
     public void setWidth(double w) {
-        rlength = 2 * w * w / rk;
+        setRlength(2 * w * w / rk);
     }
 
     /**
@@ -71,7 +71,7 @@ public class LaserPulse implements Cloneable {
      * @return
      */
     public double getWidth2(double z) {
-        return (rlength + z * z / rlength) * rk / 2;
+        return (getRlength() + z * z / getRlength()) * rk / 2;
     }
 
     /**
@@ -130,6 +130,86 @@ public class LaserPulse implements Cloneable {
     }
 
     /**
+     * Laser pulse semi-length, m
+     * @return the length
+     */
+    public double getLength() {
+        return length;
+    }
+
+    /**
+     * Laser pulse semi-length, m
+     * @param length the length to set
+     */
+    public void setLength(double length) {
+        this.length = length;
+    }
+
+    /**
+     * Mean direction of the laser pulse
+     * @return the direction
+     */
+    public Vector getDirection() {
+        return direction;
+    }
+
+    /**
+     * Mean direction of the laser pulse
+     * @param direction the direction to set
+     */
+    public void setDirection(Vector direction) {
+        this.direction = direction;
+    }
+
+    /**
+     * Laser pulse Rayleigh length, m
+     * @return the rlength
+     */
+    public double getRlength() {
+        return rlength;
+    }
+
+    /**
+     * Laser pulse Rayleigh length, m
+     * @param rlength the rlength to set
+     */
+    public void setRlength(double rlength) {
+        this.rlength = rlength;
+    }
+
+    /**
+     * Pulse frequency, 1/s
+     * @return the fq
+     */
+    public double getFq() {
+        return fq;
+    }
+
+    /**
+     * Pulse frequency, 1/s
+     * @param fq the fq to set
+     */
+    public void setFq(double fq) {
+        this.fq = fq;
+    }
+
+    /**
+     * Laser pulse delay, m
+     * @return the delay
+     */
+    public double getDelay() {
+        return delay;
+    }
+
+    /**
+     * Laser pulse delay, m
+     * @param delay the delay to set
+     */
+    public void setDelay(double delay) {
+        this.delay = delay;
+    }
+
+    /**
      * Photon energy, J
      */
     private double photonenergy;
@@ -142,27 +222,27 @@ public class LaserPulse implements Cloneable {
     /**
      * Laser pulse semi-length, m
      */
-    public double length = 4.5e-3;
+    private double length = 4.5e-3;
 
     /**
      * Mean direction of the laser pulse
      */
-    public Vector direction;
+    private Vector direction;
 
     /**
      * Laser pulse Rayleigh length, m
      */
-    public double rlength = 5.4e-3;
+    private double rlength = 5.4e-3;
 
     /**
      * Pulse frequency, 1/s
      */
-    public double fq = 7.9e7;
+    private double fq = 7.9e7;
 
     /**
      * Laser pulse delay, m
      */
-    public double delay = 0;
+    private double delay = 0;
 
     private double rk;
 

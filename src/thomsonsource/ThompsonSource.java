@@ -29,7 +29,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class contating all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 1.4
+ * @version 1.5
  */
 public class ThompsonSource implements Cloneable {
 
@@ -68,7 +68,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
      */
-    public int npGeometricFactor = 5000000;
+    private int npGeometricFactor = 5000000;
 
     /**
      * Maximal number of evaluations in calculations of the brilliance
@@ -78,33 +78,33 @@ public class ThompsonSource implements Cloneable {
     /**
      * Precision in calculations of the brilliance
      */
-    public double precision = 0.0001;
+    private double precision = 0.0001;
 
     /**
      * Normalized total flux from the source
      */
-    public double totalFlux;
+    private double totalFlux;
 
     /**
      * Geometric factor. Assumes values from 0 to 1
      */
-    public double geometricFactor = 1;
+    private double geometricFactor = 1;
 
     /**
      * Flag - whether or not the electron beam transversal velocity spread is
      * taken into account
      */
-    public boolean eSpread = false;
+    private boolean eSpread = false;
 
     /**
      * Flux in the phase space volume of ray generation
      */
-    public double partialFlux;
+    private double partialFlux;
 
     /**
      * Counter of ray iterations
      */
-    public int counter;
+    private int counter;
 
     private LaserPulse lp;
     private ElectronBunch eb;
@@ -147,8 +147,8 @@ public class ThompsonSource implements Cloneable {
      * A method calculating normalized total flux
      */
     public void calculateTotalFlux() {
-        this.totalFlux = SIGMA_T * eb.number * lp.getPhotonNumber()
-                * lp.fq / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
+        this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber()
+                * lp.getFq() / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
                         * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
 
@@ -159,17 +159,17 @@ public class ThompsonSource implements Cloneable {
         Vector iter = new BasicVector(new double[]{0.0, 0.0, 0.0});
         double sum = 0, wdx, wdy, len;
         int mult = 2;
-        wdx = mult * Math.max(eb.getxWidth(0.0) + Math.abs(eb.shift.get(0)) / 2, lp.getWidth(0.0) + Math.abs(eb.shift.get(0)) / 2);
-        wdy = mult * Math.max(eb.getyWidth(0.0) + Math.abs(eb.shift.get(1)) / 2, lp.getWidth(0.0) + Math.abs(eb.shift.get(1)) / 2);
-        len = mult * Math.max(eb.length + Math.abs(eb.shift.get(2)) / 2, lp.length + Math.abs(eb.shift.get(2)) / 2);
+        wdx = mult * Math.max(eb.getxWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2);
+        wdy = mult * Math.max(eb.getyWidth(0.0) + Math.abs(eb.getShift().get(1)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(1)) / 2);
+        len = mult * Math.max(eb.getLength() + Math.abs(eb.getShift().get(2)) / 2, lp.getLength() + Math.abs(eb.getShift().get(2)) / 2);
 
-        for (int i = 0; i < npGeometricFactor; i++) {
-            iter.set(0, eb.shift.get(0) / 2 + wdx * (2 * Math.random() - 1.0));
-            iter.set(1, eb.shift.get(1) / 2 + wdy * (2 * Math.random() - 1.0));
-            iter.set(2, eb.shift.get(2) / 2 + len * (2 * Math.random() - 1.0));
+        for (int i = 0; i < getNpGeometricFactor(); i++) {
+            iter.set(0, eb.getShift().get(0) / 2 + wdx * (2 * Math.random() - 1.0));
+            iter.set(1, eb.getShift().get(1) / 2 + wdy * (2 * Math.random() - 1.0));
+            iter.set(2, eb.getShift().get(2) / 2 + len * (2 * Math.random() - 1.0));
             sum += volumeFlux(iter);
         }
-        this.geometricFactor = 8 * wdx * wdy * len * sum / npGeometricFactor;
+        this.geometricFactor = 8 * wdx * wdy * len * sum / getNpGeometricFactor();
     }
 
     /**
@@ -182,7 +182,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFlux(Vector n, Vector v, double e) {
-        return eSpread ? directionFrequencyFluxSpread(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
+        return iseSpread() ? directionFrequencyFluxSpread(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
     }
 
     /**
@@ -199,8 +199,8 @@ public class ThompsonSource implements Cloneable {
         double K, th;
         th = (1 - n.innerProduct(v)) * 2;
         K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.delgamma, 2);
-        return totalFlux * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.delgamma / eb.getGamma() / lp.getPhotonEnergy()
+                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
+        return getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
                 * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
                 / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
     }
@@ -215,7 +215,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
-        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v, n);
@@ -236,7 +236,7 @@ public class ThompsonSource implements Cloneable {
             this.e = e;
             this.v0 = v0;
             this.n = n;
-            this.inergrator = new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
 
@@ -287,7 +287,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyVolumeFlux(Vector r, Vector n, Vector v, double e) {
-        return eSpread ? directionFrequencyVolumeFluxSpread(r, n, v, e) : directionFrequencyVolumeFluxNoSpread(r, n, v, e);
+        return iseSpread() ? directionFrequencyVolumeFluxSpread(r, n, v, e) : directionFrequencyVolumeFluxNoSpread(r, n, v, e);
     }
 
     /**
@@ -328,20 +328,20 @@ public class ThompsonSource implements Cloneable {
      */
     public double volumeFlux(Vector r) {
         double u, z0, z, z1, x0, x, x1, y0, y, y1, sn, cs, K, len;
-        len = Math.sqrt(lp.length * lp.length
-                + eb.length * eb.length);
-        sn = lp.direction.get(1);
-        cs = lp.direction.get(2);
-        x0 = eb.shift.get(0);
-        y0 = eb.shift.get(1);
-        z0 = eb.shift.get(2);
+        len = Math.sqrt(lp.getLength() * lp.getLength()
+                + eb.getLength() * eb.getLength());
+        sn = lp.getDirection().get(1);
+        cs = lp.getDirection().get(2);
+        x0 = eb.getShift().get(0);
+        y0 = eb.getShift().get(1);
+        z0 = eb.getShift().get(2);
         x = r.get(0);
         y = r.get(1);
         z = r.get(2);
         x1 = x;
         y1 = -sn * z + cs * y;
         z1 = cs * z + sn * y;
-        K = Math.pow((z + z1 - z0 - lp.delay) / len, 2)
+        K = Math.pow((z + z1 - z0 - lp.getDelay()) / len, 2)
                 + Math.pow((x - x0), 2) / eb.getxWidth2(z - z0) + Math.pow((y - y0), 2) / eb.getyWidth2(z - z0)
                 + (Math.pow(x1, 2) + Math.pow(y1, 2)) / lp.getWidth2(z1);
         u = 2.0 / Math.pow(Math.PI, 1.5) * Math.sqrt((lp.getWidth2(0.0)
@@ -361,8 +361,8 @@ public class ThompsonSource implements Cloneable {
         double gamma2, th;
         th = (1 - n.innerProduct(v)) * 2;
         gamma2 = eb.getGamma() * eb.getGamma();
-        return totalFlux * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
-                / Math.pow((1 + gamma2 * th), 4) * geometricFactor;
+        return getTotalFlux() * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
+                / Math.pow((1 + gamma2 * th), 4) * getGeometricFactor();
     }
 
     /**
@@ -388,7 +388,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyBrilliance(Vector r0, Vector n, Vector v, double e) {
-        return eSpread ? directionFrequencyBrillianceSpread(r0, n, v, e) : directionFrequencyBrillianceNoSpread(r0, n, v, e);
+        return iseSpread() ? directionFrequencyBrillianceSpread(r0, n, v, e) : directionFrequencyBrillianceNoSpread(r0, n, v, e);
     }
 
     /**
@@ -403,13 +403,13 @@ public class ThompsonSource implements Cloneable {
      */
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
         double u;
-        RombergIntegrator integrator = new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
         try {
             u = integrator.integrate(30000, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.length,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.length);
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
             return u * directionFrequencyFluxNoSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
@@ -428,13 +428,13 @@ public class ThompsonSource implements Cloneable {
      */
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
         double u;
-        RombergIntegrator integrator = new RombergIntegrator(precision, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
         try {
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.length,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.length);
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
             return u * directionFrequencyFluxSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
@@ -492,10 +492,10 @@ public class ThompsonSource implements Cloneable {
         double prob0, prob, EMax, mult = 2, factor, sum = 0;
         EMax = directionEnergy(n, n);
         factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
-                * Math.max(eb.length, lp.length) * 4 * rayXAnglerange * rayYAnglerange
+                * Math.max(eb.getLength(), lp.getLength()) * 4 * rayXAnglerange * rayYAnglerange
                 * (maxEnergy - minEnergy);
         prob0 = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax);
-        if (eSpread) {
+        if (iseSpread()) {
             prob0 *= eb.angleDistribution(0, 0);
             factor *= 4 * mult * mult * eb.getXSpread() * eb.getYSpread();
         }
@@ -505,7 +505,7 @@ public class ThompsonSource implements Cloneable {
             }
             ray[0] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
             ray[2] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
-            ray[1] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.length, lp.length);
+            ray[1] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
             r.set(0, ray[0]);
             r.set(1, ray[2]);
             r.set(2, ray[1]);
@@ -519,7 +519,7 @@ public class ThompsonSource implements Cloneable {
             ray[5] = n.get(1);
             ray[4] = n.get(2);
             ray[10] = Math.random() * (maxEnergy - minEnergy) + minEnergy;
-            if (eSpread) {
+            if (iseSpread()) {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
                 Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
@@ -597,5 +597,87 @@ public class ThompsonSource implements Cloneable {
         this.ksi1 = ksi1;
         this.ksi2 = ksi2;
         this.ksi3 = ksi3;
+    }
+
+    /**
+     * Number of points in Monte Carlo calculation of the geometric factor
+     * @return the npGeometricFactor
+     */
+    public int getNpGeometricFactor() {
+        return npGeometricFactor;
+    }
+
+    /**
+     * Number of points in Monte Carlo calculation of the geometric factor
+     * @param npGeometricFactor the npGeometricFactor to set
+     */
+    public void setNpGeometricFactor(int npGeometricFactor) {
+        this.npGeometricFactor = npGeometricFactor;
+    }
+
+    /**
+     * Precision in calculations of the brilliance
+     * @return the precision
+     */
+    public double getPrecision() {
+        return precision;
+    }
+
+    /**
+     * Precision in calculations of the brilliance
+     * @param precision the precision to set
+     */
+    public void setPrecision(double precision) {
+        this.precision = precision;
+    }
+
+    /**
+     * Normalized total flux from the source
+     * @return the totalFlux
+     */
+    public double getTotalFlux() {
+        return totalFlux;
+    }
+
+    /**
+     * Geometric factor. Assumes values from 0 to 1
+     * @return the geometricFactor
+     */
+    public double getGeometricFactor() {
+        return geometricFactor;
+    }
+
+    /**
+     * Flag - whether or not the electron beam transversal velocity spread is
+     * taken into account
+     * @return the eSpread
+     */
+    public boolean iseSpread() {
+        return eSpread;
+    }
+
+    /**
+     * Flag - whether or not the electron beam transversal velocity spread is
+     * taken into account
+     * @param eSpread the eSpread to set
+     */
+    public void seteSpread(boolean eSpread) {
+        this.eSpread = eSpread;
+    }
+
+    /**
+     * Flux in the phase space volume of ray generation
+     * @return the partialFlux
+     */
+    public double getPartialFlux() {
+        return partialFlux;
+    }
+
+    /**
+     * Counter of ray iterations
+     * @return the counter
+     */
+    public int getCounter() {
+        return counter;
     }
 }
