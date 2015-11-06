@@ -2506,7 +2506,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
-        // TODO add your handling code here:
+        // Saving the LEXG parameters into a file
         JFileChooser fo = new JFileChooser(pFile);
         fo.setDialogTitle("Choose file to save Thompson source parameters");
         int ans = fo.showSaveDialog(this);
@@ -2519,7 +2519,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     return;
                 }
             }
-            Formatter fm;
+
             Properties prop = new Properties();
             try (FileWriter fw = new FileWriter(pFile, false)) {
                 prop.setProperty(paramNames[0], new Double(ebunch.getGamma() * 0.512).toString());
@@ -2548,7 +2548,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemSaveParamActionPerformed
 
     private void jMenuItemLoadParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadParamActionPerformed
-        // TODO add your handling code here:
+        // Loading LEXG parameters from a file
         JFileChooser fo = new JFileChooser();
         fo.setDialogTitle("Choose file to load Thompson source parameters from");
         int ans = fo.showOpenDialog(this);
@@ -2558,7 +2558,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             try (FileReader fr = new FileReader(pFile)) {
                 prop.load(fr);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error while reading from the file", "Error",
+                JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
             try {
