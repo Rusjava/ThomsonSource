@@ -26,11 +26,8 @@ import java.util.Formatter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.IllegalFormatException;
@@ -61,12 +58,13 @@ import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
 import java.net.URL;
+import java.util.Properties;
 import shadowfileconverter.ShadowFiles;
 
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.7.2
+ * @version 1.8.0
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -175,12 +173,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
 
-        this.paramNames = new String[]{"Electron energy, MeV", "Electron bunch charge nQ",
-            "Electron bunch relative energy spread", "Electron bunch length, ps",
-            "Emittance, mm*mrad", "Beta-x function, mm", "Beta-y function, mm", "Photon energy, eV",
-            "Pulse energy, mJ", "Laser pulse length, ps", "Rayleigh length, mm",
-            "Pulse frequency, MHz", "Delay, ps", "X-shift, mm",
-            "Y-shift, mm", "Z-shift, mm", "Laser-electron angle, mrad"};
+        this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
+            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
+            "Emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
+            "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
+            "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
+            "Y-shift_mm", "Z-shift_mm", "Laser-electron_angle_mrad"};
         this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
@@ -2522,59 +2520,26 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             }
             Formatter fm;
-            try (PrintWriter pw = new PrintWriter(new FileWriter(pFile, false))) {
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[0] + ": ", ebunch.getGamma() * 0.512);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[1] + ": ", ebunch.getNumber() * ElectronBunch.E * 1e9);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[2] + ": ", ebunch.getDelgamma());
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[3] + ": ", ebunch.getLength() * 2 / 3e-4);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[4] + ": ", ebunch.getEps() * 1e6);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[5] + ": ", ebunch.getBetax() * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[6] + ": ", ebunch.getBetay() * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[7] + ": ", lpulse.getPhotonEnergy() / ElectronBunch.E);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[8] + ": ", lpulse.getPulseEnergy() * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[9] + ": ", lpulse.getLength() * 2 / 3e-4);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[10] + ": ", lpulse.getRlength() * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[11] + ": ", lpulse.getFq() * 1e-6);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[12] + ": ", lpulse.getDelay() / 3e-4);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[13] + ": ", ebunch.getShift().get(0) * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[14] + ": ", ebunch.getShift().get(1) * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[15] + ": ", ebunch.getShift().get(2) * 1e3);
-                pw.println(fm);
-                fm = new Formatter();
-                fm.format("%s %.2f", paramNames[16] + ": ", Math.acos(lpulse.getDirection().get(2)) * 1e3);
-                pw.println(fm);
-                pw.close();
+            Properties prop = new Properties();
+            try (FileWriter fw = new FileWriter(pFile, false)) {
+                prop.setProperty(paramNames[0], new Double(ebunch.getGamma() * 0.512).toString());
+                prop.setProperty(paramNames[1], new Double(ebunch.getNumber() * ElectronBunch.E * 1e9).toString());
+                prop.setProperty(paramNames[2], new Double(ebunch.getDelgamma()).toString());
+                prop.setProperty(paramNames[3], new Double(ebunch.getLength() * 2 / 3e-4).toString());
+                prop.setProperty(paramNames[4], new Double(ebunch.getEps() * 1e6).toString());
+                prop.setProperty(paramNames[5], new Double(ebunch.getBetax() * 1e3).toString());
+                prop.setProperty(paramNames[6], new Double(ebunch.getBetay() * 1e3).toString());
+                prop.setProperty(paramNames[7], new Double(lpulse.getPhotonEnergy() / ElectronBunch.E).toString());
+                prop.setProperty(paramNames[8], new Double(lpulse.getPulseEnergy() * 1e3).toString());
+                prop.setProperty(paramNames[9], new Double(lpulse.getLength() * 2 / 3e-4).toString());
+                prop.setProperty(paramNames[10], new Double(lpulse.getRlength() * 1e3).toString());
+                prop.setProperty(paramNames[11], new Double(lpulse.getFq() * 1e-6).toString());
+                prop.setProperty(paramNames[12], new Double(lpulse.getDelay() / 3e-4).toString());
+                prop.setProperty(paramNames[13], new Double(ebunch.getShift().get(0) * 1e3).toString());
+                prop.setProperty(paramNames[14], new Double(ebunch.getShift().get(1) * 1e3).toString());
+                prop.setProperty(paramNames[15], new Double(ebunch.getShift().get(2) * 1e3).toString());
+                prop.setProperty(paramNames[16], pulseanglevalue.getText());
+                prop.store(fw, "Thomson source parameters");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -2589,104 +2554,52 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         int ans = fo.showOpenDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
-            ArrayList<String> inputList = new ArrayList<>();
-            try (BufferedReader pr = new BufferedReader(new FileReader(pFile))) {
-                String ts;
-                do {
-                    ts = pr.readLine();
-                    if (ts != null) {
-                        inputList.add(ts);
-                    }
-                } while (ts != null);
-                pr.close();
+            Properties prop = new Properties();
+            try (FileReader fr = new FileReader(pFile)) {
+                prop.load(fr);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while reading from the file", "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
-            Iterator<String> itt = inputList.iterator();
-            while (itt.hasNext()) {
-                String ts = itt.next();
-                try {
-                    for (int i = 0; i < paramNames.length; i++) {
-                        if (ts.contains(paramNames[i])) {
-                            String tss = ts.substring(ts.indexOf(':') + 1);
-                            switch (i) {
-                                case 0:
-                                    ebunch.setGamma(Float.parseFloat(tss) / 0.512);
-                                    energyvalue.setText(tss);
-                                    break;
-                                case 1:
-                                    ebunch.setNumber(Float.parseFloat(tss) / ElectronBunch.E * 1e-9);
-                                    chargevalue.setText(tss);
-                                    break;
-                                case 2:
-                                    ebunch.setDelgamma(Float.parseFloat(tss));
-                                    spreadvalue.setText(tss);
-                                    break;
-                                case 3:
-                                    ebunch.setLength(Float.parseFloat(tss) * 3e-4 / 2);
-                                    elengthvalue.setText(tss);
-                                    break;
-                                case 4:
-                                    ebunch.setEps(Float.parseFloat(tss) * 1e-6);
-                                    eemitvalue.setText(tss);
-                                    break;
-                                case 5:
-                                    ebunch.setBetax(Float.parseFloat(tss) * 1e-3);
-                                    ebetaxvalue.setText(tss);
-                                    break;
-                                case 6:
-                                    ebunch.setBetay(Float.parseFloat(tss) * 1e-3);
-                                    ebetayvalue.setText(tss);
-                                    break;
-                                case 7:
-                                    lpulse.setPhotonEnergy(Float.parseFloat(tss) * ElectronBunch.E);
-                                    phenergyvalue.setText(tss);
-                                    break;
-                                case 8:
-                                    lpulse.setPulseEnergy(Float.parseFloat(tss) * 1e-3);
-                                    pulseenergyvalue.setText(tss);
-                                    break;
-                                case 9:
-                                    lpulse.setLength(Float.parseFloat(tss) * 3e-4 / 2);
-                                    pulselengthvalue.setText(tss);
-                                    break;
-                                case 10:
-                                    lpulse.setRlength(Float.parseFloat(tss) * 1e-3);
-                                    pulserelvalue.setText(tss);
-                                    break;
-                                case 11:
-                                    lpulse.setFq(Float.parseFloat(tss) * 1e6);
-                                    pulsefreqvalue.setText(tss);
-                                    break;
-                                case 12:
-                                    lpulse.setDelay(Float.parseFloat(tss) * 3e-4);
-                                    pulsedelayvalue.setText(tss);
-                                    break;
-                                case 13:
-                                    ebunch.getShift().set(0, Float.parseFloat(tss) * 1e-3);
-                                    eshiftxvalue.setText(tss);
-                                    break;
-                                case 14:
-                                    ebunch.getShift().set(1, Float.parseFloat(tss) * 1e-3);
-                                    eshiftyvalue.setText(tss);
-                                    break;
-                                case 15:
-                                    ebunch.getShift().set(2, Float.parseFloat(tss) * 1e-3);
-                                    eshiftzvalue.setText(tss);
-                                    break;
-                                case 16:
-                                    lpulse.getDirection().set(2, Math.cos(Float.parseFloat(tss) * 1e-3));
-                                    lpulse.getDirection().set(1, Math.sin(Float.parseFloat(tss) * 1e-3));
-                                    pulseanglevalue.setText(tss);
-                                    break;
-                            }
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Error in the file", "Error",
+            try {
+                ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+                energyvalue.setText(prop.getProperty(paramNames[0], "0"));
+                ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
+                chargevalue.setText(prop.getProperty(paramNames[1], "0"));
+                ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
+                spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
+                ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
+                elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
+                ebunch.setEps(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
+                eemitvalue.setText(prop.getProperty(paramNames[4], "0"));
+                ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[5], "0")) * 1e-3);
+                ebetaxvalue.setText(prop.getProperty(paramNames[5], "0"));
+                ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
+                ebetayvalue.setText(prop.getProperty(paramNames[6], "0"));
+                lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * ElectronBunch.E);
+                phenergyvalue.setText(prop.getProperty(paramNames[7], "0"));
+                lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * 1e-3);
+                pulseenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
+                lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[9], "0")) / 2 * 3e-4);
+                pulselengthvalue.setText(prop.getProperty(paramNames[9], "0"));
+                lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) * 1e-3);
+                pulserelvalue.setText(prop.getProperty(paramNames[10], "0"));
+                lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e6);
+                pulsefreqvalue.setText(prop.getProperty(paramNames[11], "0"));
+                lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 3e-4);
+                pulsedelayvalue.setText(prop.getProperty(paramNames[12], "0"));
+                ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 1e-3);
+                eshiftxvalue.setText(prop.getProperty(paramNames[13], "0"));
+                ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+                eshiftyvalue.setText(prop.getProperty(paramNames[14], "0"));
+                ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+                eshiftzvalue.setText(prop.getProperty(paramNames[15], "0"));
+                lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
+                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));         
+                pulseanglevalue.setText(prop.getProperty(paramNames[16], "0"));
+            } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
                             JOptionPane.ERROR_MESSAGE);
-                }
             }
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed
