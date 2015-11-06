@@ -729,11 +729,19 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Number of used threads
+     * Setting the number of used threads
      *
      * @param threadNumber the threadNumber to set
      */
     public void setThreadNumber(int threadNumber) {
         this.threadNumber = threadNumber;
+    }
+    
+    /**
+     * Getting the number of used threads
+     * @return
+     */
+    public int getThreadNumber() {
+        return threadNumber;
     }
 }

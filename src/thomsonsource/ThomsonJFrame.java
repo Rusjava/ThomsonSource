@@ -39,6 +39,12 @@ import java.util.Map;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -58,7 +64,6 @@ import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
 import java.net.URL;
-import java.util.Properties;
 import shadowfileconverter.ShadowFiles;
 
 /**
@@ -2595,11 +2600,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
                 eshiftzvalue.setText(prop.getProperty(paramNames[15], "0"));
                 lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
-                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));         
+                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
                 pulseanglevalue.setText(prop.getProperty(paramNames[16], "0"));
             } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed
@@ -2624,27 +2629,52 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, number, bFile)) {
+                // Creating a pool of threads, a lock, an atomic interger and a latch
+                ExecutorService excs = Executors.newFixedThreadPool(tsource.getThreadNumber());
+                CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
+                ReentrantLock lock = new ReentrantLock();
+                AtomicInteger counter = new AtomicInteger();
+                // Open a file for rays
+                int rayNumber = tsource.getThreadNumber() * (number / tsource.getThreadNumber());
+                try (ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
                     SwingUtilities.invokeLater(() -> rayProgressFrame.setVisible(true));
-                    for (int i = 0; i < number; i++) {
+                    Long ns = System.nanoTime();
+                    for (int th = 0; th < tsource.getThreadNumber(); th++) {
                         if (isCancelled()) {
                             break;
                         }
-                        //Getting a ray
-                        double[] ray = tsourceRayClone.getRay();
-                        //Units conversions
-                        ray[0] *= 1e2;
-                        ray[1] *= 1e2;
-                        ray[2] *= 1e2;
-                        ray[10] *= 1e-2 / LaserPulse.HC;
-                        ray[11] = i;
-                        shadowFile.write(ray);
-                        setStatusBar((int) 100 * (i + 1) / number);
+                        //Creating multiple threads to accelerate calculations
+                        excs.execute(() -> {
+                            for (int i = 0; i < rayNumber / tsource.getThreadNumber(); i++) {
+                                try {
+                                    //Getting a ray
+                                    double[] ray = tsourceRayClone.getRay();
+                                    //Units conversions
+                                    ray[0] *= 1e2;
+                                    ray[1] *= 1e2;
+                                    ray[2] *= 1e2;
+                                    ray[10] *= 1e-2 / LaserPulse.HC;
+                                    ray[11] = i;
+                                    //Synchronized wrting to the ray file
+                                    lock.lock();
+                                    shadowFile.write(ray);
+                                    lock.unlock();
+                                    setStatusBar((int) 100 * (counter.incrementAndGet() + 1) / rayNumber);
+                                } catch (IOException | InterruptedException ex) {
+                                    break;
+                                }
+                            }
+                            lt.countDown();
+                        });
                     }
-                } catch (Exception ex) {
+                    lt.await();
+                    System.out.println(System.nanoTime() - ns);
+                } catch (InterruptedException ex) {
+                    excs.shutdownNow();
                     throw ex;
                 }
+                excs.shutdownNow();
                 return null;
             }
 
@@ -2681,7 +2711,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              * @param status
              */
             public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(() -> jRayProgressBar.setValue(status));
+                SwingUtilities.invokeLater(() -> {
+                    if (status != jRayProgressBar.getValue()) {
+                        jRayProgressBar.setValue(status);
+                    }
+                });
             }
         };
         rayWorker.execute();
