@@ -187,11 +187,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
-        // Adding skin menua items to their button group
+        // Adding skin menu items to their button group
         buttonGroupSkin.add(jRadioButtonMenuDefault);
         buttonGroupSkin.add(jRadioButtonMenuSystem);
         buttonGroupSkin.add(jRadioButtonMenuNimbus);
-        // Adding a listerner of the UI manager
+        // Adding a listerner to the UI manager for skin update
         UIManager.addPropertyChangeListener(e -> {
             SwingUtilities.updateComponentTreeUI(this);
             SwingUtilities.updateComponentTreeUI(gfCalc);
@@ -2618,12 +2618,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setStringPainted(true);
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
-        final int number = numberOfRays;
         try {
             tsourceRayClone = (ThompsonSource) tsource.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
+        final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());     
         tsourceRayClone.calculateTotalFlux();
         rayWorking = true;
         rayWorker = new SwingWorker<Void, Void>() {
@@ -2635,18 +2635,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 ReentrantLock lock = new ReentrantLock();
                 AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
-                int rayNumber = tsource.getThreadNumber() * (number / tsource.getThreadNumber());
                 try (ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
-                    SwingUtilities.invokeLater(() -> rayProgressFrame.setVisible(true));
                     Long ns = System.nanoTime();
-                    for (int th = 0; th < tsource.getThreadNumber(); th++) {
+                    for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
                         if (isCancelled()) {
                             break;
                         }
                         //Creating multiple threads to accelerate calculations
                         excs.execute(() -> {
-                            for (int i = 0; i < rayNumber / tsource.getThreadNumber(); i++) {
+                            for (int i = 0; i < rayNumber / tsourceRayClone.getThreadNumber(); i++) {
                                 try {
                                     //Getting a ray
                                     double[] ray = tsourceRayClone.getRay();
@@ -2656,10 +2654,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     ray[2] *= 1e2;
                                     ray[10] *= 1e-2 / LaserPulse.HC;
                                     ray[11] = i;
-                                    //Synchronized wrting to the ray file
                                     lock.lock();
-                                    shadowFile.write(ray);
-                                    lock.unlock();
+                                    try {
+                                        shadowFile.write(ray);
+                                    } finally {
+                                        lock.unlock();
+                                    }
                                     setStatusBar((int) 100 * (counter.incrementAndGet() + 1) / rayNumber);
                                 } catch (IOException | InterruptedException ex) {
                                     break;
@@ -2718,6 +2718,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 });
             }
         };
+        rayProgressFrame.setVisible(true);
         rayWorker.execute();
     }//GEN-LAST:event_jMenuItemSourceActionPerformed
 

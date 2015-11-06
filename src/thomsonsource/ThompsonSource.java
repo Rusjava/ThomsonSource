@@ -19,6 +19,7 @@ package thomsonsource;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
@@ -36,9 +37,10 @@ import org.la4j.vector.dense.BasicVector;
  * @version 1.6
  */
 public class ThompsonSource implements Cloneable {
-    
+
     /**
      * Constructor
+     *
      * @param l
      * @param b
      */
@@ -46,6 +48,8 @@ public class ThompsonSource implements Cloneable {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
+        this.counter = new AtomicInteger();
+        this.partialFlux = new DoubleAdder();
         calculateTotalFlux();
         calculateGeometricFactor();
     }
@@ -58,12 +62,12 @@ public class ThompsonSource implements Cloneable {
     /**
      * Angle range for rays exported for Shadow in the X-direction
      */
-    private double rayXAnglerange = 0.05;
+    private double rayXAnglerange = 0.0003;
 
     /**
      * Angle range for rays exported for Shadow in the Y-direction
      */
-    private double rayYAnglerange = 0.05;
+    private double rayYAnglerange = 0.0003;
 
     /**
      * Min ray energy
@@ -109,7 +113,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Flux in the phase space volume of ray generation
      */
-    private double partialFlux;
+    private DoubleAdder partialFlux;
 
     /**
      * Number of used threads
@@ -119,7 +123,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Counter of ray iterations
      */
-    private int counter;
+    private AtomicInteger counter;
 
     private LaserPulse lp;
     private ElectronBunch eb;
@@ -131,6 +135,8 @@ public class ThompsonSource implements Cloneable {
         Object tm = super.clone();
         ((ThompsonSource) tm).eb = (ElectronBunch) this.eb.clone();
         ((ThompsonSource) tm).lp = (LaserPulse) this.lp.clone();
+        ((ThompsonSource) tm).counter = new AtomicInteger();
+        ((ThompsonSource) tm).partialFlux = new DoubleAdder();
         return tm;
     }
 
@@ -183,8 +189,8 @@ public class ThompsonSource implements Cloneable {
         len = mult * Math.max(eb.getLength() + Math.abs(eb.getShift().get(2)) / 2, lp.getLength() + Math.abs(eb.getShift().get(2)) / 2);
         final int itNumber = Math.round(getNpGeometricFactor() / threadNumber);
         /*
-        Splitting the job into a number of threads
-        */
+         Splitting the job into a number of threads
+         */
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
                 double psum = 0;
@@ -567,7 +573,7 @@ public class ThompsonSource implements Cloneable {
             if (!new Double(prob).isNaN()) {
                 sum += prob / ray[10];
             }
-            counter++;
+            counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculation of the rotated polarization vector
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
@@ -584,7 +590,7 @@ public class ThompsonSource implements Cloneable {
         ray[9] = 1.0;
         ray[13] = Math.random() * 2 * Math.PI;
         ray[14] = Math.random() * 2 * Math.PI;
-        partialFlux += sum * factor;
+        partialFlux.add(sum * factor);
         return ray;
     }
 
@@ -716,7 +722,7 @@ public class ThompsonSource implements Cloneable {
      * @return the partialFlux
      */
     public double getPartialFlux() {
-        return partialFlux;
+        return partialFlux.sum();
     }
 
     /**
@@ -725,7 +731,7 @@ public class ThompsonSource implements Cloneable {
      * @return the counter
      */
     public int getCounter() {
-        return counter;
+        return counter.get();
     }
 
     /**
@@ -736,9 +742,10 @@ public class ThompsonSource implements Cloneable {
     public void setThreadNumber(int threadNumber) {
         this.threadNumber = threadNumber;
     }
-    
+
     /**
      * Getting the number of used threads
+     *
      * @return
      */
     public int getThreadNumber() {
