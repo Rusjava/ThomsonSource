@@ -2633,7 +2633,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
                 AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
-                try (ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
+                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
                     Long ns = System.nanoTime();
                     for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
