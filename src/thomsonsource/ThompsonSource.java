@@ -34,7 +34,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 1.6
+ * @version 1.9
  */
 public class ThompsonSource implements Cloneable {
 

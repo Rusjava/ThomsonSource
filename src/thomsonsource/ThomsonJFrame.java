@@ -43,7 +43,6 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jfree.chart.ChartPanel;
@@ -69,7 +68,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.8.0
+ * @version 1.9.0
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2632,7 +2631,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 // Creating a pool of threads, a lock, an atomic interger and a latch
                 ExecutorService excs = Executors.newFixedThreadPool(tsource.getThreadNumber());
                 CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
-                ReentrantLock lock = new ReentrantLock();
                 AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
                 try (ShadowFiles shadowFile = new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
@@ -2654,12 +2652,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     ray[2] *= 1e2;
                                     ray[10] *= 1e-2 / LaserPulse.HC;
                                     ray[11] = i;
-                                    lock.lock();
-                                    try {
-                                        shadowFile.write(ray);
-                                    } finally {
-                                        lock.unlock();
-                                    }
+                                    shadowFile.write(ray);
                                     setStatusBar((int) 100 * (counter.incrementAndGet() + 1) / rayNumber);
                                 } catch (IOException | InterruptedException ex) {
                                     break;
