@@ -25,6 +25,7 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.vector.Vector;
 import org.apache.commons.math3.analysis.integration.*;
+import org.apache.commons.math3.complex.Complex;
 import org.la4j.matrix.Matrix;
 import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.Vectors;
@@ -575,21 +576,22 @@ public class ThompsonSource implements Cloneable {
             }
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
-        // Calculation of the rotated polarization vector
+        // Calculation of the rotated polarization vector and getting the full polarizaation state
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
-        As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).multiply(Math.sqrt(1 - ksi1) / Math.sqrt(2));
+        double[] pol = getPolarization();
+        As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).multiply(pol[0]);
         ray[6] = As.get(0);
         ray[7] = As.get(1);
         ray[8] = As.get(2);
-        As = T.multiply(new BasicVector(new double[]{0.0, 0.0, 1.0})).multiply(Math.sqrt(1 + ksi1) / Math.sqrt(2));
+        As = T.multiply(new BasicVector(new double[]{0.0, 0.0, 1.0})).multiply(pol[1]);
         ray[15] = As.get(0);
         ray[16] = As.get(1);
         ray[17] = As.get(2);
         //Setting other columns
         ray[9] = 1.0;
-        ray[13] = Math.random() * 2 * Math.PI;
-        ray[14] = Math.random() * 2 * Math.PI;
+        ray[13] = pol[2];
+        ray[14] = pol[3];
         partialFlux.add(sum * factor);
         return ray;
     }
@@ -750,5 +752,23 @@ public class ThompsonSource implements Cloneable {
      */
     public int getThreadNumber() {
         return threadNumber;
+    }
+
+    /**
+     * Calculation of random amplitudes and phases
+     *
+     * @return
+     */
+    private double[] getPolarization() {
+        double[] pol = new double[4];
+        double psi0 = Math.atan(ksi3 / ksi2);
+        double psi1 = Math.random() * 2 * Math.PI;
+        double psi2 = Math.random() * 2 * Math.PI;
+        Complex e1, e2;
+        pol[0] = Math.sqrt((1 - ksi1) / 2);
+        pol[1] = Math.sqrt((1 + ksi1) / 2);
+        pol[2] = Math.random() * 2 * Math.PI;
+        pol[3] = Math.random() * 2 * Math.PI;
+        return pol;
     }
 }
