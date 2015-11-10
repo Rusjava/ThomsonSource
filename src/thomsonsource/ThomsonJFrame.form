@@ -645,7 +645,6 @@
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="buttonGroupPolarization"/>
                     </Property>
-                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="Unpolarized"/>
                   </Properties>
                   <Events>
@@ -657,6 +656,7 @@
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="buttonGroupPolarization"/>
                     </Property>
+                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="S-polarized"/>
                   </Properties>
                   <Events>
@@ -672,6 +672,17 @@
                   </Properties>
                   <Events>
                     <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemPPolarizedItemStateChanged"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemAutoPolarized">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="buttonGroupPolarization"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Automatic"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemAutoPolarizedItemStateChanged"/>
                   </Events>
                 </MenuItem>
               </SubComponents>
@@ -693,6 +704,16 @@
             <Property name="text" type="java.lang.String" value="Options"/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemLaserPolarization">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Laser polarization..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemLaserPolarizationActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator5">
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemSize">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Graph parameters..."/>
@@ -730,6 +751,9 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuDefault">
                   <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="buttonGroupSkin"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Default"/>
                   </Properties>
                   <Events>
@@ -738,6 +762,9 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuSystem">
                   <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="buttonGroupSkin"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="System"/>
                   </Properties>
                   <Events>
@@ -746,6 +773,9 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuNimbus">
                   <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="buttonGroupSkin"/>
+                    </Property>
                     <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="Nimbus"/>
                   </Properties>
@@ -1179,7 +1209,7 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="28" max="32767" attributes="0"/>
+                          <EmptySpace pref="24" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                   <Component id="puslelengthlabel" max="32767" attributes="0"/>
@@ -1469,17 +1499,17 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jPanel_xflux_left" pref="338" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_left" pref="336" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jPanel_xflux_right" pref="293" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_right" pref="291" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel_xflux_left" pref="226" max="32767" attributes="0"/>
-                          <Component id="jPanel_xflux_right" alignment="0" pref="226" max="32767" attributes="0"/>
+                          <Component id="jPanel_xflux_left" pref="225" max="32767" attributes="0"/>
+                          <Component id="jPanel_xflux_right" alignment="0" pref="225" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>

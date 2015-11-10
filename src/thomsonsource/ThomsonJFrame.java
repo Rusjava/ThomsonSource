@@ -186,10 +186,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
-        // Adding skin menu items to their button group
-        buttonGroupSkin.add(jRadioButtonMenuDefault);
-        buttonGroupSkin.add(jRadioButtonMenuSystem);
-        buttonGroupSkin.add(jRadioButtonMenuNimbus);
         // Adding a listerner to the UI manager for skin update
         UIManager.addPropertyChangeListener(e -> {
             SwingUtilities.updateComponentTreeUI(this);
@@ -331,9 +327,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRadioButtonMenuItemUnPolarized = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItemSPolarized = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItemPPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemAutoPolarized = new javax.swing.JRadioButtonMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItemConv = new javax.swing.JMenuItem();
         jMenuOptions = new javax.swing.JMenu();
+        jMenuItemLaserPolarization = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemNumerical = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
@@ -1059,7 +1058,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_phLayout.setHorizontalGroup(
             jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_phLayout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+                .addContainerGap(24, Short.MAX_VALUE)
                 .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(puslelengthlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1199,15 +1198,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xfluxLayout.setHorizontalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_xfluxLayout.createSequentialGroup()
-                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
                 .addGap(4, 4, 4))
         );
         jPanel_xfluxLayout.setVerticalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+            .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Flux", jPanel_xflux);
@@ -1435,7 +1434,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(jPanel_ph, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+                            .addComponent(jPanel_sh, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE)
                             .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -1537,7 +1536,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.setText("Polarization...");
 
         buttonGroupPolarization.add(jRadioButtonMenuItemUnPolarized);
-        jRadioButtonMenuItemUnPolarized.setSelected(true);
         jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
         jRadioButtonMenuItemUnPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1547,6 +1545,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemSPolarized);
+        jRadioButtonMenuItemSPolarized.setSelected(true);
         jRadioButtonMenuItemSPolarized.setText("S-polarized");
         jRadioButtonMenuItemSPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1564,6 +1563,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
 
+        buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
+        jRadioButtonMenuItemAutoPolarized.setText("Automatic");
+        jRadioButtonMenuItemAutoPolarized.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuItemAutoPolarizedItemStateChanged(evt);
+            }
+        });
+        jMenuPolarization.add(jRadioButtonMenuItemAutoPolarized);
+
         jMenuShadow.add(jMenuPolarization);
         jMenuShadow.add(jSeparator3);
 
@@ -1578,6 +1586,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuBarMain.add(jMenuShadow);
 
         jMenuOptions.setText("Options");
+
+        jMenuItemLaserPolarization.setText("Laser polarization...");
+        jMenuItemLaserPolarization.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemLaserPolarizationActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jMenuItemLaserPolarization);
+        jMenuOptions.add(jSeparator5);
 
         jMenuItemSize.setText("Graph parameters...");
         jMenuItemSize.addActionListener(new java.awt.event.ActionListener() {
@@ -1609,6 +1626,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jMenuSkin.setText("Look&Feel...");
 
+        buttonGroupSkin.add(jRadioButtonMenuDefault);
         jRadioButtonMenuDefault.setText("Default");
         jRadioButtonMenuDefault.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1617,6 +1635,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuSkin.add(jRadioButtonMenuDefault);
 
+        buttonGroupSkin.add(jRadioButtonMenuSystem);
         jRadioButtonMenuSystem.setText("System");
         jRadioButtonMenuSystem.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1625,6 +1644,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuSkin.add(jRadioButtonMenuSystem);
 
+        buttonGroupSkin.add(jRadioButtonMenuNimbus);
         jRadioButtonMenuNimbus.setSelected(true);
         jRadioButtonMenuNimbus.setText("Nimbus");
         jRadioButtonMenuNimbus.addItemListener(new java.awt.event.ItemListener() {
@@ -2622,7 +2642,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         } catch (CloneNotSupportedException ex) {
 
         }
-        final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());     
+        final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());
         tsourceRayClone.calculateTotalFlux();
         rayWorking = true;
         rayWorker = new SwingWorker<Void, Void>() {
@@ -3059,17 +3079,29 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jRadioButtonMenuNimbusItemStateChanged
+
+    private void jMenuItemLaserPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLaserPolarizationActionPerformed
+        // Setting up laser polarization state
+    }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
+
+    private void jRadioButtonMenuItemAutoPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
+        // Selecting automatic polarization
+        pRadioButtons();
+    }//GEN-LAST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
+
     /*
      * Setting up polarization of X-ray radiation
      */
-
     private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(0, 0, 0);
         } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
             tsource.setPolarization(-1, 0, 0);
-        } else {
+        } else if (jRadioButtonMenuItemPPolarized.isSelected()) {
             tsource.setPolarization(1, 0, 0);
+        } else {
+            double[] pol = tsource.getLaserPulse().getPolarization();
+            tsource.setPolarization(pol[0], pol[1], pol[2]);
         }
     }
 
@@ -3510,6 +3542,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemConv;
     private javax.swing.JMenuItem jMenuItemExit;
     private javax.swing.JMenuItem jMenuItemGeometricFactor;
+    private javax.swing.JMenuItem jMenuItemLaserPolarization;
     private javax.swing.JMenuItem jMenuItemLoadParam;
     private javax.swing.JMenuItem jMenuItemNumerical;
     private javax.swing.JMenuItem jMenuItemSaveParam;
@@ -3533,6 +3566,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemAutoPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemSPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemUnPolarized;
@@ -3545,6 +3579,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSlider jSlider_pickup;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel phenergylabel;

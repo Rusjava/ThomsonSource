@@ -619,7 +619,7 @@ public class ThompsonSource implements Cloneable {
      * @return transformation matrix
      */
     protected Matrix getTransform(Vector n, Vector n0) {
-        Matrix M, D, A, I = new Basic1DMatrix(3, 3);
+        Matrix D, A, I = new Basic1DMatrix(3, 3);
         I.set(0, 0, 1.0);
         I.set(1, 1, 1.0);
         I.set(2, 2, 1.0);
@@ -761,14 +761,26 @@ public class ThompsonSource implements Cloneable {
      */
     private double[] getPolarization() {
         double[] pol = new double[4];
-        double psi0 = Math.atan(ksi3 / ksi2);
-        double psi1 = Math.random() * 2 * Math.PI;
-        double psi2 = Math.random() * 2 * Math.PI;
-        Complex e1, e2;
-        pol[0] = Math.sqrt((1 - ksi1) / 2);
-        pol[1] = Math.sqrt((1 + ksi1) / 2);
-        pol[2] = Math.random() * 2 * Math.PI;
-        pol[3] = Math.random() * 2 * Math.PI;
+        Complex phase1 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
+        Complex phase2 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
+        double p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi3 * ksi3);
+        if (p != 0) {
+            double k1 = Math.sqrt(1 - p);
+            double k2 = Math.sqrt(1 + p);
+            double coef = Math.sqrt((p + ksi1) / p) / 2;
+            Complex ksiD = new Complex(ksi2, ksi3);
+            Complex e1 = phase1.multiply(k1).add(phase2.multiply(ksiD).multiply(k2).divide(p + ksi1)).multiply(coef);
+            Complex e2 = phase2.multiply(k2).subtract(phase1.multiply(ksiD.conjugate()).multiply(k1).divide(p + ksi1)).multiply(coef);
+            pol[0] = e1.abs();
+            pol[1] = e2.abs();
+            pol[2] = e1.getArgument();
+            pol[3] = e2.getArgument();
+        } else {
+            pol[0] = 1 / Math.sqrt(2);
+            pol[1] = pol[0];
+            pol[2] = Math.random() * 2 * Math.PI;
+            pol[3] = Math.random() * 2 * Math.PI;
+        }
         return pol;
     }
 }

@@ -131,6 +131,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Laser pulse semi-length, m
+     *
      * @return the length
      */
     public double getLength() {
@@ -139,6 +140,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Laser pulse semi-length, m
+     *
      * @param length the length to set
      */
     public void setLength(double length) {
@@ -147,6 +149,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Mean direction of the laser pulse
+     *
      * @return the direction
      */
     public Vector getDirection() {
@@ -155,6 +158,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Mean direction of the laser pulse
+     *
      * @param direction the direction to set
      */
     public void setDirection(Vector direction) {
@@ -163,6 +167,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Laser pulse Rayleigh length, m
+     *
      * @return the rlength
      */
     public double getRlength() {
@@ -171,6 +176,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Laser pulse Rayleigh length, m
+     *
      * @param rlength the rlength to set
      */
     public void setRlength(double rlength) {
@@ -179,6 +185,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Pulse frequency, 1/s
+     *
      * @return the fq
      */
     public double getFq() {
@@ -187,6 +194,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Pulse frequency, 1/s
+     *
      * @param fq the fq to set
      */
     public void setFq(double fq) {
@@ -195,6 +203,7 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Laser pulse delay, m
+     *
      * @return the delay
      */
     public double getDelay() {
@@ -203,12 +212,34 @@ public class LaserPulse implements Cloneable {
 
     /**
      * Laser pulse delay, m
+     *
      * @param delay the delay to set
      */
     public void setDelay(double delay) {
         this.delay = delay;
     }
 
+    /**
+     * Setting laser polarization state
+     *
+     * @param ksi1
+     * @param ksi2
+     * @param ksi3
+     */
+    public void setPolarization(double ksi1, double ksi2, double ksi3) {
+        this.ksi1 = ksi1;
+        this.ksi2 = ksi2;
+        this.ksi3 = ksi3;
+    }
+
+    /**
+     * Getting laser polarization state vector
+     *
+     * @return 
+     */
+    public double[] getPolarization() {
+        return new double [] {ksi1, ksi2, ksi3};
+    }
     /**
      * Photon energy, J
      */
@@ -243,6 +274,13 @@ public class LaserPulse implements Cloneable {
      * Laser pulse delay, m
      */
     private double delay = 0;
+
+    /**
+     * Stocks parameters
+     */
+    private double ksi1 = 0;
+    private double ksi2 = 0;
+    private double ksi3 = 0;
 
     private double rk;
 
