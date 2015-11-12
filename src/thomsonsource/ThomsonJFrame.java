@@ -100,6 +100,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
         rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
         threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
+        ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         /**
          * An auxiliary method giving the flux density in a given direction
          *
@@ -1922,7 +1925,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
             gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
-            yRangeBox, xEnergyRangeBox, threadsNumberBox;
+            yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box;
 
     private File bFile = null, pFile = null;
 
@@ -2543,7 +2546,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     return;
                 }
             }
-
+            //Creating Properties object to store program parameters
             Properties prop = new Properties();
             try (FileWriter fw = new FileWriter(pFile, false)) {
                 prop.setProperty(paramNames[0], new Double(ebunch.getGamma() * 0.512).toString());
@@ -2734,7 +2737,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemSourceActionPerformed
 
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
-        // TODO add your handling code here:
+        // Obtaining display parameters
         Object[] message = {
             "x-size:", xSizeBox,
             "y-size:", ySizeBox,
@@ -3078,6 +3081,29 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemLaserPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLaserPolarizationActionPerformed
         // Setting up laser polarization state
+        String warning = "";
+        double p2;
+        JPanel panel1 = new JPanel();
+        panel1.add(new JLabel("ksi1:"));
+        panel1.add(ksi1Box);
+        panel1.add(new JLabel("ksi2:"));
+        panel1.add(ksi2Box);
+        panel1.add(new JLabel("ksi3:"));
+        panel1.add(ksi3Box);
+        JPanel panel2 = new JPanel();
+        panel2.add(new JLabel(""));
+        Object[] message = {panel1, panel2};
+        do {
+            ((JLabel) panel2.getComponents()[0]).setText(warning);
+            int option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
+                        (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
+            }
+            p2 = Math.pow((double) ksi1Box.getValue(), 2) + Math.pow((double) ksi2Box.getValue(), 2)
+                    + Math.pow((double) ksi3Box.getValue(), 2);    
+            warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must be not exceed unity!" : "";
+        } while (p2 > 1);
     }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
 
     private void jRadioButtonMenuItemAutoPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
