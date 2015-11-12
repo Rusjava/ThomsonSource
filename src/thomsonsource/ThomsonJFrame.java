@@ -3083,27 +3083,27 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Setting up laser polarization state
         String warning = "";
         double p2;
-        JPanel panel1 = new JPanel();
-        panel1.add(new JLabel("ksi1:"));
-        panel1.add(ksi1Box);
-        panel1.add(new JLabel("ksi2:"));
-        panel1.add(ksi2Box);
-        panel1.add(new JLabel("ksi3:"));
-        panel1.add(ksi3Box);
-        JPanel panel2 = new JPanel();
-        panel2.add(new JLabel(""));
-        Object[] message = {panel1, panel2};
+        JPanel panel = new JPanel();
+        panel.add(new JLabel(""));
+        ((JLabel) panel.getComponents()[0]).setForeground(Color.red);
+        Object[] message = {
+            "ksi1:", ksi1Box,
+            "ksi2:", ksi2Box,
+            "ksi3:", ksi3Box,
+             panel
+        };
+        int option;
         do {
-            ((JLabel) panel2.getComponents()[0]).setText(warning);
-            int option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
-                tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
-                        (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
-            }
+            ((JLabel) panel.getComponents()[0]).setText(warning);
+            option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);      
             p2 = Math.pow((double) ksi1Box.getValue(), 2) + Math.pow((double) ksi2Box.getValue(), 2)
                     + Math.pow((double) ksi3Box.getValue(), 2);    
             warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must be not exceed unity!" : "";
-        } while (p2 > 1);
+        } while (p2 > 1 && option == JOptionPane.OK_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
+                        (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
+        }
     }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
 
     private void jRadioButtonMenuItemAutoPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
