@@ -2655,7 +2655,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 // Open a file for rays
                 try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
-                    Long ns = System.nanoTime();
                     for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
                         if (isCancelled()) {
                             break;
@@ -2682,7 +2681,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         });
                     }
                     lt.await();
-                    System.out.println(System.nanoTime() - ns);
                 } catch (InterruptedException ex) {
                     excs.shutdownNow();
                     throw ex;
@@ -2788,7 +2786,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
                 double offset = gfForm.minValueClone;
-                Long nt = System.nanoTime();
                 switch (gfForm.selectedItemIndexClone) {
                     case 0:
                         gfForm.chartParam.setup(xp -> {
@@ -2858,7 +2855,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }, xsize, step, offset);
                         break;
                 }
-                System.out.println(System.nanoTime() - nt);
                 return null;
             }
 
