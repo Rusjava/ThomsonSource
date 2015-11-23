@@ -55,6 +55,7 @@ public class ThompsonSource implements Cloneable {
         calculateGeometricFactor();
     }
 
+    private final double INT_RANGE = 3;
     /**
      * The number of columns in Shadow files
      */
@@ -250,6 +251,25 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy without taking into account electron
+     * transversal pulse spread
+     *
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
+        double[] array = new double[4];
+        array[0] = directionFrequencyFluxNoSpread(n, v, e);
+        for (int i = 1; i < 4; i++) {
+            array[i] *= lp.getPolarization()[i];
+        }
+        return array;
+    }
+
+    /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy taking into account electron transversal pulse spread
      *
@@ -264,13 +284,42 @@ public class ThompsonSource implements Cloneable {
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v, n);
         try {
-            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.PI);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
     }
 
-    class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
+    /**
+     * A method calculating the stocks parameters density in a given direction
+     * for a given X-ray photon energy taking into account electron transversal
+     * pulse spread
+     *
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyPolarizationSpread(Vector n, Vector v, double e) {
+        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        double[] array = new double[4];
+        UnivariateFunction func;
+        for (int i = 0; i < 4; i++) {
+            func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, i);
+            try {
+                array[i] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.PI);
+            } catch (TooManyEvaluationsException ex) {
+                array[i] = 0;
+            }
+        }
+        return array;
+    }
+
+    /**
+     * An auxiliary class for Romberg integrator for flux calculations
+     */
+    private class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
 
         private final double e;
         private final Vector n, v0;
@@ -289,14 +338,48 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 3 * eb.getSpread());
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
         }
     }
 
-    class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
+    /**
+     * An auxiliary class for Romberg integrator for polarization calculations
+     */
+    private class UnivariateFrequencyPolarizationSpreadOuter implements UnivariateFunction {
+
+        private final double e;
+        private final Vector n, v0;
+        private final int index;
+        private final BaseAbstractUnivariateIntegrator inergrator;
+
+        public UnivariateFrequencyPolarizationSpreadOuter(double e, Vector v0, Vector n, int index) {
+            this.e = e;
+            this.v0 = v0;
+            this.n = n;
+            this.index = index;
+            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                    RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        }
+
+        @Override
+        public double value(double phi) {
+            UnivariateFunction func
+                    = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
+            try {
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+            } catch (TooManyEvaluationsException ex) {
+                return 0;
+            }
+        }
+    }
+
+    /**
+     * An auxiliary class for Romberg integrator for flux calculations
+     */
+    private class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
 
         private final double phi, e;
         private final Vector n, v0;
@@ -321,6 +404,35 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
+     * An auxiliary class for Romberg integrator for polarization calculations
+     */
+    private class UnivariateFrequencyPolarizationSpreadInner implements UnivariateFunction {
+
+        private final double phi, e;
+        private final int index;
+        private final Vector n, v0;
+
+        public UnivariateFrequencyPolarizationSpreadInner(double phi, double e, Vector v0, Vector n, int index) {
+            this.phi = phi;
+            this.e = e;
+            this.n = n;
+            this.index = index;
+            this.v0 = v0;
+        }
+
+        @Override
+        public double value(double theta) {
+            double u;
+            Vector v = new BasicVector(new double[]{Math.sin(theta) * Math.cos(phi),
+                Math.sin(theta) * Math.sin(phi), Math.cos(theta)});
+            Vector dv = v.subtract(v0);
+            u = theta * directionFrequencyPolarizationNoSpread(n, v, e)[index]
+                    * eb.angleDistribution(dv.get(0), dv.get(1));
+            return new Double(u).isNaN() ? 0 : u;
+        }
+    }
+
+    /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy for a given volume element
      *
@@ -332,6 +444,20 @@ public class ThompsonSource implements Cloneable {
      */
     public double directionFrequencyVolumeFlux(Vector r, Vector n, Vector v, double e) {
         return iseSpread() ? directionFrequencyVolumeFluxSpread(r, n, v, e) : directionFrequencyVolumeFluxNoSpread(r, n, v, e);
+    }
+
+    /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy for a given volume element
+     *
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyVolumePolarization(Vector r, Vector n, Vector v, double e) {
+        return iseSpread() ? directionFrequencyVolumePolarizationSpread(r, n, v, e) : directionFrequencyVolumePolarizationNoSpread(r, n, v, e);
     }
 
     /**
@@ -350,6 +476,26 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy for a given volume element without taking
+     * into account electron transversal pulse spread
+     *
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) {
+        double[] stocks = directionFrequencyPolarizationNoSpread(n, v, e);
+        double vFlux = volumeFlux(r);
+        for (int i = 0; i < 4; i++) {
+            stocks[i] *= vFlux;
+        }
+        return stocks;
+    }
+
+    /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy for a given volume element taking into account
      * electron transversal pulse spread
@@ -362,6 +508,26 @@ public class ThompsonSource implements Cloneable {
      */
     public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
         return directionFrequencyFluxSpread(n, v, e) * volumeFlux(r);
+    }
+
+    /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy for a given volume element taking into
+     * account electron transversal pulse spread
+     *
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) {
+        double[] stocks = directionFrequencyPolarizationSpread(n, v, e);
+        double vFlux = volumeFlux(r);
+        for (int i = 0; i < 4; i++) {
+            stocks[i] *= vFlux;
+        }
+        return stocks;
     }
 
     /**
