@@ -130,7 +130,7 @@ public class ThompsonSource implements Cloneable {
     private LaserPulse lp;
     private ElectronBunch eb;
 
-    private double ksi1, ksi2, ksi3;
+    private double[] ksi = null;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -228,6 +228,19 @@ public class ThompsonSource implements Cloneable {
      */
     public double directionFrequencyFlux(Vector n, Vector v, double e) {
         return iseSpread() ? directionFrequencyFluxSpread(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
+    }
+
+    /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy
+     *
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyPolarization(Vector n, Vector v, double e) {
+        return iseSpread() ? directionFrequencyPolarizationSpread(n, v, e) : directionFrequencyPolarizationNoSpread(n, v, e);
     }
 
     /**
@@ -745,7 +758,13 @@ public class ThompsonSource implements Cloneable {
         // Calculation of the rotated polarization vector and getting the full polarizaation state
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
-        double[] pol = getPolarization();
+        double[] pol;
+        if (ksi != null) {
+            pol = getPolarization(ksi);
+        } else {
+            double[] polParam = directionFrequencyPolarization(n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
+            pol = getPolarization(new double[]{polParam[1] / polParam[0], polParam[2] / polParam[0], polParam[3] / polParam[0]});
+        }
         As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).multiply(pol[0]);
         ray[6] = As.get(0);
         ray[7] = As.get(1);
@@ -800,14 +819,10 @@ public class ThompsonSource implements Cloneable {
     /**
      * Setting Stocks parameters
      *
-     * @param ksi1
-     * @param ksi2
-     * @param ksi3
+     * @param ksi
      */
-    public void setPolarization(double ksi1, double ksi2, double ksi3) {
-        this.ksi1 = ksi1;
-        this.ksi2 = ksi2;
-        this.ksi3 = ksi3;
+    public void setPolarization(double[] ksi) {
+        this.ksi = ksi;
     }
 
     /**
@@ -925,18 +940,18 @@ public class ThompsonSource implements Cloneable {
      *
      * @return
      */
-    private double[] getPolarization() {
+    private double[] getPolarization(double[] ksiVector) {
         double[] pol = new double[4];
         Complex phase1 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
         Complex phase2 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
-        double p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi3 * ksi3);
+        double p = Math.sqrt(ksiVector[0] * ksiVector[0] + ksiVector[1] * ksiVector[1] + ksiVector[2] * ksiVector[2]);
         if (p != 0) {
             double k1 = Math.sqrt(1 - p);
             double k2 = Math.sqrt(1 + p);
-            double coef = Math.sqrt((p + ksi1) / p) / 2;
-            Complex ksiD = new Complex(ksi2, ksi3);
-            Complex e1 = phase1.multiply(k1).add(phase2.multiply(ksiD).multiply(k2).divide(p + ksi1)).multiply(coef);
-            Complex e2 = phase2.multiply(k2).subtract(phase1.multiply(ksiD.conjugate()).multiply(k1).divide(p + ksi1)).multiply(coef);
+            double coef = Math.sqrt((p + ksiVector[0]) / p) / 2;
+            Complex ksiD = new Complex(ksiVector[1], ksiVector[2]);
+            Complex e1 = phase1.multiply(k1).add(phase2.multiply(ksiD).multiply(k2).divide(p + ksiVector[0])).multiply(coef);
+            Complex e2 = phase2.multiply(k2).subtract(phase1.multiply(ksiD.conjugate()).multiply(k1).divide(p + ksiVector[0])).multiply(coef);
             pol[0] = e1.abs();
             pol[1] = e2.abs();
             pol[2] = e1.getArgument();

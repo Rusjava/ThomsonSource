@@ -3090,19 +3090,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "ksi1:", ksi1Box,
             "ksi2:", ksi2Box,
             "ksi3:", ksi3Box,
-             panel
+            panel
         };
         int option;
         do {
             ((JLabel) panel.getComponents()[0]).setText(warning);
-            option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);      
+            option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);
             p2 = Math.pow((double) ksi1Box.getValue(), 2) + Math.pow((double) ksi2Box.getValue(), 2)
-                    + Math.pow((double) ksi3Box.getValue(), 2);    
+                    + Math.pow((double) ksi3Box.getValue(), 2);
             warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must be not exceed unity!" : "";
         } while (p2 > 1 && option == JOptionPane.OK_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
-                        (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
+                    (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
         }
     }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
 
@@ -3116,14 +3116,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
      */
     private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
-            tsource.setPolarization(0, 0, 0);
+            tsource.setPolarization(new double[]{0, 0, 0});
         } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
-            tsource.setPolarization(-1, 0, 0);
+            tsource.setPolarization(new double[]{-1, 0, 0});
         } else if (jRadioButtonMenuItemPPolarized.isSelected()) {
-            tsource.setPolarization(1, 0, 0);
+            tsource.setPolarization(new double[]{1, 0, 0});
         } else {
-            double[] pol = tsource.getLaserPulse().getPolarization();
-            tsource.setPolarization(pol[0], pol[1], pol[2]);
+            tsource.setPolarization(null);
         }
     }
 
