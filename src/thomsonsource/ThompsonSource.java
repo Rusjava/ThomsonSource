@@ -55,6 +55,9 @@ public class ThompsonSource implements Cloneable {
         calculateGeometricFactor();
     }
 
+    /**
+     * Multiple for the range
+     */
     private final double INT_RANGE = 3;
     /**
      * The number of columns in Shadow files
@@ -275,10 +278,19 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
         double[] array = new double[4];
-        array[0] = directionFrequencyFluxNoSpread(n, v, e);
-        for (int i = 1; i < 4; i++) {
-            array[i] *= lp.getPolarization()[i];
-        }
+        double K, th, m11, m22, m12, mlt;
+        th = (1 - n.innerProduct(v)) * 2;
+        mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
+        K = Math.exp(-Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
+                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2));
+        m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+        m12 = m11 * mlt;
+        m22 = m12 * mlt;
+        array[0] = (m22 * (1 + lp.getPolarization()[0]) + m11 * (1 - lp.getPolarization()[0])) / 2;
+        array[1] = (m22 * (1 + lp.getPolarization()[0]) - m11 * (1 - lp.getPolarization()[0])) / 2 / array[0];
+        array[2] = m12 * lp.getPolarization()[1] / array[0];
+        array[3] = m12 * lp.getPolarization()[2] / array[0];
         return array;
     }
 
@@ -297,7 +309,7 @@ public class ThompsonSource implements Cloneable {
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v, n);
         try {
-            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.PI);
+            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -321,7 +333,7 @@ public class ThompsonSource implements Cloneable {
         for (int i = 0; i < 4; i++) {
             func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, i);
             try {
-                array[i] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.PI);
+                array[i] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
             } catch (TooManyEvaluationsException ex) {
                 array[i] = 0;
             }
@@ -615,6 +627,20 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
+     * A method calculating spectral brilliance in a given direction with
+     * polarization
+     *
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyPolarizationBrilliance(Vector r0, Vector n, Vector v, double e) {
+        return iseSpread() ? directionFrequencyBrilliancePolarizationSpread(r0, n, v, e) : directionFrequencyBrilliancePolarizationNoSpread(r0, n, v, e);
+    }
+
+    /**
      * A method calculating spectral brilliance in a given direction without
      * taking into account electron transversal pulse spread
      *
@@ -637,6 +663,36 @@ public class ThompsonSource implements Cloneable {
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
+    }
+
+    /**
+     * A method calculating spectral brilliance in a given direction without
+     * taking into account electron transversal pulse spread but with
+     * polarization
+     *
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) {
+        double mlt;
+        double[] array = new double[4];
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
+        try {
+            mlt = integrator.integrate(30000, func,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            mlt = 0;
+        }
+        for (int i = 0; i < 4; i++) {
+            array[i] = mlt * directionFrequencyPolarizationNoSpread(n, v, e)[i];
+        }
+        return array;
     }
 
     /**
@@ -664,6 +720,38 @@ public class ThompsonSource implements Cloneable {
         }
     }
 
+    /**
+     * A method calculating spectral brilliance in a given direction taking into
+     * account electron transversal pulse spread nd with polarization
+     *
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) {
+        double mlt;
+        double[] array = new double[4];
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
+        try {
+            mlt = integrator.integrate(30000, func,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            mlt = 0;
+        }
+        for (int i = 0; i < 4; i++) {
+            array[i] = mlt * directionFrequencyPolarizationSpread(n, v, e)[i];
+        }
+        return array;
+    }
+
+    /**
+     * An auxiliary class for the brilliance calculations
+     */
     private class UnivariateVolumeFlux implements UnivariateFunction {
 
         Vector r0;
@@ -686,6 +774,9 @@ public class ThompsonSource implements Cloneable {
         }
     }
 
+    /**
+     * A custom exception class
+     */
     private static class LocalException extends RuntimeException {
 
         // The x value that caused the problem.
@@ -713,11 +804,12 @@ public class ThompsonSource implements Cloneable {
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
         double prob0, prob, EMax, mult = 2, factor, sum = 0;
+        double[] pol, polParam;
         EMax = directionEnergy(n, n);
         factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
                 * Math.max(eb.getLength(), lp.getLength()) * 4 * rayXAnglerange * rayYAnglerange
                 * (maxEnergy - minEnergy);
-        prob0 = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax);
+        prob0 = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax)[0];
         if (iseSpread()) {
             prob0 *= eb.angleDistribution(0, 0);
             factor *= 4 * mult * mult * eb.getXSpread() * eb.getYSpread();
@@ -746,9 +838,11 @@ public class ThompsonSource implements Cloneable {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
                 Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
-                prob = directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]) * eb.angleDistribution(thetax, thetay);
+                polParam = directionFrequencyVolumePolarizationNoSpread(r, n, v, ray[10]);
+                prob = polParam[0] * eb.angleDistribution(thetax, thetay);
             } else {
-                prob = directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
+                polParam = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
+                prob = polParam[0];
             }
             if (!new Double(prob).isNaN()) {
                 sum += prob / ray[10];
@@ -758,13 +852,13 @@ public class ThompsonSource implements Cloneable {
         // Calculation of the rotated polarization vector and getting the full polarizaation state
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
-        double[] pol;
+        //Checking if polarization is pre-specified
         if (ksi != null) {
             pol = getPolarization(ksi);
         } else {
-            double[] polParam = directionFrequencyPolarization(n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
-            pol = getPolarization(new double[]{polParam[1] / polParam[0], polParam[2] / polParam[0], polParam[3] / polParam[0]});
+            pol = getPolarization(new double[]{polParam[1], polParam[2], polParam[3]});
         }
+        //Rotating the ray electrical vectors
         As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).multiply(pol[0]);
         ray[6] = As.get(0);
         ray[7] = As.get(1);
@@ -936,7 +1030,7 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Calculation of random amplitudes and phases
+     * Calculation of random amplitudes and phases for an arbitrary state of polarization
      *
      * @return
      */
