@@ -284,13 +284,13 @@ public class ThompsonSource implements Cloneable {
         K = Math.exp(-Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
                 / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2));
         m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
-                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * K;
         m12 = m11 * mlt;
         m22 = m12 * mlt;
         array[0] = (m22 * (1 + lp.getPolarization()[0]) + m11 * (1 - lp.getPolarization()[0])) / 2;
-        array[1] = (m22 * (1 + lp.getPolarization()[0]) - m11 * (1 - lp.getPolarization()[0])) / 2 / array[0];
-        array[2] = m12 * lp.getPolarization()[1] / array[0];
-        array[3] = m12 * lp.getPolarization()[2] / array[0];
+        array[1] = (m22 * (1 + lp.getPolarization()[0]) - m11 * (1 - lp.getPolarization()[0])) / 2;
+        array[2] = m12 * lp.getPolarization()[1];
+        array[3] = m12 * lp.getPolarization()[2];
         return array;
     }
 
@@ -853,11 +853,8 @@ public class ThompsonSource implements Cloneable {
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
         //Checking if polarization is pre-specified
-        if (ksi != null) {
-            pol = getPolarization(ksi);
-        } else {
-            pol = getPolarization(new double[]{polParam[1], polParam[2], polParam[3]});
-        }
+        pol = (ksi != null) ? getPolarization(ksi) : 
+                getPolarization(new double[]{polParam[1] / polParam[0], polParam[2] / polParam[0], polParam[3] / polParam[0]});
         //Rotating the ray electrical vectors
         As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).multiply(pol[0]);
         ray[6] = As.get(0);
@@ -1030,7 +1027,8 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Calculation of random amplitudes and phases for an arbitrary state of polarization
+     * Calculation of random amplitudes and phases for an arbitrary state of
+     * polarization
      *
      * @return
      */
@@ -1039,7 +1037,16 @@ public class ThompsonSource implements Cloneable {
         Complex phase1 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
         Complex phase2 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
         double p = Math.sqrt(ksiVector[0] * ksiVector[0] + ksiVector[1] * ksiVector[1] + ksiVector[2] * ksiVector[2]);
-        if (p != 0) {
+        //If p > 1 reducing it yo 1
+        p = p > 1 ? 1 : p;
+        //Special case when the denomonator is zero
+        if (ksiVector[0] == -p) {
+            pol[0] = Math.sqrt((1 - ksiVector[0]) / 2);
+            pol[1] = Math.sqrt((1 + ksiVector[0]) / 2);
+            pol[2] = Math.random() * 2 * Math.PI;
+            pol[3] = Math.random() * 2 * Math.PI;
+        } else {
+            //General case
             double k1 = Math.sqrt(1 - p);
             double k2 = Math.sqrt(1 + p);
             double coef = Math.sqrt((p + ksiVector[0]) / p) / 2;
@@ -1050,11 +1057,6 @@ public class ThompsonSource implements Cloneable {
             pol[1] = e2.abs();
             pol[2] = e1.getArgument();
             pol[3] = e2.getArgument();
-        } else {
-            pol[0] = 1 / Math.sqrt(2);
-            pol[1] = pol[0];
-            pol[2] = Math.random() * 2 * Math.PI;
-            pol[3] = Math.random() * 2 * Math.PI;
         }
         return pol;
     }

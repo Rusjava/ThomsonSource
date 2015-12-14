@@ -656,7 +656,6 @@
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="buttonGroupPolarization"/>
                     </Property>
-                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="S-polarized"/>
                   </Properties>
                   <Events>
@@ -679,6 +678,7 @@
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="buttonGroupPolarization"/>
                     </Property>
+                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="Automatic"/>
                   </Properties>
                   <Events>
@@ -1209,7 +1209,7 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="24" max="32767" attributes="0"/>
+                          <EmptySpace pref="28" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                   <Component id="puslelengthlabel" max="32767" attributes="0"/>
@@ -1499,17 +1499,17 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jPanel_xflux_left" pref="336" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_left" pref="338" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jPanel_xflux_right" pref="291" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_right" pref="293" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel_xflux_left" pref="225" max="32767" attributes="0"/>
-                          <Component id="jPanel_xflux_right" alignment="0" pref="225" max="32767" attributes="0"/>
+                          <Component id="jPanel_xflux_left" pref="226" max="32767" attributes="0"/>
+                          <Component id="jPanel_xflux_right" alignment="0" pref="226" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                   </Layout>
