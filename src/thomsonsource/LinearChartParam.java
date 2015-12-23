@@ -24,7 +24,7 @@ import java.util.List;
  * Class for linear chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 1.0
+ * @version 2.0
  */
 public class LinearChartParam {
 

@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.9.0
+ * @version 1.9.5
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -3416,6 +3416,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
+                
                 double offset = polForm.minValueClone;
                 List<Function<Double, Double>> func = new ArrayList<>();
                 List<Function<double[], Double>> fn = new ArrayList<>();
