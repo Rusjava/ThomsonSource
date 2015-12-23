@@ -180,6 +180,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
 
+        /**
+         * Objects for the polarization calculation
+         */
+        this.polForm = new CalcBoxParam("Polarization");
+        this.polForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad",
+            "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
+        this.polForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
+            "X-ray energy, keV", "Observation angle, mrad"};
+        this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
+        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30", "0"};
+        this.polForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "5"};
+        this.polForm.savetext = "Choose file to save polarization data";
+        this.polForm.numberOfItems = 10;
+
         this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
             "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
             "Emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
@@ -240,6 +255,26 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFmaxvaluelabel = new javax.swing.JLabel();
         GFProgressBar = new javax.swing.JProgressBar();
         GFCalcGraph = new javax.swing.JPanel();
+        polarizationCalc = new javax.swing.JFrame();
+        polarizationParam = new javax.swing.JPanel();
+        polarizationCalcBox = new javax.swing.JComboBox();
+        polarizationCalcStart = new javax.swing.JButton();
+        polarizationCalcSave = new javax.swing.JButton();
+        polminvalue = new javax.swing.JTextField();
+        polminvaluelabel = new javax.swing.JLabel();
+        polminvalueunitlabel = new javax.swing.JLabel();
+        polmaxvalueunitlabel = new javax.swing.JLabel();
+        polmaxvalue = new javax.swing.JTextField();
+        polmaxvaluelabel = new javax.swing.JLabel();
+        jPolCheckBoxSpread = new javax.swing.JCheckBox();
+        polProgressBar = new javax.swing.JProgressBar();
+        jPolAngleLabel = new javax.swing.JLabel();
+        polAngleValue = new javax.swing.JTextField();
+        polAngleValueUnitLable = new javax.swing.JLabel();
+        jPolEnergyLabel = new javax.swing.JLabel();
+        polEnergyValue = new javax.swing.JTextField();
+        polEnergyValueUnitLable = new javax.swing.JLabel();
+        polarizationCalcGraph = new javax.swing.JPanel();
         rayProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
@@ -323,6 +358,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuCalc = new javax.swing.JMenu();
         jMenuItemBrilliance = new javax.swing.JMenuItem();
         jMenuItemGeometricFactor = new javax.swing.JMenuItem();
+        jMenuItemPolarization = new javax.swing.JMenuItem();
         jMenuShadow = new javax.swing.JMenu();
         jMenuItemSource = new javax.swing.JMenuItem();
         jMenuItemSourceParam = new javax.swing.JMenuItem();
@@ -694,6 +730,213 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addComponent(GFParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        polarizationCalc.setTitle("Polarization box");
+        polarizationCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+
+        polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+
+        polarizationCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        polarizationCalcBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcBoxActionPerformed(evt);
+            }
+        });
+
+        polarizationCalcStart.setText("Calculate");
+        polarizationCalcStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcStartActionPerformed(evt);
+            }
+        });
+
+        polarizationCalcSave.setText("Save");
+        polarizationCalcSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcSaveActionPerformed(evt);
+            }
+        });
+
+        polminvalue.setText("0");
+        polminvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polminvalueFocusLost(evt);
+            }
+        });
+        polminvalue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polminvalueActionPerformed(evt);
+            }
+        });
+
+        polminvaluelabel.setText("Min value");
+
+        polminvalueunitlabel.setText("mrad");
+
+        polmaxvalueunitlabel.setText("mrad");
+
+        polmaxvalue.setText("35");
+        polmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polmaxvalueFocusLost(evt);
+            }
+        });
+        polmaxvalue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polmaxvalueActionPerformed(evt);
+            }
+        });
+
+        polmaxvaluelabel.setText("Max value");
+
+        jPolCheckBoxSpread.setText("Spread");
+        jPolCheckBoxSpread.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPolCheckBoxSpreadActionPerformed(evt);
+            }
+        });
+
+        jPolAngleLabel.setText("Angle");
+
+        polAngleValue.setText("0");
+        polAngleValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polAngleValueFocusLost(evt);
+            }
+        });
+        polAngleValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polAngleValueActionPerformed(evt);
+            }
+        });
+
+        polAngleValueUnitLable.setText("mrad");
+
+        jPolEnergyLabel.setText("Energy");
+
+        polEnergyValue.setText("44");
+        polEnergyValue.setEnabled(false);
+        polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polEnergyValueFocusLost(evt);
+            }
+        });
+        polEnergyValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polEnergyValueActionPerformed(evt);
+            }
+        });
+
+        polEnergyValueUnitLable.setText("kev");
+
+        javax.swing.GroupLayout polarizationParamLayout = new javax.swing.GroupLayout(polarizationParam);
+        polarizationParam.setLayout(polarizationParamLayout);
+        polarizationParamLayout.setHorizontalGroup(
+            polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationParamLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(polarizationCalcBox, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29))
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(polminvaluelabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polmaxvaluelabel, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPolCheckBoxSpread)
+                        .addGap(18, 18, 18)))
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(polarizationCalcStart)
+                        .addGap(31, 31, 31)
+                        .addComponent(polarizationCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(polProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(jPolAngleLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polAngleValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polAngleValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(jPolEnergyLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polEnergyValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polEnergyValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+        polarizationParamLayout.setVerticalGroup(
+            polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationParamLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(polarizationCalcBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(polarizationCalcStart)
+                    .addComponent(polarizationCalcSave)
+                    .addComponent(jPolAngleLabel)
+                    .addComponent(polAngleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(polAngleValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(polminvaluelabel)
+                            .addComponent(polminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polmaxvaluelabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polmaxvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPolCheckBoxSpread, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+                        .addGap(8, 8, 8))
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(polEnergyValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polEnergyValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPolEnergyLabel))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+
+        polarizationCalcGraph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Polarization parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        polarizationCalcGraph.setPreferredSize(new java.awt.Dimension(639, 215));
+        polarizationCalcGraph.setRequestFocusEnabled(false);
+
+        javax.swing.GroupLayout polarizationCalcGraphLayout = new javax.swing.GroupLayout(polarizationCalcGraph);
+        polarizationCalcGraph.setLayout(polarizationCalcGraphLayout);
+        polarizationCalcGraphLayout.setHorizontalGroup(
+            polarizationCalcGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        polarizationCalcGraphLayout.setVerticalGroup(
+            polarizationCalcGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 213, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout polarizationCalcLayout = new javax.swing.GroupLayout(polarizationCalc.getContentPane());
+        polarizationCalc.getContentPane().setLayout(polarizationCalcLayout);
+        polarizationCalcLayout.setHorizontalGroup(
+            polarizationCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(polarizationParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(polarizationCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+        );
+        polarizationCalcLayout.setVerticalGroup(
+            polarizationCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationCalcLayout.createSequentialGroup()
+                .addComponent(polarizationParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(polarizationCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         );
 
         rayProgressFrame.setTitle("Ray generation progress");
@@ -1516,6 +1759,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuCalc.add(jMenuItemGeometricFactor);
 
+        jMenuItemPolarization.setText("Polarization...");
+        jMenuItemPolarization.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemPolarizationActionPerformed(evt);
+            }
+        });
+        jMenuCalc.add(jMenuItemPolarization);
+
         jMenuBarMain.add(jMenuCalc);
 
         jMenuShadow.setText("Shadow");
@@ -1711,6 +1962,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
      */
     class CalcBoxParam {
 
+        public final static double MIN_DIF = 1e-10;
         public String[] valueUnitLabels, plotLabels;
         public String[] minValues, maxValues;
         public int selectedItemIndex, selectedItemIndexClone;
@@ -1809,7 +2061,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             } else {
                 chart.getXYPlot().getDomainAxis().setRange(minValueClone, maxValueClone);
                 chart.getXYPlot().getDomainAxis().setLabel(plotLabels[selectedItemIndexClone]);
-                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(), chartParam.getUMax());
+                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
+                        chartParam.getUMax() + MIN_DIF);
                 chart.fireChartChanged();
             }
             working = false;
@@ -1918,7 +2171,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private final TitledBorder xrayenergyborder;
     private final String[] paramNames;
 
-    private final CalcBoxParam brilForm, gfForm;
+    private final CalcBoxParam brilForm, gfForm, polForm;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
     private boolean working = false, rayWorking = false;
     private SwingWorker<Void, Void> mainWorker, rayWorker;
@@ -2450,14 +2703,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_BrillianceCalcStartActionPerformed
 
     private void BrillianceCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcSaveActionPerformed
-        // TODO add your handling code here:
+        // Saving the brilliance plot data
         if (brilForm.chartPanel != null) {
             brilForm.save();
         }
     }//GEN-LAST:event_BrillianceCalcSaveActionPerformed
 
     private void BrillianceCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcBoxActionPerformed
-        // TODO add your handling code here:
+        // Update boxes, labels and other items when parameters selection is performed
         int sInd = BrillianceCalcBox.getSelectedIndex();
         brilForm.selectedItemIndex = sInd;
         Brilminvalueunitlabel.setText(brilForm.valueUnitLabels[sInd]);
@@ -3112,6 +3365,267 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
 
+    private void polarizationCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcBoxActionPerformed
+        // Update boxes, labels and other items when parameters selection is performed
+        int sInd = polarizationCalcBox.getSelectedIndex();
+        polForm.selectedItemIndex = sInd;
+        polminvalueunitlabel.setText(polForm.valueUnitLabels[sInd]);
+        polmaxvalueunitlabel.setText(polForm.valueUnitLabels[sInd]);
+        polminvalue.setText(polForm.minValues[sInd]);
+        polmaxvalue.setText(polForm.maxValues[sInd]);
+        polForm.minValue = Float.parseFloat(polminvalue.getText());
+        polForm.maxValue = Float.parseFloat(polmaxvalue.getText());
+        if (sInd == 9) {
+            polAngleValue.setEnabled(false);
+            polEnergyValue.setEnabled(true);
+        } else {
+            polAngleValue.setEnabled(true);
+            polEnergyValue.setEnabled(false);
+        }
+    }//GEN-LAST:event_polarizationCalcBoxActionPerformed
+
+    private void polarizationCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcStartActionPerformed
+        //Polarization box calculations
+        // Checking if already running
+        if (polForm.working) {
+            polForm.cancel();
+            polarizationCalcStart.setText("Calculate");
+            polarizationCalcSave.setEnabled(true);
+            return;
+        }
+        polProgressBar.setValue(0);
+        polProgressBar.setStringPainted(true);
+        polarizationCalcStart.setText("Terminate");
+        polarizationCalcSave.setEnabled(false);
+        polForm.initialize();
+
+        /**
+         * Calculating data array. Using SwingWorker class
+         */
+        polForm.worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
+                double offset = polForm.minValueClone;
+                switch (polForm.selectedItemIndexClone) {
+                    case 0:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.lpulseclone.getDirection().set(2, Math.cos(x));
+                            polForm.lpulseclone.getDirection().set(1, Math.sin(x));
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 1:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.lpulseclone.setDelay(x);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 2:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.ebunchclone.getShift().set(2, x);
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 3:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.ebunchclone.setBetax(x);
+                            polForm.ebunchclone.setBetay(x);
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 4:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.ebunchclone.setEps(x);
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 5:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.lpulseclone.setRlength(x);
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 6:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.lpulseclone.setWidth(x);
+                            polForm.ebunchclone.setxWidth(x);
+                            polForm.ebunchclone.setyWidth(x);
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 7:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.ebunchclone.setDelgamma(x);
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 8:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = polForm.angleclone * 1e-3;
+                            double e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                    case 9:
+                        polForm.chartParam.setup(xp -> {
+                            double ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                            double e = polForm.energyclone * ElectronBunch.E * 1e3;
+                            polForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
+                        }, xsize, step, offset);
+                        break;
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                polForm.updateGraph(polarizationCalcGraph, "");
+                polarizationCalcStart.setText("Calculate");
+                polarizationCalcSave.setEnabled(true);
+            }
+
+            /**
+             * Updating progress bar
+             *
+             * @param status
+             */
+            public void setStatusBar(final int status) {
+                SwingUtilities.invokeLater(() -> polProgressBar.setValue(status));
+            }
+        };
+        polForm.worker.execute();
+    }//GEN-LAST:event_polarizationCalcStartActionPerformed
+
+    private void polarizationCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcSaveActionPerformed
+        // Saving the brilliance plot data
+        if (polForm.chartPanel != null) {
+            polForm.save();
+        }
+    }//GEN-LAST:event_polarizationCalcSaveActionPerformed
+
+    private void polminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polminvalueFocusLost
+        // TODO add your handling code here:
+        polForm.minValue = TestValueWithMemory(0, 1000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polminvalueFocusLost
+
+    private void polminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polminvalueActionPerformed
+        // TODO add your handling code here:
+        polForm.minValue = TestValueWithMemory(0, 1000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polminvalueActionPerformed
+
+    private void polmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polmaxvalueFocusLost
+        // TODO add your handling code here:
+        polForm.maxValue = TestValueWithMemory(0, 1000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polmaxvalueFocusLost
+
+    private void polmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polmaxvalueActionPerformed
+        // TODO add your handling code here:
+        polForm.maxValue = TestValueWithMemory(0, 1000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polmaxvalueActionPerformed
+
+    private void jPolCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPolCheckBoxSpreadActionPerformed
+
+    private void polAngleValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polAngleValueFocusLost
+        // TODO add your handling code here:
+        polForm.angle = TestValueWithMemory(0, 100, polAngleValue, "0", oldStrings);
+    }//GEN-LAST:event_polAngleValueFocusLost
+
+    private void polAngleValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polAngleValueActionPerformed
+        // TODO add your handling code here:
+        polForm.angle = TestValueWithMemory(0, 100, polAngleValue, "0", oldStrings);
+    }//GEN-LAST:event_polAngleValueActionPerformed
+
+    private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
+        // TODO add your handling code here:
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+    }//GEN-LAST:event_polEnergyValueFocusLost
+
+    private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
+        // TODO add your handling code here:
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+    }//GEN-LAST:event_polEnergyValueActionPerformed
+
+    private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
+        // TODO add your handling code here:
+        polarizationCalc.setVisible(true);
+    }//GEN-LAST:event_jMenuItemPolarizationActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation
      */
@@ -3567,6 +4081,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemLaserPolarization;
     private javax.swing.JMenuItem jMenuItemLoadParam;
     private javax.swing.JMenuItem jMenuItemNumerical;
+    private javax.swing.JMenuItem jMenuItemPolarization;
     private javax.swing.JMenuItem jMenuItemSaveParam;
     private javax.swing.JMenuItem jMenuItemSize;
     private javax.swing.JMenuItem jMenuItemSource;
@@ -3587,6 +4102,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux;
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
+    private javax.swing.JLabel jPolAngleLabel;
+    private javax.swing.JCheckBox jPolCheckBoxSpread;
+    private javax.swing.JLabel jPolEnergyLabel;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemAutoPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
@@ -3607,6 +4125,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel phenergylabel;
     private javax.swing.JLabel phenergyunitlabel;
     private javax.swing.JTextField phenergyvalue;
+    private javax.swing.JTextField polAngleValue;
+    private javax.swing.JLabel polAngleValueUnitLable;
+    private javax.swing.JTextField polEnergyValue;
+    private javax.swing.JLabel polEnergyValueUnitLable;
+    private javax.swing.JProgressBar polProgressBar;
+    private javax.swing.JFrame polarizationCalc;
+    private javax.swing.JComboBox polarizationCalcBox;
+    private javax.swing.JPanel polarizationCalcGraph;
+    private javax.swing.JButton polarizationCalcSave;
+    private javax.swing.JButton polarizationCalcStart;
+    private javax.swing.JPanel polarizationParam;
+    private javax.swing.JTextField polmaxvalue;
+    private javax.swing.JLabel polmaxvaluelabel;
+    private javax.swing.JLabel polmaxvalueunitlabel;
+    private javax.swing.JTextField polminvalue;
+    private javax.swing.JLabel polminvaluelabel;
+    private javax.swing.JLabel polminvalueunitlabel;
     private javax.swing.JLabel pulseanglelabel;
     private javax.swing.JLabel pulseangleunitlabel;
     private javax.swing.JTextField pulseanglevalue;
