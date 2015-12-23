@@ -58,12 +58,12 @@ public class LinearChartParam {
     /**
      * Maximum value
      */
-    protected double[] umax;
+    protected double umax;
 
     /**
      * Minimum value
      */
-    protected double[] umin;
+    protected double umin;
 
     /**
      * Functional list for calculation of values
@@ -111,7 +111,7 @@ public class LinearChartParam {
      *
      * @return
      */
-    public double[] getUMax() {
+    public double getUMax() {
         return umax;
     }
 
@@ -120,7 +120,7 @@ public class LinearChartParam {
      *
      * @return
      */
-    public double[] getUMin() {
+    public double getUMin() {
         return umin;
     }
 
@@ -169,7 +169,9 @@ public class LinearChartParam {
         this.data = new double[f.size()][];
         for (int k = 0; k < f.size(); k++) {
             this.data[k] = new double[size];
-            for (int i = 0; i < size; i++) {
+        }
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < f.size(); k++) {
                 if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
                 }
@@ -183,11 +185,13 @@ public class LinearChartParam {
      * Calculating min and max values of data
      */
     protected void setExtr() {
-        this.umax = new double[func.size()];
-        this.umin = new double[func.size()];
+        double [] umaxt = new double[func.size()];
+        double [] umint = new double[func.size()];
         for (int k = 0; k < func.size(); k++) {
-            this.umax[k] = (new BasicVector(data[k])).max();
-            this.umin[k] = (new BasicVector(data[k])).min();
+            umaxt[k] = (new BasicVector(data[k])).max();
+            umint[k] = (new BasicVector(data[k])).min();
         }
+        umax=(new BasicVector(umaxt)).max();
+        umin=(new BasicVector(umint)).min();
     }
 }

@@ -2050,6 +2050,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                  * Creating chart and plot dataset
                  */
                 chart = createLineChart(createLineDataset(chartParam), plotLabels[selectedItemIndexClone], label);
+                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
+                        chartParam.getUMax() + MIN_DIF);
+                chart.fireChartChanged();
                 /**
                  * Creation of the ChartPanel
                  */
@@ -2064,8 +2067,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             } else {
                 chart.getXYPlot().getDomainAxis().setRange(minValueClone, maxValueClone);
                 chart.getXYPlot().getDomainAxis().setLabel(plotLabels[selectedItemIndexClone]);
-                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin()[0],
-                        chartParam.getUMax()[0] + MIN_DIF);
+                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
+                        chartParam.getUMax() + MIN_DIF);
                 chart.fireChartChanged();
             }
             working = false;
@@ -2316,7 +2319,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                     if (xenergycrosschart != null) {
                         xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax()[0]);
+                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax());
                         xenergycrosschart.getXYPlot().getDomainAxis().
                                 setRangeAboutValue(xenergycrossdata.getOffset()
                                         + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
@@ -2427,7 +2430,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                     if (xenergycrosschart != null) {
                         xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax()[0]);
+                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax());
                         xenergycrosschart.fireChartChanged();
                     }
                     startbutton.setText("Start");
@@ -3415,6 +3418,24 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
                 double offset = polForm.minValueClone;
                 List<Function<Double, Double>> func = new ArrayList<>();
+                List<Function<double[], Double>> fn = new ArrayList<>();
+                fn.add(x -> {
+                    double tmp = x[1] / x[0];
+                    return new Double(tmp).isNaN() ? 0 : tmp;
+                });
+                fn.add(x -> {
+                    double tmp = x[2] / x[0];
+                    return new Double(tmp).isNaN() ? 0 : tmp;
+                });
+                fn.add(x -> {
+                    double tmp = x[3] / x[0];
+                    return new Double(tmp).isNaN() ? 0 : tmp;
+                });
+                fn.add(x -> {
+                    double tmp = Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
+                            + (x[3] / x[0]) * (x[3] / x[0]));
+                    return new Double(tmp).isNaN() ? 0 : tmp;
+                });
                 switch (polForm.selectedItemIndexClone) {
                     case 0:
                         func.add(xp -> {
@@ -3544,16 +3565,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         });
                         break;
                     case 9:
-                        func.add(xp -> {
-                            double ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            double e = polForm.energyclone * ElectronBunch.E * 1e3;
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
+                        for (int i = 0; i < 4; i++) {
+                            int[] ia = new int[]{i};
+                            func.add(xp -> {
+                                double ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                double e = polForm.energyclone * ElectronBunch.E * 1e3;
+                                polForm.tsourceclone.calculateTotalFlux();
+                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                                double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                        e);
+                                return fn.get(ia[0]).apply(res);
+                            });
+                        }
                         break;
                 }
                 polForm.chartParam.setup(func, xsize, step, offset);
@@ -3927,10 +3951,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         yAxis.setAutoRangeIncludesZero(false);
         /* Renderer */
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesLinesVisible(0, true);
-        renderer.setSeriesShapesVisible(0, false);
-        renderer.setSeriesStroke(0, new BasicStroke(2.0f));
-        renderer.setSeriesPaint(0, Color.GREEN);
+        for (int i = 0; i < dataset.getSeriesCount(); i++) {
+            renderer.setSeriesLinesVisible(i, true);
+            renderer.setSeriesShapesVisible(i, false);
+            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+        }
+        renderer.setSeriesPaint(0, Color.BLUE);
+        renderer.setSeriesPaint(1, Color.GREEN);
+        renderer.setSeriesPaint(2, Color.MAGENTA);
+        renderer.setSeriesPaint(3, Color.BLACK);
+
         /* Plot creation */
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
         plot.setBackgroundPaint(Color.white);
@@ -3947,7 +3977,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         return new XYDataset() {
             @Override
             public int getSeriesCount() {
-                return 1;
+                return data.getData().length;
             }
 
             @Override
@@ -3972,7 +4002,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             public double getYValue(int series, int item) {
-                return data.getData()[0][item];
+                return data.getData()[series][item];
             }
 
             @Override
