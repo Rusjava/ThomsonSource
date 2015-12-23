@@ -3162,7 +3162,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_GFmaxvalueActionPerformed
 
     private void jCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadActionPerformed
-        // TODO add your handling code here:
+        // Cheking spread check box
         brilForm.espread = jCheckBoxSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxSpreadActionPerformed
 
@@ -3598,7 +3598,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_polmaxvalueActionPerformed
 
     private void jPolCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadActionPerformed
-        // TODO add your handling code here:
+        // Cheking spread check box
+        polForm.espread = jPolCheckBoxSpread.isSelected();
     }//GEN-LAST:event_jPolCheckBoxSpreadActionPerformed
 
     private void polAngleValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polAngleValueFocusLost
