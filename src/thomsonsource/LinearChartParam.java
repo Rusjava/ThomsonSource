@@ -18,6 +18,7 @@ package thomsonsource;
 
 import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
+import java.util.List;
 
 /**
  * Class for linear chart parameters
@@ -52,22 +53,22 @@ public class LinearChartParam {
     /**
      * Plot data
      */
-    protected double[] data;
+    protected double[][] data;
 
     /**
      * Maximum value
      */
-    protected double umax;
+    protected double[] umax;
 
     /**
      * Minimum value
      */
-    protected double umin;
+    protected double[] umin;
 
     /**
-     * Function for calculation values
+     * Functional list for calculation of values
      */
-    protected Function<Double, Double> func;
+    protected List<Function<Double, Double>> func;
 
     /**
      * Returning plot size
@@ -101,7 +102,7 @@ public class LinearChartParam {
      *
      * @return
      */
-    public double[] getData() {
+    public double[][] getData() {
         return data;
     }
 
@@ -110,7 +111,7 @@ public class LinearChartParam {
      *
      * @return
      */
-    public double getUMax() {
+    public double[] getUMax() {
         return umax;
     }
 
@@ -119,7 +120,7 @@ public class LinearChartParam {
      *
      * @return
      */
-    public double getUMin() {
+    public double[] getUMin() {
         return umin;
     }
 
@@ -139,12 +140,13 @@ public class LinearChartParam {
         this.size = size;
         this.step = step;
         this.offset = offset;
-        this.data = new double[size];
+        this.data = new double[1][];
+        this.data[0] = new double[size];
         for (int i = 0; i < size; i++) {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
-            this.data[i] = row ? data[i][index] : data[index][i];
+            this.data[0][i] = row ? data[i][index] : data[index][i];
         }
         setExtr();
     }
@@ -152,24 +154,27 @@ public class LinearChartParam {
     /**
      * Setting up data based on a given function
      *
-     * @param f function to get data from
+     * @param f functional array to get data from
      * @param size
      * @param step
      * @param offset
      * @throws java.lang.InterruptedException
      */
-    public void setup(Function<Double, Double> f, int size,
+    public void setup(List<Function<Double, Double>> f, int size,
             double step, double offset) throws InterruptedException {
         this.size = size;
         this.step = step;
         this.offset = offset;
         this.func = f;
-        this.data = new double[size];
-        for (int i = 0; i < size; i++) {
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException();
+        this.data = new double[f.size()][];
+        for (int k = 0; k < f.size(); k++) {
+            this.data[k] = new double[size];
+            for (int i = 0; i < size; i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
+                }
+                this.data[k][i] = f.get(k).apply(step * i + offset);
             }
-            this.data[i] = f.apply(step * i + offset);
         }
         setExtr();
     }
@@ -178,7 +183,11 @@ public class LinearChartParam {
      * Calculating min and max values of data
      */
     protected void setExtr() {
-        this.umax = (new BasicVector(data)).max();
-        this.umin = (new BasicVector(data)).min();
+        this.umax = new double[func.size()];
+        this.umin = new double[func.size()];
+        for (int k = 0; k < func.size(); k++) {
+            this.umax[k] = (new BasicVector(data[k])).max();
+            this.umin[k] = (new BasicVector(data[k])).min();
+        }
     }
 }

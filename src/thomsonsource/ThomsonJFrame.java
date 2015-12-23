@@ -36,6 +36,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
@@ -63,6 +65,7 @@ import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
 import java.net.URL;
+import java.util.function.Function;
 import shadowfileconverter.ShadowFiles;
 
 /**
@@ -2027,7 +2030,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     for (int i = 0; i < chartParam.getSize(); i++) {
                         fm = new Formatter();
                         fm.format("%f %f", new Double(i * chartParam.getStep()
-                                + chartParam.getOffset()), new Double(chartParam.getData()[i]));
+                                + chartParam.getOffset()), new Double(chartParam.getData()[0][i]));
                         pw.println(fm);
                     }
                     pw.close();
@@ -2061,8 +2064,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             } else {
                 chart.getXYPlot().getDomainAxis().setRange(minValueClone, maxValueClone);
                 chart.getXYPlot().getDomainAxis().setLabel(plotLabels[selectedItemIndexClone]);
-                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
-                        chartParam.getUMax() + MIN_DIF);
+                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin()[0],
+                        chartParam.getUMax()[0] + MIN_DIF);
                 chart.fireChartChanged();
             }
             working = false;
@@ -2313,7 +2316,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                     if (xenergycrosschart != null) {
                         xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0], xenergycrossdata.getUMax());
+                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax()[0]);
                         xenergycrosschart.getXYPlot().getDomainAxis().
                                 setRangeAboutValue(xenergycrossdata.getOffset()
                                         + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
@@ -2424,7 +2427,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                     if (xenergycrosschart != null) {
                         xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0], xenergycrossdata.getUMax());
+                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax()[0]);
                         xenergycrosschart.fireChartChanged();
                     }
                     startbutton.setText("Start");
@@ -2548,9 +2551,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 double step = (brilForm.maxValueClone - brilForm.minValueClone) / (xsize - 1);
                 double offset = brilForm.minValueClone;
+                List<Function<Double, Double>> func = new ArrayList<>();
                 switch (brilForm.selectedItemIndexClone) {
                     case 0:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2561,10 +2565,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 1:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2573,10 +2577,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 2:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2586,10 +2590,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 3:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2600,10 +2604,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 4:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2613,10 +2617,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 5:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2626,10 +2630,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 6:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2641,10 +2645,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 7:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
@@ -2654,10 +2658,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 8:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.calculateTotalFlux();
@@ -2665,10 +2669,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 9:
-                        brilForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             double e = brilForm.energyclone * ElectronBunch.E * 1e3;
                             brilForm.tsourceclone.calculateTotalFlux();
@@ -2676,9 +2680,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
-                        }, xsize, step, offset);
+                        });
                         break;
                 }
+                brilForm.chartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -3043,65 +3048,66 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
                 double offset = gfForm.minValueClone;
+                List<Function<Double, Double>> func = new ArrayList<>();
                 switch (gfForm.selectedItemIndexClone) {
                     case 0:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.lpulseclone.getDirection().set(2, Math.cos(x));
                             gfForm.lpulseclone.getDirection().set(1, Math.sin(x));
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 1:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.lpulseclone.setDelay(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 2:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.ebunchclone.getShift().set(2, x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 3:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.ebunchclone.setBetax(x);
                             gfForm.ebunchclone.setBetay(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 4:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.ebunchclone.setEps(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 5:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.lpulseclone.setRlength(x);
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 6:
-                        gfForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                             gfForm.lpulseclone.setWidth(x);
                             gfForm.ebunchclone.setxWidth(x);
@@ -3109,9 +3115,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.tsourceclone.calculateGeometricFactor();
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                             return gfForm.tsourceclone.getGeometricFactor();
-                        }, xsize, step, offset);
+                        });
                         break;
                 }
+                gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -3407,9 +3414,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
                 double offset = polForm.minValueClone;
+                List<Function<Double, Double>> func = new ArrayList<>();
                 switch (polForm.selectedItemIndexClone) {
                     case 0:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3421,10 +3429,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 1:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3434,10 +3442,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 2:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3448,10 +3456,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 3:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3463,10 +3471,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 4:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3477,10 +3485,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 5:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3491,10 +3499,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 6:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3507,10 +3515,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 7:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                             double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
@@ -3521,10 +3529,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 8:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = polForm.angleclone * 1e-3;
                             double e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                             polForm.tsourceclone.calculateTotalFlux();
@@ -3533,10 +3541,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                     case 9:
-                        polForm.chartParam.setup(xp -> {
+                        func.add(xp -> {
                             double ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                             double e = polForm.energyclone * ElectronBunch.E * 1e3;
                             polForm.tsourceclone.calculateTotalFlux();
@@ -3545,9 +3553,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e);
                             return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        }, xsize, step, offset);
+                        });
                         break;
                 }
+                polForm.chartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -3963,7 +3972,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             public double getYValue(int series, int item) {
-                return data.getData()[item];
+                return data.getData()[0][item];
             }
 
             @Override
