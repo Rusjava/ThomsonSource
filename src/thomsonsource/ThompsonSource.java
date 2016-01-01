@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.vector.Vector;
@@ -201,6 +203,9 @@ public class ThompsonSource implements Cloneable {
                 double psum = 0;
                 Vector iter = new BasicVector(new double[]{0.0, 0.0, 0.0});
                 for (int i = 0; i < itNumber; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
                     iter.set(0, eb.getShift().get(0) / 2 + wdx * (2 * Math.random() - 1.0));
                     iter.set(1, eb.getShift().get(1) / 2 + wdy * (2 * Math.random() - 1.0));
                     iter.set(2, eb.getShift().get(2) / 2 + len * (2 * Math.random() - 1.0));
@@ -213,11 +218,10 @@ public class ThompsonSource implements Cloneable {
         try {
             lt.await();
         } catch (InterruptedException ex) {
-            execs.shutdownNow();
-            return;
+            Thread.currentThread().interrupt();
         }
-        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / itNumber / threadNumber;
-        execs.shutdown();
+        execs.shutdownNow();
+        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / itNumber / threadNumber;    
     }
 
     /**
@@ -853,8 +857,8 @@ public class ThompsonSource implements Cloneable {
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
         //Checking if polarization is pre-specified
-        pol = (ksi != null) ? getPolarization(ksi) : 
-                getPolarization(new double[]{polParam[1] / polParam[0], polParam[2] / polParam[0], polParam[3] / polParam[0]});
+        pol = (ksi != null) ? getPolarization(ksi)
+                : getPolarization(new double[]{polParam[1] / polParam[0], polParam[2] / polParam[0], polParam[3] / polParam[0]});
         //Rotating the ray electrical vectors
         As = T.multiply(new BasicVector(new double[]{1.0, 0.0, 0.0})).multiply(pol[0]);
         ray[6] = As.get(0);

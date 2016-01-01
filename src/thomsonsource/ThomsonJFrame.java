@@ -3049,78 +3049,42 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         gfForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
-                double offset = gfForm.minValueClone;
+                final double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
+                final double offset = gfForm.minValueClone;
                 List<Function<Double, Double>> func = new ArrayList<>();
-                switch (gfForm.selectedItemIndexClone) {
-                    case 0:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                func.add(xp -> {
+                    double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                    switch (gfForm.selectedItemIndexClone) {
+                        case 0:
                             gfForm.lpulseclone.getDirection().set(2, Math.cos(x));
                             gfForm.lpulseclone.getDirection().set(1, Math.sin(x));
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 1:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                            break;
+                        case 1:
                             gfForm.lpulseclone.setDelay(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 2:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                            break;
+                        case 2:
                             gfForm.ebunchclone.getShift().set(2, x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 3:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                            break;
+                        case 3:
                             gfForm.ebunchclone.setBetax(x);
                             gfForm.ebunchclone.setBetay(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 4:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                            break;
+                        case 4:
                             gfForm.ebunchclone.setEps(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 5:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                            break;
+                        case 5:
                             gfForm.lpulseclone.setRlength(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 6:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                            break;
+                        case 6:
                             gfForm.lpulseclone.setWidth(x);
                             gfForm.ebunchclone.setxWidth(x);
                             gfForm.ebunchclone.setyWidth(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                }
+                            break;
+                    }
+                    gfForm.tsourceclone.calculateGeometricFactor();
+                    setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                    return gfForm.tsourceclone.getGeometricFactor();
+                });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;
             }
@@ -3442,57 +3406,36 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     func.add(xp -> {
                         double[] res;
                         double ang = 0, e = 0, x;
+                        x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                        ang = polForm.angleclone * 1e-3;
+                        e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
                         switch (polForm.selectedItemIndexClone) {
                             case 0:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.getDirection().set(2, Math.cos(x));
                                 polForm.lpulseclone.getDirection().set(1, Math.sin(x));
                                 break;
                             case 1:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.setDelay(x);
                                 break;
                             case 2:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.getShift().set(2, x);
                                 break;
                             case 3:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.setBetax(x);
                                 polForm.ebunchclone.setBetay(x);
                                 break;
                             case 4:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.setEps(x);
                                 break;
                             case 5:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.setRlength(x);
                                 break;
                             case 6:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.setWidth(x);
                                 polForm.ebunchclone.setxWidth(x);
                                 polForm.ebunchclone.setyWidth(x);
                                 break;
                             case 7:
-                                ang = polForm.angleclone * 1e-3;
-                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.setDelgamma(x);
                                 break;
                             case 8:
