@@ -3459,7 +3459,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3488,7 +3488,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3518,7 +3518,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3549,7 +3549,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3579,7 +3579,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3609,7 +3609,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3641,7 +3641,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3671,7 +3671,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3699,7 +3699,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
@@ -3727,12 +3727,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 //If NaNs use the saved values
-                                if (new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
                                         || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
                                     return fn.get(ia[0]).apply(rescash);
                                 }
                                 xpcash[0] = xp;
                                 System.arraycopy(res, 0, rescash, 0, 4);
+                                System.out.println(rescash[0]);
                                 return fn.get(ia[0]).apply(res);
                             });
                         }
