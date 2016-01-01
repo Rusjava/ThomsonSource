@@ -21,16 +21,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
-import org.la4j.vector.Vector;
+import org.la4j.Vector;
 import org.apache.commons.math3.analysis.integration.*;
 import org.apache.commons.math3.complex.Complex;
-import org.la4j.matrix.Matrix;
+import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic1DMatrix;
-import org.la4j.vector.Vectors;
+import org.la4j.Vectors;
 import org.la4j.vector.dense.BasicVector;
 
 /**

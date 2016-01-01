@@ -22,7 +22,7 @@ package thomsonsource;
  * @author Ruslan Feshchenko
  * @version 1.2
  */
-import org.la4j.vector.Vector;
+import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
