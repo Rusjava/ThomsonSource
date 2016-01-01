@@ -3437,307 +3437,92 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 });
                 double[] rescash = new double[]{1, 0, 0, 0};
                 double[] xpcash = new double[]{-1};
-                switch (polForm.selectedItemIndexClone) {
-                    case 0:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                for (int i = 0; i < 4; i++) {
+                    int[] ia = new int[]{i};
+                    func.add(xp -> {
+                        double[] res;
+                        double ang = 0, e = 0, x;
+                        switch (polForm.selectedItemIndexClone) {
+                            case 0:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.getDirection().set(2, Math.cos(x));
                                 polForm.lpulseclone.getDirection().set(1, Math.sin(x));
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 1:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 1:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.setDelay(x);
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 2:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 2:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.getShift().set(2, x);
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 3:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 3:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.setBetax(x);
                                 polForm.ebunchclone.setBetay(x);
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 4:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 4:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.setEps(x);
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 5:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 5:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.setRlength(x);
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 6:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 6:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.lpulseclone.setWidth(x);
                                 polForm.ebunchclone.setxWidth(x);
                                 polForm.ebunchclone.setyWidth(x);
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
-                        }
-                        break;
-                    case 7:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                                double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 7:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                                x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                                 polForm.ebunchclone.setDelgamma(x);
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
+                                break;
+                            case 8:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 9:
+                                ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                e = polForm.energyclone * ElectronBunch.E * 1e3;
+                                break;
                         }
-                        break;
-                    case 8:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = polForm.angleclone * 1e-3;
-                                double e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                return fn.get(ia[0]).apply(res);
-                            });
+                        polForm.tsourceclone.calculateTotalFlux();
+                        //If the same point, use the saved values
+                        if (xpcash[0] != xp) {
+                            res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e);
+                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                        } else {
+                            return fn.get(ia[0]).apply(rescash);
                         }
-                        break;
-                    case 9:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                                double e = polForm.energyclone * ElectronBunch.E * 1e3;
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res;
-                                //If the same point, use the saved values
-                                if (xpcash[0] != xp) {
-                                    res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                            new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                            e);
-                                } else {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                //If NaNs use the saved values
-                                if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                        || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                                    return fn.get(ia[0]).apply(rescash);
-                                }
-                                xpcash[0] = xp;
-                                System.arraycopy(res, 0, rescash, 0, 4);
-                                System.out.println(rescash[0]);
-                                return fn.get(ia[0]).apply(res);
-                            });
+                        //If NaNs use the saved values
+                        if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
+                            return fn.get(ia[0]).apply(rescash);
                         }
-                        break;
+                        xpcash[0] = xp;
+                        System.arraycopy(res, 0, rescash, 0, 4);
+                        return fn.get(ia[0]).apply(res);
+                    });
                 }
                 polForm.chartParam.setup(func, xsize, step, offset);
                 return null;
