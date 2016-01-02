@@ -28,12 +28,12 @@ version: 1.0
     <div class="intro">
         <h1>TSource application user guide</h1>
         <p>The TSource application is intended as a tool to make fast estimates of the main Thompson source parameters such as:
-	the total photon flux, the X-ray photon flux in the given direction and spectral brilliance in a given direction.</p>
+	the total photon flux, the X-ray photon flux in the given direction and spectral brilliance and polarization in a given direction.</p>
     
         <p>The application consists of the main window, where one can specify the parameters of the Thompson source as well as plot
-	photon flux, photon energy and spectral brilliance distributions in the form of 2D color plots and 1D line plots, and two calculation
-	boxes where one can obtain and plot estimates of the geometric factor and brilliance in in the specified direction and at the specified energy
-	as function of a number of parameters.</p>
+	photon flux, photon energy in the form of 2D color plots and 1D line plots, and three calculation boxes where one can obtain 
+        and plot estimates of the geometric factor, spectral brilliance and polarization parameters in the specified direction and at the 
+        specified energy as function of a number of parameters.</p>
     
 	<p>The parameters from the main window can be saved to the file and loaded from the file. The plots from the calculation boxes 
 	can be saved to a file as well.</p>
@@ -85,23 +85,29 @@ version: 1.0
 	 -> <em>Load parameters</em>) them from a file.</p>
 	 
 	<h2>Calculation menu</h2>
-	<p>The <em>Calculation</em> menu provides access to two calculations boxes: for the spectral brilliance of the X-ray radiation and 
-	the geometric factor. These quantities are calculated by pressing <em>Calculate</em> button and can be plotted as a function of a number of parameters,
-	which can be chosen from a drop-down box. The desirable parameter range can be entered using two text fields. Other Thompson source parameters are taken 
+	<p>The <em>Calculation</em> menu provides access to three calculations boxes: for the spectral brilliance of the X-ray radiation, 
+	geometric factor and radiation polarization parameters (the three Stocks parameters and degree of polarization). These quantities are 
+        calculated by pressing <em>Calculate</em> button and can be plotted as a function of a number of parameters, which can be chosen 
+        from a drop-down box. The desirable parameter range can be entered using two text fields. Other Thompson source parameters are taken 
 	from the main window of the program. The results of calculation can be saved as a text file using <em>Save</em> button.</p>
 	
-	<p>The brilliance calculation box also allows to choose whether the transversal velocity spread of the electrons is taken into account. The observation 
-	angle and X-ray energy may be also specified if necessary.</p>
+	<p>The brilliance calculation and polarization boxes also allow to choose whether the transversal velocity spread of the electrons is
+            taken into account. The observation angle and X-ray energy may be also specified if necessary.</p>
 	
 	<h2>Shadow menu</h2>
 	<p>The <em>Shadow</em> menu allows one to generate a set of rays for the use as an X-ray source in Shadow ray-tracing software. 
-	To choose the number of generated rays, the angular and energy ranges use <em>Shadow</em> -> <em>Parameters</em> dialog. The ray set is saved in
-        binary Shadow format. A converter from binary to text format and from text to binary format can be launched from the <em>Shadow</em> as well.</p>
+	To choose the number of generated rays, the angular and energy ranges use <em>Shadow</em> -> <em>Parameters...</em> dialog. The ray 
+        set is saved in binary Shadow format. The <em>Shadow</em> -> <em>Polarization...</em> dialog allows one to specify the polarization of 
+        the generated rays by choosing between three pre-specified options or allowing the program to calculate the polarization using laser 
+        radiation polarization parameters and other parameters of the Thomson source. A converter application from binary to text format and from 
+        text to binary format can be launched from the <em>Shadow</em> as well.</p>
 	
 	<h2>Option menu</h2>
-	<p>Option menu provides access to additional graph parameters via <em>Options</em> -> <em>Graph parameters</em> as well as to the numerical integration precision and the number of points in Monte-Carlo
-	 calculation of the geometric factor via <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> specifies whether the transversal 
-	 velocity spread is taken into account in the main window calculations as well while generating a set of rays for Shadow.</p>
+	<p>Option menu provides access to additional graph parameters via <em>Options</em> -> <em>Laser polarization...</em> (Stocks 
+            parameters for the laser radiation), <em>Options</em> -> <em>Graph parameters...</em> as well as to the numerical integration 
+            precision, the number of used threads and the number of points in Monte-Carlo calculation of the geometric factor via 
+            <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> specifies whether the transversal
+            velocity spread is taken into account in the main window calculations as well while generating a set of rays for Shadow.</p>
     </div>
   </body>
 </html>

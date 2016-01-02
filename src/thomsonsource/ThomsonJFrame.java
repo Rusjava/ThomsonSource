@@ -212,6 +212,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(this);
             SwingUtilities.updateComponentTreeUI(gfCalc);
             SwingUtilities.updateComponentTreeUI(brillianceCalc);
+            SwingUtilities.updateComponentTreeUI(polarizationCalc);
             SwingUtilities.updateComponentTreeUI(rayProgressFrame);
         });
     }
