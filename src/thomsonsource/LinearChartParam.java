@@ -24,7 +24,7 @@ import java.util.List;
  * Class for linear chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 2.0
+ * @version 2.1
  */
 public class LinearChartParam {
 
@@ -176,7 +176,9 @@ public class LinearChartParam {
                 if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
                 }
+                Long t = System.nanoTime();
                 this.data[k][i] = f.get(k).apply(xp);
+                System.out.println(System.nanoTime() - t);
             }
         }
         setExtr();

@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 1.9
+ * @version 2.1
  */
 public class ThompsonSource implements Cloneable {
 
@@ -171,7 +171,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating normalized total flux
      */
-    public void calculateTotalFlux() {
+    public final void calculateTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber()
                 * lp.getFq() / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
                         * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
@@ -181,7 +181,7 @@ public class ThompsonSource implements Cloneable {
      * A method calculating the geometric factor
      *
      */
-    public void calculateGeometricFactor() {
+    public final void calculateGeometricFactor() {
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         // We need to synchronize threads
         CountDownLatch lt = new CountDownLatch(threadNumber);
@@ -219,7 +219,7 @@ public class ThompsonSource implements Cloneable {
             Thread.currentThread().interrupt();
         }
         execs.shutdownNow();
-        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / itNumber / threadNumber;    
+        this.geometricFactor = 8 * wdx * wdy * len * sum.sum() / itNumber / threadNumber;
     }
 
     /**
@@ -243,8 +243,9 @@ public class ThompsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarization(Vector n, Vector v, double e) {
+    public double[] directionFrequencyPolarization(Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyPolarizationSpread(n, v, e) : directionFrequencyPolarizationNoSpread(n, v, e);
     }
 
@@ -289,10 +290,21 @@ public class ThompsonSource implements Cloneable {
                 * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * K;
         m12 = m11 * mlt;
         m22 = m12 * mlt;
-        array[0] = (m22 * (1 + lp.getPolarization()[0]) + m11 * (1 - lp.getPolarization()[0])) / 2;
-        array[1] = (m22 * (1 + lp.getPolarization()[0]) - m11 * (1 - lp.getPolarization()[0])) / 2;
-        array[2] = m12 * lp.getPolarization()[1];
-        array[3] = m12 * lp.getPolarization()[2];
+        //Determine the polarization rotation angle
+        Vector b = new BasicVector(new double[]{n.get(1) * v.get(2) - n.get(2) * v.get(1),
+            n.get(2) * v.get(0) - n.get(0) * v.get(2), n.get(1) * v.get(0) - n.get(0) * v.get(1)});
+        b = b.subtract(n.multiply(b.innerProduct(n)));
+        b = b.divide(b.fold(Vectors.mkEuclideanNormAccumulator()));
+        b = new Double(b.get(0)).isNaN() ? new BasicVector(new double[]{0, 1, 0}) : b;
+        double cs2 = 2 * b.get(1) * b.get(1) - 1, sn2 = 2 * b.get(0) * b.get(1);
+        double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
+        //Calculating Stocks parameters
+        array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[0] + sn2 * lp.getPolarization()[1]) * (m11 - m22)) / 2;
+        array[1] = (cs2 * (m22 - m11) + lp.getPolarization()[0] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
+                + lp.getPolarization()[1] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
+        array[2] = (sn2 * (m22 - m11) + lp.getPolarization()[1] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
+                + lp.getPolarization()[0] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
+        array[3] = lp.getPolarization()[2] * m12;
         return array;
     }
 
@@ -326,13 +338,17 @@ public class ThompsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationSpread(Vector n, Vector v, double e) {
+    public double[] directionFrequencyPolarizationSpread(Vector n, Vector v, double e) throws InterruptedException {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         double[] array = new double[4];
         UnivariateFunction func;
         for (int i = 0; i < 4; i++) {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
+            }
             func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, i);
             try {
                 array[i] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
@@ -393,6 +409,7 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            System.out.println("phi = " + phi + " index = " + index);
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
@@ -408,11 +425,12 @@ public class ThompsonSource implements Cloneable {
      */
     private class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
 
-        private final double phi, e;
+        private final double snphi, csphi, e;
         private final Vector n, v0;
 
         public UnivariateFrequencyFluxSpreadInner(double phi, double e, Vector v0, Vector n) {
-            this.phi = phi;
+            this.snphi = Math.sin(phi);
+            this.csphi = Math.cos(phi);
             this.e = e;
             this.n = n;
             this.v0 = v0;
@@ -420,12 +438,10 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double theta) {
-            double u;
-            Vector v = new BasicVector(new double[]{Math.sin(theta) * Math.cos(phi),
-                Math.sin(theta) * Math.sin(phi), Math.cos(theta)});
+            double u, sn = Math.sin(theta);
+            Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyFluxNoSpread(n, v, e)
-                    * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = theta * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -435,12 +451,13 @@ public class ThompsonSource implements Cloneable {
      */
     private class UnivariateFrequencyPolarizationSpreadInner implements UnivariateFunction {
 
-        private final double phi, e;
+        private final double snphi, csphi, e;
         private final int index;
         private final Vector n, v0;
 
         public UnivariateFrequencyPolarizationSpreadInner(double phi, double e, Vector v0, Vector n, int index) {
-            this.phi = phi;
+            this.snphi = Math.sin(phi);
+            this.csphi = Math.cos(phi);
             this.e = e;
             this.n = n;
             this.index = index;
@@ -449,12 +466,10 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double theta) {
-            double u;
-            Vector v = new BasicVector(new double[]{Math.sin(theta) * Math.cos(phi),
-                Math.sin(theta) * Math.sin(phi), Math.cos(theta)});
+            double u, sn = Math.sin(theta);
+            Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyPolarizationNoSpread(n, v, e)[index]
-                    * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = theta * directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1));
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -482,8 +497,9 @@ public class ThompsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyVolumePolarization(Vector r, Vector n, Vector v, double e) {
+    public double[] directionFrequencyVolumePolarization(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyVolumePolarizationSpread(r, n, v, e) : directionFrequencyVolumePolarizationNoSpread(r, n, v, e);
     }
 
@@ -547,8 +563,9 @@ public class ThompsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) {
+    public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         double[] stocks = directionFrequencyPolarizationSpread(n, v, e);
         double vFlux = volumeFlux(r);
         for (int i = 0; i < 4; i++) {
@@ -637,8 +654,9 @@ public class ThompsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationBrilliance(Vector r0, Vector n, Vector v, double e) {
+    public double[] directionFrequencyPolarizationBrilliance(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyBrilliancePolarizationSpread(r0, n, v, e) : directionFrequencyBrilliancePolarizationNoSpread(r0, n, v, e);
     }
 
@@ -731,8 +749,9 @@ public class ThompsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) {
+    public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double mlt;
         double[] array = new double[4];
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
