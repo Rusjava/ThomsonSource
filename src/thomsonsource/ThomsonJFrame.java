@@ -1853,7 +1853,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuOptions.add(jMenuItemLaserPolarization);
         jMenuOptions.add(jSeparator5);
 
-        jMenuItemSize.setText("Graph parameters...");
+        jMenuItemSize.setText("Graphical parameters...");
         jMenuItemSize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSizeActionPerformed(evt);
@@ -3007,12 +3007,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "y-range (mrad):", yRangeBox,
             "xenergy-range (eV):", xEnergyRangeBox
         };
-        int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, message, "Graphical parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             xsize = (int) xSizeBox.getValue();
             ysize = (int) ySizeBox.getValue();
-            xstep = (int) xRangeBox.getValue() / xsize;
-            ystep = (int) yRangeBox.getValue() / ysize;
+            xstep = (double) xRangeBox.getValue() / xsize;
+            ystep = (double) yRangeBox.getValue() / ysize;
             estep = (double) xEnergyRangeBox.getValue() / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
@@ -3178,8 +3178,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
-            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox,
-            "<html>Number of threads</html>", threadsNumberBox
+            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", brilPrecisionBox,
+            "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
@@ -3380,7 +3380,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
-
                 double offset = polForm.minValueClone;
                 //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
@@ -3405,7 +3404,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     int[] ia = new int[]{i};
                     func.add(xp -> {
                         double[] res;
-                        double ang = 0, e = 0, x;
+                        double ang, e, x;
                         x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                         ang = polForm.angleclone * 1e-3;
                         e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
@@ -3450,9 +3449,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         polForm.tsourceclone.calculateTotalFlux();
                         //If the same point, use the saved values
                         if (xpcash[0] != xp) {
-                            res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e);
+                            try {
+                                res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e);                           
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return fn.get(ia[0]).apply(rescash);
+                            }
                             setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
                         } else {
                             return fn.get(ia[0]).apply(rescash);

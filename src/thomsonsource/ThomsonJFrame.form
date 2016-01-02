@@ -1010,7 +1010,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemSize">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Graph parameters..."/>
+                <Property name="text" type="java.lang.String" value="Graphical parameters..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemSizeActionPerformed"/>

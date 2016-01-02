@@ -54,11 +54,10 @@ public class ThompsonSource implements Cloneable {
         calculateTotalFlux();
         calculateGeometricFactor();
     }
-
     /**
      * Multiple for the range
      */
-    private final double INT_RANGE = 3;
+    private static final double INT_RANGE = 3;
     /**
      * The number of columns in Shadow files
      */
@@ -90,10 +89,10 @@ public class ThompsonSource implements Cloneable {
     private int npGeometricFactor = 5000000;
 
     /**
-     * Maximal number of evaluations in calculations of the brilliance
+     * Maximal number of evaluations in calculations of the brilliance and
+     * polarization
      */
     public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 30000;
-
     /**
      * Precision in calculations of the brilliance
      */
@@ -340,22 +339,32 @@ public class ThompsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationSpread(Vector n, Vector v, double e) throws InterruptedException {
-        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final double e) throws InterruptedException {
+        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         double[] array = new double[4];
-        UnivariateFunction func;
+        //Calculating full polarization tensor using multiple threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         for (int i = 0; i < 4; i++) {
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException();
-            }
-            func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, i);
-            try {
-                array[i] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
-            } catch (TooManyEvaluationsException ex) {
-                array[i] = 0;
-            }
+            int[] ia = new int[]{i};
+            execs.execute(() -> {
+                UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, ia[0]);
+                try {
+                    array[ia[0]] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+                } catch (TooManyEvaluationsException ex) {
+                    array[ia[0]] = 0;
+                }
+                lt.countDown();
+            });
         }
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            execs.shutdownNow();
+            throw ex;
+        }
+        execs.shutdownNow();
         return array;
     }
 
@@ -403,13 +412,12 @@ public class ThompsonSource implements Cloneable {
             this.v0 = v0;
             this.n = n;
             this.index = index;
-            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
 
         @Override
         public double value(double phi) {
-            System.out.println("phi = " + phi + " index = " + index);
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {

@@ -176,9 +176,7 @@ public class LinearChartParam {
                 if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
                 }
-                Long t = System.nanoTime();
                 this.data[k][i] = f.get(k).apply(xp);
-                System.out.println(System.nanoTime() - t);
             }
         }
         setExtr();
