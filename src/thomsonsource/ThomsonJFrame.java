@@ -183,7 +183,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100"};
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
-
         /**
          * Objects for the polarization calculation
          */
@@ -2009,7 +2008,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Saving the results into the text file
          */
-
         public void save() {
             JFileChooser fo = new JFileChooser(file);
             fo.setDialogTitle(savetext);
@@ -2041,7 +2039,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Updatin or creating chart and chartpanel
          */
-
         public void updateGraph(JPanel panel, String label) {
             if (chartPanel == null) {
                 /**
