@@ -418,7 +418,6 @@ public class ThompsonSource implements Cloneable {
             this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
-
         @Override
         public double value(double phi) {
             UnivariateFunction func
@@ -446,7 +445,6 @@ public class ThompsonSource implements Cloneable {
             this.n = n;
             this.v0 = v0;
         }
-
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -474,7 +472,6 @@ public class ThompsonSource implements Cloneable {
             this.index = index;
             this.v0 = v0;
         }
-
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -793,7 +790,6 @@ public class ThompsonSource implements Cloneable {
             this.r0 = r0;
             this.n0 = n0;
         }
-
         @Override
         public double value(double x) {
             Vector r;
