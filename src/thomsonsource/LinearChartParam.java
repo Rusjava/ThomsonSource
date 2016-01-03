@@ -186,9 +186,10 @@ public class LinearChartParam {
      * Calculating min and max values of data
      */
     protected void setExtr() {
-        double[] umaxt = new double[func.size()];
-        double[] umint = new double[func.size()];
-        for (int k = 0; k < func.size(); k++) {
+        int sz = (func != null) ? func.size() : 1;
+        double[] umaxt = new double[sz];
+        double[] umint = new double[sz];
+        for (int k = 0; k < sz; k++) {
             umaxt[k] = (new BasicVector(data[k])).max();
             umint[k] = (new BasicVector(data[k])).min();
         }

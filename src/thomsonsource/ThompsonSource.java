@@ -141,6 +141,7 @@ public class ThompsonSource implements Cloneable {
         ((ThompsonSource) tm).lp = (LaserPulse) this.lp.clone();
         ((ThompsonSource) tm).counter = new AtomicInteger();
         ((ThompsonSource) tm).partialFlux = new DoubleAdder();
+        ((ThompsonSource) tm).ksi = (double[]) ksi.clone();
         return tm;
     }
 
@@ -386,6 +387,7 @@ public class ThompsonSource implements Cloneable {
             this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
+
         @Override
         public double value(double phi) {
             UnivariateFunction func
@@ -416,6 +418,7 @@ public class ThompsonSource implements Cloneable {
             this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
+
         @Override
         public double value(double phi) {
             UnivariateFunction func
@@ -443,6 +446,7 @@ public class ThompsonSource implements Cloneable {
             this.n = n;
             this.v0 = v0;
         }
+
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -470,6 +474,7 @@ public class ThompsonSource implements Cloneable {
             this.index = index;
             this.v0 = v0;
         }
+
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -788,6 +793,7 @@ public class ThompsonSource implements Cloneable {
             this.r0 = r0;
             this.n0 = n0;
         }
+
         @Override
         public double value(double x) {
             Vector r;
@@ -864,10 +870,18 @@ public class ThompsonSource implements Cloneable {
                 double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
                 double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
                 Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
-                polParam = directionFrequencyVolumePolarizationNoSpread(r, n, v, ray[10]);
+                if (ksi == null) {
+                    polParam = directionFrequencyVolumePolarizationNoSpread(r, n, v, ray[10]);
+                } else {
+                    polParam = new double[]{directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]), ksi[0], ksi[1], ksi[2]};
+                }
                 prob = polParam[0] * eb.angleDistribution(thetax, thetay);
             } else {
-                polParam = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
+                if (ksi == null) {
+                    polParam = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
+                } else {
+                    polParam = new double[]{directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]), ksi[0], ksi[1], ksi[2]};
+                }
                 prob = polParam[0];
             }
             if (!new Double(prob).isNaN()) {
@@ -875,7 +889,7 @@ public class ThompsonSource implements Cloneable {
             }
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
-        // Calculation of the rotated polarization vector and getting the full polarizaation state
+        // Calculating the rotated polarization vector and getting the full polarizaation state
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
         //Checking if polarization is pre-specified

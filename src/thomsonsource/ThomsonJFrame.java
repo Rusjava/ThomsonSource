@@ -84,6 +84,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ebunch = new ElectronBunch();
         this.lpulse = new LaserPulse();
         this.tsource = new ThompsonSource(lpulse, ebunch);
+        tsource.setPolarization(new double[]{0, 0, 0});
         this.xsize = 300;
         this.ysize = 200;
         this.xstep = 20.0 / xsize;
@@ -1794,6 +1795,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.setText("Polarization...");
 
         buttonGroupPolarization.add(jRadioButtonMenuItemUnPolarized);
+        jRadioButtonMenuItemUnPolarized.setSelected(true);
         jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
         jRadioButtonMenuItemUnPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1821,7 +1823,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
-        jRadioButtonMenuItemAutoPolarized.setSelected(true);
         jRadioButtonMenuItemAutoPolarized.setText("Automatic");
         jRadioButtonMenuItemAutoPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -2292,34 +2293,35 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 double plotwidth = 0;
+                //Checking if there are any errors in the worker thread
+                try {
+                    get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 if (!isCancelled() || fluxChart != null) {
-
+                    //Creating or updating charts
                     if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
                     } else {
                         fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
                                 jPanel_xflux_left, 0.75, true);
                     }
-
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
                                 "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
                     }
-
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
                     } else {
                         xEnergyChart = new ColorChart(xenergydata, "theta_x, mrad", "theta_y, mrad", "kev", jPanel_xenergy_left, 0.75, true);
                     }
-
                     if (xenergycrosschart != null) {
-                        xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax());
-                        xenergycrosschart.getXYPlot().getDomainAxis().
-                                setRangeAboutValue(xenergycrossdata.getOffset()
-                                        + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
+                        xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
+                        xenergycrosschart.getXYPlot().getDomainAxis().setRangeAboutValue(xenergycrossdata.getOffset()
+                                + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
                         xenergycrosschart.fireChartChanged();
                     } else {
                         xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata, new String[]{"Energy cross section"}), "theta_y, mrad", "Energy, keV");
@@ -2402,8 +2404,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     try {
                         fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
                         setStatusBar((int) 100);
-                        xenergycrossdata.setup(xenergydata.getudata(),
-                                (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                        xenergycrossdata.setup(xenergydata.getudata(), (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
                                 false, ysize, ystep, -ystep * ysize / 2);
                     } catch (InterruptedException e) {
 
@@ -2413,21 +2414,24 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                 @Override
                 protected void done() {
+                    //Checking if there are any errors in the worker thread
+                    try {
+                        get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     if (fluxChart != null) {
                         fluxChart.update();
                     }
-
+                    //Updating charts
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     }
-
                     if (xEnergyChart != null) {
                         xEnergyChart.update();
                     }
-
                     if (xenergycrosschart != null) {
-                        xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax());
+                        xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
                         xenergycrosschart.fireChartChanged();
                     }
                     startbutton.setText("Start");
@@ -2440,9 +2444,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                  * @param status
                  */
                 public void setStatusBar(final int status) {
-                    SwingUtilities.invokeLater(() -> {
-                        MainProgressBar.setValue(status);
-                    });
+                    SwingUtilities.invokeLater(() -> MainProgressBar.setValue(status));
                 }
             };
             mainWorker.execute();
