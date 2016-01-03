@@ -340,11 +340,12 @@ public class ThompsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final double e) throws InterruptedException {
+        //Creating an integrator
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         double[] array = new double[4];
         //Calculating full polarization tensor using multiple threads
-        CountDownLatch lt = new CountDownLatch(threadNumber);
+        CountDownLatch lt = new CountDownLatch(4);
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         for (int i = 0; i < 4; i++) {
             int[] ia = new int[]{i};
@@ -358,6 +359,7 @@ public class ThompsonSource implements Cloneable {
                 lt.countDown();
             });
         }
+        //Waiting for an interruption and shuting down threads if interrupted
         try {
             lt.await();
         } catch (InterruptedException ex) {
@@ -384,7 +386,6 @@ public class ThompsonSource implements Cloneable {
             this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
-
         @Override
         public double value(double phi) {
             UnivariateFunction func
@@ -415,7 +416,6 @@ public class ThompsonSource implements Cloneable {
             this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
-
         @Override
         public double value(double phi) {
             UnivariateFunction func
@@ -443,7 +443,6 @@ public class ThompsonSource implements Cloneable {
             this.n = n;
             this.v0 = v0;
         }
-
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -471,7 +470,6 @@ public class ThompsonSource implements Cloneable {
             this.index = index;
             this.v0 = v0;
         }
-
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -790,7 +788,6 @@ public class ThompsonSource implements Cloneable {
             this.r0 = r0;
             this.n0 = n0;
         }
-
         @Override
         public double value(double x) {
             Vector r;
