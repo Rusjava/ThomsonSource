@@ -2008,6 +2008,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Saving the results into the text file
          */
+
         public void save() {
             JFileChooser fo = new JFileChooser(file);
             fo.setDialogTitle(savetext);
@@ -2023,10 +2024,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 Formatter fm;
                 try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+                    int nc = chartParam.getData().length;
                     for (int i = 0; i < chartParam.getSize(); i++) {
                         fm = new Formatter();
-                        fm.format("%f %f", new Double(i * chartParam.getStep()
-                                + chartParam.getOffset()), new Double(chartParam.getData()[0][i]));
+                        fm.format("%f", i * chartParam.getStep() + chartParam.getOffset());
+                        for (double[] data : chartParam.getData()) {
+                            fm.format(" %f", data[i]);
+                        }
                         pw.println(fm);
                     }
                     pw.close();
@@ -2039,6 +2043,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /*
          * Updatin or creating chart and chartpanel
          */
+
         public void updateGraph(JPanel panel, String label) {
             if (chartPanel == null) {
                 /**
