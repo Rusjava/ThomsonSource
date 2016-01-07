@@ -351,7 +351,7 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final double e) throws InterruptedException {
         //Creating an integrator
-        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision() * 10, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         double[] array = new double[NUMBER_OF_POL_PARAM];
         //Calculating full polarization tensor using multiple threads
