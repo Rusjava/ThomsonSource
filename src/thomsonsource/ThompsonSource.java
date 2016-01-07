@@ -97,7 +97,7 @@ public class ThompsonSource implements Cloneable {
      * Maximal number of evaluations in calculations of the brilliance and
      * polarization
      */
-    public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 30000;
+    public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 200000;
     /**
      * Precision in calculations of the brilliance
      */
@@ -424,7 +424,7 @@ public class ThompsonSource implements Cloneable {
             this.v0 = v0;
             this.n = n;
             this.index = index;
-            this.inergrator = new RombergIntegrator(getPrecision() * 50, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
 
