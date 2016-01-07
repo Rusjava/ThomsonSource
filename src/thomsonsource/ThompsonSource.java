@@ -64,6 +64,11 @@ public class ThompsonSource implements Cloneable {
     public static final int NUMBER_OF_COLUMNS = 18;
 
     /**
+     * The number of polarization parameters
+     */
+    public static final int NUMBER_OF_POL_PARAM = 4;
+
+    /**
      * Angle range for rays exported for Shadow in the X-direction
      */
     private double rayXAnglerange = 0.0003;
@@ -280,8 +285,8 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
-        double[] array = new double[4];
-        double K, th, m11, m22, m12, mlt;
+        double[] array = new double[NUMBER_OF_POL_PARAM];
+        double K, th, m11, m22, m12, mlt, cs, sn;
         th = (1 - n.innerProduct(v)) * 2;
         mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
         K = Math.exp(-Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
@@ -291,12 +296,16 @@ public class ThompsonSource implements Cloneable {
         m12 = m11 * mlt;
         m22 = m12 * mlt;
         //Determine the polarization rotation angle
-        Vector b = new BasicVector(new double[]{n.get(1) * v.get(2) - n.get(2) * v.get(1),
-            n.get(2) * v.get(0) - n.get(0) * v.get(2), n.get(1) * v.get(0) - n.get(0) * v.get(1)});
-        b = b.subtract(n.multiply(b.innerProduct(n)));
-        b = b.divide(b.fold(Vectors.mkEuclideanNormAccumulator()));
-        b = new Double(b.get(0)).isNaN() ? new BasicVector(new double[]{0, 1, 0}) : b;
-        double cs2 = 2 * b.get(1) * b.get(1) - 1, sn2 = 2 * b.get(0) * b.get(1);
+        double vn = v.innerProduct(n);
+        double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(1)));
+        if (norm != 0) {
+            cs = (v.get(1) - n.get(1) * vn) / norm;
+            sn = (n.get(2) * v.get(0) - n.get(0) * v.get(2)) / norm;
+        } else {
+            cs = 1;
+            sn = 0;
+        }
+        double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
         double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
         //Calculating Stocks parameters
         array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[0] + sn2 * lp.getPolarization()[1]) * (m11 - m22)) / 2;
@@ -342,13 +351,13 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final double e) throws InterruptedException {
         //Creating an integrator
-        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
+        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision() * 10, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        double[] array = new double[4];
+        double[] array = new double[NUMBER_OF_POL_PARAM];
         //Calculating full polarization tensor using multiple threads
-        CountDownLatch lt = new CountDownLatch(4);
+        CountDownLatch lt = new CountDownLatch(NUMBER_OF_POL_PARAM);
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             int[] ia = new int[]{i};
             execs.execute(() -> {
                 UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, ia[0]);
@@ -415,11 +424,16 @@ public class ThompsonSource implements Cloneable {
             this.v0 = v0;
             this.n = n;
             this.index = index;
-            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY * 1e5,
+            this.inergrator = new RombergIntegrator(getPrecision() * 50, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
+
         @Override
         public double value(double phi) {
+            if (Thread.currentThread().isInterrupted()) {
+             Thread.currentThread().interrupt();
+             return 0;
+             }
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
@@ -445,6 +459,7 @@ public class ThompsonSource implements Cloneable {
             this.n = n;
             this.v0 = v0;
         }
+
         @Override
         public double value(double theta) {
             double u, sn = Math.sin(theta);
@@ -472,8 +487,13 @@ public class ThompsonSource implements Cloneable {
             this.index = index;
             this.v0 = v0;
         }
+
         @Override
         public double value(double theta) {
+            if (Thread.currentThread().isInterrupted()) {
+             Thread.currentThread().interrupt();
+             return 0;
+             }
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
@@ -540,7 +560,7 @@ public class ThompsonSource implements Cloneable {
     public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) {
         double[] stocks = directionFrequencyPolarizationNoSpread(n, v, e);
         double vFlux = volumeFlux(r);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             stocks[i] *= vFlux;
         }
         return stocks;
@@ -576,7 +596,7 @@ public class ThompsonSource implements Cloneable {
     public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         double[] stocks = directionFrequencyPolarizationSpread(n, v, e);
         double vFlux = volumeFlux(r);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             stocks[i] *= vFlux;
         }
         return stocks;
@@ -706,7 +726,7 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) {
         double mlt;
-        double[] array = new double[4];
+        double[] array = new double[NUMBER_OF_POL_PARAM];
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
@@ -717,7 +737,7 @@ public class ThompsonSource implements Cloneable {
         } catch (TooManyEvaluationsException ex) {
             mlt = 0;
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             array[i] = mlt * directionFrequencyPolarizationNoSpread(n, v, e)[i];
         }
         return array;
@@ -761,7 +781,7 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double mlt;
-        double[] array = new double[4];
+        double[] array = new double[NUMBER_OF_POL_PARAM];
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
@@ -772,7 +792,7 @@ public class ThompsonSource implements Cloneable {
         } catch (TooManyEvaluationsException ex) {
             mlt = 0;
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             array[i] = mlt * directionFrequencyPolarizationSpread(n, v, e)[i];
         }
         return array;
@@ -790,6 +810,7 @@ public class ThompsonSource implements Cloneable {
             this.r0 = r0;
             this.n0 = n0;
         }
+
         @Override
         public double value(double x) {
             Vector r;
