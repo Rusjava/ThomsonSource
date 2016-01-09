@@ -97,7 +97,7 @@ public class ThompsonSource implements Cloneable {
      * Maximal number of evaluations in calculations of the brilliance and
      * polarization
      */
-    public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 200000;
+    public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 1000000;
     /**
      * Precision in calculations of the brilliance
      */
@@ -297,10 +297,10 @@ public class ThompsonSource implements Cloneable {
         m22 = m12 * mlt;
         //Determine the polarization rotation angle
         double vn = v.innerProduct(n);
-        double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(1)));
+        double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(0) * n.get(0)));
         if (norm != 0) {
-            cs = (v.get(1) - n.get(1) * vn) / norm;
-            sn = (n.get(2) * v.get(0) - n.get(0) * v.get(2)) / norm;
+            cs = (v.get(0) - n.get(0) * vn) / norm;
+            sn = (n.get(0) * v.get(2) - n.get(2) * v.get(0)) / norm;
         } else {
             cs = 1;
             sn = 0;
@@ -431,9 +431,9 @@ public class ThompsonSource implements Cloneable {
         @Override
         public double value(double phi) {
             if (Thread.currentThread().isInterrupted()) {
-             Thread.currentThread().interrupt();
-             return 0;
-             }
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
@@ -491,9 +491,9 @@ public class ThompsonSource implements Cloneable {
         @Override
         public double value(double theta) {
             if (Thread.currentThread().isInterrupted()) {
-             Thread.currentThread().interrupt();
-             return 0;
-             }
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);

@@ -3470,9 +3470,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         //If the same point, use the saved values
                         if (xpcash[0] != xp) {
                             try {
-                                res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e);
+                                res = polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 
+                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), e);
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return fn.get(ia[0]).apply(rescash);
