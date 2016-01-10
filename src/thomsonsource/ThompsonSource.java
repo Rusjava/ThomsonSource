@@ -289,10 +289,10 @@ public class ThompsonSource implements Cloneable {
         double K, th, m11, m22, m12, mlt, cs, sn;
         th = (1 - n.innerProduct(v)) * 2;
         mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
-        K = Math.exp(-Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2));
+        K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
+                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
         m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
-                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * K;
+                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
         m12 = m11 * mlt;
         m22 = m12 * mlt;
         //Determine the polarization rotation angle
@@ -300,7 +300,7 @@ public class ThompsonSource implements Cloneable {
         double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(0) * n.get(0)));
         if (norm != 0) {
             cs = (v.get(0) - n.get(0) * vn) / norm;
-            sn = (n.get(0) * v.get(2) - n.get(2) * v.get(0)) / norm;
+            sn = (n.get(1) * v.get(2) - n.get(2) * v.get(1)) / norm;
         } else {
             cs = 1;
             sn = 0;
@@ -322,15 +322,15 @@ public class ThompsonSource implements Cloneable {
      * X-ray photon energy taking into account electron transversal pulse spread
      *
      * @param n direction
-     * @param v normalized electron velocity
+     * @param v0 normalized electron velocity
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyFluxSpread(Vector n, Vector v, double e) {
+    public double directionFrequencyFluxSpread(Vector n, Vector v0, double e) {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func
-                = new UnivariateFrequencyFluxSpreadOuter(e, v, n);
+                = new UnivariateFrequencyFluxSpreadOuter(e, v0, n);
         try {
             return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
         } catch (TooManyEvaluationsException ex) {
@@ -339,30 +339,33 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating the stocks parameters density in a given direction
+     * A multi-threaded method calculating the full polarization tensor density in a given direction
      * for a given X-ray photon energy taking into account electron transversal
      * pulse spread
      *
      * @param n direction
-     * @param v normalized electron velocity
+     * @param v0 normalized electron velocity
      * @param e X-ray energy
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final double e) throws InterruptedException {
-        //Creating an integrator
-        BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v0, final double e) throws InterruptedException {
+        //An array for results
         double[] array = new double[NUMBER_OF_POL_PARAM];
-        //Calculating full polarization tensor using multiple threads
+        //Creating a latch for threads
         CountDownLatch lt = new CountDownLatch(NUMBER_OF_POL_PARAM);
+        //Creating a pool of threads for calculations
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        //Calculating the polarization tensor elements
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             int[] ia = new int[]{i};
             execs.execute(() -> {
-                UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v, n, ia[0]);
+                UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, ia[0]);
                 try {
-                    array[ia[0]] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+                    //Creating a separate inegrator for each thread
+                    array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                            RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
+                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -437,7 +440,8 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                double rs = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                return rs;
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
