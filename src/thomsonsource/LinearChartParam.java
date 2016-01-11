@@ -24,7 +24,7 @@ import java.util.List;
  * Class for linear chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 2.0
+ * @version 2.1
  */
 public class LinearChartParam {
 
@@ -171,11 +171,12 @@ public class LinearChartParam {
             this.data[k] = new double[size];
         }
         for (int i = 0; i < size; i++) {
+            double xp = step * i + offset;
             for (int k = 0; k < f.size(); k++) {
                 if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
                 }
-                this.data[k][i] = f.get(k).apply(step * i + offset);
+                this.data[k][i] = f.get(k).apply(xp);
             }
         }
         setExtr();
@@ -185,13 +186,14 @@ public class LinearChartParam {
      * Calculating min and max values of data
      */
     protected void setExtr() {
-        double [] umaxt = new double[func.size()];
-        double [] umint = new double[func.size()];
-        for (int k = 0; k < func.size(); k++) {
+        int sz = (func != null) ? func.size() : 1;
+        double[] umaxt = new double[sz];
+        double[] umint = new double[sz];
+        for (int k = 0; k < sz; k++) {
             umaxt[k] = (new BasicVector(data[k])).max();
             umint[k] = (new BasicVector(data[k])).min();
         }
-        umax=(new BasicVector(umaxt)).max();
-        umin=(new BasicVector(umint)).min();
+        umax = (new BasicVector(umaxt)).max();
+        umin = (new BasicVector(umint)).min();
     }
 }
