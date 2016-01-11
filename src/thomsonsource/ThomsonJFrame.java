@@ -1,32 +1,51 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 Ruslan Feshchenko
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package thomsonsource;
 
 import java.text.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
 import java.util.Formatter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
-import javax.swing.border.TitledBorder;
-import java.awt.geom.Rectangle2D;
-import java.io.EOFException;
-import javax.swing.text.*;
 import java.util.concurrent.ExecutionException;
 import java.util.IllegalFormatException;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -41,10 +60,8 @@ import org.jfree.chart.renderer.PaintScale;
 import org.jfree.chart.renderer.xy.XYBlockRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
-import org.la4j.vector.*;
+import org.la4j.*;
 import org.la4j.vector.dense.*;
-import org.la4j.matrix.*;
-import org.la4j.matrix.dense.*;
 
 import TextUtilities.MyTextUtilities;
 import shadowfileconverter.ShadowFiles;
@@ -52,111 +69,150 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.0
+ * @version 2.15
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
     /**
      * Creates new form ThomsonJFrame
      */
-    
     public ThomsonJFrame() {
         this.xrayenergyborder = javax.swing.BorderFactory.createTitledBorder(null, "X-ray photon energy",
                 javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION);
-        this.ebunch=new ElectronBunch();
-        this.lpulse=new LaserPulse();
-        this.tsource=new ThompsonSource(lpulse, ebunch);
-        this.xsize=200;
-        this.ysize=200;
-        this.xstep=20.0/xsize;
-        this.ystep=20.0/ysize;
-        this.estep=2000/xsize;
-        
+        this.ebunch = new ElectronBunch();
+        this.lpulse = new LaserPulse();
+        this.tsource = new ThompsonSource(lpulse, ebunch);
+        tsource.setPolarization(new double[]{0, 0, 0});
+        this.xsize = 300;
+        this.ysize = 200;
+        this.xstep = 20.0 / xsize;
+        this.ystep = 20.0 / ysize;
+        this.estep = 2000 / xsize;
+        this.oldStrings = new HashMap<>();
+        rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
+        rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        gfMonteCarloNumberBox = getIntegerFormattedTextField(5000000, 1, 100000000);
+        brilPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
+        xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
+        ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
+        xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
+        rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
+        rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
+        threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
+        ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         /**
-        * An auxiliary method giving the flux density in a given direction 
-        * 
-        */     
-        this.fluxdata=new ChartParam() {
+         * An auxiliary method giving the flux density in a given direction
+         *
+         */
+        this.fluxdata = new ChartParam() {
             @Override
-            public double func (double thetax, double thetay) {
+            public double func(double thetax, double thetay) {
                 Vector v, n;
-                v=new BasicVector(new double []{0.0,0.0,1.0});
-                n=new BasicVector(new double []{thetax*1e-3,thetay*1e-3,1.0});
-                n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-6*tsource.directionFlux(n, v)/1e10;
+                v = new BasicVector(new double[]{0.0, 0.0, 1.0});
+                n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
+                n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
+                return 1e-6 * tsource.directionFlux(n, v) / 1e10;
             }
         };
         /**
-        * An auxiliary method calculating the flux density in a given direction for a given 
-        * X-ray photon energy
-        * 
-        */ 
-        this.fluxcrossdata=new ChartParam() {
+         * An auxiliary method calculating the flux density in a given direction
+         * for a given X-ray photon energy
+         *
+         */
+        this.fluxcrossdata = new ChartParam() {
             @Override
-            public double func (double e, double theta) {
+            public double func(double e, double theta) {
                 Vector n, v;
-                v=new BasicVector(new double []{0.0,0.0,1.0});
-                n=new BasicVector(new double []{hoffset*1e-3,theta*1e-3,1.0});
-                n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9*tsource.geometricFactor*tsource.directionFrequencyFlux(n, v, e*1.6e-19)/1e10;
+                v = new BasicVector(new double[]{0.0, 0.0, 1.0});
+                n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
+                n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
+                return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, e * ElectronBunch.E) / 1e10;
             }
         };
-        
+
         /**
-        * An auxiliary method calculating X-ray energy in a given direction 
-        * 
-        */   
-        this.xenergydata=new ChartParam() {
+         * An auxiliary method calculating X-ray energy in a given direction
+         *
+         */
+        this.xenergydata = new ChartParam() {
             @Override
-            public double func (double thetax, double thetay) {
+            public double func(double thetax, double thetay) {
                 Vector n, v;
-                v=new BasicVector(new double []{0.0, 0.0, 1.0});
-                n=new BasicVector(new double []{thetax*1e-3, thetay*1e-3, 1.0});
-                n=n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return tsource.directionEnergy(n, v)/1.6e-16;
+                v = new BasicVector(new double[]{0.0, 0.0, 1.0});
+                n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
+                n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
+                return tsource.directionEnergy(n, v) / ElectronBunch.E * 1e-3;
             }
         };
-        
+        /**
+         * Auxiliary object for linear energy chart parameters
+         */
+        this.xenergycrossdata = new LinearChartParam();
+
         /**
          * Objects for the brilliance calculation
          */
-        this.BrilForm=new CalcBoxParam ("Brilliance");
-        this.BrilForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>", "", "keV", "keV", "keV"};
-        this.BrilForm.plotLabels=new String [] {"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
-            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3", "X-ray energy, keV", "X-ray energy, keV", "X-ray energy, keV"};
-        this.BrilForm.comboBoxValues=new String [] {"Laser-electron angle", "Delay", "Z-shift", 
-            "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", 
-            "Energy spread", "X-ray energy - 0 degrees", "X-ray energy - 0.16 degrees",
-            "X-ray energy - 0.32 degrees"};
-        this.BrilForm.conversionValues=new double [] {1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, 1.6e-16, 1.6e-16, 1.6e-16};
-        this.BrilForm.minValues=new String [] {"0", "0", "0", "10", "3", "5.4", "20", "0.001", "35", "30", "25"};
-        this.BrilForm.maxValues=new String [] {"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "46", "46"};
-        this.BrilForm.savetext="Choose file to save spectral brilliance data";
-        this.BrilForm.numberOfItems=11;
-        
+        this.brilForm = new CalcBoxParam(new String[]{"Spectral brilliance"});
+        this.brilForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad",
+            "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
+        this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
+            "X-ray energy, keV", "Observation angle, mrad"};
+        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
+        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30", "0"};
+        this.brilForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "5"};
+        this.brilForm.savetext = "Choose file to save spectral brilliance data";
+        this.brilForm.numberOfItems = 10;
+
         /**
          * Objects for the GF calculation
-         */ 
-        this.GFForm=new CalcBoxParam ("Geometric factor");
-        this.GFForm.valueUnitLabels=new String [] {"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
-        this.GFForm.plotLabels=new String [] {"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+         */
+        this.gfForm = new CalcBoxParam(new String[]{"Geometric factor"});
+        this.gfForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
+        this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
-        this.GFForm.comboBoxValues=new String [] {"Laser-electron angle", "Delay", "Z-shift", 
-            "Beta function", "Emittance", "Rayleigh length", "Waist semi-width"};
-        this.GFForm.conversionValues=new double [] {1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6};
-        this.GFForm.minValues=new String [] {"0", "0", "0", "10", "3", "2.7", "20"};
-        this.GFForm.maxValues=new String [] {"35", "100", "10", "50", "10", "10", "100"};
-        this.GFForm.savetext="Choose file to save geometric factor data";
-        this.GFForm.numberOfItems=7;
-        
-        this.paramNames=new String [] {"Electron energy, MeV", "Electron bunch charge nQ",
-                                    "Electron bunch relative energy spread", "Electron bunch length, ps", 
-                                    "Emittance, mm*mrad", "Beta-x function, mm", "Beta-y function, mm", "Photon energy, eV",
-                                    "Pulse energy, mJ", "Laser pulse length, ps", "Rayleigh length, mm", 
-                                    "Pulse frequency, MHz", "Delay, ps", "X-shift, mm",
-                                    "Y-shift, mm", "Z-shift, mm", "Laser-electron angle, mrad"};
-        
+        this.gfForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6};
+        this.gfForm.minValues = new String[]{"0", "0", "0", "10", "3", "2.7", "20"};
+        this.gfForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100"};
+        this.gfForm.savetext = "Choose file to save geometric factor data";
+        this.gfForm.numberOfItems = 7;
+        /**
+         * Objects for the polarization calculation
+         */
+        this.polForm = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"});
+        this.polForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad",
+            "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
+        this.polForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+            "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
+            "X-ray energy, keV", "Observation angle, mrad"};
+        this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
+        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "5.4", "20", "0.001", "30", "0"};
+        this.polForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100", "0.01", "46", "5"};
+        this.polForm.savetext = "Choose file to save polarization data";
+        this.polForm.numberOfItems = 10;
+
+        this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
+            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
+            "Emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
+            "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
+            "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
+            "Y-shift_mm", "Z-shift_mm", "Laser-electron_angle_mrad"};
+        this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
+
         initComponents();
+        // Adding a listerner to the UI manager for skin update
+        UIManager.addPropertyChangeListener(e -> {
+            SwingUtilities.updateComponentTreeUI(this);
+            SwingUtilities.updateComponentTreeUI(gfCalc);
+            SwingUtilities.updateComponentTreeUI(brillianceCalc);
+            SwingUtilities.updateComponentTreeUI(polarizationCalc);
+            SwingUtilities.updateComponentTreeUI(rayProgressFrame);
+        });
     }
 
     /**
@@ -168,7 +224,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        BrillianceCalc = new javax.swing.JFrame();
+        brillianceCalc = new javax.swing.JFrame();
         BrillianceParam = new javax.swing.JPanel();
         BrillianceCalcBox = new javax.swing.JComboBox();
         BrillianceCalcStart = new javax.swing.JButton();
@@ -181,8 +237,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         Brilmaxvaluelabel = new javax.swing.JLabel();
         jCheckBoxSpread = new javax.swing.JCheckBox();
         BrilProgressBar = new javax.swing.JProgressBar();
+        jAngleLabel = new javax.swing.JLabel();
+        angleValue = new javax.swing.JTextField();
+        angleValueUnitLable = new javax.swing.JLabel();
+        jEnergyLabel = new javax.swing.JLabel();
+        energyValue = new javax.swing.JTextField();
+        energyValueUnitLable = new javax.swing.JLabel();
         BrillianceCalcGraph = new javax.swing.JPanel();
-        GfCalc = new javax.swing.JFrame();
+        gfCalc = new javax.swing.JFrame();
         GFParam = new javax.swing.JPanel();
         GFCalcBox = new javax.swing.JComboBox();
         GFCalcStart = new javax.swing.JButton();
@@ -195,9 +257,32 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFmaxvaluelabel = new javax.swing.JLabel();
         GFProgressBar = new javax.swing.JProgressBar();
         GFCalcGraph = new javax.swing.JPanel();
-        ProgressFrame = new javax.swing.JFrame();
+        polarizationCalc = new javax.swing.JFrame();
+        polarizationParam = new javax.swing.JPanel();
+        polarizationCalcBox = new javax.swing.JComboBox();
+        polarizationCalcStart = new javax.swing.JButton();
+        polarizationCalcSave = new javax.swing.JButton();
+        polminvalue = new javax.swing.JTextField();
+        polminvaluelabel = new javax.swing.JLabel();
+        polminvalueunitlabel = new javax.swing.JLabel();
+        polmaxvalueunitlabel = new javax.swing.JLabel();
+        polmaxvalue = new javax.swing.JTextField();
+        polmaxvaluelabel = new javax.swing.JLabel();
+        jPolCheckBoxSpread = new javax.swing.JCheckBox();
+        polProgressBar = new javax.swing.JProgressBar();
+        jPolAngleLabel = new javax.swing.JLabel();
+        polAngleValue = new javax.swing.JTextField();
+        polAngleValueUnitLable = new javax.swing.JLabel();
+        jPolEnergyLabel = new javax.swing.JLabel();
+        polEnergyValue = new javax.swing.JTextField();
+        polEnergyValueUnitLable = new javax.swing.JLabel();
+        polarizationCalcGraph = new javax.swing.JPanel();
+        rayProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
+        jLabelPartialFlux = new javax.swing.JLabel();
+        buttonGroupPolarization = new javax.swing.ButtonGroup();
+        buttonGroupSkin = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel_el = new javax.swing.JPanel();
@@ -275,24 +360,39 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuCalc = new javax.swing.JMenu();
         jMenuItemBrilliance = new javax.swing.JMenuItem();
         jMenuItemGeometricFactor = new javax.swing.JMenuItem();
+        jMenuItemPolarization = new javax.swing.JMenuItem();
         jMenuShadow = new javax.swing.JMenu();
         jMenuItemSource = new javax.swing.JMenuItem();
         jMenuItemSourceParam = new javax.swing.JMenuItem();
+        jMenuPolarization = new javax.swing.JMenu();
+        jRadioButtonMenuItemUnPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemSPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemPPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemAutoPolarized = new javax.swing.JRadioButtonMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemConv = new javax.swing.JMenuItem();
         jMenuOptions = new javax.swing.JMenu();
+        jMenuItemLaserPolarization = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
         jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemNumerical = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jMenuSkin = new javax.swing.JMenu();
+        jRadioButtonMenuDefault = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuSystem = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuNimbus = new javax.swing.JRadioButtonMenuItem();
         jMenuHelp = new javax.swing.JMenu();
         HelpItem = new javax.swing.JMenuItem();
         jMenuItemAbout = new javax.swing.JMenuItem();
 
-        BrillianceCalc.setTitle("Brilliance box");
-        BrillianceCalc.setMinimumSize(new java.awt.Dimension(660, 313));
+        brillianceCalc.setTitle("Brilliance box");
+        brillianceCalc.setMinimumSize(new java.awt.Dimension(760, 313));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
-        BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy - 0 degrees", "X-ray energy - 0.16 degrees", "X-ray energy - 0.32 degrees" }));
+        BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
         BrillianceCalcBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BrillianceCalcBoxActionPerformed(evt);
@@ -352,6 +452,39 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
+        jAngleLabel.setText("Angle");
+
+        angleValue.setText("0");
+        angleValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                angleValueFocusLost(evt);
+            }
+        });
+        angleValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                angleValueActionPerformed(evt);
+            }
+        });
+
+        angleValueUnitLable.setText("mrad");
+
+        jEnergyLabel.setText("Energy");
+
+        energyValue.setText("44");
+        energyValue.setEnabled(false);
+        energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                energyValueFocusLost(evt);
+            }
+        });
+        energyValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                energyValueActionPerformed(evt);
+            }
+        });
+
+        energyValueUnitLable.setText("kev");
+
         javax.swing.GroupLayout BrillianceParamLayout = new javax.swing.GroupLayout(BrillianceParam);
         BrillianceParam.setLayout(BrillianceParamLayout);
         BrillianceParamLayout.setHorizontalGroup(
@@ -383,7 +516,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addGap(31, 31, 31)
                         .addComponent(BrillianceCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(BrilProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addComponent(jAngleLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(angleValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(angleValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addComponent(jEnergyLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(energyValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(energyValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         BrillianceParamLayout.setVerticalGroup(
             BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -392,18 +539,29 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BrillianceCalcBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(BrillianceCalcStart)
-                    .addComponent(BrillianceCalcSave))
+                    .addComponent(BrillianceCalcSave)
+                    .addComponent(jAngleLabel)
+                    .addComponent(angleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(angleValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Brilminvaluelabel)
-                    .addComponent(Brilminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Brilminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Brilmaxvaluelabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Brilmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Brilmaxvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jCheckBoxSpread, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(BrilProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Brilminvaluelabel)
+                            .addComponent(Brilminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Brilminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Brilmaxvaluelabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Brilmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Brilmaxvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jCheckBoxSpread, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(BrilProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+                        .addGap(8, 8, 8))
+                    .addGroup(BrillianceParamLayout.createSequentialGroup()
+                        .addGroup(BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(energyValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(energyValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jEnergyLabel))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         BrillianceCalcGraph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Spectral brilliance", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -418,26 +576,26 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
         BrillianceCalcGraphLayout.setVerticalGroup(
             BrillianceCalcGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 221, Short.MAX_VALUE)
+            .addGap(0, 213, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout BrillianceCalcLayout = new javax.swing.GroupLayout(BrillianceCalc.getContentPane());
-        BrillianceCalc.getContentPane().setLayout(BrillianceCalcLayout);
-        BrillianceCalcLayout.setHorizontalGroup(
-            BrillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout brillianceCalcLayout = new javax.swing.GroupLayout(brillianceCalc.getContentPane());
+        brillianceCalc.getContentPane().setLayout(brillianceCalcLayout);
+        brillianceCalcLayout.setHorizontalGroup(
+            brillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(BrillianceParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
         );
-        BrillianceCalcLayout.setVerticalGroup(
-            BrillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(BrillianceCalcLayout.createSequentialGroup()
-                .addComponent(BrillianceParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        brillianceCalcLayout.setVerticalGroup(
+            brillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(brillianceCalcLayout.createSequentialGroup()
+                .addComponent(BrillianceParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE))
+                .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         );
 
-        GfCalc.setTitle("Geometric factor box");
-        GfCalc.setMinimumSize(new java.awt.Dimension(586, 313));
+        gfCalc.setTitle("Geometric factor box");
+        gfCalc.setMinimumSize(new java.awt.Dimension(586, 313));
 
         GFParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -503,7 +661,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFCalcBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(29, 29, 29))
+                        .addGap(42, 42, 42))
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFminvaluelabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -515,15 +673,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GFmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
-                        .addComponent(GFmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(GFmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFCalcStart)
-                        .addGap(31, 31, 31)
+                        .addGap(18, 18, 18)
                         .addComponent(GFCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(GFProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(59, Short.MAX_VALUE))
+                    .addComponent(GFProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         GFParamLayout.setVerticalGroup(
             GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -561,53 +719,267 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGap(0, 193, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout GfCalcLayout = new javax.swing.GroupLayout(GfCalc.getContentPane());
-        GfCalc.getContentPane().setLayout(GfCalcLayout);
-        GfCalcLayout.setHorizontalGroup(
-            GfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout gfCalcLayout = new javax.swing.GroupLayout(gfCalc.getContentPane());
+        gfCalc.getContentPane().setLayout(gfCalcLayout);
+        gfCalcLayout.setHorizontalGroup(
+            gfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(GFParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
         );
-        GfCalcLayout.setVerticalGroup(
-            GfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(GfCalcLayout.createSequentialGroup()
+        gfCalcLayout.setVerticalGroup(
+            gfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gfCalcLayout.createSequentialGroup()
                 .addComponent(GFParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        ProgressFrame.setTitle("Ray generation progress");
-        ProgressFrame.setAlwaysOnTop(true);
-        ProgressFrame.setMinimumSize(new java.awt.Dimension(400, 80));
-        ProgressFrame.setResizable(false);
+        polarizationCalc.setTitle("Polarization box");
+        polarizationCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+
+        polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+
+        polarizationCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        polarizationCalcBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcBoxActionPerformed(evt);
+            }
+        });
+
+        polarizationCalcStart.setText("Calculate");
+        polarizationCalcStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcStartActionPerformed(evt);
+            }
+        });
+
+        polarizationCalcSave.setText("Save");
+        polarizationCalcSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcSaveActionPerformed(evt);
+            }
+        });
+
+        polminvalue.setText("0");
+        polminvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polminvalueFocusLost(evt);
+            }
+        });
+        polminvalue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polminvalueActionPerformed(evt);
+            }
+        });
+
+        polminvaluelabel.setText("Min value");
+
+        polminvalueunitlabel.setText("mrad");
+
+        polmaxvalueunitlabel.setText("mrad");
+
+        polmaxvalue.setText("35");
+        polmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polmaxvalueFocusLost(evt);
+            }
+        });
+        polmaxvalue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polmaxvalueActionPerformed(evt);
+            }
+        });
+
+        polmaxvaluelabel.setText("Max value");
+
+        jPolCheckBoxSpread.setText("Spread");
+        jPolCheckBoxSpread.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPolCheckBoxSpreadActionPerformed(evt);
+            }
+        });
+
+        jPolAngleLabel.setText("Angle");
+
+        polAngleValue.setText("0");
+        polAngleValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polAngleValueFocusLost(evt);
+            }
+        });
+        polAngleValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polAngleValueActionPerformed(evt);
+            }
+        });
+
+        polAngleValueUnitLable.setText("mrad");
+
+        jPolEnergyLabel.setText("Energy");
+
+        polEnergyValue.setText("44");
+        polEnergyValue.setEnabled(false);
+        polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polEnergyValueFocusLost(evt);
+            }
+        });
+        polEnergyValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polEnergyValueActionPerformed(evt);
+            }
+        });
+
+        polEnergyValueUnitLable.setText("kev");
+
+        javax.swing.GroupLayout polarizationParamLayout = new javax.swing.GroupLayout(polarizationParam);
+        polarizationParam.setLayout(polarizationParamLayout);
+        polarizationParamLayout.setHorizontalGroup(
+            polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationParamLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(polarizationCalcBox, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29))
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(polminvaluelabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polmaxvaluelabel, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPolCheckBoxSpread)
+                        .addGap(18, 18, 18)))
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(polarizationCalcStart)
+                        .addGap(31, 31, 31)
+                        .addComponent(polarizationCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(polProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(jPolAngleLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polAngleValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polAngleValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addComponent(jPolEnergyLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polEnergyValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polEnergyValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+        polarizationParamLayout.setVerticalGroup(
+            polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationParamLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(polarizationCalcBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(polarizationCalcStart)
+                    .addComponent(polarizationCalcSave)
+                    .addComponent(jPolAngleLabel)
+                    .addComponent(polAngleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(polAngleValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(polminvaluelabel)
+                            .addComponent(polminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polminvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polmaxvaluelabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polmaxvalueunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPolCheckBoxSpread, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+                        .addGap(8, 8, 8))
+                    .addGroup(polarizationParamLayout.createSequentialGroup()
+                        .addGroup(polarizationParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(polEnergyValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polEnergyValueUnitLable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPolEnergyLabel))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+
+        polarizationCalcGraph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Polarization parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        polarizationCalcGraph.setPreferredSize(new java.awt.Dimension(639, 215));
+        polarizationCalcGraph.setRequestFocusEnabled(false);
+
+        javax.swing.GroupLayout polarizationCalcGraphLayout = new javax.swing.GroupLayout(polarizationCalcGraph);
+        polarizationCalcGraph.setLayout(polarizationCalcGraphLayout);
+        polarizationCalcGraphLayout.setHorizontalGroup(
+            polarizationCalcGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        polarizationCalcGraphLayout.setVerticalGroup(
+            polarizationCalcGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 213, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout polarizationCalcLayout = new javax.swing.GroupLayout(polarizationCalc.getContentPane());
+        polarizationCalc.getContentPane().setLayout(polarizationCalcLayout);
+        polarizationCalcLayout.setHorizontalGroup(
+            polarizationCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(polarizationParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(polarizationCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+        );
+        polarizationCalcLayout.setVerticalGroup(
+            polarizationCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationCalcLayout.createSequentialGroup()
+                .addComponent(polarizationParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(polarizationCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+        );
+
+        rayProgressFrame.setTitle("Ray generation progress");
+        rayProgressFrame.setAlwaysOnTop(true);
+        rayProgressFrame.setMinimumSize(new java.awt.Dimension(400, 100));
+        rayProgressFrame.setResizable(false);
 
         jRayStopButton.setText("Stop");
         jRayStopButton.setToolTipText("");
+        jRayStopButton.setEnabled(false);
         jRayStopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRayStopButtonActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout ProgressFrameLayout = new javax.swing.GroupLayout(ProgressFrame.getContentPane());
-        ProgressFrame.getContentPane().setLayout(ProgressFrameLayout);
-        ProgressFrameLayout.setHorizontalGroup(
-            ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ProgressFrameLayout.createSequentialGroup()
+        jLabelPartialFlux.setText("Flux: ");
+
+        javax.swing.GroupLayout rayProgressFrameLayout = new javax.swing.GroupLayout(rayProgressFrame.getContentPane());
+        rayProgressFrame.getContentPane().setLayout(rayProgressFrameLayout);
+        rayProgressFrameLayout.setHorizontalGroup(
+            rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rayProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                .addGroup(rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabelPartialFlux, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jRayStopButton)
                 .addGap(21, 21, 21))
         );
-        ProgressFrameLayout.setVerticalGroup(
-            ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ProgressFrameLayout.createSequentialGroup()
+        rayProgressFrameLayout.setVerticalGroup(
+            rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(rayProgressFrameLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(ProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(rayProgressFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jRayProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jRayStopButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addComponent(jLabelPartialFlux)
+                .addContainerGap())
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -829,7 +1201,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     .addComponent(ebetayunitlabel)))
         );
 
-        jPanel_ph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Laser bunch parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        jPanel_ph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Laser pulse parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel_ph.setToolTipText("Input parameters of the laser bunch");
         jPanel_ph.setPreferredSize(new java.awt.Dimension(223, 350));
 
@@ -887,7 +1259,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("5.4");
+        pulserelvalue.setText("2.7");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);
@@ -1389,6 +1761,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuCalc.add(jMenuItemGeometricFactor);
 
+        jMenuItemPolarization.setText("Polarization...");
+        jMenuItemPolarization.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemPolarizationActionPerformed(evt);
+            }
+        });
+        jMenuCalc.add(jMenuItemPolarization);
+
         jMenuBarMain.add(jMenuCalc);
 
         jMenuShadow.setText("Shadow");
@@ -1409,11 +1789,70 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuShadow.add(jMenuItemSourceParam);
 
+        jMenuPolarization.setText("Polarization...");
+
+        buttonGroupPolarization.add(jRadioButtonMenuItemUnPolarized);
+        jRadioButtonMenuItemUnPolarized.setSelected(true);
+        jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
+        jRadioButtonMenuItemUnPolarized.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuItemUnPolarizedItemStateChanged(evt);
+            }
+        });
+        jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
+
+        buttonGroupPolarization.add(jRadioButtonMenuItemSPolarized);
+        jRadioButtonMenuItemSPolarized.setText("S-polarized");
+        jRadioButtonMenuItemSPolarized.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuItemSPolarizedItemStateChanged(evt);
+            }
+        });
+        jMenuPolarization.add(jRadioButtonMenuItemSPolarized);
+
+        buttonGroupPolarization.add(jRadioButtonMenuItemPPolarized);
+        jRadioButtonMenuItemPPolarized.setText("P-polarized");
+        jRadioButtonMenuItemPPolarized.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuItemPPolarizedItemStateChanged(evt);
+            }
+        });
+        jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
+
+        buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
+        jRadioButtonMenuItemAutoPolarized.setText("Automatic");
+        jRadioButtonMenuItemAutoPolarized.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuItemAutoPolarizedItemStateChanged(evt);
+            }
+        });
+        jMenuPolarization.add(jRadioButtonMenuItemAutoPolarized);
+
+        jMenuShadow.add(jMenuPolarization);
+        jMenuShadow.add(jSeparator3);
+
+        jMenuItemConv.setText("Converter...");
+        jMenuItemConv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemConvActionPerformed(evt);
+            }
+        });
+        jMenuShadow.add(jMenuItemConv);
+
         jMenuBarMain.add(jMenuShadow);
 
         jMenuOptions.setText("Options");
 
-        jMenuItemSize.setText("Graph parameters...");
+        jMenuItemLaserPolarization.setText("Laser polarization...");
+        jMenuItemLaserPolarization.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemLaserPolarizationActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jMenuItemLaserPolarization);
+        jMenuOptions.add(jSeparator5);
+
+        jMenuItemSize.setText("Graphical parameters...");
         jMenuItemSize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSizeActionPerformed(evt);
@@ -1439,6 +1878,39 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuOptions.add(jCheckBoxMenuItemSpread);
+        jMenuOptions.add(jSeparator4);
+
+        jMenuSkin.setText("Look&Feel...");
+
+        buttonGroupSkin.add(jRadioButtonMenuDefault);
+        jRadioButtonMenuDefault.setText("Default");
+        jRadioButtonMenuDefault.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuDefaultItemStateChanged(evt);
+            }
+        });
+        jMenuSkin.add(jRadioButtonMenuDefault);
+
+        buttonGroupSkin.add(jRadioButtonMenuSystem);
+        jRadioButtonMenuSystem.setText("System");
+        jRadioButtonMenuSystem.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuSystemItemStateChanged(evt);
+            }
+        });
+        jMenuSkin.add(jRadioButtonMenuSystem);
+
+        buttonGroupSkin.add(jRadioButtonMenuNimbus);
+        jRadioButtonMenuNimbus.setSelected(true);
+        jRadioButtonMenuNimbus.setText("Nimbus");
+        jRadioButtonMenuNimbus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jRadioButtonMenuNimbusItemStateChanged(evt);
+            }
+        });
+        jMenuSkin.add(jRadioButtonMenuNimbus);
+
+        jMenuOptions.add(jMenuSkin);
 
         jMenuBarMain.add(jMenuOptions);
 
@@ -1483,94 +1955,145 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    ElectronBunch ebunch;
-    LaserPulse lpulse;
-    ThompsonSource tsource;
-    
+    private ElectronBunch ebunch;
+    private LaserPulse lpulse;
+    private ThompsonSource tsource, tsourceRayClone = null;
+
     /**
      * Parameters for the calculation boxes
-     */ 
+     */
     class CalcBoxParam {
-        
-        public String [] valueUnitLabels, comboBoxValues, plotLabels; 
-        public String [] minValues, maxValues;
-        public int selectedItemIndex=0, selectedItemIndexClone=0, size;
-        public int numberOfItems=7;
-        public double minValue=0, maxValue=35, minValueClone=0, maxValueClone=35, step, offset, umax, umin;
-        public double [] conversionValues;
-        public ElectronBunch ebunchclone;
-        public LaserPulse lpulseclone;
+
+        public final static double MIN_DIF = 1e-10;
+        public String[] valueUnitLabels, plotLabels;
+        public String[] minValues, maxValues;
+        public int selectedItemIndex, selectedItemIndexClone;
+        public int numberOfItems;
+        public double minValue, maxValue = 35, minValueClone, maxValueClone;
+        public double[] conversionValues;
         public ThompsonSource tsourceclone;
-        public double [] data;
-        public boolean espread=false;
-        public boolean working=false;
+        public boolean espread = false;
+        public boolean working = false;
         public SwingWorker<Void, Void> worker;
         public String savetext;
-        private String key;
-        
-        public CalcBoxParam (String key) {
+        final private String[] keys;
+        public LinearChartParam chartParam;
+        public ChartPanel chartPanel = null;
+        public JFreeChart chart = null;
+        double angle = 0, angleclone, energy = 44, energyclone;
+        private File file = null;
+
+        public CalcBoxParam(String[] keys) {
             super();
-            this.key=key;
+            this.keys = keys;
+            this.chartParam = new LinearChartParam();
         }
-        
-        public void initialize () {
-            size=xsize;
+
+        public void initialize() {
+            working = true;
             try {
-                tsourceclone=(ThompsonSource)tsource.clone();
+                tsourceclone = (ThompsonSource) tsource.clone();
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
-            ebunchclone=tsourceclone.getElectronBunch();
-            lpulseclone=tsourceclone.getLaserPulse();
-            tsourceclone.eSpread=espread;
-            minValueClone=minValue;
-            maxValueClone=maxValue;
-            selectedItemIndexClone=selectedItemIndex;
-            step=(maxValue-minValue)/(size-1);
-            offset=minValue;   
-            data=new double[size];  
+            tsourceclone.seteSpread(espread);
+            minValueClone = minValue;
+            maxValueClone = maxValue;
+            angleclone = angle;
+            energyclone = energy;
+            selectedItemIndexClone = selectedItemIndex;
         }
-        
+        /*
+         * Saving the results into the text file
+         */
+
         public void save() {
-            JFileChooser fo=new JFileChooser ();
+            JFileChooser fo = new JFileChooser(file);
             fo.setDialogTitle(savetext);
-            int ans=fo.showSaveDialog(null);
-            if (ans==JFileChooser.APPROVE_OPTION) { 
-                File file=fo.getSelectedFile();
-                if (file.exists ()) {
-                    int n=JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
-                                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if (n==JOptionPane.NO_OPTION) {
+            int ans = fo.showSaveDialog(null);
+            if (ans == JFileChooser.APPROVE_OPTION) {
+                file = fo.getSelectedFile();
+                if (file.exists()) {
+                    int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if (n == JOptionPane.NO_OPTION) {
                         return;
                     }
                 }
                 Formatter fm;
-                try (PrintWriter pw=new PrintWriter(new FileWriter(file, false))) { 
-                    for (int i=0; i<size; i++) {
-                        fm=new Formatter();
-                        fm.format("%f %f", new Double(i*step+offset), new Double(data[i]));
-                        pw.println(fm); 
+                try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+                    int nc = chartParam.getData().length;
+                    for (int i = 0; i < chartParam.getSize(); i++) {
+                        fm = new Formatter();
+                        fm.format("%f", i * chartParam.getStep() + chartParam.getOffset());
+                        for (double[] data : chartParam.getData()) {
+                            fm.format(" %f", data[i]);
+                        }
+                        pw.println(fm);
                     }
                     pw.close();
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
-                                JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
+        /*
+         * Updatin or creating chart and chartpanel
+         */
+
+        public void updateGraph(JPanel panel, String label) {
+            if (chartPanel == null) {
+                /**
+                 * Creating chart and plot dataset
+                 */
+                chart = createLineChart(createLineDataset(chartParam, keys), plotLabels[selectedItemIndexClone], label);
+                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
+                        chartParam.getUMax() + MIN_DIF);
+                chart.fireChartChanged();
+                /**
+                 * Creation of the ChartPanel
+                 */
+                chartPanel = new ChartPanel(chart,
+                        (int) (panel.getWidth()), (int) panel.getHeight(), 0, 0,
+                        (int) (10 * panel.getWidth()), (int) (10 * panel.getHeight()),
+                        false, true, true, true, true, true);
+                panel.setLayout(new BorderLayout(10, 10));
+                panel.add(chartPanel, BorderLayout.CENTER);
+                panel.revalidate();
+                panel.repaint();
+            } else {
+                chart.getXYPlot().getDomainAxis().setRange(minValueClone, maxValueClone);
+                chart.getXYPlot().getDomainAxis().setLabel(plotLabels[selectedItemIndexClone]);
+                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
+                        chartParam.getUMax() + MIN_DIF);
+                chart.fireChartChanged();
+            }
+            working = false;
+        }
+        /*
+         * Canceling worker
+         */
+
+        public void cancel() {
+            working = false;
+            worker.cancel(true);
+        }
     }
-    
+
     /**
      * Object for the color charts
      */
-    
     class ColorChart {
+
         private final JFreeChart chart;
         private final JFreeChart colorbarchart;
         private final ChartPanel chartpanel;
 
         /**
-         * Creating a color chart with a colorbar and and attaching it to a JPanel
+         * Creating a color chart with a colorbar and and attaching it to a
+         * JPanel
+         *
          * @param data
          * @param xlabel
          * @param ylabel
@@ -1578,150 +2101,159 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * @param jPanel
          * @param fraction
          */
-        ColorChart (ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
-            this.chart=createChart(createDataset(data, slider), data, xlabel, ylabel);
-            this.chartpanel = new ChartPanel(chart, 
-                (int) (fraction*jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
-                (int) (10*jPanel.getWidth()), (int) (10*jPanel.getHeight()),
-                false, true, true, true, true, true);   
-            this.colorbarchart=createColorBar(data, colorBarlabel);
-            JPanel fluxcolorbarpanel=new ChartPanel(colorbarchart,
-                (int) ((1-fraction)*jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
-                (int) (10*jPanel.getWidth()), (int) (10*jPanel.getHeight()),
-                false, true, true, true, true, true);      
+        ColorChart(ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
+            this.chart = createChart(createDataset(data, slider), data, xlabel, ylabel);
+            this.chartpanel = new ChartPanel(chart,
+                    (int) (fraction * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
+                    (int) (10 * jPanel.getWidth()), (int) (10 * jPanel.getHeight()),
+                    false, true, true, true, true, true);
+            this.colorbarchart = createColorBar(data, colorBarlabel);
+            JPanel fluxcolorbarpanel = new ChartPanel(colorbarchart,
+                    (int) ((1 - fraction) * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
+                    (int) (10 * jPanel.getWidth()), (int) (10 * jPanel.getHeight()),
+                    false, true, true, true, true, true);
             jPanel.setLayout(new BorderLayout(10, 10));
             jPanel.add(chartpanel, BorderLayout.CENTER);
-            jPanel.add(fluxcolorbarpanel,BorderLayout.LINE_END);        
+            jPanel.add(fluxcolorbarpanel, BorderLayout.LINE_END);
             jPanel.revalidate();
-            jPanel.repaint(); 
+            jPanel.repaint();
         }
+
         /**
          * Updating the chart and colorbar
-         * @param data 
+         *
+         * @param data
          */
-        void fullupdate (ChartParam data) {
-            chart.getXYPlot().getDomainAxis().setRangeAboutValue(data.getxoffset(), data.getxsize()*data.getxstep());
-            chart.getXYPlot().getRangeAxis().setRangeAboutValue(data.getyoffset(), data.getysize()*data.getystep());
+        void fullupdate(ChartParam data) {
+            chart.getXYPlot().getDomainAxis().setRangeAboutValue(data.getxoffset(), data.getxsize() * data.getxstep());
+            chart.getXYPlot().getRangeAxis().setRangeAboutValue(data.getyoffset(), data.getysize() * data.getystep());
             PaintScale scale = new JetPaintScale(0, data.getumax());
-            XYBlockRenderer renderer=((XYBlockRenderer)chart.getXYPlot().getRenderer());
+            XYBlockRenderer renderer = ((XYBlockRenderer) chart.getXYPlot().getRenderer());
             renderer.setBlockHeight(data.getystep());
             renderer.setBlockWidth(data.getxstep());
             renderer.setPaintScale(scale);
             chart.fireChartChanged();
-                
+
             colorbarchart.getXYPlot().getRangeAxis().setRange(0.0, data.getumax());
-            renderer=((XYBlockRenderer)colorbarchart.getXYPlot().getRenderer());
+            renderer = ((XYBlockRenderer) colorbarchart.getXYPlot().getRenderer());
             renderer.setPaintScale(scale);
-            renderer.setBlockHeight(data.getumax()/(data.getxsize()-1));
+            renderer.setBlockHeight(data.getumax() / (data.getxsize() - 1));
             colorbarchart.fireChartChanged();
-        }  
-        
-        void update () {
+        }
+
+        void update() {
             chart.fireChartChanged();
             colorbarchart.fireChartChanged();
         }
-        
+
         JFreeChart getchart() {
             return chart;
         }
-        
+
         ChartPanel getchartpanel() {
             return chartpanel;
         }
-        
+
         JFreeChart getcolorbarchart() {
             return colorbarchart;
         }
     }
-    
+
     /**
      * Main program parameters
      */
-    private int xsize, ysize, sliderposition=50; /* The size of the graph in x or y direction */
-    private double xstep, ystep, estep, hoffset=0; /* Step in x or y direction */
-    private int numberOfRays=1000; /* Number of rays exported for Shadow */
-    
-    private ChartParam fluxdata, fluxcrossdata, xenergydata;
-    private JFreeChart xenergycrosschart=null, BrilCalcChart, GFCalcChart;
-    private ChartPanel BrilCalc=null, GFCalc=null;
-    
+    private int xsize, ysize, sliderposition = 50; /* The size of the graph in x or y direction */
+
+    private double xstep, ystep, estep, hoffset = 0; /* Step in x or y direction */
+
+    private int numberOfRays = 1000; /* Number of rays exported for Shadow */
+
+    private final ChartParam fluxdata, fluxcrossdata, xenergydata;
+    private final LinearChartParam xenergycrossdata;
+    private JFreeChart xenergycrosschart = null;
+
     private final TitledBorder xrayenergyborder;
-    private final String [] paramNames;
-    
-    private CalcBoxParam BrilForm, GFForm;
+    private final String[] paramNames;
+
+    private final CalcBoxParam brilForm, gfForm, polForm;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
-    private boolean working=false, rayWorking=false;
-    public SwingWorker<Void, Void> mainWorker, rayWorker;
-    
-    
+    private boolean working = false, rayWorking = false;
+    private SwingWorker<Void, Void> mainWorker, rayWorker;
+    private Map<JTextField, String> oldStrings;
+    JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
+            gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
+            yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box;
+
+    private File bFile = null, pFile = null;
+
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(MyTextUtilities.TestValue(0, 100, energyvalue, "51.2")/0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(MyTextUtilities.TestValue(0, 10, phenergyvalue, "1.1")*1.6e-19);   
+        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
     }//GEN-LAST:event_phenergyvalueActionPerformed
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(MyTextUtilities.TestValue(0, 100, energyvalue, "51.2")/0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(MyTextUtilities.TestValue(0, 10, phenergyvalue, "1.1")*1.6e-19);     
+        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
     }//GEN-LAST:event_phenergyvalueFocusLost
 
     private void chargevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargevalueActionPerformed
         // TODO add your handling code here:
-        ebunch.number=MyTextUtilities.TestValue(0, 10, chargevalue, "1")/1.6e-10;
+        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9);
     }//GEN-LAST:event_chargevalueActionPerformed
 
     private void chargevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_chargevalueFocusLost
         // TODO add your handling code here:
-        ebunch.number=MyTextUtilities.TestValue(0, 10, chargevalue, "1")/1.6e-10;
+        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9);
     }//GEN-LAST:event_chargevalueFocusLost
 
     private void spreadvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spreadvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.delgamma=MyTextUtilities.TestValue(0.0001, 0.1, spreadvalue, "0.01");
+        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings));
     }//GEN-LAST:event_spreadvalueActionPerformed
 
     private void spreadvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spreadvalueFocusLost
         // TODO add your handling code here:
-        ebunch.delgamma=MyTextUtilities.TestValue(0.0001, 0.1, spreadvalue, "0.01");
+        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings));
     }//GEN-LAST:event_spreadvalueFocusLost
 
     private void elengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elengthvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.length=MyTextUtilities.TestValue(0, 1000, elengthvalue, "30")*3e-4/2;
+        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_elengthvalueActionPerformed
 
     private void elengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_elengthvalueFocusLost
         // TODO add your handling code here:
-        ebunch.length=MyTextUtilities.TestValue(0, 1000, elengthvalue, "30")*3e-4/2;
+        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_elengthvalueFocusLost
 
     private void pulseenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(MyTextUtilities.TestValue(0, 1000, pulseenergyvalue, "20")*1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueActionPerformed
 
     private void pulseenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(MyTextUtilities.TestValue(0, 1000, pulseenergyvalue, "20")*1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueFocusLost
 
     private void pulselengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulselengthvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.length=MyTextUtilities.TestValue(0, 1000, pulselengthvalue, "30")*3e-4/2;
+        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_pulselengthvalueActionPerformed
 
     private void pulselengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulselengthvalueFocusLost
         // TODO add your handling code here:
-        lpulse.length=MyTextUtilities.TestValue(0, 1000, pulselengthvalue, "30")*3e-4/2;
+        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_pulselengthvalueFocusLost
 
     private void startbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startbuttonActionPerformed
@@ -1734,62 +2266,72 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         MainProgressBar.setStringPainted(true);
         jSlider_pickup.setEnabled(false);
         startbutton.setText("Stop ");
-        working=true;
-        
-        mainWorker=new SwingWorker<Void, Void> () {
+        working = true;
+
+        mainWorker = new SwingWorker<Void, Void>() {
             @Override
-            protected Void doInBackground() throws Exception { 
+            protected Void doInBackground() throws Exception {
                 try {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
-                    setStatusBar((int)100/3);
+                    setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
-                    setStatusBar((int)100*2/3);
-                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);  
-                    setStatusBar((int)100);
+                    setStatusBar((int) 100 * 2 / 4);
+                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
+                    setStatusBar((int) 100 * 3 / 4);
+                    xenergycrossdata.setup(xenergydata.getudata(),
+                            (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                            false, ysize, ystep, -ystep * ysize / 2);
+                    setStatusBar((int) 100);
                 } catch (InterruptedException e) {
-                    
+
                 }
                 return null;
             }
+
             @Override
             protected void done() {
-                double plotwidth=0;
-                if (!isCancelled()||fluxChart!=null) {
-                   
-                    if (fluxChart!=null) {
+                double plotwidth = 0;
+                //Checking if there are any errors in the worker thread
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
+                if (!isCancelled() || fluxChart != null) {
+                    //Creating or updating charts
+                    if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
                     } else {
-                        fluxChart=new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
+                        fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
                                 jPanel_xflux_left, 0.75, true);
                     }
-         
-                    if (fluxCrossChart!=null) {
-                                fluxCrossChart.fullupdate(fluxcrossdata);
+                    if (fluxCrossChart != null) {
+                        fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
-                        fluxCrossChart=new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
+                        fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
                                 "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
                     }
-        
-                    if (xEnergyChart!=null) {
+                    if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
                     } else {
-                        xEnergyChart=new ColorChart(xenergydata, "theta_x, mrad", "theta_y, mrad", "kev", jPanel_xenergy_left, 0.75, true);
+                        xEnergyChart = new ColorChart(xenergydata, "theta_x, mrad", "theta_y, mrad", "kev", jPanel_xenergy_left, 0.75, true);
                     }
-        
-                    if (xenergycrosschart!=null) {
-                        xenergycrosschart.getXYPlot().getDomainAxis().
-                                    setRange(xenergydata.getudata()[(int)(xenergydata.getxsize()-1)*sliderposition/100][0],
-                                            xenergydata.getudata()[(int)(xenergydata.getxsize()-1)*sliderposition/100][xenergydata.getxsize()/2]);
-                        xenergycrosschart.fireChartChanged(); 
+                    if (xenergycrosschart != null) {
+                        xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
+                        xenergycrosschart.getXYPlot().getDomainAxis().setRangeAboutValue(xenergycrossdata.getOffset()
+                                + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
+                        xenergycrosschart.fireChartChanged();
                     } else {
-                        xenergycrosschart=createLineChart(createLineDataset(xenergydata), "Energy, keV", "theta_y, mrad");
-                        ChartPanel chartpanel = new ChartPanel(xenergycrosschart, 
+                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata, new String[]{"Energy cross section"}), "theta_y, mrad", "Energy, keV");
+                        ChartPanel chartpanel = new ChartPanel(xenergycrosschart,
                                 (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
-                                (int) (10*jPanel_xenergy_right.getWidth()), (int) (10*jPanel_xenergy_right.getHeight()),
-                                false, true, true, true, true, true);    
-                        jPanel_xenergy_right.setLayout(new BorderLayout(10,10));
+                                (int) (10 * jPanel_xenergy_right.getWidth()), (int) (10 * jPanel_xenergy_right.getHeight()),
+                                false, true, true, true, true, true);
+                        jPanel_xenergy_right.setLayout(new BorderLayout(10, 10));
                         jPanel_xenergy_right.add(chartpanel, BorderLayout.CENTER);
                         jPanel_xenergy_right.revalidate();
                         jPanel_xenergy_right.repaint();
@@ -1798,54 +2340,55 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     fluxChart.getchartpanel().repaint();
                     plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
                             getPlotInfo().getDataArea().getWidth();
-                    xrayenergyborder.setTitle("X-ray photon energy"+". Max: "+(new DecimalFormat("########.##")).format(xenergydata.getumax())+" keV");
-                    totalFluxLabel.setText("Total flux: "+
-                            (new DecimalFormat("########.##")).format(tsource.totalFlux*tsource.geometricFactor*1e-15)+
-                            "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                    xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
+                    totalFluxLabel.setText("Total flux: "
+                            + (new DecimalFormat("########.##")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
-                if (plotwidth!=0){
-                    jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth,
-                                (int)jSlider_pickup.getSize().getHeight()));
+                if (plotwidth != 0) {
+                    jSlider_pickup.setPreferredSize(new Dimension((int) plotwidth,
+                            (int) jSlider_pickup.getSize().getHeight()));
                 }
-                working=false;
+                working = false;
             }
 
             /**
              * Updating progress bar
-             * @param status 
+             *
+             * @param status
              */
-             public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(()->MainProgressBar.setValue(status));
+            public void setStatusBar(final int status) {
+                SwingUtilities.invokeLater(() -> MainProgressBar.setValue(status));
             }
         };
-       mainWorker.execute();      
+        mainWorker.execute();
     }//GEN-LAST:event_startbuttonActionPerformed
 
     private void eemitvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitvalueFocusLost
         // TODO add your handling code here:
-        ebunch.eps=MyTextUtilities.TestValue(0.1, 100, eemitvalue, "5")*1e-6;
+        ebunch.setEps(TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitvalueFocusLost
 
     private void eemitvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.eps=MyTextUtilities.TestValue(0.1, 100, eemitvalue, "5")*1e-6;
+        ebunch.setEps(TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitvalueActionPerformed
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betax=MyTextUtilities.TestValue(1, 100, ebetaxvalue, "10")*1e-3;
+        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betax=MyTextUtilities.TestValue(1, 100, ebetaxvalue, "10")*1e-3;
+        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
         // TODO add your handling code here:
-        JSlider source = (JSlider)evt.getSource();   
+        JSlider source = (JSlider) evt.getSource();
         if (!source.getValueIsAdjusting()) {
             if (working) {
                 return;
@@ -1853,314 +2396,374 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             MainProgressBar.setValue(0);
             MainProgressBar.setStringPainted(true);
             startbutton.setText("Stop");
-            working=true;
-        
-            sliderposition = (int)source.getValue();
-            hoffset=xsize*xstep*(sliderposition-50)/100;
-            mainWorker=new SwingWorker<Void, Void> () {
+            working = true;
+
+            sliderposition = (int) source.getValue();
+            hoffset = xsize * xstep * (sliderposition - 50) / 100;
+            mainWorker = new SwingWorker<Void, Void>() {
                 @Override
-                protected Void doInBackground() throws Exception { 
+                protected Void doInBackground() throws Exception {
                     try {
-                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)*1e3, 0.0);
-                        setStatusBar((int)100);
+                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
+                        setStatusBar((int) 100);
+                        xenergycrossdata.setup(xenergydata.getudata(), (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                                false, ysize, ystep, -ystep * ysize / 2);
                     } catch (InterruptedException e) {
-                      
+
                     }
                     return null;
                 }
+
                 @Override
                 protected void done() {
-                    if (fluxChart!=null) {
+                    //Checking if there are any errors in the worker thread
+                    try {
+                        get();
+                    } catch (ExecutionException ex) {
+                        Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException | CancellationException ex) {
+
+                    }
+                    if (fluxChart != null) {
                         fluxChart.update();
                     }
-                        
-                    if (fluxCrossChart!=null) {     
+                    //Updating charts
+                    if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
-                    } 
-            
-                    if (xEnergyChart!=null) {
-                        xEnergyChart.update(); 
                     }
-            
-                    if (xenergycrosschart!=null) {
-                        int sliderindex=(int)(xenergydata.getxsize()-1)*sliderposition/100;
-                        xenergycrosschart.getXYPlot().getDomainAxis().
-                            setRange(xenergydata.getudata()[sliderindex][0],
-                                    xenergydata.getudata()[sliderindex][xenergydata.getxsize()/2]);
-                        xenergycrosschart.fireChartChanged(); 
+                    if (xEnergyChart != null) {
+                        xEnergyChart.update();
+                    }
+                    if (xenergycrosschart != null) {
+                        xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
+                        xenergycrosschart.fireChartChanged();
                     }
                     startbutton.setText("Start");
-                    working=false;
+                    working = false;
                 }
+
                 /**
-                * Updating progress bar
-                * @param status 
-                */
+                 * Updating progress bar
+                 *
+                 * @param status
+                 */
                 public void setStatusBar(final int status) {
-                    SwingUtilities.invokeLater(new Runnable(){
-                        @Override
-                        public void run() {
-                            MainProgressBar.setValue(status);
-                        }
-                    });
+                    SwingUtilities.invokeLater(() -> MainProgressBar.setValue(status));
                 }
             };
-            mainWorker.execute();       
+            mainWorker.execute();
         }
     }//GEN-LAST:event_jSlider_pickupStateChanged
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.rlength=MyTextUtilities.TestValue(1, 100, pulserelvalue, "2.7")*1e-3;
+        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.rlength=MyTextUtilities.TestValue(1, 100, pulserelvalue, "2.7")*1e-3;
+        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.fq=MyTextUtilities.TestValue(1, 1000, pulsefreqvalue, "79")*1e6;
+        lpulse.setFq(TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6);
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.fq=MyTextUtilities.TestValue(1, 1000, pulsefreqvalue, "79")*1e6;
+        lpulse.setFq(TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6);
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
         // TODO add your handling code here:
-        lpulse.delay=MyTextUtilities.TestValue(0, 1000, pulsedelayvalue, "0")*3e-4;
+        lpulse.setDelay(TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4);
     }//GEN-LAST:event_pulsedelayvalueFocusLost
 
     private void pulsedelayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsedelayvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.delay=MyTextUtilities.TestValue(0, 1000, pulsedelayvalue, "0")*3e-4;
+        lpulse.setDelay(TestValueWithMemory(0, 1000, pulsedelayvalue, "0", oldStrings) * 3e-4);
     }//GEN-LAST:event_pulsedelayvalueActionPerformed
 
     private void eshiftxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(0, MyTextUtilities.TestValue(0, 1, eshiftxvalue, "0")*1e-3);
+        ebunch.getShift().set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueFocusLost
 
     private void eshiftxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(0, MyTextUtilities.TestValue(0, 1, eshiftxvalue, "0")*1e-3);
+        ebunch.getShift().set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftxvalueActionPerformed
 
     private void eshiftyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(1, MyTextUtilities.TestValue(0, 1, eshiftyvalue, "0")*1e-3);
+        ebunch.getShift().set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueFocusLost
 
     private void eshiftyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(1, MyTextUtilities.TestValue(0, 1, eshiftyvalue, "0")*1e-3);
+        ebunch.getShift().set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftyvalueActionPerformed
 
     private void eshiftzvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftzvalueFocusLost
         // TODO add your handling code here:
-        ebunch.shift.set(2, MyTextUtilities.TestValue(0, 1000, eshiftzvalue, "0")*1e-3);
+        ebunch.getShift().set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftzvalueFocusLost
 
     private void eshiftzvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftzvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.shift.set(2, MyTextUtilities.TestValue(0, 1000, eshiftzvalue, "0")*1e-3);
+        ebunch.getShift().set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
     }//GEN-LAST:event_eshiftzvalueActionPerformed
 
     private void pulseanglevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseanglevalueFocusLost
         // TODO add your handling code here:
-        Double value=MyTextUtilities.TestValue(0, 300, pulseanglevalue, "0")*1e-3;
-        lpulse.direction.set(2, Math.cos(value));
-        lpulse.direction.set(1, Math.sin(value));
+        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        lpulse.getDirection().set(2, Math.cos(value));
+        lpulse.getDirection().set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueFocusLost
 
     private void pulseanglevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseanglevalueActionPerformed
         // TODO add your handling code here:
-        Double value=MyTextUtilities.TestValue(0, 300, pulseanglevalue, "0")*1e-3;
-        lpulse.direction.set(2, Math.cos(value));
-        lpulse.direction.set(1, Math.sin(value));
+        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        lpulse.getDirection().set(2, Math.cos(value));
+        lpulse.getDirection().set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueActionPerformed
 
     private void jMenuItemBrillianceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceActionPerformed
         // TODO add your handling code here:  
-        BrillianceCalc.setVisible(true);
+        brillianceCalc.setVisible(true);
     }//GEN-LAST:event_jMenuItemBrillianceActionPerformed
 
     private void BrillianceCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcStartActionPerformed
-        // TODO add your handling code here:
+        // Brilliance box calculations
         // Checking if already running
-        if (BrilForm.working) { 
-            BrilForm.working=false;
-            BrilForm.worker.cancel(false);
+        if (brilForm.working) {
+            brilForm.cancel();
             BrillianceCalcStart.setText("Calculate");
             BrillianceCalcSave.setEnabled(true);
             return;
         }
         BrilProgressBar.setValue(0);
         BrilProgressBar.setStringPainted(true);
-        BrilForm.working=true;
         BrillianceCalcStart.setText("Terminate");
         BrillianceCalcSave.setEnabled(false);
-        
-        BrilForm.initialize();
-          
+        brilForm.initialize();
+
         /**
          * Calculating data array. Using SwingWorker class
-         */ 
-        BrilForm.worker=new SwingWorker<Void, Void> () {
+         */
+        brilForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                double x, e, an;
-                an=0;
-                e=xenergydata.func(an*1e3, 0.0)*1.6e-16;
-                for (int j=0; j<BrilForm.size; j++) {
-                    if (isCancelled()) {
+                double step = (brilForm.maxValueClone - brilForm.minValueClone) / (xsize - 1);
+                double offset = brilForm.minValueClone;
+                List<Function<Double, Double>> func = new ArrayList<>();
+                switch (brilForm.selectedItemIndexClone) {
+                    case 0:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                            brilForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                    }
-                    x=(BrilForm.offset+BrilForm.step*j)*BrilForm.conversionValues[BrilForm.selectedItemIndexClone];  
-                    switch (BrilForm.selectedItemIndexClone) {
-                        case 0: 
-                            BrilForm.lpulseclone.direction.set(2,Math.cos(x));
-                            BrilForm.lpulseclone.direction.set(1,Math.sin(x));
+                    case 1:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getLaserPulse().setDelay(x);
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 1: 
-                            BrilForm.lpulseclone.delay=x;
+                    case 2:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getElectronBunch().getShift().set(2, x);
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 2: 
-                            BrilForm.ebunchclone.shift.set(2,x);
+                    case 3:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getElectronBunch().setBetax(x);
+                            brilForm.tsourceclone.getElectronBunch().setBetay(x);
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 3: 
-                            BrilForm.ebunchclone.betax=x;
-                            BrilForm.ebunchclone.betay=x;
+                    case 4:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getElectronBunch().setEps(x);
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 4: 
-                            BrilForm.ebunchclone.eps=x;
+                    case 5:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getLaserPulse().setRlength(x);
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 5: 
-                            BrilForm.lpulseclone.rlength=x;
+                    case 6:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getLaserPulse().setWidth(x);
+                            brilForm.tsourceclone.getElectronBunch().setxWidth(x);
+                            brilForm.tsourceclone.getElectronBunch().setyWidth(x);
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 6: 
-                            BrilForm.lpulseclone.setWidth(x);
-                            BrilForm.ebunchclone.setxWidth(x);
-                            BrilForm.ebunchclone.setyWidth(x);
+                    case 7:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
+                            double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.getElectronBunch().setDelgamma(x);
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 7:
-                            BrilForm.ebunchclone.delgamma=x;
+                    case 8:
+                        func.add(xp -> {
+                            double ang = brilForm.angleclone * 1e-3;
+                            double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e) * 1e-15 * 1e-13;
+                        });
                         break;
-                        case 8:
-                            e=x;
-                        break; 
-                        case 9:
-                            an=0.16*Math.PI/180;
-                            e=x;
-                        break; 
-                        case 10:
-                            an=0.32*Math.PI/180;
-                            e=x;
-                        break; 
-                        }
-                    BrilForm.tsourceclone.calculateTotalFlux();
-                    BrilForm.data[j]=BrilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double []{0.0, 0.0, 0.0}),
-                            new BasicVector(new double []{an, 0.0, Math.sqrt(1.0-an*an)}), new BasicVector(new double []{0.0, 0.0, 1.0}),
-                                    e)*1e-15*1e-13;
-                    setStatusBar((int)100*(j+1)/BrilForm.size);
-                } 
-                BrilForm.umax=(new BasicVector (BrilForm.data)).max();
-                BrilForm.umin=(new BasicVector (BrilForm.data)).min();
-                return null;  
-            } 
-            
+                    case 9:
+                        func.add(xp -> {
+                            double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
+                            double e = brilForm.energyclone * ElectronBunch.E * 1e3;
+                            brilForm.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                }
+                brilForm.chartParam.setup(func, xsize, step, offset);
+                return null;
+            }
+
             @Override
             protected void done() {
-                
-                if (BrilCalc==null) {
-                    /**
-                    * Creating plot dataset
-                    */
-                    XYDataset plotdataset = createLineDataset2(BrilForm);
-                            
-                    /**
-                    * Creating chart
-                    */
-                    BrilCalcChart=createLineChart(plotdataset, BrilForm.plotLabels[BrilForm.selectedItemIndexClone],
-                            "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u00B3");
-                    
-                    /**
-                    * Creation of the ChartPanel
-                    */
-                    BrilCalc = new ChartPanel(BrilCalcChart, 
-                        (int) (BrillianceCalcGraph.getWidth()), (int) BrillianceCalcGraph.getHeight(), 0, 0,
-                        (int) (10*BrillianceCalcGraph.getWidth()), (int) (10*BrillianceCalcGraph.getHeight()),
-                        false, true, true, true, true, true);    
-                    BrillianceCalcGraph.setLayout(new BorderLayout(10,10));
-                    BrillianceCalcGraph.add(BrilCalc,BorderLayout.CENTER);
-                    BrillianceCalcGraph.revalidate();
-                    BrillianceCalcGraph.repaint();
-                } else {
-                    BrilCalcChart.getXYPlot().getDomainAxis().setRange(BrilForm.minValueClone, BrilForm.maxValueClone);
-                    BrilCalcChart.getXYPlot().getDomainAxis().setLabel(BrilForm.plotLabels[BrilForm.selectedItemIndexClone]);
-                    BrilCalcChart.getXYPlot().getRangeAxis().setRange(BrilForm.umin, BrilForm.umax);
-                    BrilCalcChart.getXYPlot().getDomainAxis().setLabel(BrilForm.plotLabels[BrilForm.selectedItemIndexClone]);
-                    BrilCalcChart.fireChartChanged(); 
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
                 }
-            BrilForm.working=false;
-            BrillianceCalcStart.setText("Calculate");
-            BrillianceCalcSave.setEnabled(true);
+                brilForm.updateGraph(BrillianceCalcGraph,
+                        "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u00B3");
+                BrillianceCalcStart.setText("Calculate");
+                BrillianceCalcSave.setEnabled(true);
             }
+
             /**
              * Updating progress bar
-             * @param status 
+             *
+             * @param status
              */
-             public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(()->BrilProgressBar.setValue(status));
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> BrilProgressBar.setValue((int) Math.round(100 * status)));
             }
         };
-     BrilForm.worker.execute();    
+        brilForm.worker.execute();
     }//GEN-LAST:event_BrillianceCalcStartActionPerformed
 
     private void BrillianceCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcSaveActionPerformed
-        // TODO add your handling code here:
-        if (BrilCalc!=null) {
-            BrilForm.save();
+        // Saving the brilliance plot data
+        if (brilForm.chartPanel != null) {
+            brilForm.save();
         }
     }//GEN-LAST:event_BrillianceCalcSaveActionPerformed
 
     private void BrillianceCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcBoxActionPerformed
-        // TODO add your handling code here:
-        String selectedItem=(String)BrillianceCalcBox.getSelectedItem();
-        for (int i=0; i<BrilForm.numberOfItems; i++) {
-            if (selectedItem.equals(BrilForm.comboBoxValues[i])) {
-                BrilForm.selectedItemIndex=i;
-            }
+        // Update boxes, labels and other items when parameters selection is performed
+        int sInd = BrillianceCalcBox.getSelectedIndex();
+        brilForm.selectedItemIndex = sInd;
+        Brilminvalueunitlabel.setText(brilForm.valueUnitLabels[sInd]);
+        Brilmaxvalueunitlabel.setText(brilForm.valueUnitLabels[sInd]);
+        Brilminvalue.setText(brilForm.minValues[sInd]);
+        Brilmaxvalue.setText(brilForm.maxValues[sInd]);
+        brilForm.minValue = Float.parseFloat(Brilminvalue.getText());
+        brilForm.maxValue = Float.parseFloat(Brilmaxvalue.getText());
+        if (sInd == 9) {
+            angleValue.setEnabled(false);
+            energyValue.setEnabled(true);
+        } else {
+            angleValue.setEnabled(true);
+            energyValue.setEnabled(false);
         }
-        Brilminvalueunitlabel.setText(BrilForm.valueUnitLabels[BrilForm.selectedItemIndex]);
-        Brilmaxvalueunitlabel.setText(BrilForm.valueUnitLabels[BrilForm.selectedItemIndex]); 
-        Brilminvalue.setText(BrilForm.minValues[BrilForm.selectedItemIndex]);
-        Brilmaxvalue.setText(BrilForm.maxValues[BrilForm.selectedItemIndex]); 
-        BrilForm.minValue=Float.parseFloat(Brilminvalue.getText());
-        BrilForm.maxValue=Float.parseFloat(Brilmaxvalue.getText());
     }//GEN-LAST:event_BrillianceCalcBoxActionPerformed
 
     private void BrilmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilmaxvalueActionPerformed
         // TODO add your handling code here:
-        BrilForm.maxValue=MyTextUtilities.TestValue(0, 1000, Brilmaxvalue, BrilForm.maxValues[BrilForm.selectedItemIndex]);
+        brilForm.maxValue = TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueActionPerformed
 
     private void BrilminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilminvalueActionPerformed
         // TODO add your handling code here:
-        BrilForm.minValue=MyTextUtilities.TestValue(0, 1000, Brilminvalue, BrilForm.minValues[BrilForm.selectedItemIndex]);
+        brilForm.minValue = TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueActionPerformed
 
     private void BrilminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilminvalueFocusLost
         // TODO add your handling code here:
-        BrilForm.minValue=MyTextUtilities.TestValue(0, 1000, Brilminvalue, BrilForm.minValues[BrilForm.selectedItemIndex]);
+        brilForm.minValue = TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueFocusLost
 
     private void BrilmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilmaxvalueFocusLost
         // TODO add your handling code here:
-        BrilForm.maxValue=MyTextUtilities.TestValue(0, 1000, Brilmaxvalue, BrilForm.maxValues[BrilForm.selectedItemIndex]);
+        brilForm.maxValue = TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueFocusLost
 
     private void jMenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExitActionPerformed
@@ -2170,542 +2773,821 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemGeometricFactorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGeometricFactorActionPerformed
         // TODO add your handling code here:
-        GfCalc.setVisible(true);
+        gfCalc.setVisible(true);
     }//GEN-LAST:event_jMenuItemGeometricFactorActionPerformed
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(null, 
-                "<html>Thompson source parameter calculation. <br>Version: 0.7 <br>Date: February 2014. <br>Author: Ruslan Feshchenko</html>",
-                "About TSource", 1);
+        // Extracting the build date from the MANIFEST.MF file
+        Package pk = Package.getPackage("thomsonsource");
+        Date dt = new Date();
+        DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Enumeration<URL> mfs = this.getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (mfs.hasMoreElements()) {
+                Manifest mft = new Manifest(mfs.nextElement().openStream());
+                if (mft.getMainAttributes().getValue("Built-Date") != null) {
+                    dt = dtf.parse(mft.getMainAttributes().getValue("Built-Date"));
+                    break;
+                }
+            }
+        } catch (IOException | ParseException ex) {
+            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Extracting vendor and version from the MANIFEST.MF file and showing up About popup window
+        JOptionPane.showMessageDialog(null,
+                "<html>" + pk.getImplementationTitle()
+                + "<br>Version: " + pk.getImplementationVersion()
+                + "<br>Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
+                + "<br>Author: " + pk.getImplementationVendor()
+                + "</html>",
+                "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
-        // TODO add your handling code here:
-        JFileChooser fo=new JFileChooser ();
+        // Saving the LEXG parameters into a file
+        JFileChooser fo = new JFileChooser(pFile);
         fo.setDialogTitle("Choose file to save Thompson source parameters");
-        int ans=fo.showSaveDialog(this);
-        if (ans==JFileChooser.APPROVE_OPTION) { 
-            File file=fo.getSelectedFile();
-            if (file.exists ()) {
-                    int n=JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
-                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if (n==JOptionPane.NO_OPTION) {
-                        return;
-                    }
+        int ans = fo.showSaveDialog(this);
+        if (ans == JFileChooser.APPROVE_OPTION) {
+            pFile = fo.getSelectedFile();
+            if (pFile.exists()) {
+                int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (n == JOptionPane.NO_OPTION) {
+                    return;
+                }
             }
-            Formatter fm;
-            try (PrintWriter pw=new PrintWriter(new FileWriter(file, false))){  
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[0]+": ", ebunch.getGamma()*0.512);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[1]+": ", ebunch.number*1.6e-10);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[2]+": ", ebunch.delgamma);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[3]+": ", ebunch.length*2/3e-4);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[4]+": ", ebunch.eps*1e6);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[5]+": ", ebunch.betax*1e3);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[6]+": ", ebunch.betay*1e3);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[7]+": ", lpulse.getPhotonEnergy()/1.6e-19);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[8]+": ", lpulse.getPulseEnergy()*1e3);
-                    pw.println(fm); 
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[9]+": ", lpulse.length*2/3e-4);
-                    pw.println(fm); 
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[10]+": ", lpulse.rlength*1e3);
-                    pw.println(fm); 
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[11]+": ", lpulse.fq*1e-6);
-                    pw.println(fm); 
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[12]+": ", lpulse.delay/3e-4);
-                    pw.println(fm); 
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[13]+": ", ebunch.shift.get(0)*1e3);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[14]+": ", ebunch.shift.get(1)*1e3);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[15]+": ", ebunch.shift.get(2)*1e3);
-                    pw.println(fm);
-                    fm=new Formatter();
-                    fm.format("%s %.2f", paramNames[16]+": ", Math.acos(lpulse.direction.get(2))*1e3);
-                    pw.println(fm); 
-                    pw.close();
+            //Creating Properties object to store program parameters
+            Properties prop = new Properties();
+            try (FileWriter fw = new FileWriter(pFile, false)) {
+                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.512));
+                prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * ElectronBunch.E * 1e9));
+                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
+                prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[4], Double.toString(ebunch.getEps() * 1e6));
+                prop.setProperty(paramNames[5], Double.toString(ebunch.getBetax() * 1e3));
+                prop.setProperty(paramNames[6], Double.toString(ebunch.getBetay() * 1e3));
+                prop.setProperty(paramNames[7], Double.toString(lpulse.getPhotonEnergy() / ElectronBunch.E));
+                prop.setProperty(paramNames[8], Double.toString(lpulse.getPulseEnergy() * 1e3));
+                prop.setProperty(paramNames[9], Double.toString(lpulse.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[10], Double.toString(lpulse.getRlength() * 1e3));
+                prop.setProperty(paramNames[11], Double.toString(lpulse.getFq() * 1e-6));
+                prop.setProperty(paramNames[12], Double.toString(lpulse.getDelay() / 3e-4));
+                prop.setProperty(paramNames[13], Double.toString(ebunch.getShift().get(0) * 1e3));
+                prop.setProperty(paramNames[14], Double.toString(ebunch.getShift().get(1) * 1e3));
+                prop.setProperty(paramNames[15], Double.toString(ebunch.getShift().get(2) * 1e3));
+                prop.setProperty(paramNames[16], pulseanglevalue.getText());
+                prop.store(fw, "Thomson source parameters");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jMenuItemSaveParamActionPerformed
 
     private void jMenuItemLoadParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadParamActionPerformed
-        // TODO add your handling code here:
-        JFileChooser fo=new JFileChooser ();
+        // Loading LEXG parameters from a file
+        JFileChooser fo = new JFileChooser();
         fo.setDialogTitle("Choose file to load Thompson source parameters from");
-        int ans=fo.showOpenDialog(this);
-        if (ans==JFileChooser.APPROVE_OPTION) {
-            File file=fo.getSelectedFile();
-            ArrayList<String> inputList=new ArrayList<>();
-            try (BufferedReader pr=new BufferedReader(new FileReader(file))) { 
-                String ts;
-                do {
-                   ts=pr.readLine(); 
-                   if (ts!=null) inputList.add(ts);
-                } while (ts!=null);
-                pr.close();           
+        int ans = fo.showOpenDialog(this);
+        if (ans == JFileChooser.APPROVE_OPTION) {
+            pFile = fo.getSelectedFile();
+            Properties prop = new Properties();
+            try (FileReader fr = new FileReader(pFile)) {
+                prop.load(fr);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error while reading from the file", "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
-            Iterator<String> itt=inputList.iterator();
-            while (itt.hasNext()) {
-                String ts=itt.next();
-                try {
-                    for (int i=0; i<paramNames.length; i++) {
-                        if (ts.contains(paramNames[i])) {
-                            String tss=ts.substring(ts.indexOf(':')+1);
-                            switch (i) {
-                                case 0: ebunch.setGamma(Float.parseFloat(tss)/0.512);
-                                        energyvalue.setText(tss);
-                                        break;
-                                case 1: ebunch.number=Float.parseFloat(tss)/1.6e-19;
-                                        chargevalue.setText(tss);
-                                        break;
-                                case 2: ebunch.delgamma=Float.parseFloat(tss);
-                                        spreadvalue.setText(tss);
-                                        break;
-                                case 3: ebunch.length=Float.parseFloat(tss)*3e-4/2;
-                                        elengthvalue.setText(tss);
-                                        break;
-                                case 4: ebunch.eps=Float.parseFloat(tss)*1e-6;
-                                        eemitvalue.setText(tss);
-                                        break;
-                                case 5: ebunch.betax=Float.parseFloat(tss)*1e-3;
-                                        ebetaxvalue.setText(tss);
-                                        break;
-                                case 6: ebunch.betay=Float.parseFloat(tss)*1e-3;
-                                        ebetayvalue.setText(tss);
-                                        break;
-                                case 7: lpulse.setPhotonEnergy(Float.parseFloat(tss)*1.6e-19);
-                                        phenergyvalue.setText(tss);
-                                        break;
-                                case 8: lpulse.setPulseEnergy(Float.parseFloat(tss)*1e-3);
-                                        pulseenergyvalue.setText(tss);
-                                        break;
-                                case 9: lpulse.length=Float.parseFloat(tss)*3e-4/2;
-                                        pulselengthvalue.setText(tss);
-                                        break;
-                                case 10:lpulse.rlength=Float.parseFloat(tss)*1e-3;
-                                        pulserelvalue.setText(tss);
-                                        break;
-                                case 11:lpulse.fq=Float.parseFloat(tss)*1e6;
-                                        pulsefreqvalue.setText(tss);
-                                        break;
-                                case 12:lpulse.delay=Float.parseFloat(tss)*3e-4;
-                                        pulsedelayvalue.setText(tss);
-                                        break;
-                                case 13:ebunch.shift.set(0, Float.parseFloat(tss)*1e-3);
-                                        eshiftxvalue.setText(tss);
-                                        break;
-                                case 14:ebunch.shift.set(1, Float.parseFloat(tss)*1e-3);
-                                        eshiftyvalue.setText(tss);
-                                        break;
-                                case 15:ebunch.shift.set(2, Float.parseFloat(tss)*1e-3);
-                                        eshiftzvalue.setText(tss);
-                                        break;
-                                case 16:lpulse.direction.set(2, Math.cos(Float.parseFloat(tss)*1e-3));
-                                        lpulse.direction.set(1, Math.sin(Float.parseFloat(tss)*1e-3));
-                                        pulseanglevalue.setText(tss);
-                                        break;
-                            }
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Error while reading from the file", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }   
+            try {
+                ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+                energyvalue.setText(prop.getProperty(paramNames[0], "0"));
+                ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
+                chargevalue.setText(prop.getProperty(paramNames[1], "0"));
+                ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
+                spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
+                ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
+                elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
+                ebunch.setEps(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
+                eemitvalue.setText(prop.getProperty(paramNames[4], "0"));
+                ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[5], "0")) * 1e-3);
+                ebetaxvalue.setText(prop.getProperty(paramNames[5], "0"));
+                ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
+                ebetayvalue.setText(prop.getProperty(paramNames[6], "0"));
+                lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * ElectronBunch.E);
+                phenergyvalue.setText(prop.getProperty(paramNames[7], "0"));
+                lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * 1e-3);
+                pulseenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
+                lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[9], "0")) / 2 * 3e-4);
+                pulselengthvalue.setText(prop.getProperty(paramNames[9], "0"));
+                lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) * 1e-3);
+                pulserelvalue.setText(prop.getProperty(paramNames[10], "0"));
+                lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e6);
+                pulsefreqvalue.setText(prop.getProperty(paramNames[11], "0"));
+                lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 3e-4);
+                pulsedelayvalue.setText(prop.getProperty(paramNames[12], "0"));
+                ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 1e-3);
+                eshiftxvalue.setText(prop.getProperty(paramNames[13], "0"));
+                ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+                eshiftyvalue.setText(prop.getProperty(paramNames[14], "0"));
+                ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+                eshiftzvalue.setText(prop.getProperty(paramNames[15], "0"));
+                lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
+                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
+                pulseanglevalue.setText(prop.getProperty(paramNames[16], "0"));
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed
 
     private void jMenuItemSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceActionPerformed
         // TODO add your handling code here:
-        final int number=numberOfRays;
         if (rayWorking) {
-            ProgressFrame.setVisible(true);
+            rayProgressFrame.setVisible(true);
             return;
         }
-        
-        ProgressFrame.setVisible(true);
-        rayWorking=true;
-        rayWorker=new SwingWorker<Void, Void> () {
+        jRayProgressBar.setStringPainted(true);
+        jRayProgressBar.setValue(0);
+        jRayStopButton.setEnabled(true);
+        try {
+            tsourceRayClone = (ThompsonSource) tsource.clone();
+        } catch (CloneNotSupportedException ex) {
+
+        }
+        final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());
+        tsourceRayClone.calculateTotalFlux();
+        rayWorking = true;
+        rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                ShadowFiles shadowFile=new ShadowFiles(true, false, ThompsonSource.NUMBER_OF_COLUMNS, number);
-                for (int i=0; i<number; i++) {
-                    if (isCancelled()) {
-                        break;
+                // Creating a pool of threads, a lock, an atomic interger and a latch
+                ExecutorService excs = Executors.newFixedThreadPool(tsource.getThreadNumber());
+                CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
+                AtomicInteger counter = new AtomicInteger();
+                // Open a file for rays
+                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
+                    bFile = shadowFile.getFile();
+                    for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
+                        if (isCancelled()) {
+                            break;
+                        }
+                        //Creating multiple threads to accelerate calculations
+                        excs.execute(() -> {
+                            for (int i = 0; i < rayNumber / tsourceRayClone.getThreadNumber(); i++) {
+                                try {
+                                    //Getting a ray
+                                    double[] ray = tsourceRayClone.getRay();
+                                    //Units conversions
+                                    ray[0] *= 1e2;
+                                    ray[1] *= 1e2;
+                                    ray[2] *= 1e2;
+                                    ray[10] *= 1e-2 / LaserPulse.HC;
+                                    ray[11] = i;
+                                    shadowFile.write(ray);
+                                    setStatusBar((int) 100 * (counter.incrementAndGet() + 1) / rayNumber);
+                                } catch (IOException | InterruptedException ex) {
+                                    break;
+                                }
+                            }
+                            lt.countDown();
+                        });
                     }
-                    //Getting a ray
-                    double [] ray=tsource.getRay();
-                    //Units conversions
-                    ray[0]=1e2*ray[0];
-                    ray[1]=1e2*ray[1];
-                    ray[2]=1e2*ray[2];
-                    ray[10]=1e-2*ray[10]/3.201e-26;
-                    shadowFile.write(ray);
-                    setStatusBar((int)100*i/number);
+                    lt.await();
+                } catch (InterruptedException ex) {
+                    excs.shutdownNow();
+                    throw ex;
                 }
-                shadowFile.close(); 
+                excs.shutdownNow();
                 return null;
             }
-                    
+
             @Override
             protected void done() {
-                ProgressFrame.setVisible(false);
-                rayWorking=false;
+                jRayStopButton.setEnabled(false);
+                int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
+                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
+                        / cn * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
-                     get();
-                } catch (InterruptedException e) {
-                            
+                    get();
+                } catch (InterruptedException | CancellationException e) {
+                    /* If the thread is interrupted or cancelled */
+
                 } catch (ExecutionException e) {
+                    /* If an exception is thrown during execution */
                     if (e.getCause() instanceof IOException) {
-                            JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
-                                        JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else if (e.getCause() instanceof IllegalFormatException) {
+                        JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
+
+                    } else {
+
                     }
-                    if (e.getCause() instanceof IllegalFormatException) {
-                            JOptionPane.showMessageDialog(null, "Format error while writing to the file", "Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                    }   
-                    if (e.getCause() instanceof ShadowFiles.FileNotOpenedException) {
-                            JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                    }   
-                    if (e.getCause() instanceof Exception) {
-                        
-                    }
-                } catch (CancellationException e) {
-                        
                 }
-                    
+                rayWorking = false;
             }
-                /**
-                * Updating progress bar
-                 * @param status 
-                */
+
+            /**
+             * Updating progress bar
+             *
+             * @param status
+             */
             public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(()->jRayProgressBar.setValue(status));
+                SwingUtilities.invokeLater(() -> {
+                    if (status != jRayProgressBar.getValue()) {
+                        jRayProgressBar.setValue(status);
+                    }
+                });
             }
         };
+        rayProgressFrame.setVisible(true);
         rayWorker.execute();
     }//GEN-LAST:event_jMenuItemSourceActionPerformed
 
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
-        // TODO add your handling code here:
-        JTextField xsizebox = new JTextField();
-        JTextField ysizebox = new JTextField();
-        JTextField xrangebox = new JTextField();
-        JTextField yrangebox = new JTextField();
-        JTextField xenergyrangebox = new JTextField();
-        xsizebox.setText("200");
-        ysizebox.setText("200");
-        xrangebox.setText("20");
-        yrangebox.setText("20");
-        xenergyrangebox.setText("2000");
+        // Obtaining display parameters
         Object[] message = {
-                        "x-size:", xsizebox,
-                        "y-size:", ysizebox,
-                        "x-range (mrad):", xrangebox,
-                        "y-range (mrad):", yrangebox,
-                        "xenergy-range (eV):", xenergyrangebox
+            "x-size:", xSizeBox,
+            "y-size:", ySizeBox,
+            "x-range (mrad):", xRangeBox,
+            "y-range (mrad):", yRangeBox,
+            "xenergy-range (eV):", xEnergyRangeBox
         };
-        int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, message, "Graphical parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            xsize=Integer.parseInt(xsizebox.getText());
-            ysize=Integer.parseInt(ysizebox.getText());
-            xstep=Float.parseFloat(xrangebox.getText())/xsize;
-            ystep=Float.parseFloat(yrangebox.getText())/ysize;
-            estep=Float.parseFloat(xenergyrangebox.getText())/xsize;
+            xsize = (int) xSizeBox.getValue();
+            ysize = (int) ySizeBox.getValue();
+            xstep = (double) xRangeBox.getValue() / xsize;
+            ystep = (double) yRangeBox.getValue() / ysize;
+            estep = (double) xEnergyRangeBox.getValue() / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
     private void GFCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFCalcBoxActionPerformed
         // TODO add your handling code here:
-        String selectedItem=(String)GFCalcBox.getSelectedItem();
-        for (int i=0; i<GFForm.numberOfItems; i++) {
-            if (selectedItem.equals(GFForm.comboBoxValues[i])) {
-                GFForm.selectedItemIndex=i;
-            }
-        }
-        GFminvalueunitlabel.setText(GFForm.valueUnitLabels[GFForm.selectedItemIndex]);
-        GFmaxvalueunitlabel.setText(GFForm.valueUnitLabels[GFForm.selectedItemIndex]); 
-        GFminvalue.setText(GFForm.minValues[GFForm.selectedItemIndex]);
-        GFmaxvalue.setText(GFForm.maxValues[GFForm.selectedItemIndex]); 
-        GFForm.minValue=Float.parseFloat(GFminvalue.getText());
-        GFForm.maxValue=Float.parseFloat(GFmaxvalue.getText());
+        int sInd = GFCalcBox.getSelectedIndex();
+        gfForm.selectedItemIndex = sInd;
+        GFminvalueunitlabel.setText(gfForm.valueUnitLabels[sInd]);
+        GFmaxvalueunitlabel.setText(gfForm.valueUnitLabels[sInd]);
+        GFminvalue.setText(gfForm.minValues[sInd]);
+        GFmaxvalue.setText(gfForm.maxValues[sInd]);
+        gfForm.minValue = Float.parseFloat(GFminvalue.getText());
+        gfForm.maxValue = Float.parseFloat(GFmaxvalue.getText());
     }//GEN-LAST:event_GFCalcBoxActionPerformed
 
     private void GFCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFCalcStartActionPerformed
         // TODO add your handling code here:
         // Checking if already running
-        if (GFForm.working) { 
-            GFForm.working=false;
-            GFForm.worker.cancel(false);
+        if (gfForm.working) {
+            gfForm.cancel();
             GFCalcStart.setText("Calculate");
             GFCalcSave.setEnabled(true);
             return;
         }
         GFProgressBar.setValue(0);
         GFProgressBar.setStringPainted(true);
-        GFForm.working=true;
         GFCalcStart.setText("Terminate");
         GFCalcSave.setEnabled(false);
-        
-        GFForm.initialize();
-          
+        gfForm.initialize();
         /**
          * Calculating data array. Using SwingWorker class
          */
-        GFForm.worker=new SwingWorker<Void, Void> () {
+        gfForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                double x;
-                
-                for (int j=0; j<GFForm.size; j++) {
-                    if (isCancelled()) {
-                        break;
+                final double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
+                final double offset = gfForm.minValueClone;
+                List<Function<Double, Double>> func = new ArrayList<>();
+                func.add(xp -> {
+                    double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                    switch (gfForm.selectedItemIndexClone) {
+                        case 0:
+                            gfForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                            gfForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                            break;
+                        case 1:
+                            gfForm.tsourceclone.getLaserPulse().setDelay(x);
+                            break;
+                        case 2:
+                            gfForm.tsourceclone.getElectronBunch().getShift().set(2, x);
+                            break;
+                        case 3:
+                            gfForm.tsourceclone.getElectronBunch().setBetax(x);
+                            gfForm.tsourceclone.getElectronBunch().setBetay(x);
+                            break;
+                        case 4:
+                            gfForm.tsourceclone.getElectronBunch().setEps(x);
+                            break;
+                        case 5:
+                            gfForm.tsourceclone.getLaserPulse().setRlength(x);
+                            break;
+                        case 6:
+                            gfForm.tsourceclone.getLaserPulse().setWidth(x);
+                            gfForm.tsourceclone.getElectronBunch().setxWidth(x);
+                            gfForm.tsourceclone.getElectronBunch().setyWidth(x);
+                            break;
                     }
-                    x=(GFForm.offset+GFForm.step*j)*GFForm.conversionValues[GFForm.selectedItemIndexClone];  
-                    switch (GFForm.selectedItemIndexClone) {
-                        case 0: 
-                            GFForm.lpulseclone.direction.set(2,Math.cos(x));
-                            GFForm.lpulseclone.direction.set(1,Math.sin(x));
-                        break;
-                        case 1: 
-                            GFForm.lpulseclone.delay=x;
-                        break;
-                        case 2: 
-                            GFForm.ebunchclone.shift.set(2,x);
-                        break;
-                        case 3: 
-                            GFForm.ebunchclone.betax=x;
-                            GFForm.ebunchclone.betay=x;
-                        break;
-                        case 4: 
-                            GFForm.ebunchclone.eps=x;
-                        break;
-                        case 5: 
-                            GFForm.lpulseclone.rlength=x;
-                        break;
-                        case 6: 
-                            GFForm.lpulseclone.setWidth(x);
-                            GFForm.ebunchclone.setxWidth(x);
-                            GFForm.ebunchclone.setyWidth(x);
-                        break;
-                    }
-                    GFForm.tsourceclone.calculateTotalFlux();
-                    GFForm.tsourceclone.calculateGeometricFactor();
-                    GFForm.data[j]=GFForm.tsourceclone.geometricFactor;  
-                    setStatusBar((int)100*(j+1)/GFForm.size);
-                } 
-                GFForm.umax=(new BasicVector (GFForm.data)).max();
-                GFForm.umin=(new BasicVector (GFForm.data)).min();
-                return null;  
-            } 
-            
+                    gfForm.tsourceclone.calculateGeometricFactor();
+                    setStatusBar((xp - offset) / step / (xsize - 1));
+                    return gfForm.tsourceclone.getGeometricFactor();
+                });
+                gfForm.chartParam.setup(func, xsize, step, offset);
+                return null;
+            }
+
             @Override
             protected void done() {
-                
-                if (GFCalc==null) {
-                    /**
-                    * Creating plot dataset
-                    */
-                    XYDataset plotdataset = createLineDataset2(GFForm);
-                    
-                    /**
-                    * Creating chart
-                    */
-                    GFCalcChart=createLineChart(plotdataset, GFForm.plotLabels[GFForm.selectedItemIndexClone], "");
-                    
-                    /**
-                    * Creation of the ChartPanel
-                    */
-                    GFCalc = new ChartPanel(GFCalcChart, 
-                        (int) (GFCalcGraph.getWidth()), (int) GFCalcGraph.getHeight(), 0, 0,
-                        (int) (10*GFCalcGraph.getWidth()), (int) (10*GFCalcGraph.getHeight()),
-                        false, true, true, true, true, true);    
-                    GFCalcGraph.setLayout(new BorderLayout(10,10));
-                    GFCalcGraph.add(GFCalc,BorderLayout.CENTER);
-                    GFCalcGraph.revalidate();
-                    GFCalcGraph.repaint();
-                } else {
-                    GFCalcChart.getXYPlot().getDomainAxis().setRange(GFForm.minValueClone, GFForm.maxValueClone);
-                    GFCalcChart.getXYPlot().getDomainAxis().setLabel(GFForm.plotLabels[GFForm.selectedItemIndexClone]);
-                    GFCalcChart.getXYPlot().getRangeAxis().setRange(GFForm.umin, GFForm.umax);
-                    GFCalcChart.getXYPlot().getDomainAxis().setLabel(GFForm.plotLabels[GFForm.selectedItemIndexClone]);
-                    GFCalcChart.fireChartChanged(); 
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
                 }
-            GFForm.working=false; 
-            GFCalcStart.setText("Calculate");
-            GFCalcSave.setEnabled(true);
+                gfForm.updateGraph(GFCalcGraph, "");
+                GFCalcStart.setText("Calculate");
+                GFCalcSave.setEnabled(true);
             }
+
             /**
              * Updating progress bar
-             * @param status 
+             *
+             * @param status
              */
-            public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(()->GFProgressBar.setValue(status));
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> GFProgressBar.setValue((int) Math.round(100 * status)));
             }
         };
-        GFForm.worker.execute();           
+        gfForm.worker.execute();
     }//GEN-LAST:event_GFCalcStartActionPerformed
 
     private void GFCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFCalcSaveActionPerformed
         // TODO add your handling code here:
-        if (GFCalc!=null) {
-            GFForm.save();
+        if (gfForm.chartPanel != null) {
+            gfForm.save();
         }
     }//GEN-LAST:event_GFCalcSaveActionPerformed
 
     private void GFminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFminvalueFocusLost
         // TODO add your handling code here:
-        GFForm.minValue=MyTextUtilities.TestValue(0, 1000, GFminvalue, GFForm.minValues[GFForm.selectedItemIndex]);
+        gfForm.minValue = TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueFocusLost
 
     private void GFminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFminvalueActionPerformed
         // TODO add your handling code here:
-        GFForm.minValue=MyTextUtilities.TestValue(0, 1000, GFminvalue, GFForm.minValues[GFForm.selectedItemIndex]);
+        gfForm.minValue = TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueActionPerformed
 
     private void GFmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFmaxvalueFocusLost
         // TODO add your handling code here:
-        GFForm.maxValue=MyTextUtilities.TestValue(0, 1000, GFmaxvalue, GFForm.maxValues[GFForm.selectedItemIndex]);
+        gfForm.maxValue = TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueFocusLost
 
     private void GFmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFmaxvalueActionPerformed
         // TODO add your handling code here:
-        GFForm.maxValue=MyTextUtilities.TestValue(0, 1000, GFmaxvalue, GFForm.maxValues[GFForm.selectedItemIndex]);
+        gfForm.maxValue = TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueActionPerformed
 
     private void jCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadActionPerformed
-        // TODO add your handling code here:
-        BrilForm.espread=jCheckBoxSpread.isSelected();
+        // Cheking spread check box
+        brilForm.espread = jCheckBoxSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxSpreadActionPerformed
 
     private void HelpItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HelpItemActionPerformed
-        // TODO add your handling code here:
-        File file=new File("help.html");
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(null, "The help file does not exist!", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            return;
-        } 
-        JTextPane textArea=new JTextPane();
+        // Displaying help
+        JTextPane textArea = new JTextPane();
+        //Reading the HTML help file
         try {
-            textArea.setPage(file.toURI().toURL());
+            textArea.setPage(ThomsonJFrame.class.
+                    getResource("/thomsonsourcehelp/thomsonsourcehelp.html"));
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error in the help file!", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "The help file does not exist!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
-        textArea.setPreferredSize(new Dimension(600, 400)); 
+        textArea.setPreferredSize(new Dimension(600, 400));
         textArea.setEditable(false);
-        
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.getViewport().add(textArea, BorderLayout.CENTER);
         Object[] message = {
-                        "Program description", scrollPane
+            "Program description", scrollPane
         };
         JOptionPane.showMessageDialog(null, message, "Help", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_HelpItemActionPerformed
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.betay=MyTextUtilities.TestValue(1, 100, ebetayvalue, "10")*1e-3;
+        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.betay=MyTextUtilities.TestValue(1, 100, ebetayvalue, "10")*1e-3;
+        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
-        // TODO add your handling code here:
-        JTextField gfmontecarlonumberbox = new JTextField();
-        gfmontecarlonumberbox.setText("5000000");
-        JTextField brilPrecisionBox = new JTextField();
-        brilPrecisionBox.setText("0.0001");
+        // Dispalying a window to enter numerical parameters
         Object[] message = {
-                        "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfmontecarlonumberbox,
-                        "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox
+            "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
+            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", brilPrecisionBox,
+            "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.npGeometricFactor=(int)Math.round(MyTextUtilities.TestValue(1, 1e7, gfmontecarlonumberbox, "5000000"));
-            tsource.precision=MyTextUtilities.TestValue(1e-6, 1e-2, brilPrecisionBox, "0.0001");
+            tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
+            tsource.setPrecision((double) brilPrecisionBox.getValue());
+            tsource.setThreadNumber((int) threadsNumberBox.getValue());
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
     private void jMenuItemSourceParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSourceParamActionPerformed
         // TODO add your handling code here:
-        JTextField rayNumberBox = new JTextField();
-        rayNumberBox.setText("1000");
-        JTextField rayXAngleRangeBox = new JTextField();
-        rayXAngleRangeBox.setText("5");
-        JTextField rayYAngleRangeBox = new JTextField();
-        rayYAngleRangeBox.setText("5");
         Object[] message = {
-                        "Numner of rays:", rayNumberBox,
-                        "X-range, mrad", rayXAngleRangeBox,
-                        "Y-range, mrad", rayYAngleRangeBox
+            "Numner of rays:", rayNumberBox,
+            "X-range, mrad", rayXAngleRangeBox,
+            "Y-range, mrad", rayYAngleRangeBox,
+            "Minimal energy, kev", rayMinEnergyBox,
+            "Energy range, kev", rayEnergyRangeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            numberOfRays=(int)Math.round(MyTextUtilities.TestValue(1, 1e6, rayNumberBox, "1000"));
-            tsource.setAngleRange(MyTextUtilities.TestValue(0, 30, rayXAngleRangeBox, "5")*1e-3, 
-                    MyTextUtilities.TestValue(0, 30, rayYAngleRangeBox, "5")*1e-3);
+            double eMin = (double) rayMinEnergyBox.getValue() * ElectronBunch.E * 1e3;
+            numberOfRays = (int) rayNumberBox.getValue();
+            tsource.setRayRanges((double) rayXAngleRangeBox.getValue() * 1e-3,
+                    (double) rayYAngleRangeBox.getValue() * 1e-3, eMin,
+                    eMin + (double) rayEnergyRangeBox.getValue() * ElectronBunch.E * 1e3);
         }
     }//GEN-LAST:event_jMenuItemSourceParamActionPerformed
 
     private void jCheckBoxMenuItemSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemSpreadActionPerformed
         // TODO add your handling code here:
-        tsource.eSpread=jCheckBoxMenuItemSpread.isSelected();
+        tsource.seteSpread(jCheckBoxMenuItemSpread.isSelected());
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
 
     private void jRayStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRayStopButtonActionPerformed
         // TODO add your handling code here:
-        rayWorker.cancel(false);
+        rayWorker.cancel(true);
     }//GEN-LAST:event_jRayStopButtonActionPerformed
 
     private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
         // TODO add your handling code here:
-        if (fluxChart!=null) {
+        if (fluxChart != null) {
             double plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
-                                getPlotInfo().getDataArea().getWidth();
-            if (plotwidth!=0){
-                jSlider_pickup.setPreferredSize(new Dimension((int)plotwidth,
-                                (int)jSlider_pickup.getSize().getHeight()));
+                    getPlotInfo().getDataArea().getWidth();
+            if (plotwidth != 0) {
+                jSlider_pickup.setPreferredSize(new Dimension((int) plotwidth,
+                        (int) jSlider_pickup.getSize().getHeight()));
             }
         }
     }//GEN-LAST:event_formMouseMoved
+
+    private void angleValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_angleValueFocusLost
+        // TODO add your handling code here:
+        brilForm.angle = TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
+    }//GEN-LAST:event_angleValueFocusLost
+
+    private void angleValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_angleValueActionPerformed
+        // TODO add your handling code here:
+        brilForm.angle = TestValueWithMemory(0, 100, angleValue, "0", oldStrings);
+    }//GEN-LAST:event_angleValueActionPerformed
+
+    private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
+        // TODO add your handling code here:
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+    }//GEN-LAST:event_energyValueFocusLost
+
+    private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
+        // TODO add your handling code here:
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+    }//GEN-LAST:event_energyValueActionPerformed
+
+    private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
+        try {
+            // TODO add your handling code here:
+            Runtime.getRuntime().exec("javaw.exe -jar lib\\ShadowFileConverter.jar");
+        } catch (IOException ex) {
+            Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItemConvActionPerformed
+
+    private void jRadioButtonMenuItemUnPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
+        // Selecting no polarization
+        pRadioButtons();
+    }//GEN-LAST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
+
+    private void jRadioButtonMenuItemSPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
+        // Selecting s-polarization
+        pRadioButtons();
+    }//GEN-LAST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
+
+    private void jRadioButtonMenuItemPPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+        // Selecting p-polarization
+        pRadioButtons();
+    }//GEN-LAST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+
+    private void jRadioButtonMenuDefaultItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuDefaultItemStateChanged
+        // Selecting default look&feel
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuDefaultItemStateChanged
+
+    private void jRadioButtonMenuSystemItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuSystemItemStateChanged
+        // Selecting system look&feel
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuSystemItemStateChanged
+
+    private void jRadioButtonMenuNimbusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuNimbusItemStateChanged
+        // Selecting nimbus look&feel
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            try {
+                UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jRadioButtonMenuNimbusItemStateChanged
+
+    private void jMenuItemLaserPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLaserPolarizationActionPerformed
+        // Setting up laser polarization state
+        String warning = "";
+        double p2;
+        JPanel panel = new JPanel();
+        panel.add(new JLabel(""));
+        ((JLabel) panel.getComponents()[0]).setForeground(Color.red);
+        Object[] message = {
+            "ksi1:", ksi1Box,
+            "ksi2:", ksi2Box,
+            "ksi3:", ksi3Box,
+            panel
+        };
+        int option;
+        do {
+            ((JLabel) panel.getComponents()[0]).setText(warning);
+            option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);
+            p2 = Math.pow((double) ksi1Box.getValue(), 2) + Math.pow((double) ksi2Box.getValue(), 2)
+                    + Math.pow((double) ksi3Box.getValue(), 2);
+            warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must be not exceed unity!" : "";
+        } while (p2 > 1 && option == JOptionPane.OK_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
+                    (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
+        }
+    }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
+
+    private void jRadioButtonMenuItemAutoPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
+        // Selecting automatic polarization
+        pRadioButtons();
+    }//GEN-LAST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
+
+    private void polarizationCalcBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcBoxActionPerformed
+        // Update boxes, labels and other items when parameters selection is performed
+        int sInd = polarizationCalcBox.getSelectedIndex();
+        polForm.selectedItemIndex = sInd;
+        polminvalueunitlabel.setText(polForm.valueUnitLabels[sInd]);
+        polmaxvalueunitlabel.setText(polForm.valueUnitLabels[sInd]);
+        polminvalue.setText(polForm.minValues[sInd]);
+        polmaxvalue.setText(polForm.maxValues[sInd]);
+        polForm.minValue = Float.parseFloat(polminvalue.getText());
+        polForm.maxValue = Float.parseFloat(polmaxvalue.getText());
+        if (sInd == 9) {
+            polAngleValue.setEnabled(false);
+            polEnergyValue.setEnabled(true);
+        } else {
+            polAngleValue.setEnabled(true);
+            polEnergyValue.setEnabled(false);
+        }
+    }//GEN-LAST:event_polarizationCalcBoxActionPerformed
+
+    private void polarizationCalcStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcStartActionPerformed
+        //Polarization box calculations
+        // Checking if already running
+        if (polForm.working) {
+            polForm.cancel();
+            polarizationCalcStart.setText("Calculate");
+            polarizationCalcSave.setEnabled(true);
+            return;
+        }
+        polProgressBar.setValue(0);
+        polProgressBar.setStringPainted(true);
+        polarizationCalcStart.setText("Terminate");
+        polarizationCalcSave.setEnabled(false);
+        polForm.initialize();
+
+        /**
+         * Calculating data array. Using SwingWorker class
+         */
+        polForm.worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
+                double offset = polForm.minValueClone;
+                //A list of functions calculating intensity and polarization
+                List<Function<Double, Double>> func = new ArrayList<>();
+                //A list of auxiliary functions
+                List<Function<double[], Double>> fn = new ArrayList<>();
+                fn.add(x -> {
+                    return x[1] / x[0];
+                });
+                fn.add(x -> {
+                    return x[2] / x[0];
+                });
+                fn.add(x -> {
+                    return x[3] / x[0];
+                });
+                fn.add(x -> {
+                    return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
+                            + (x[3] / x[0]) * (x[3] / x[0]));
+                });
+                double[] rescash = new double[]{1, 0, 0, 0};
+                double[] xpcash = new double[]{-1};
+                for (int i = 0; i < 4; i++) {
+                    int[] ia = new int[]{i};
+                    func.add(xp -> {
+                        double[] res;
+                        double ang, e, x;
+                        x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                        ang = polForm.angleclone * 1e-3;
+                        e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                        switch (polForm.selectedItemIndexClone) {
+                            case 0:
+                                polForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                                polForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                                break;
+                            case 1:
+                                polForm.tsourceclone.getLaserPulse().setDelay(x);
+                                break;
+                            case 2:
+                                polForm.tsourceclone.getElectronBunch().getShift().set(2, x);
+                                break;
+                            case 3:
+                                polForm.tsourceclone.getElectronBunch().setBetax(x);
+                                polForm.tsourceclone.getElectronBunch().setBetay(x);
+                                break;
+                            case 4:
+                                polForm.tsourceclone.getElectronBunch().setEps(x);
+                                break;
+                            case 5:
+                                polForm.tsourceclone.getLaserPulse().setRlength(x);
+                                break;
+                            case 6:
+                                polForm.tsourceclone.getLaserPulse().setWidth(x);
+                                polForm.tsourceclone.getElectronBunch().setxWidth(x);
+                                polForm.tsourceclone.getElectronBunch().setyWidth(x);
+                                break;
+                            case 7:
+                                polForm.tsourceclone.getElectronBunch().setDelgamma(x);
+                                break;
+                            case 8:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 9:
+                                ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                e = polForm.energyclone * ElectronBunch.E * 1e3;
+                                break;
+                        }
+                        setStatusBar((xp - offset) / step / (xsize - 1));
+                        polForm.tsourceclone.calculateTotalFlux();
+                        //If the same point, use the saved values
+                        if (xpcash[0] != xp) {
+                            try {
+                                res = polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 
+                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), e);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return fn.get(ia[0]).apply(rescash);
+                            }
+                        } else {
+                            return fn.get(ia[0]).apply(rescash);
+                        }
+                        //If NaNs use the saved values
+                        if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
+                            return fn.get(ia[0]).apply(rescash);
+                        }
+                        xpcash[0] = xp;
+                        System.arraycopy(res, 0, rescash, 0, 4);
+                        return fn.get(ia[0]).apply(res);
+                    });
+                }
+                polForm.chartParam.setup(func, xsize, step, offset);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
+                polForm.updateGraph(polarizationCalcGraph, "Polarization parameters");
+                polarizationCalcStart.setText("Calculate");
+                polarizationCalcSave.setEnabled(true);
+            }
+
+            /**
+             * Updating progress bar
+             *
+             * @param status
+             */
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> polProgressBar.setValue((int) Math.round(100 * status)));
+            }
+        };
+        polForm.worker.execute();
+    }//GEN-LAST:event_polarizationCalcStartActionPerformed
+
+    private void polarizationCalcSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcSaveActionPerformed
+        // Saving the brilliance plot data
+        if (polForm.chartPanel != null) {
+            polForm.save();
+        }
+    }//GEN-LAST:event_polarizationCalcSaveActionPerformed
+
+    private void polminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polminvalueFocusLost
+        // TODO add your handling code here:
+        polForm.minValue = TestValueWithMemory(0, 1000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polminvalueFocusLost
+
+    private void polminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polminvalueActionPerformed
+        // TODO add your handling code here:
+        polForm.minValue = TestValueWithMemory(0, 1000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polminvalueActionPerformed
+
+    private void polmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polmaxvalueFocusLost
+        // TODO add your handling code here:
+        polForm.maxValue = TestValueWithMemory(0, 1000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polmaxvalueFocusLost
+
+    private void polmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polmaxvalueActionPerformed
+        // TODO add your handling code here:
+        polForm.maxValue = TestValueWithMemory(0, 1000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+    }//GEN-LAST:event_polmaxvalueActionPerformed
+
+    private void jPolCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadActionPerformed
+        // Cheking spread check box
+        polForm.espread = jPolCheckBoxSpread.isSelected();
+    }//GEN-LAST:event_jPolCheckBoxSpreadActionPerformed
+
+    private void polAngleValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polAngleValueFocusLost
+        // TODO add your handling code here:
+        polForm.angle = TestValueWithMemory(0, 100, polAngleValue, "0", oldStrings);
+    }//GEN-LAST:event_polAngleValueFocusLost
+
+    private void polAngleValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polAngleValueActionPerformed
+        // TODO add your handling code here:
+        polForm.angle = TestValueWithMemory(0, 100, polAngleValue, "0", oldStrings);
+    }//GEN-LAST:event_polAngleValueActionPerformed
+
+    private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
+        // TODO add your handling code here:
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+    }//GEN-LAST:event_polEnergyValueFocusLost
+
+    private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
+        // TODO add your handling code here:
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+    }//GEN-LAST:event_polEnergyValueActionPerformed
+
+    private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
+        // TODO add your handling code here:
+        polarizationCalc.setVisible(true);
+    }//GEN-LAST:event_jMenuItemPolarizationActionPerformed
+
+    /*
+     * Setting up polarization of X-ray radiation
+     */
+    private void pRadioButtons() {
+        if (jRadioButtonMenuItemUnPolarized.isSelected()) {
+            tsource.setPolarization(new double[]{0, 0, 0});
+        } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
+            tsource.setPolarization(new double[]{-1, 0, 0});
+        } else if (jRadioButtonMenuItemPPolarized.isSelected()) {
+            tsource.setPolarization(new double[]{1, 0, 0});
+        } else {
+            tsource.setPolarization(null);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -2721,7 +3603,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                } 
+                }
             }
             //javax.swing.UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
@@ -2736,14 +3618,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         //</editor-fold>
         Locale.setDefault(new Locale("en", "US"));
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ThomsonJFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ThomsonJFrame().setVisible(true);
         });
     }
-    
+
     private JFreeChart createChart(XYZDataset dataset, ChartParam data, String xlabel, String ylabel) {
         /* X axis */
         NumberAxis xAxis = new NumberAxis(xlabel);
@@ -2773,8 +3652,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         chart.removeLegend();
         chart.setBackgroundPaint(Color.white);
         return chart;
-    } 
-    
+    }
+
     private JFreeChart createColorBar(final ChartParam data, String label) {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLowerMargin(0.0);
@@ -2784,133 +3663,193 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
         yAxis.setLowerMargin(0.0);
         yAxis.setUpperMargin(0.0);
-        XYZDataset dataset=new XYZDataset() {
+        XYZDataset dataset = new XYZDataset() {
+            @Override
             public int getSeriesCount() {
                 return 1;
             }
+
+            @Override
             public int getItemCount(int series) {
                 return data.getysize();
             }
+
+            @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
+            @Override
             public double getXValue(int series, int item) {
                 return 0;
             }
+
+            @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
+
+            @Override
             public double getYValue(int series, int item) {
-                return item*data.getumax()/(data.getysize()-1);
+                return item * data.getumax() / (data.getysize() - 1);
             }
+
+            @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
+
+            @Override
             public double getZValue(int series, int item) {
                 return getYValue(series, item);
             }
+
+            @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
+
+            @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
+            @Override
             public DatasetGroup getGroup() {
                 return null;
             }
+
+            @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
+            @Override
             public Comparable getSeriesKey(int series) {
                 return "colorbar";
             }
+
+            @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
+
+            @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
-            }        
+            }
         };
         XYBlockRenderer renderer = new XYBlockRenderer();
         PaintScale scale = new JetPaintScale(0, data.getumax());
         renderer.setPaintScale(scale);
-        renderer.setBlockHeight((double)data.getumax()/(data.getysize()-1));
+        renderer.setBlockHeight((double) data.getumax() / (data.getysize() - 1));
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
         plot.setBackgroundPaint(Color.white);
         plot.setDomainGridlinesVisible(false);
         plot.setRangeGridlinePaint(Color.black);
-        JFreeChart chart = new JFreeChart("",plot);
+        JFreeChart chart = new JFreeChart("", plot);
         chart.removeLegend();
         chart.setBackgroundPaint(Color.white);
         return chart;
-    } 
-  
+    }
+
     private XYZDataset createDataset(final ChartParam data, final boolean linemark) {
         return new XYZDataset() {
+            @Override
             public int getSeriesCount() {
                 return 1;
             }
+
+            @Override
             public int getItemCount(int series) {
-                return data.getxsize()*data.getysize();
+                return data.getxsize() * data.getysize();
             }
+
+            @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
+            @Override
             public double getXValue(int series, int item) {
-                return (getXindex(series, item)- data.getxsize()/2)*data.getxstep()+data.getxoffset();
+                return (getXindex(series, item) - data.getxsize() / 2) * data.getxstep() + data.getxoffset();
             }
-            private int getXindex(int series, int item) {
-                return item/data.getysize();
+
+            public int getXindex(int series, int item) {
+                return item / data.getysize();
             }
+
+            @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
+
+            @Override
             public double getYValue(int series, int item) {
-                return (getYindex(series, item)- data.getysize()/2)*data.getystep()+data.getyoffset();
+                return (getYindex(series, item) - data.getysize() / 2) * data.getystep() + data.getyoffset();
             }
-            private int getYindex(int series, int item) {
-                return item - (item/data.getysize())*data.getysize();
+
+            public int getYindex(int series, int item) {
+                return item - (item / data.getysize()) * data.getysize();
             }
+
+            @Override
             public Number getZ(int series, int item) {
                 return new Double(getZValue(series, item));
             }
+
+            @Override
             public double getZValue(int series, int item) {
                 int x = getXindex(series, item);
                 int y = getYindex(series, item);
                 if (!linemark) {
                     return data.getudata()[x][y];
                 } else {
-                    if (x==(int)(data.getysize()-1)*sliderposition/100) {
-                        return data.getumax()/2;
+                    if (x == (int) (data.getxsize() - 1) * sliderposition / 100) {
+                        return data.getumax() / 2;
                     } else {
                         return data.getudata()[x][y];
-                    }                     
-                } 
+                    }
+                }
             }
+
+            @Override
             public void addChangeListener(DatasetChangeListener listener) {
                 // ignore - this dataset never changes
             }
+
+            @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
+            @Override
             public DatasetGroup getGroup() {
                 return null;
             }
+
+            @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
+            @Override
             public Comparable getSeriesKey(int series) {
                 return "Flux";
             }
+
+            @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
+
+            @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
-            }        
+            }
         };
-    } 
-    
+    }
+
     private JFreeChart createLineChart(XYDataset dataset, String xlabel, String ylabel) {
         /* X axis */
         NumberAxis xAxis = new NumberAxis(xlabel);
@@ -2926,10 +3865,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         yAxis.setAutoRangeIncludesZero(false);
         /* Renderer */
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesLinesVisible(0, true);
-        renderer.setSeriesShapesVisible(0, false);
-        renderer.setSeriesStroke(0, new BasicStroke(2.0f));
-        renderer.setSeriesPaint(0, Color.GREEN);
+        for (int i = 0; i < dataset.getSeriesCount(); i++) {
+            renderer.setSeriesLinesVisible(i, true);
+            renderer.setSeriesShapesVisible(i, false);
+            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+        }
+        renderer.setSeriesPaint(0, Color.BLUE);
+        renderer.setSeriesPaint(1, Color.GREEN);
+        renderer.setSeriesPaint(2, Color.MAGENTA);
+        renderer.setSeriesPaint(3, Color.BLACK);
+
         /* Plot creation */
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
         plot.setBackgroundPaint(Color.white);
@@ -2937,102 +3882,81 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         plot.setDomainGridlinePaint(Color.black);
         /* Chart creation */
         JFreeChart chart = new JFreeChart(plot);
-        chart.removeLegend();
         chart.setBackgroundPaint(Color.white);
         return chart;
-    } 
-    
-    private XYDataset createLineDataset(final ChartParam data) {
+    }
+
+    private XYDataset createLineDataset(final LinearChartParam data, String[] keys) {
         return new XYDataset() {
+            @Override
             public int getSeriesCount() {
-                return 1;
+                return data.getData().length;
             }
+
+            @Override
             public int getItemCount(int series) {
-                return data.getysize();
+                return data.getSize();
             }
-            public Number getY(int series, int item) {
-                return new Double(getYValue(series, item));
-            }
-            public double getYValue(int series, int item) {
-                return (item-data.getysize()/2)*data.getystep()+data.getyoffset();
-            }
+
+            @Override
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
+            @Override
             public double getXValue(int series, int item) {
-                return data.getudata()[(int)(data.getxsize()-1)*sliderposition/100][item]+data.getyoffset();
+                return item * data.getStep() + data.getOffset();
             }
-            public void addChangeListener(DatasetChangeListener listener) {
-            // ignore - this dataset never changes
-            }
-            public void removeChangeListener(DatasetChangeListener listener) {
-                // ignore
-            }
-            public DatasetGroup getGroup() {
-                return null;
-            }
-            public void setGroup(DatasetGroup group) {
-                // ignore
-            }
-            public Comparable getSeriesKey(int series) {
-                return "EnergyCrossSection";
-            }
-            public int indexOf(Comparable seriesKey) {
-                return 0;
-            }
-            public DomainOrder getDomainOrder() {
-                return DomainOrder.ASCENDING;
-            }        
-        };
-    } 
-    
-    private XYDataset createLineDataset2(final CalcBoxParam form) {
-        return new XYDataset() {
-            public int getSeriesCount() {
-                return 1;
-            }
-            public int getItemCount(int series) {
-                return form.size;
-            }
+
+            @Override
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
-            public double getXValue(int series, int item) {
-                return item*form.step+form.offset;
-            }
-            public Number getX(int series, int item) {
-                return new Double(getXValue(series, item));
-            }
+
+            @Override
             public double getYValue(int series, int item) {
-                return form.data[item];
+                return data.getData()[series][item];
             }
+
+            @Override
             public void addChangeListener(DatasetChangeListener listener) {
-            // ignore - this dataset never changes
+                // ignore - this dataset never changes
             }
+
+            @Override
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
+            @Override
             public DatasetGroup getGroup() {
                 return null;
             }
+
+            @Override
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
+            @Override
             public Comparable getSeriesKey(int series) {
-                return form.key;
+                return keys[series];
             }
+
+            @Override
             public int indexOf(Comparable seriesKey) {
                 return 0;
             }
+
+            @Override
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
-            }        
+            }
         };
-    } 
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JProgressBar BrilProgressBar;
-    private javax.swing.JFrame BrillianceCalc;
     private javax.swing.JComboBox BrillianceCalcBox;
     private javax.swing.JPanel BrillianceCalcGraph;
     private javax.swing.JButton BrillianceCalcSave;
@@ -3056,10 +3980,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField GFminvalue;
     private javax.swing.JLabel GFminvaluelabel;
     private javax.swing.JLabel GFminvalueunitlabel;
-    private javax.swing.JFrame GfCalc;
     private javax.swing.JMenuItem HelpItem;
     private javax.swing.JProgressBar MainProgressBar;
-    private javax.swing.JFrame ProgressFrame;
+    private javax.swing.JTextField angleValue;
+    private javax.swing.JLabel angleValueUnitLable;
+    private javax.swing.JFrame brillianceCalc;
+    private javax.swing.ButtonGroup buttonGroupPolarization;
+    private javax.swing.ButtonGroup buttonGroupSkin;
     private javax.swing.JLabel chargelabel;
     private javax.swing.JLabel chargeunitlabel;
     private javax.swing.JTextField chargevalue;
@@ -3075,6 +4002,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel elengthlabel;
     private javax.swing.JLabel elengthunitlabel;
     private javax.swing.JTextField elengthvalue;
+    private javax.swing.JTextField energyValue;
+    private javax.swing.JLabel energyValueUnitLable;
     private javax.swing.JLabel energylabel;
     private javax.swing.JLabel energyunitlabel;
     private javax.swing.JTextField energyvalue;
@@ -3087,24 +4016,33 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel eshiftzlabel;
     private javax.swing.JLabel eshiftzunitlabel;
     private javax.swing.JTextField eshiftzvalue;
+    private javax.swing.JFrame gfCalc;
+    private javax.swing.JLabel jAngleLabel;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
+    private javax.swing.JLabel jEnergyLabel;
+    private javax.swing.JLabel jLabelPartialFlux;
     private javax.swing.JMenuBar jMenuBarMain;
     private javax.swing.JMenu jMenuCalc;
     private javax.swing.JMenu jMenuFile;
     private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItemAbout;
     private javax.swing.JMenuItem jMenuItemBrilliance;
+    private javax.swing.JMenuItem jMenuItemConv;
     private javax.swing.JMenuItem jMenuItemExit;
     private javax.swing.JMenuItem jMenuItemGeometricFactor;
+    private javax.swing.JMenuItem jMenuItemLaserPolarization;
     private javax.swing.JMenuItem jMenuItemLoadParam;
     private javax.swing.JMenuItem jMenuItemNumerical;
+    private javax.swing.JMenuItem jMenuItemPolarization;
     private javax.swing.JMenuItem jMenuItemSaveParam;
     private javax.swing.JMenuItem jMenuItemSize;
     private javax.swing.JMenuItem jMenuItemSource;
     private javax.swing.JMenuItem jMenuItemSourceParam;
     private javax.swing.JMenu jMenuOptions;
+    private javax.swing.JMenu jMenuPolarization;
     private javax.swing.JMenu jMenuShadow;
+    private javax.swing.JMenu jMenuSkin;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel_el;
     private javax.swing.JPanel jPanel_exec;
@@ -3117,16 +4055,46 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux;
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
+    private javax.swing.JLabel jPolAngleLabel;
+    private javax.swing.JCheckBox jPolCheckBoxSpread;
+    private javax.swing.JLabel jPolEnergyLabel;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemAutoPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemSPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemUnPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuNimbus;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuSystem;
     private javax.swing.JProgressBar jRayProgressBar;
     private javax.swing.JButton jRayStopButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSlider jSlider_pickup;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel phenergylabel;
     private javax.swing.JLabel phenergyunitlabel;
     private javax.swing.JTextField phenergyvalue;
+    private javax.swing.JTextField polAngleValue;
+    private javax.swing.JLabel polAngleValueUnitLable;
+    private javax.swing.JTextField polEnergyValue;
+    private javax.swing.JLabel polEnergyValueUnitLable;
+    private javax.swing.JProgressBar polProgressBar;
+    private javax.swing.JFrame polarizationCalc;
+    private javax.swing.JComboBox polarizationCalcBox;
+    private javax.swing.JPanel polarizationCalcGraph;
+    private javax.swing.JButton polarizationCalcSave;
+    private javax.swing.JButton polarizationCalcStart;
+    private javax.swing.JPanel polarizationParam;
+    private javax.swing.JTextField polmaxvalue;
+    private javax.swing.JLabel polmaxvaluelabel;
+    private javax.swing.JLabel polmaxvalueunitlabel;
+    private javax.swing.JTextField polminvalue;
+    private javax.swing.JLabel polminvaluelabel;
+    private javax.swing.JLabel polminvalueunitlabel;
     private javax.swing.JLabel pulseanglelabel;
     private javax.swing.JLabel pulseangleunitlabel;
     private javax.swing.JTextField pulseanglevalue;
@@ -3145,6 +4113,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel pulserelunitlable;
     private javax.swing.JTextField pulserelvalue;
     private javax.swing.JLabel puslelengthlabel;
+    private javax.swing.JFrame rayProgressFrame;
     private javax.swing.JLabel spreadlabel;
     private javax.swing.JTextField spreadvalue;
     private javax.swing.JButton startbutton;
