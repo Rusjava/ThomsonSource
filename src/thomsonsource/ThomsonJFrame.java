@@ -60,7 +60,7 @@ import org.jfree.chart.renderer.PaintScale;
 import org.jfree.chart.renderer.xy.XYBlockRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
-import org.la4j.vector.*;
+import org.la4j.*;
 import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.9.5
+ * @version 2.15
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -84,6 +84,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ebunch = new ElectronBunch();
         this.lpulse = new LaserPulse();
         this.tsource = new ThompsonSource(lpulse, ebunch);
+        tsource.setPolarization(new double[]{0, 0, 0});
         this.xsize = 300;
         this.ysize = 200;
         this.xstep = 20.0 / xsize;
@@ -158,7 +159,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the brilliance calculation
          */
-        this.brilForm = new CalcBoxParam("Brilliance");
+        this.brilForm = new CalcBoxParam(new String[]{"Spectral brilliance"});
         this.brilForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad",
             "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
         this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
@@ -173,7 +174,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the GF calculation
          */
-        this.gfForm = new CalcBoxParam("Geometric factor");
+        this.gfForm = new CalcBoxParam(new String[]{"Geometric factor"});
         this.gfForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
@@ -182,11 +183,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100"};
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
-
         /**
          * Objects for the polarization calculation
          */
-        this.polForm = new CalcBoxParam("Polarization");
+        this.polForm = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"});
         this.polForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad",
             "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
         this.polForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
@@ -212,6 +212,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(this);
             SwingUtilities.updateComponentTreeUI(gfCalc);
             SwingUtilities.updateComponentTreeUI(brillianceCalc);
+            SwingUtilities.updateComponentTreeUI(polarizationCalc);
             SwingUtilities.updateComponentTreeUI(rayProgressFrame);
         });
     }
@@ -1793,6 +1794,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.setText("Polarization...");
 
         buttonGroupPolarization.add(jRadioButtonMenuItemUnPolarized);
+        jRadioButtonMenuItemUnPolarized.setSelected(true);
         jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
         jRadioButtonMenuItemUnPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1820,7 +1822,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
-        jRadioButtonMenuItemAutoPolarized.setSelected(true);
         jRadioButtonMenuItemAutoPolarized.setText("Automatic");
         jRadioButtonMenuItemAutoPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1853,7 +1854,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuOptions.add(jMenuItemLaserPolarization);
         jMenuOptions.add(jSeparator5);
 
-        jMenuItemSize.setText("Graph parameters...");
+        jMenuItemSize.setText("Graphical parameters...");
         jMenuItemSize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSizeActionPerformed(evt);
@@ -1972,23 +1973,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public int numberOfItems;
         public double minValue, maxValue = 35, minValueClone, maxValueClone;
         public double[] conversionValues;
-        public ElectronBunch ebunchclone;
-        public LaserPulse lpulseclone;
         public ThompsonSource tsourceclone;
         public boolean espread = false;
         public boolean working = false;
         public SwingWorker<Void, Void> worker;
         public String savetext;
-        final private String key;
+        final private String[] keys;
         public LinearChartParam chartParam;
-        ChartPanel chartPanel = null;
-        JFreeChart chart = null;
+        public ChartPanel chartPanel = null;
+        public JFreeChart chart = null;
         double angle = 0, angleclone, energy = 44, energyclone;
         private File file = null;
 
-        public CalcBoxParam(String key) {
+        public CalcBoxParam(String[] keys) {
             super();
-            this.key = key;
+            this.keys = keys;
             this.chartParam = new LinearChartParam();
         }
 
@@ -1999,8 +1998,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
-            ebunchclone = tsourceclone.getElectronBunch();
-            lpulseclone = tsourceclone.getLaserPulse();
             tsourceclone.seteSpread(espread);
             minValueClone = minValue;
             maxValueClone = maxValue;
@@ -2027,10 +2024,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 Formatter fm;
                 try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+                    int nc = chartParam.getData().length;
                     for (int i = 0; i < chartParam.getSize(); i++) {
                         fm = new Formatter();
-                        fm.format("%f %f", new Double(i * chartParam.getStep()
-                                + chartParam.getOffset()), new Double(chartParam.getData()[0][i]));
+                        fm.format("%f", i * chartParam.getStep() + chartParam.getOffset());
+                        for (double[] data : chartParam.getData()) {
+                            fm.format(" %f", data[i]);
+                        }
                         pw.println(fm);
                     }
                     pw.close();
@@ -2049,7 +2049,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 /**
                  * Creating chart and plot dataset
                  */
-                chart = createLineChart(createLineDataset(chartParam), plotLabels[selectedItemIndexClone], label);
+                chart = createLineChart(createLineDataset(chartParam, keys), plotLabels[selectedItemIndexClone], label);
                 chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
                         chartParam.getUMax() + MIN_DIF);
                 chart.fireChartChanged();
@@ -2295,37 +2295,40 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 double plotwidth = 0;
-                if (!isCancelled() || fluxChart != null) {
+                //Checking if there are any errors in the worker thread
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
 
+                }
+                if (!isCancelled() || fluxChart != null) {
+                    //Creating or updating charts
                     if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
                     } else {
                         fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
                                 jPanel_xflux_left, 0.75, true);
                     }
-
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
                                 "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
                     }
-
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
                     } else {
                         xEnergyChart = new ColorChart(xenergydata, "theta_x, mrad", "theta_y, mrad", "kev", jPanel_xenergy_left, 0.75, true);
                     }
-
                     if (xenergycrosschart != null) {
-                        xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax());
-                        xenergycrosschart.getXYPlot().getDomainAxis().
-                                setRangeAboutValue(xenergycrossdata.getOffset()
-                                        + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
+                        xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
+                        xenergycrosschart.getXYPlot().getDomainAxis().setRangeAboutValue(xenergycrossdata.getOffset()
+                                + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
                         xenergycrosschart.fireChartChanged();
                     } else {
-                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata), "theta_y, mrad", "Energy, keV");
+                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata, new String[]{"Energy cross section"}), "theta_y, mrad", "Energy, keV");
                         ChartPanel chartpanel = new ChartPanel(xenergycrosschart,
                                 (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
                                 (int) (10 * jPanel_xenergy_right.getWidth()), (int) (10 * jPanel_xenergy_right.getHeight()),
@@ -2405,8 +2408,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     try {
                         fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
                         setStatusBar((int) 100);
-                        xenergycrossdata.setup(xenergydata.getudata(),
-                                (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                        xenergycrossdata.setup(xenergydata.getudata(), (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
                                 false, ysize, ystep, -ystep * ysize / 2);
                     } catch (InterruptedException e) {
 
@@ -2416,21 +2418,26 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                 @Override
                 protected void done() {
+                    //Checking if there are any errors in the worker thread
+                    try {
+                        get();
+                    } catch (ExecutionException ex) {
+                        Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException | CancellationException ex) {
+
+                    }
                     if (fluxChart != null) {
                         fluxChart.update();
                     }
-
+                    //Updating charts
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     }
-
                     if (xEnergyChart != null) {
                         xEnergyChart.update();
                     }
-
                     if (xenergycrosschart != null) {
-                        xenergycrosschart.getXYPlot().getRangeAxis().
-                                setRange(xenergycrossdata.getData()[0][0], xenergycrossdata.getUMax());
+                        xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
                         xenergycrosschart.fireChartChanged();
                     }
                     startbutton.setText("Start");
@@ -2443,9 +2450,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                  * @param status
                  */
                 public void setStatusBar(final int status) {
-                    SwingUtilities.invokeLater(() -> {
-                        MainProgressBar.setValue(status);
-                    });
+                    SwingUtilities.invokeLater(() -> MainProgressBar.setValue(status));
                 }
             };
             mainWorker.execute();
@@ -2559,107 +2564,107 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     case 0:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.getDirection().set(2, Math.cos(x));
-                            brilForm.lpulseclone.getDirection().set(1, Math.sin(x));
+                            brilForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                            brilForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 1:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.setDelay(x);
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            brilForm.tsourceclone.getLaserPulse().setDelay(x);
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 2:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.getShift().set(2, x);
+                            brilForm.tsourceclone.getElectronBunch().getShift().set(2, x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 3:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.setBetax(x);
-                            brilForm.ebunchclone.setBetay(x);
+                            brilForm.tsourceclone.getElectronBunch().setBetax(x);
+                            brilForm.tsourceclone.getElectronBunch().setBetay(x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 4:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.setEps(x);
+                            brilForm.tsourceclone.getElectronBunch().setEps(x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 5:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.setRlength(x);
+                            brilForm.tsourceclone.getLaserPulse().setRlength(x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 6:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.lpulseclone.setWidth(x);
-                            brilForm.ebunchclone.setxWidth(x);
-                            brilForm.ebunchclone.setyWidth(x);
+                            brilForm.tsourceclone.getLaserPulse().setWidth(x);
+                            brilForm.tsourceclone.getElectronBunch().setxWidth(x);
+                            brilForm.tsourceclone.getElectronBunch().setyWidth(x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
                     case 7:
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                            double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.ebunchclone.setDelgamma(x);
+                            brilForm.tsourceclone.getElectronBunch().setDelgamma(x);
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
@@ -2668,9 +2673,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
+                            setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
@@ -2679,9 +2684,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             double e = brilForm.energyclone * ElectronBunch.E * 1e3;
                             brilForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
                                     e) * 1e-15 * 1e-13;
                         });
                         break;
@@ -2692,6 +2697,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             protected void done() {
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
                 brilForm.updateGraph(BrillianceCalcGraph,
                         "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u00B3");
                 BrillianceCalcStart.setText("Calculate");
@@ -2703,8 +2715,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              *
              * @param status
              */
-            public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(() -> BrilProgressBar.setValue(status));
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> BrilProgressBar.setValue((int) Math.round(100 * status)));
             }
         };
         brilForm.worker.execute();
@@ -2810,22 +2822,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             //Creating Properties object to store program parameters
             Properties prop = new Properties();
             try (FileWriter fw = new FileWriter(pFile, false)) {
-                prop.setProperty(paramNames[0], new Double(ebunch.getGamma() * 0.512).toString());
-                prop.setProperty(paramNames[1], new Double(ebunch.getNumber() * ElectronBunch.E * 1e9).toString());
-                prop.setProperty(paramNames[2], new Double(ebunch.getDelgamma()).toString());
-                prop.setProperty(paramNames[3], new Double(ebunch.getLength() * 2 / 3e-4).toString());
-                prop.setProperty(paramNames[4], new Double(ebunch.getEps() * 1e6).toString());
-                prop.setProperty(paramNames[5], new Double(ebunch.getBetax() * 1e3).toString());
-                prop.setProperty(paramNames[6], new Double(ebunch.getBetay() * 1e3).toString());
-                prop.setProperty(paramNames[7], new Double(lpulse.getPhotonEnergy() / ElectronBunch.E).toString());
-                prop.setProperty(paramNames[8], new Double(lpulse.getPulseEnergy() * 1e3).toString());
-                prop.setProperty(paramNames[9], new Double(lpulse.getLength() * 2 / 3e-4).toString());
-                prop.setProperty(paramNames[10], new Double(lpulse.getRlength() * 1e3).toString());
-                prop.setProperty(paramNames[11], new Double(lpulse.getFq() * 1e-6).toString());
-                prop.setProperty(paramNames[12], new Double(lpulse.getDelay() / 3e-4).toString());
-                prop.setProperty(paramNames[13], new Double(ebunch.getShift().get(0) * 1e3).toString());
-                prop.setProperty(paramNames[14], new Double(ebunch.getShift().get(1) * 1e3).toString());
-                prop.setProperty(paramNames[15], new Double(ebunch.getShift().get(2) * 1e3).toString());
+                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.512));
+                prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * ElectronBunch.E * 1e9));
+                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
+                prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[4], Double.toString(ebunch.getEps() * 1e6));
+                prop.setProperty(paramNames[5], Double.toString(ebunch.getBetax() * 1e3));
+                prop.setProperty(paramNames[6], Double.toString(ebunch.getBetay() * 1e3));
+                prop.setProperty(paramNames[7], Double.toString(lpulse.getPhotonEnergy() / ElectronBunch.E));
+                prop.setProperty(paramNames[8], Double.toString(lpulse.getPulseEnergy() * 1e3));
+                prop.setProperty(paramNames[9], Double.toString(lpulse.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[10], Double.toString(lpulse.getRlength() * 1e3));
+                prop.setProperty(paramNames[11], Double.toString(lpulse.getFq() * 1e-6));
+                prop.setProperty(paramNames[12], Double.toString(lpulse.getDelay() / 3e-4));
+                prop.setProperty(paramNames[13], Double.toString(ebunch.getShift().get(0) * 1e3));
+                prop.setProperty(paramNames[14], Double.toString(ebunch.getShift().get(1) * 1e3));
+                prop.setProperty(paramNames[15], Double.toString(ebunch.getShift().get(2) * 1e3));
                 prop.setProperty(paramNames[16], pulseanglevalue.getText());
                 prop.store(fw, "Thomson source parameters");
             } catch (IOException e) {
@@ -3007,12 +3019,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "y-range (mrad):", yRangeBox,
             "xenergy-range (eV):", xEnergyRangeBox
         };
-        int option = JOptionPane.showConfirmDialog(null, message, "Graph parameters", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, message, "Graphical parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             xsize = (int) xSizeBox.getValue();
             ysize = (int) ySizeBox.getValue();
-            xstep = (int) xRangeBox.getValue() / xsize;
-            ystep = (int) yRangeBox.getValue() / ysize;
+            xstep = (double) xRangeBox.getValue() / xsize;
+            ystep = (double) yRangeBox.getValue() / ysize;
             estep = (double) xEnergyRangeBox.getValue() / xsize;
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
@@ -3049,84 +3061,55 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         gfForm.worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
-                double offset = gfForm.minValueClone;
+                final double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
+                final double offset = gfForm.minValueClone;
                 List<Function<Double, Double>> func = new ArrayList<>();
-                switch (gfForm.selectedItemIndexClone) {
-                    case 0:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.getDirection().set(2, Math.cos(x));
-                            gfForm.lpulseclone.getDirection().set(1, Math.sin(x));
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 1:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.setDelay(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 2:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.ebunchclone.getShift().set(2, x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 3:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.ebunchclone.setBetax(x);
-                            gfForm.ebunchclone.setBetay(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 4:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.ebunchclone.setEps(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 5:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.setRlength(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                    case 6:
-                        func.add(xp -> {
-                            double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
-                            gfForm.lpulseclone.setWidth(x);
-                            gfForm.ebunchclone.setxWidth(x);
-                            gfForm.ebunchclone.setyWidth(x);
-                            gfForm.tsourceclone.calculateGeometricFactor();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            return gfForm.tsourceclone.getGeometricFactor();
-                        });
-                        break;
-                }
+                func.add(xp -> {
+                    double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                    switch (gfForm.selectedItemIndexClone) {
+                        case 0:
+                            gfForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                            gfForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                            break;
+                        case 1:
+                            gfForm.tsourceclone.getLaserPulse().setDelay(x);
+                            break;
+                        case 2:
+                            gfForm.tsourceclone.getElectronBunch().getShift().set(2, x);
+                            break;
+                        case 3:
+                            gfForm.tsourceclone.getElectronBunch().setBetax(x);
+                            gfForm.tsourceclone.getElectronBunch().setBetay(x);
+                            break;
+                        case 4:
+                            gfForm.tsourceclone.getElectronBunch().setEps(x);
+                            break;
+                        case 5:
+                            gfForm.tsourceclone.getLaserPulse().setRlength(x);
+                            break;
+                        case 6:
+                            gfForm.tsourceclone.getLaserPulse().setWidth(x);
+                            gfForm.tsourceclone.getElectronBunch().setxWidth(x);
+                            gfForm.tsourceclone.getElectronBunch().setyWidth(x);
+                            break;
+                    }
+                    gfForm.tsourceclone.calculateGeometricFactor();
+                    setStatusBar((xp - offset) / step / (xsize - 1));
+                    return gfForm.tsourceclone.getGeometricFactor();
+                });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
             @Override
             protected void done() {
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
                 gfForm.updateGraph(GFCalcGraph, "");
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
@@ -3137,8 +3120,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              *
              * @param status
              */
-            public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(() -> GFProgressBar.setValue(status));
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> GFProgressBar.setValue((int) Math.round(100 * status)));
             }
         };
         gfForm.worker.execute();
@@ -3214,8 +3197,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
-            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance:</html>", brilPrecisionBox,
-            "<html>Number of threads</html>", threadsNumberBox
+            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", brilPrecisionBox,
+            "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
@@ -3416,170 +3399,95 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 double step = (polForm.maxValueClone - polForm.minValueClone) / (xsize - 1);
-                
                 double offset = polForm.minValueClone;
+                //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
+                //A list of auxiliary functions
                 List<Function<double[], Double>> fn = new ArrayList<>();
                 fn.add(x -> {
-                    double tmp = x[1] / x[0];
-                    return new Double(tmp).isNaN() ? 0 : tmp;
+                    return x[1] / x[0];
                 });
                 fn.add(x -> {
-                    double tmp = x[2] / x[0];
-                    return new Double(tmp).isNaN() ? 0 : tmp;
+                    return x[2] / x[0];
                 });
                 fn.add(x -> {
-                    double tmp = x[3] / x[0];
-                    return new Double(tmp).isNaN() ? 0 : tmp;
+                    return x[3] / x[0];
                 });
                 fn.add(x -> {
-                    double tmp = Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
+                    return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
                             + (x[3] / x[0]) * (x[3] / x[0]));
-                    return new Double(tmp).isNaN() ? 0 : tmp;
                 });
-                switch (polForm.selectedItemIndexClone) {
-                    case 0:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.lpulseclone.getDirection().set(2, Math.cos(x));
-                            polForm.lpulseclone.getDirection().set(1, Math.sin(x));
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 1:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.lpulseclone.setDelay(x);
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 2:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.ebunchclone.getShift().set(2, x);
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 3:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.ebunchclone.setBetax(x);
-                            polForm.ebunchclone.setBetay(x);
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 4:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.ebunchclone.setEps(x);
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 5:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.lpulseclone.setRlength(x);
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 6:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.lpulseclone.setWidth(x);
-                            polForm.ebunchclone.setxWidth(x);
-                            polForm.ebunchclone.setyWidth(x);
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 7:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
-                            double x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.ebunchclone.setDelgamma(x);
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 8:
-                        func.add(xp -> {
-                            double ang = polForm.angleclone * 1e-3;
-                            double e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                            polForm.tsourceclone.calculateTotalFlux();
-                            setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                            double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e);
-                            return !(new Double(res[1] / res[0]).isNaN()) ? res[1] / res[0] : 0;
-                        });
-                        break;
-                    case 9:
-                        for (int i = 0; i < 4; i++) {
-                            int[] ia = new int[]{i};
-                            func.add(xp -> {
-                                double ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
-                                double e = polForm.energyclone * ElectronBunch.E * 1e3;
-                                polForm.tsourceclone.calculateTotalFlux();
-                                setStatusBar((int) (100 * (xp - offset) / step / (xsize - 1)));
-                                double[] res = polForm.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                        new BasicVector(new double[]{Math.sin(ang), 0.0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                        e);
-                                return fn.get(ia[0]).apply(res);
-                            });
+                double[] rescash = new double[]{1, 0, 0, 0};
+                double[] xpcash = new double[]{-1};
+                for (int i = 0; i < 4; i++) {
+                    int[] ia = new int[]{i};
+                    func.add(xp -> {
+                        double[] res;
+                        double ang, e, x;
+                        x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                        ang = polForm.angleclone * 1e-3;
+                        e = xenergydata.func(ang * 1e3, 0.0) * ElectronBunch.E * 1e3;
+                        switch (polForm.selectedItemIndexClone) {
+                            case 0:
+                                polForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                                polForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                                break;
+                            case 1:
+                                polForm.tsourceclone.getLaserPulse().setDelay(x);
+                                break;
+                            case 2:
+                                polForm.tsourceclone.getElectronBunch().getShift().set(2, x);
+                                break;
+                            case 3:
+                                polForm.tsourceclone.getElectronBunch().setBetax(x);
+                                polForm.tsourceclone.getElectronBunch().setBetay(x);
+                                break;
+                            case 4:
+                                polForm.tsourceclone.getElectronBunch().setEps(x);
+                                break;
+                            case 5:
+                                polForm.tsourceclone.getLaserPulse().setRlength(x);
+                                break;
+                            case 6:
+                                polForm.tsourceclone.getLaserPulse().setWidth(x);
+                                polForm.tsourceclone.getElectronBunch().setxWidth(x);
+                                polForm.tsourceclone.getElectronBunch().setyWidth(x);
+                                break;
+                            case 7:
+                                polForm.tsourceclone.getElectronBunch().setDelgamma(x);
+                                break;
+                            case 8:
+                                ang = polForm.angleclone * 1e-3;
+                                e = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                break;
+                            case 9:
+                                ang = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
+                                e = polForm.energyclone * ElectronBunch.E * 1e3;
+                                break;
                         }
-                        break;
+                        setStatusBar((xp - offset) / step / (xsize - 1));
+                        polForm.tsourceclone.calculateTotalFlux();
+                        //If the same point, use the saved values
+                        if (xpcash[0] != xp) {
+                            try {
+                                res = polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 
+                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), e);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return fn.get(ia[0]).apply(rescash);
+                            }
+                        } else {
+                            return fn.get(ia[0]).apply(rescash);
+                        }
+                        //If NaNs use the saved values
+                        if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
+                            return fn.get(ia[0]).apply(rescash);
+                        }
+                        xpcash[0] = xp;
+                        System.arraycopy(res, 0, rescash, 0, 4);
+                        return fn.get(ia[0]).apply(res);
+                    });
                 }
                 polForm.chartParam.setup(func, xsize, step, offset);
                 return null;
@@ -3587,7 +3495,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             protected void done() {
-                polForm.updateGraph(polarizationCalcGraph, "");
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
+                polForm.updateGraph(polarizationCalcGraph, "Polarization parameters");
                 polarizationCalcStart.setText("Calculate");
                 polarizationCalcSave.setEnabled(true);
             }
@@ -3597,8 +3512,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              *
              * @param status
              */
-            public void setStatusBar(final int status) {
-                SwingUtilities.invokeLater(() -> polProgressBar.setValue(status));
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> polProgressBar.setValue((int) Math.round(100 * status)));
             }
         };
         polForm.worker.execute();
@@ -3969,12 +3884,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         plot.setDomainGridlinePaint(Color.black);
         /* Chart creation */
         JFreeChart chart = new JFreeChart(plot);
-        chart.removeLegend();
         chart.setBackgroundPaint(Color.white);
         return chart;
     }
 
-    private XYDataset createLineDataset(final LinearChartParam data) {
+    private XYDataset createLineDataset(final LinearChartParam data, String[] keys) {
         return new XYDataset() {
             @Override
             public int getSeriesCount() {
@@ -4028,7 +3942,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             public Comparable getSeriesKey(int series) {
-                return "EnergyCrossSection";
+                return keys[series];
             }
 
             @Override
