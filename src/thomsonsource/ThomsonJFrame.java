@@ -63,7 +63,9 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.la4j.*;
 import org.la4j.vector.dense.*;
 
-import TextUtilities.MyTextUtilities;
+import static TextUtilities.MyTextUtilities.*;
+import java.net.URL;
+import java.util.function.Function;
 import shadowfileconverter.ShadowFiles;
 
 /**
