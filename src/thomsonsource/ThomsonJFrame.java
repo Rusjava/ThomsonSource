@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.15
+ * @version 2.2
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -172,9 +172,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.brilForm.numberOfItems = 10;
 
         /**
-         * Objects for the GF calculation
+         * Objects for the exact and approximate GF calculations
          */
-        this.gfForm = new CalcBoxParam(new String[]{"Geometric factor"});
+        this.gfForm = new CalcBoxParam(new String[]{"Geometric factor", "Approximate geometric factor"});
         this.gfForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
@@ -3064,6 +3064,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 final double step = (gfForm.maxValueClone - gfForm.minValueClone) / (xsize - 1);
                 final double offset = gfForm.minValueClone;
                 List<Function<Double, Double>> func = new ArrayList<>();
+                //Precise geometric factor
                 func.add(xp -> {
                     double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
                     switch (gfForm.selectedItemIndexClone) {
@@ -3096,6 +3097,38 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     gfForm.tsourceclone.calculateGeometricFactor();
                     setStatusBar((xp - offset) / step / (xsize - 1));
                     return gfForm.tsourceclone.getGeometricFactor();
+                });
+                //Approximate geopmetric factor
+                func.add(xp -> {
+                    double x = xp * gfForm.conversionValues[gfForm.selectedItemIndexClone];
+                    switch (gfForm.selectedItemIndexClone) {
+                        case 0:
+                            gfForm.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                            gfForm.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                            break;
+                        case 1:
+                            gfForm.tsourceclone.getLaserPulse().setDelay(x);
+                            break;
+                        case 2:
+                            gfForm.tsourceclone.getElectronBunch().getShift().set(2, x);
+                            break;
+                        case 3:
+                            gfForm.tsourceclone.getElectronBunch().setBetax(x);
+                            gfForm.tsourceclone.getElectronBunch().setBetay(x);
+                            break;
+                        case 4:
+                            gfForm.tsourceclone.getElectronBunch().setEps(x);
+                            break;
+                        case 5:
+                            gfForm.tsourceclone.getLaserPulse().setRlength(x);
+                            break;
+                        case 6:
+                            gfForm.tsourceclone.getLaserPulse().setWidth(x);
+                            gfForm.tsourceclone.getElectronBunch().setxWidth(x);
+                            gfForm.tsourceclone.getElectronBunch().setyWidth(x);
+                            break;
+                    }
+                    return gfForm.tsourceclone.getApproxGeometricFactor();
                 });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;
@@ -3419,7 +3452,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 });
                 double[] rescash = new double[]{1, 0, 0, 0};
                 double[] xpcash = new double[]{-1};
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < ThompsonSource.NUMBER_OF_POL_PARAM; i++) {
                     int[] ia = new int[]{i};
                     func.add(xp -> {
                         double[] res;
