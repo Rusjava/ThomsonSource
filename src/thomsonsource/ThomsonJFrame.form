@@ -1188,7 +1188,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jPanel_el" min="-2" max="-2" attributes="0"/>
+                              <Component id="jPanel_el" min="-2" pref="258" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jPanel_ph" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -1202,7 +1202,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="jPanel_slider" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jTabbedPane1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jTabbedPane1" alignment="0" pref="675" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -1253,54 +1253,67 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="spreadlabel" min="-2" pref="71" max="-2" attributes="0"/>
-                              <Component id="energylabel" alignment="0" min="-2" pref="92" max="-2" attributes="0"/>
-                              <Component id="chargelabel" alignment="0" min="-2" pref="75" max="-2" attributes="0"/>
-                              <Component id="elengthlabel" min="-2" pref="62" max="-2" attributes="0"/>
-                              <Component id="eemitlabel" alignment="0" min="-2" pref="62" max="-2" attributes="0"/>
-                              <Component id="ebetaxlabel" alignment="0" min="-2" pref="62" max="-2" attributes="0"/>
-                              <Component id="ebetaylabel" min="-2" pref="62" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Component id="ebetaxlabel" min="-2" pref="62" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Component id="ebetaxvalue" min="-2" pref="41" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="ebetaxunitlabel" min="-2" pref="48" max="-2" attributes="0"/>
-                                  <EmptySpace pref="30" max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="eemitvalue" max="32767" attributes="0"/>
-                                          <Component id="chargevalue" max="32767" attributes="0"/>
-                                          <Component id="energyvalue" max="32767" attributes="0"/>
-                                          <Component id="spreadvalue" pref="41" max="32767" attributes="0"/>
-                                          <Component id="elengthvalue" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Component id="ebetayvalue" alignment="1" pref="41" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="elengthunitlabel" max="32767" attributes="0"/>
-                                              <Group type="102" attributes="0">
-                                                  <Component id="eemitunitlabel" min="-2" pref="59" max="-2" attributes="0"/>
-                                                  <EmptySpace min="0" pref="13" max="32767" attributes="0"/>
+                                              <Component id="energylabel" alignment="0" min="-2" pref="92" max="-2" attributes="0"/>
+                                              <Component id="elengthlabel" min="-2" pref="62" max="-2" attributes="0"/>
+                                              <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                                  <Component id="eemitylabel" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="eemitxlabel" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="spreadlabel" alignment="0" pref="75" max="32767" attributes="0"/>
+                                                  <Component id="chargelabel" alignment="0" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" attributes="0">
+                                                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                                                  <Component id="energyvalue" min="-2" pref="41" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" alignment="1" attributes="0">
+                                                  <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                      <Component id="spreadvalue" pref="41" max="32767" attributes="0"/>
+                                                      <Component id="elengthvalue" max="32767" attributes="0"/>
+                                                      <Component id="eemitxvalue" alignment="0" max="32767" attributes="0"/>
+                                                      <Component id="eemityvalue" max="32767" attributes="0"/>
+                                                  </Group>
+                                              </Group>
+                                          </Group>
                                       </Group>
+                                      <Component id="chargevalue" min="-2" pref="41" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="elengthunitlabel" max="32767" attributes="0"/>
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="energyunitlabel" min="-2" max="-2" attributes="0"/>
-                                              <Component id="chargeunitlabel" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
-                                              <Component id="ebetayunitlabel" alignment="0" min="-2" pref="48" max="-2" attributes="0"/>
+                                              <Component id="eemitxunitlabel" min="-2" pref="59" max="-2" attributes="0"/>
+                                              <Component id="ebetaxunitlabel" alignment="0" min="-2" pref="48" max="-2" attributes="0"/>
+                                              <Component id="eemityunitlabel" min="-2" pref="59" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="chargeunitlabel" min="-2" pref="24" max="-2" attributes="0"/>
+                                      <Component id="energyunitlabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -1335,22 +1348,23 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="eemitunitlabel" alignment="3" max="32767" attributes="0"/>
-                              <Component id="eemitvalue" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="eemitlabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="eemitxunitlabel" alignment="3" max="32767" attributes="0"/>
+                              <Component id="eemitxvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="eemitxlabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="ebetaxlabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ebetaxvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="eemitylabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="eemityvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="eemityunitlabel" alignment="3" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="ebetaxunitlabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="ebetaxvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="ebetaxlabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="ebetayvalue" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ebetaylabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="ebetayunitlabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1396,7 +1410,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="spreadlabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Spread"/>
+                    <Property name="text" type="java.lang.String" value="Gamma-spread"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="spreadvalue">
@@ -1427,21 +1441,21 @@
                     <Property name="text" type="java.lang.String" value="ps"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="eemitlabel">
+                <Component class="javax.swing.JLabel" name="eemitxlabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Emittance"/>
+                    <Property name="text" type="java.lang.String" value="X-emittance"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="eemitvalue">
+                <Component class="javax.swing.JTextField" name="eemitxvalue">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="5"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eemitvalueFocusLost"/>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="eemitvalueActionPerformed"/>
+                    <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eemitxvalueFocusLost"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="eemitxvalueActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JLabel" name="eemitunitlabel">
+                <Component class="javax.swing.JLabel" name="eemitxunitlabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="mm*mrad"/>
                   </Properties>
@@ -1465,23 +1479,23 @@
                     <Property name="text" type="java.lang.String" value="mm"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="ebetaylabel">
+                <Component class="javax.swing.JLabel" name="eemitylabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Beta  y"/>
+                    <Property name="text" type="java.lang.String" value="Y-emittance"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="ebetayvalue">
+                <Component class="javax.swing.JTextField" name="eemityvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="10"/>
+                    <Property name="text" type="java.lang.String" value="5"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ebetayvalueFocusLost"/>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ebetayvalueActionPerformed"/>
+                    <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eemityvalueFocusLost"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="eemityvalueActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JLabel" name="ebetayunitlabel">
+                <Component class="javax.swing.JLabel" name="eemityunitlabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="mm"/>
+                    <Property name="text" type="java.lang.String" value="mm*mrad"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -1502,7 +1516,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
+                      <Group type="102" attributes="0">
                           <EmptySpace pref="28" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
@@ -1513,26 +1527,36 @@
                                   <Component id="pulsedelaylabel" alignment="0" max="32767" attributes="0"/>
                               </Group>
                               <Component id="pulseenergylabel" alignment="0" min="-2" pref="78" max="-2" attributes="0"/>
+                              <Component id="ebetaylabel" min="-2" pref="62" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="pulseenergyvalue" pref="41" max="32767" attributes="0"/>
-                              <Component id="phenergyvalue" alignment="0" pref="41" max="32767" attributes="0"/>
-                              <Component id="pulselengthvalue" max="32767" attributes="0"/>
-                              <Component id="pulserelvalue" alignment="0" max="32767" attributes="0"/>
-                              <Component id="pulsefreqvalue" alignment="0" max="32767" attributes="0"/>
-                              <Component id="pulsedelayvalue" alignment="0" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="pulseenergyvalue" pref="41" max="32767" attributes="0"/>
+                                      <Component id="phenergyvalue" alignment="0" pref="41" max="32767" attributes="0"/>
+                                      <Component id="pulselengthvalue" max="32767" attributes="0"/>
+                                      <Component id="pulserelvalue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="pulsefreqvalue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="pulsedelayvalue" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="phenergyunitlabel" max="32767" attributes="0"/>
+                                      <Component id="pulseenergyunitlabel" max="32767" attributes="0"/>
+                                      <Component id="pulselengthunitlabel" max="32767" attributes="0"/>
+                                      <Component id="pulserelunitlable" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="pulsefrequnitlabel" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="pulsedelayunitlabel" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <Component id="ebetayvalue" min="-2" pref="41" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="ebetayunitlabel" min="-2" pref="34" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="phenergyunitlabel" max="32767" attributes="0"/>
-                              <Component id="pulseenergyunitlabel" max="32767" attributes="0"/>
-                              <Component id="pulselengthunitlabel" max="32767" attributes="0"/>
-                              <Component id="pulserelunitlable" alignment="0" max="32767" attributes="0"/>
-                              <Component id="pulsefrequnitlabel" alignment="0" max="32767" attributes="0"/>
-                              <Component id="pulsedelayunitlabel" alignment="0" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1575,6 +1599,12 @@
                               <Component id="pulserelunitlable" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="ebetayunitlabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="ebetayvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="ebetaylabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1694,6 +1724,25 @@
                     <Property name="text" type="java.lang.String" value="MHz"/>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JLabel" name="ebetayunitlabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="mm"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="ebetayvalue">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="10"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ebetayvalueFocusLost"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ebetayvalueActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="ebetaylabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Beta  y"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="jPanel_exec">
@@ -1793,9 +1842,9 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jPanel_xflux_left" pref="338" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_left" pref="343" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jPanel_xflux_right" pref="293" max="32767" attributes="0"/>
+                              <Component id="jPanel_xflux_right" pref="299" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1822,7 +1871,7 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="338" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="343" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
@@ -1847,7 +1896,7 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="293" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="299" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
@@ -1884,7 +1933,7 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jPanel_xenergy_left" pref="338" max="32767" attributes="0"/>
+                              <Component id="jPanel_xenergy_left" pref="349" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jPanel_xenergy_right" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -1918,7 +1967,7 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="338" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="349" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">

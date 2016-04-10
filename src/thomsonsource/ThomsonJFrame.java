@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.2
+ * @version 2.3
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -200,7 +200,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
             "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
-            "Emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
+            "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
             "Y-shift_mm", "Z-shift_mm", "Laser-electron_angle_mrad"};
@@ -299,15 +299,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         elengthlabel = new javax.swing.JLabel();
         elengthvalue = new javax.swing.JTextField();
         elengthunitlabel = new javax.swing.JLabel();
-        eemitlabel = new javax.swing.JLabel();
-        eemitvalue = new javax.swing.JTextField();
-        eemitunitlabel = new javax.swing.JLabel();
+        eemitxlabel = new javax.swing.JLabel();
+        eemitxvalue = new javax.swing.JTextField();
+        eemitxunitlabel = new javax.swing.JLabel();
         ebetaxlabel = new javax.swing.JLabel();
         ebetaxvalue = new javax.swing.JTextField();
         ebetaxunitlabel = new javax.swing.JLabel();
-        ebetaylabel = new javax.swing.JLabel();
-        ebetayvalue = new javax.swing.JTextField();
-        ebetayunitlabel = new javax.swing.JLabel();
+        eemitylabel = new javax.swing.JLabel();
+        eemityvalue = new javax.swing.JTextField();
+        eemityunitlabel = new javax.swing.JLabel();
         jPanel_ph = new javax.swing.JPanel();
         phenergylabel = new javax.swing.JLabel();
         phenergyvalue = new javax.swing.JTextField();
@@ -327,6 +327,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         pulserelunitlable = new javax.swing.JLabel();
         pulsefrequnitlabel = new javax.swing.JLabel();
         pulsedelayunitlabel = new javax.swing.JLabel();
+        ebetayunitlabel = new javax.swing.JLabel();
+        ebetayvalue = new javax.swing.JTextField();
+        ebetaylabel = new javax.swing.JLabel();
         jPanel_exec = new javax.swing.JPanel();
         startbutton = new javax.swing.JButton();
         MainProgressBar = new javax.swing.JProgressBar();
@@ -1040,7 +1043,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         chargeunitlabel.setText("nQ");
 
-        spreadlabel.setText("Spread");
+        spreadlabel.setText("Gamma-spread");
 
         spreadvalue.setText("0.01");
         spreadvalue.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -1070,21 +1073,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         elengthunitlabel.setText("ps");
 
-        eemitlabel.setText("Emittance");
+        eemitxlabel.setText("X-emittance");
 
-        eemitvalue.setText("5");
-        eemitvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+        eemitxvalue.setText("5");
+        eemitxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-                eemitvalueFocusLost(evt);
+                eemitxvalueFocusLost(evt);
             }
         });
-        eemitvalue.addActionListener(new java.awt.event.ActionListener() {
+        eemitxvalue.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                eemitvalueActionPerformed(evt);
+                eemitxvalueActionPerformed(evt);
             }
         });
 
-        eemitunitlabel.setText("mm*mrad");
+        eemitxunitlabel.setText("mm*mrad");
 
         ebetaxlabel.setText("Beta x");
 
@@ -1102,21 +1105,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         ebetaxunitlabel.setText("mm");
 
-        ebetaylabel.setText("Beta  y");
+        eemitylabel.setText("Y-emittance");
 
-        ebetayvalue.setText("10");
-        ebetayvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+        eemityvalue.setText("5");
+        eemityvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
-                ebetayvalueFocusLost(evt);
+                eemityvalueFocusLost(evt);
             }
         });
-        ebetayvalue.addActionListener(new java.awt.event.ActionListener() {
+        eemityvalue.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ebetayvalueActionPerformed(evt);
+                eemityvalueActionPerformed(evt);
             }
         });
 
-        ebetayunitlabel.setText("mm");
+        eemityunitlabel.setText("mm*mrad");
 
         javax.swing.GroupLayout jPanel_elLayout = new javax.swing.GroupLayout(jPanel_el);
         jPanel_el.setLayout(jPanel_elLayout);
@@ -1125,44 +1128,51 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGroup(jPanel_elLayout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spreadlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(energylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chargelabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(elengthlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(eemitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ebetaxlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ebetaylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_elLayout.createSequentialGroup()
+                        .addComponent(ebetaxlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ebetaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_elLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel_elLayout.createSequentialGroup()
+                                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(energylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(elengthlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(eemitylabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(eemitxlabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(spreadlabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                                        .addComponent(chargelabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel_elLayout.createSequentialGroup()
+                                        .addGap(20, 20, 20)
+                                        .addComponent(energyvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_elLayout.createSequentialGroup()
+                                        .addGap(13, 13, 13)
+                                        .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(spreadvalue, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                                            .addComponent(elengthvalue)
+                                            .addComponent(eemitxvalue)
+                                            .addComponent(eemityvalue)))))
+                            .addComponent(chargevalue, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_elLayout.createSequentialGroup()
-                        .addComponent(ebetaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(ebetaxunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(30, Short.MAX_VALUE))
+                        .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(elengthunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel_elLayout.createSequentialGroup()
+                                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(eemitxunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ebetaxunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(eemityunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())
                     .addGroup(jPanel_elLayout.createSequentialGroup()
                         .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(eemitvalue)
-                                .addComponent(chargevalue)
-                                .addComponent(energyvalue)
-                                .addComponent(spreadvalue, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                                .addComponent(elengthvalue))
-                            .addComponent(ebetayvalue, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel_elLayout.createSequentialGroup()
-                                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(elengthunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(jPanel_elLayout.createSequentialGroup()
-                                        .addComponent(eemitunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 13, Short.MAX_VALUE)))
-                                .addContainerGap())
-                            .addGroup(jPanel_elLayout.createSequentialGroup()
-                                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(energyunitlabel)
-                                    .addComponent(chargeunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(ebetayunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))))))
+                            .addComponent(chargeunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(energyunitlabel))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel_elLayout.setVerticalGroup(
             jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1188,19 +1198,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(elengthvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(eemitunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(eemitvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(eemitlabel))
+                    .addComponent(eemitxunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(eemitxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(eemitxlabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ebetaxlabel)
+                    .addComponent(eemitylabel)
+                    .addComponent(eemityvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(eemityunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(8, 8, 8)
+                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ebetaxunitlabel)
                     .addComponent(ebetaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ebetaxunitlabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ebetayvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ebetaylabel)
-                    .addComponent(ebetayunitlabel)))
+                    .addComponent(ebetaxlabel))
+                .addGap(12, 12, 12))
         );
 
         jPanel_ph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Laser pulse parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1303,11 +1314,27 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelayunitlabel.setText("MHz");
 
+        ebetayunitlabel.setText("mm");
+
+        ebetayvalue.setText("10");
+        ebetayvalue.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                ebetayvalueFocusLost(evt);
+            }
+        });
+        ebetayvalue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ebetayvalueActionPerformed(evt);
+            }
+        });
+
+        ebetaylabel.setText("Beta  y");
+
         javax.swing.GroupLayout jPanel_phLayout = new javax.swing.GroupLayout(jPanel_ph);
         jPanel_ph.setLayout(jPanel_phLayout);
         jPanel_phLayout.setHorizontalGroup(
             jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_phLayout.createSequentialGroup()
+            .addGroup(jPanel_phLayout.createSequentialGroup()
                 .addContainerGap(28, Short.MAX_VALUE)
                 .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -1316,24 +1343,31 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(pulserellabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(pulsefreqlabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(pulsedelaylabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(pulseenergylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pulseenergylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ebetaylabel, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pulseenergyvalue, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                    .addComponent(phenergyvalue, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                    .addComponent(pulselengthvalue)
-                    .addComponent(pulserelvalue)
-                    .addComponent(pulsefreqvalue)
-                    .addComponent(pulsedelayvalue))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(phenergyunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pulseenergyunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pulselengthunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pulserelunitlable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pulsefrequnitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pulsedelayunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(24, 24, 24))
+                .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel_phLayout.createSequentialGroup()
+                        .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(pulseenergyvalue, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                            .addComponent(phenergyvalue, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                            .addComponent(pulselengthvalue)
+                            .addComponent(pulserelvalue)
+                            .addComponent(pulsefreqvalue)
+                            .addComponent(pulsedelayvalue))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(phenergyunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pulseenergyunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pulselengthunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pulserelunitlable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pulsefrequnitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pulsedelayunitlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel_phLayout.createSequentialGroup()
+                        .addComponent(ebetayvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(ebetayunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel_phLayout.setVerticalGroup(
             jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1367,7 +1401,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     .addComponent(pulsedelayvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pulsedelaylabel)
                     .addComponent(pulserelunitlable))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel_phLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ebetayunitlabel)
+                    .addComponent(ebetayvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ebetaylabel))
+                .addContainerGap())
         );
 
         jPanel_exec.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Execution", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1420,7 +1459,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xflux_left.setLayout(jPanel_xflux_leftLayout);
         jPanel_xflux_leftLayout.setHorizontalGroup(
             jPanel_xflux_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 338, Short.MAX_VALUE)
+            .addGap(0, 343, Short.MAX_VALUE)
         );
         jPanel_xflux_leftLayout.setVerticalGroup(
             jPanel_xflux_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1436,7 +1475,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xflux_right.setLayout(jPanel_xflux_rightLayout);
         jPanel_xflux_rightLayout.setHorizontalGroup(
             jPanel_xflux_rightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 293, Short.MAX_VALUE)
+            .addGap(0, 299, Short.MAX_VALUE)
         );
         jPanel_xflux_rightLayout.setVerticalGroup(
             jPanel_xflux_rightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1448,9 +1487,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xfluxLayout.setHorizontalGroup(
             jPanel_xfluxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_xfluxLayout.createSequentialGroup()
-                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_left, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addComponent(jPanel_xflux_right, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
                 .addGap(4, 4, 4))
         );
         jPanel_xfluxLayout.setVerticalGroup(
@@ -1475,7 +1514,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xenergy_left.setLayout(jPanel_xenergy_leftLayout);
         jPanel_xenergy_leftLayout.setHorizontalGroup(
             jPanel_xenergy_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 338, Short.MAX_VALUE)
+            .addGap(0, 349, Short.MAX_VALUE)
         );
         jPanel_xenergy_leftLayout.setVerticalGroup(
             jPanel_xenergy_leftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1502,7 +1541,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_xenergyLayout.setHorizontalGroup(
             jPanel_xenergyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_xenergyLayout.createSequentialGroup()
-                .addComponent(jPanel_xenergy_left, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+                .addComponent(jPanel_xenergy_left, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel_xenergy_right, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -1679,7 +1718,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel_el, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel_el, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel_ph, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1691,7 +1730,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jPanel_slider, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))))
                 .addGap(137, 137, 137))
         );
         jPanel1Layout.setVerticalGroup(
@@ -2368,15 +2407,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         mainWorker.execute();
     }//GEN-LAST:event_startbuttonActionPerformed
 
-    private void eemitvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitvalueFocusLost
+    private void eemitxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setEps(TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6);
-    }//GEN-LAST:event_eemitvalueFocusLost
+        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "5", oldStrings) * 1e-6);
+    }//GEN-LAST:event_eemitxvalueFocusLost
 
-    private void eemitvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitvalueActionPerformed
+    private void eemitxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setEps(TestValueWithMemory(0.1, 100, eemitvalue, "5", oldStrings) * 1e-6);
-    }//GEN-LAST:event_eemitvalueActionPerformed
+        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "5", oldStrings) * 1e-6);
+    }//GEN-LAST:event_eemitxvalueActionPerformed
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
@@ -2619,7 +2658,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xenergydata.func(ang * 1e3, 0) * ElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.tsourceclone.getElectronBunch().setEps(x);
+                            brilForm.tsourceclone.getElectronBunch().setEpsx(x);
+                            brilForm.tsourceclone.getElectronBunch().setEpsy(x);
                             brilForm.tsourceclone.calculateTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
@@ -2826,19 +2866,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * ElectronBunch.E * 1e9));
                 prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
                 prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
-                prop.setProperty(paramNames[4], Double.toString(ebunch.getEps() * 1e6));
-                prop.setProperty(paramNames[5], Double.toString(ebunch.getBetax() * 1e3));
-                prop.setProperty(paramNames[6], Double.toString(ebunch.getBetay() * 1e3));
-                prop.setProperty(paramNames[7], Double.toString(lpulse.getPhotonEnergy() / ElectronBunch.E));
-                prop.setProperty(paramNames[8], Double.toString(lpulse.getPulseEnergy() * 1e3));
-                prop.setProperty(paramNames[9], Double.toString(lpulse.getLength() * 2 / 3e-4));
-                prop.setProperty(paramNames[10], Double.toString(lpulse.getRlength() * 1e3));
-                prop.setProperty(paramNames[11], Double.toString(lpulse.getFq() * 1e-6));
-                prop.setProperty(paramNames[12], Double.toString(lpulse.getDelay() / 3e-4));
-                prop.setProperty(paramNames[13], Double.toString(ebunch.getShift().get(0) * 1e3));
-                prop.setProperty(paramNames[14], Double.toString(ebunch.getShift().get(1) * 1e3));
-                prop.setProperty(paramNames[15], Double.toString(ebunch.getShift().get(2) * 1e3));
-                prop.setProperty(paramNames[16], pulseanglevalue.getText());
+                prop.setProperty(paramNames[4], Double.toString(ebunch.getEpsx() * 1e6));
+                prop.setProperty(paramNames[5], Double.toString(ebunch.getEpsy() * 1e6));
+                prop.setProperty(paramNames[6], Double.toString(ebunch.getBetax() * 1e3));
+                prop.setProperty(paramNames[7], Double.toString(ebunch.getBetay() * 1e3));
+                prop.setProperty(paramNames[8], Double.toString(lpulse.getPhotonEnergy() / ElectronBunch.E));
+                prop.setProperty(paramNames[9], Double.toString(lpulse.getPulseEnergy() * 1e3));
+                prop.setProperty(paramNames[10], Double.toString(lpulse.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[11], Double.toString(lpulse.getRlength() * 1e3));
+                prop.setProperty(paramNames[12], Double.toString(lpulse.getFq() * 1e-6));
+                prop.setProperty(paramNames[13], Double.toString(lpulse.getDelay() / 3e-4));
+                prop.setProperty(paramNames[14], Double.toString(ebunch.getShift().get(0) * 1e3));
+                prop.setProperty(paramNames[15], Double.toString(ebunch.getShift().get(1) * 1e3));
+                prop.setProperty(paramNames[16], Double.toString(ebunch.getShift().get(2) * 1e3));
+                prop.setProperty(paramNames[17], pulseanglevalue.getText());
                 prop.store(fw, "Thomson source parameters");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
@@ -2870,33 +2911,35 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
                 ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
                 elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
-                ebunch.setEps(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
-                eemitvalue.setText(prop.getProperty(paramNames[4], "0"));
-                ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[5], "0")) * 1e-3);
-                ebetaxvalue.setText(prop.getProperty(paramNames[5], "0"));
-                ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
-                ebetayvalue.setText(prop.getProperty(paramNames[6], "0"));
-                lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * ElectronBunch.E);
-                phenergyvalue.setText(prop.getProperty(paramNames[7], "0"));
-                lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * 1e-3);
-                pulseenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
-                lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[9], "0")) / 2 * 3e-4);
-                pulselengthvalue.setText(prop.getProperty(paramNames[9], "0"));
-                lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) * 1e-3);
-                pulserelvalue.setText(prop.getProperty(paramNames[10], "0"));
-                lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e6);
-                pulsefreqvalue.setText(prop.getProperty(paramNames[11], "0"));
-                lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 3e-4);
-                pulsedelayvalue.setText(prop.getProperty(paramNames[12], "0"));
-                ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 1e-3);
-                eshiftxvalue.setText(prop.getProperty(paramNames[13], "0"));
-                ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
-                eshiftyvalue.setText(prop.getProperty(paramNames[14], "0"));
-                ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
-                eshiftzvalue.setText(prop.getProperty(paramNames[15], "0"));
-                lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
-                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3));
-                pulseanglevalue.setText(prop.getProperty(paramNames[16], "0"));
+                ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
+                eemitxvalue.setText(prop.getProperty(paramNames[4], "0"));
+                ebunch.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
+                eemityvalue.setText(prop.getProperty(paramNames[5], "0"));
+                ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
+                ebetaxvalue.setText(prop.getProperty(paramNames[6], "0"));
+                ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
+                ebetayvalue.setText(prop.getProperty(paramNames[7], "0"));
+                lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * ElectronBunch.E);
+                phenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
+                lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
+                pulseenergyvalue.setText(prop.getProperty(paramNames[9], "0"));
+                lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
+                pulselengthvalue.setText(prop.getProperty(paramNames[10], "0"));
+                lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
+                pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
+                lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
+                pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
+                lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
+                pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
+                ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+                eshiftxvalue.setText(prop.getProperty(paramNames[14], "0"));
+                ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+                eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
+                ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
+                eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
+                lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
+                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
+                pulseanglevalue.setText(prop.getProperty(paramNames[17], "0"));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -3083,7 +3126,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.tsourceclone.getElectronBunch().setBetay(x);
                             break;
                         case 4:
-                            gfForm.tsourceclone.getElectronBunch().setEps(x);
+                            gfForm.tsourceclone.getElectronBunch().setEpsx(x);
+                            gfForm.tsourceclone.getElectronBunch().setEpsy(x);
                             break;
                         case 5:
                             gfForm.tsourceclone.getLaserPulse().setRlength(x);
@@ -3117,7 +3161,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.tsourceclone.getElectronBunch().setBetay(x);
                             break;
                         case 4:
-                            gfForm.tsourceclone.getElectronBunch().setEps(x);
+                            gfForm.tsourceclone.getElectronBunch().setEpsx(x);
+                            gfForm.tsourceclone.getElectronBunch().setEpsy(x);
                             break;
                         case 5:
                             gfForm.tsourceclone.getLaserPulse().setRlength(x);
@@ -3476,7 +3521,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                 polForm.tsourceclone.getElectronBunch().setBetay(x);
                                 break;
                             case 4:
-                                polForm.tsourceclone.getElectronBunch().setEps(x);
+                                polForm.tsourceclone.getElectronBunch().setEpsx(x);
+                                polForm.tsourceclone.getElectronBunch().setEpsy(x);
                                 break;
                             case 5:
                                 polForm.tsourceclone.getLaserPulse().setRlength(x);
@@ -3608,6 +3654,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         polarizationCalc.setVisible(true);
     }//GEN-LAST:event_jMenuItemPolarizationActionPerformed
+
+    private void eemityvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemityvalueFocusLost
+        // TODO add your handling code here:
+        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "5", oldStrings) * 1e-6);
+    }//GEN-LAST:event_eemityvalueFocusLost
+
+    private void eemityvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemityvalueActionPerformed
+        // TODO add your handling code here:
+        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "5", oldStrings) * 1e-6);
+    }//GEN-LAST:event_eemityvalueActionPerformed
 
     /*
      * Setting up polarization of X-ray radiation
@@ -4031,9 +4087,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel ebetaylabel;
     private javax.swing.JLabel ebetayunitlabel;
     private javax.swing.JTextField ebetayvalue;
-    private javax.swing.JLabel eemitlabel;
-    private javax.swing.JLabel eemitunitlabel;
-    private javax.swing.JTextField eemitvalue;
+    private javax.swing.JLabel eemitxlabel;
+    private javax.swing.JLabel eemitxunitlabel;
+    private javax.swing.JTextField eemitxvalue;
+    private javax.swing.JLabel eemitylabel;
+    private javax.swing.JLabel eemityunitlabel;
+    private javax.swing.JTextField eemityvalue;
     private javax.swing.JLabel elengthlabel;
     private javax.swing.JLabel elengthunitlabel;
     private javax.swing.JTextField elengthvalue;
