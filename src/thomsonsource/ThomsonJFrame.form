@@ -137,17 +137,19 @@
             <Component class="javax.swing.JComboBox" name="BrillianceCalcBox">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="10">
+                  <StringArray count="12">
                     <StringItem index="0" value="Laser-electron angle"/>
                     <StringItem index="1" value="Delay"/>
                     <StringItem index="2" value="Z-shift"/>
                     <StringItem index="3" value="Beta function"/>
                     <StringItem index="4" value="Emittance"/>
-                    <StringItem index="5" value="Rayleigh length"/>
-                    <StringItem index="6" value="Waist semi-width"/>
-                    <StringItem index="7" value="Energy spread"/>
-                    <StringItem index="8" value="X-ray energy"/>
-                    <StringItem index="9" value="Observation angle"/>
+                    <StringItem index="5" value="X-emittance"/>
+                    <StringItem index="6" value="Y-emittance"/>
+                    <StringItem index="7" value="Rayleigh length"/>
+                    <StringItem index="8" value="Waist semi-width"/>
+                    <StringItem index="9" value="Energy spread"/>
+                    <StringItem index="10" value="X-ray energy"/>
+                    <StringItem index="11" value="Observation angle"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -626,17 +628,19 @@
             <Component class="javax.swing.JComboBox" name="polarizationCalcBox">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="10">
+                  <StringArray count="12">
                     <StringItem index="0" value="Laser-electron angle"/>
                     <StringItem index="1" value="Delay"/>
                     <StringItem index="2" value="Z-shift"/>
                     <StringItem index="3" value="Beta function"/>
                     <StringItem index="4" value="Emittance"/>
-                    <StringItem index="5" value="Rayleigh length"/>
-                    <StringItem index="6" value="Waist semi-width"/>
-                    <StringItem index="7" value="Energy spread"/>
-                    <StringItem index="8" value="X-ray energy"/>
-                    <StringItem index="9" value="Observation angle"/>
+                    <StringItem index="5" value="X-emittance"/>
+                    <StringItem index="6" value="Y-emittance"/>
+                    <StringItem index="7" value="Rayleigh length"/>
+                    <StringItem index="8" value="Waist semi-width"/>
+                    <StringItem index="9" value="Energy spread"/>
+                    <StringItem index="10" value="X-ray energy"/>
+                    <StringItem index="11" value="Observation angle"/>
                   </StringArray>
                 </Property>
               </Properties>
