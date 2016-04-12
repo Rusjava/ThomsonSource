@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.35
+ * @version 2.37
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2805,12 +2805,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         Brilmaxvalue.setText(brilForm.maxValues[sInd]);
         brilForm.minValue = Float.parseFloat(Brilminvalue.getText());
         brilForm.maxValue = Float.parseFloat(Brilmaxvalue.getText());
-        if (sInd == brilForm.minValues.length - 1) {
-            angleValue.setEnabled(false);
-            energyValue.setEnabled(true);
-        } else {
-            angleValue.setEnabled(true);
-            energyValue.setEnabled(false);
+        switch (sInd) {
+            case 0:
+                angleValue.setEnabled(false);
+                energyValue.setEnabled(true);
+            case 11:   
+                angleValue.setEnabled(true);
+                energyValue.setEnabled(false);
+            default:
+                angleValue.setEnabled(true);
+                energyValue.setEnabled(true);
         }
     }//GEN-LAST:event_BrillianceCalcBoxActionPerformed
 
@@ -3472,12 +3476,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polmaxvalue.setText(polForm.maxValues[sInd]);
         polForm.minValue = Float.parseFloat(polminvalue.getText());
         polForm.maxValue = Float.parseFloat(polmaxvalue.getText());
-        if (sInd == polForm.minValues.length - 1) {
-            polAngleValue.setEnabled(false);
-            polEnergyValue.setEnabled(true);
-        } else {
-            polAngleValue.setEnabled(true);
-            polEnergyValue.setEnabled(false);
+        switch (sInd) {
+            case 0:
+                polAngleValue.setEnabled(false);
+                polEnergyValue.setEnabled(true);
+            case 11:   
+                polAngleValue.setEnabled(true);
+                polEnergyValue.setEnabled(false);
+            default:
+                polAngleValue.setEnabled(true);
+                polEnergyValue.setEnabled(true);
         }
     }//GEN-LAST:event_polarizationCalcBoxActionPerformed
 
