@@ -2809,9 +2809,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             case 0:
                 angleValue.setEnabled(false);
                 energyValue.setEnabled(true);
+                break;
             case 11:   
                 angleValue.setEnabled(true);
                 energyValue.setEnabled(false);
+                break;
             default:
                 angleValue.setEnabled(true);
                 energyValue.setEnabled(true);
@@ -3480,9 +3482,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             case 0:
                 polAngleValue.setEnabled(false);
                 polEnergyValue.setEnabled(true);
+                break;
             case 11:   
                 polAngleValue.setEnabled(true);
                 polEnergyValue.setEnabled(false);
+                break;
             default:
                 polAngleValue.setEnabled(true);
                 polEnergyValue.setEnabled(true);
