@@ -3154,6 +3154,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFProgressBar.setStringPainted(true);
         GFCalcStart.setText("Terminate");
         GFCalcSave.setEnabled(false);
+        GFValueSelectionBox.setEnabled(false);
         gfForm.initialize();
         /**
          * Calculating data array. Using SwingWorker class
@@ -3261,6 +3262,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
+                GFValueSelectionBox.setEnabled(true);
             }
 
             /**
