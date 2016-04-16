@@ -477,7 +477,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jEnergyLabel.setText("Energy");
 
         energyValue.setText("44");
-        energyValue.setEnabled(false);
         energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueFocusLost(evt);
@@ -832,7 +831,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPolEnergyLabel.setText("Energy");
 
         polEnergyValue.setText("44");
-        polEnergyValue.setEnabled(false);
         polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueFocusLost(evt);
