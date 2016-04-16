@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.3
+ * @version 2.31
  */
 public class ThompsonSource implements Cloneable {
 
@@ -91,7 +91,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
      */
-    private int npGeometricFactor = 5000000;
+    private int npGeometricFactor = 50000;
 
     /**
      * Maximal number of evaluations in calculations of the brilliance and
