@@ -2019,7 +2019,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public String[] minValues, maxValues;
         public int selectedItemIndex, selectedItemIndexClone;
         public int numberOfItems;
-        public double minValue, maxValue = 35, minValueClone, maxValueClone;
+        public double minValue = 0, maxValue = 50, minValueClone, maxValueClone;
         public double[] conversionValues;
         public ThompsonSource tsourceclone;
         public boolean espread = false;
