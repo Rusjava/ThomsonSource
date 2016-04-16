@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.37
+ * @version 2.40
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -94,7 +94,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
         rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        gfMonteCarloNumberBox = getIntegerFormattedTextField(5000000, 1, 100000000);
+        gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
         brilPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
         xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
         ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
@@ -167,20 +167,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "X-ray energy, keV", "Observation angle, mrad"};
         this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
         this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.brilForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
 
         /**
          * Objects for the exact and approximate GF calculations
          */
-        this.gfForm = new CalcBoxParam(new String[]{"Geometric factor", "Approximate geometric factor"});
+        this.gfForm = new CalcBoxParam(new String[]{"Full flux", "Approximate full flux"});
         this.gfForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
         this.gfForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6};
         this.gfForm.minValues = new String[]{"0", "0", "0", "10", "3", "2.7", "20"};
-        this.gfForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "100"};
+        this.gfForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "100"};
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
         /**
@@ -194,7 +194,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "X-ray energy, keV", "Observation angle, mrad"};
         this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
         this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.polForm.maxValues = new String[]{"35", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
 
@@ -258,6 +258,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFmaxvalue = new javax.swing.JTextField();
         GFmaxvaluelabel = new javax.swing.JLabel();
         GFProgressBar = new javax.swing.JProgressBar();
+        GFValueSelectionBox = new javax.swing.JComboBox();
         GFCalcGraph = new javax.swing.JPanel();
         polarizationCalc = new javax.swing.JFrame();
         polarizationParam = new javax.swing.JPanel();
@@ -436,7 +437,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         Brilmaxvalueunitlabel.setText("mrad");
 
-        Brilmaxvalue.setText("35");
+        Brilmaxvalue.setText("50");
         Brilmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 BrilmaxvalueFocusLost(evt);
@@ -599,8 +600,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         );
 
-        gfCalc.setTitle("Geometric factor box");
-        gfCalc.setMinimumSize(new java.awt.Dimension(586, 313));
+        gfCalc.setTitle("Full flux box");
+        gfCalc.setMinimumSize(new java.awt.Dimension(700, 313));
 
         GFParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -643,7 +644,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         GFmaxvalueunitlabel.setText("mrad");
 
-        GFmaxvalue.setText("35");
+        GFmaxvalue.setText("50");
         GFmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 GFmaxvalueFocusLost(evt);
@@ -657,36 +658,43 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         GFmaxvaluelabel.setText("Max value");
 
+        GFValueSelectionBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Full flux", "Geopmetric factor" }));
+        GFValueSelectionBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GFValueSelectionBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout GFParamLayout = new javax.swing.GroupLayout(GFParam);
         GFParam.setLayout(GFParamLayout);
         GFParamLayout.setHorizontalGroup(
             GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(GFParamLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(GFParamLayout.createSequentialGroup()
-                        .addComponent(GFCalcBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(42, 42, 42))
+                .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFminvaluelabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GFminvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(GFminvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(GFminvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(13, 13, 13)
                         .addComponent(GFmaxvaluelabel, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GFmaxvalue, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(GFmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(GFmaxvalueunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(GFValueSelectionBox, 0, 138, Short.MAX_VALUE))
+                    .addComponent(GFCalcBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(GFParamLayout.createSequentialGroup()
                         .addComponent(GFCalcStart)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(GFCalcSave, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(GFProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                    .addComponent(GFProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(106, Short.MAX_VALUE))
         );
         GFParamLayout.setVerticalGroup(
             GFParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -705,11 +713,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(GFmaxvalue)
                         .addComponent(GFmaxvaluelabel)
                         .addComponent(GFminvalue)
-                        .addComponent(GFminvalueunitlabel)))
+                        .addComponent(GFminvalueunitlabel)
+                        .addComponent(GFValueSelectionBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
-        GFCalcGraph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Geometric factor", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        GFCalcGraph.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Full flux", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         GFCalcGraph.setPreferredSize(new java.awt.Dimension(418, 216));
         GFCalcGraph.setRequestFocusEnabled(false);
 
@@ -729,7 +738,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         gfCalcLayout.setHorizontalGroup(
             gfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(GFParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
+            .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 734, Short.MAX_VALUE)
         );
         gfCalcLayout.setVerticalGroup(
             gfCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -783,7 +792,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polmaxvalueunitlabel.setText("mrad");
 
-        polmaxvalue.setText("35");
+        polmaxvalue.setText("50");
         polmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polmaxvalueFocusLost(evt);
@@ -1794,7 +1803,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuCalc.add(jMenuItemBrilliance);
 
-        jMenuItemGeometricFactor.setText("Geometric factor...");
+        jMenuItemGeometricFactor.setText("Full flux/Geometric factor...");
         jMenuItemGeometricFactor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemGeometricFactorActionPerformed(evt);
@@ -2024,12 +2033,20 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         double angle = 0, angleclone, energy = 44, energyclone;
         private File file = null;
 
+        /**
+         * Constructor
+         *
+         * @param keys
+         */
         public CalcBoxParam(String[] keys) {
             super();
             this.keys = keys;
             this.chartParam = new LinearChartParam();
         }
 
+        /**
+         * Initializing code
+         */
         public void initialize() {
             working = true;
             try {
@@ -2044,10 +2061,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             energyclone = energy;
             selectedItemIndexClone = selectedItemIndex;
         }
-        /*
+
+        /**
          * Saving the results into the text file
          */
-
         public void save() {
             JFileChooser fo = new JFileChooser(file);
             fo.setDialogTitle(savetext);
@@ -2079,13 +2096,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
             }
         }
-        /*
-         * Updatin or creating chart and chartpanel
-         */
 
+        /**
+         * Updating or creating Chart and ChartPanel
+         */
         public void updateGraph(JPanel panel, String label) {
             if (chartPanel == null) {
-                /**
+                /*
                  * Creating chart and plot dataset
                  */
                 chart = createLineChart(createLineDataset(chartParam, keys), plotLabels[selectedItemIndexClone], label);
@@ -2108,17 +2125,25 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 chart.getXYPlot().getDomainAxis().setLabel(plotLabels[selectedItemIndexClone]);
                 chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
                         chartParam.getUMax() + MIN_DIF);
+                chart.getXYPlot().getRangeAxis().setLabel(label);
                 chart.fireChartChanged();
             }
             working = false;
         }
-        /*
+
+        /**
          * Canceling worker
          */
-
         public void cancel() {
             working = false;
             worker.cancel(true);
+        }
+
+        /**
+         * Returning the array with graph keys
+         */
+        public String[] getKeys() {
+            return keys;
         }
     }
 
@@ -2383,7 +2408,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("########.##")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + (new DecimalFormat("####.####")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -2810,7 +2835,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 angleValue.setEnabled(true);
                 energyValue.setEnabled(false);
                 break;
-            case 11:   
+            case 11:
                 angleValue.setEnabled(false);
                 energyValue.setEnabled(true);
                 break;
@@ -3171,8 +3196,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             break;
                     }
                     gfForm.tsourceclone.calculateGeometricFactor();
+                    gfForm.tsourceclone.calculateTotalFlux();
                     setStatusBar((xp - offset) / step / (xsize - 1));
-                    return gfForm.tsourceclone.getGeometricFactor();
+                    return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getGeometricFactor()
+                            : gfForm.tsourceclone.getGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
                 });
                 //Approximate geopmetric factor
                 func.add(xp -> {
@@ -3205,7 +3232,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.tsourceclone.getElectronBunch().setyWidth(x);
                             break;
                     }
-                    return gfForm.tsourceclone.getApproxGeometricFactor();
+                    gfForm.tsourceclone.calculateTotalFlux();
+                    return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getApproxGeometricFactor()
+                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
                 });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;
@@ -3220,7 +3249,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 } catch (InterruptedException | CancellationException ex) {
 
                 }
-                gfForm.updateGraph(GFCalcGraph, "");
+
+                if (GFValueSelectionBox.getSelectedIndex() == 1) {
+                    gfForm.updateGraph(GFCalcGraph, " ");
+                    gfForm.getKeys()[0]="Geometric factor";
+                    gfForm.getKeys()[1]="Approximate geometric factor";
+                } else {
+                    gfForm.updateGraph(GFCalcGraph, "ph/s\u00B710\u00B9\u2075");
+                    gfForm.getKeys()[0]="Full flux";
+                    gfForm.getKeys()[1]="Approximate full flux";
+                }
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
             }
@@ -3483,7 +3521,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 polAngleValue.setEnabled(true);
                 polEnergyValue.setEnabled(false);
                 break;
-            case 11:   
+            case 11:
                 polAngleValue.setEnabled(false);
                 polEnergyValue.setEnabled(true);
                 break;
@@ -3707,6 +3745,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "5", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemityvalueActionPerformed
+
+    private void GFValueSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFValueSelectionBoxActionPerformed
+        // Selecting either the full flux of geometric factor:
+        if (GFValueSelectionBox.getSelectedIndex() == 0) {
+            gfCalc.setTitle("Full flux box");
+            ((TitledBorder) GFCalcGraph.getBorder()).setTitle("Full flux");
+        } else {
+            gfCalc.setTitle("Geometric factor box");
+            ((TitledBorder) GFCalcGraph.getBorder()).setTitle("Geometric factor");
+        }
+        GFCalcGraph.repaint();
+    }//GEN-LAST:event_GFValueSelectionBoxActionPerformed
 
     /*
      * Setting up polarization of X-ray radiation
@@ -4108,6 +4158,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JButton GFCalcStart;
     private javax.swing.JPanel GFParam;
     private javax.swing.JProgressBar GFProgressBar;
+    private javax.swing.JComboBox GFValueSelectionBox;
     private javax.swing.JTextField GFmaxvalue;
     private javax.swing.JLabel GFmaxvaluelabel;
     private javax.swing.JLabel GFmaxvalueunitlabel;
