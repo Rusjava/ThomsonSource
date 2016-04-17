@@ -32,7 +32,7 @@ version: 1.0
     
         <p>The application consists of the main window, where one can specify the parameters of the Thompson source as well as plot
 	photon flux, photon energy in the form of 2D color plots and 1D line plots, and three calculation boxes where one can obtain 
-        and plot estimates of the geometric factor, spectral brilliance and polarization parameters in the specified direction and at the 
+        and plot estimates of the spectral brilliance, geometric factor or full flux and polarization parameters in the specified direction and at the 
         specified energy as function of a number of parameters.</p>
     
 	<p>The parameters from the main window can be saved to the file and loaded from the file. The plots from the calculation boxes 
@@ -87,12 +87,13 @@ version: 1.0
 	 
 	<h2>Calculation menu</h2>
 	<p>The <em>Calculation</em> menu provides access to the three calculations boxes: for the spectral brilliance of the X-ray radiation, 
-	exact and approximate geometric factor and radiation polarization parameters (the three Stocks parameters and degree of polarization). These quantities are 
-        calculated by pressing <em>Calculate</em> button and can be plotted as a function of a number of parameters, which can be chosen 
-        from a drop-down box. The desirable parameter range can be entered using two text fields. Other Thompson source parameters are taken 
-	from the main window of the program. The results of calculation can be saved as a text file using <em>Save</em> button.</p>
+	exact and approximate geometric factor (or exact and approximate full photon flux) and radiation polarization parameters (the three 
+        Stocks parameters and degree of polarization). These quantities are calculated by pressing <em>Calculate</em> button and can be plotted 
+        as a function of a number of parameters, which can be chosen from a drop-down box. The desirable parameter range can be entered using 
+        two text fields. Other Thompson source parameters are taken from the main window of the program. The results of calculation can be saved
+        as a text file using <em>Save</em> button.</p>
 	
-	<p>The brilliance calculation and polarization boxes also allow to choose whether the transversal velocity spread of the electrons is
+	<p>The brilliance calculation and polarization boxes also allow one to choose whether the transversal velocity spread of the electrons is
             taken into account. The observation angle and X-ray energy may be also specified if necessary.</p>
 	
 	<h2>Shadow menu</h2>
