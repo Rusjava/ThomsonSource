@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.15
+ * @version 2.31
  */
 public class ThompsonSource implements Cloneable {
 
@@ -91,7 +91,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
      */
-    private int npGeometricFactor = 5000000;
+    private int npGeometricFactor = 50000;
 
     /**
      * Maximal number of evaluations in calculations of the brilliance and
@@ -339,9 +339,9 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * A multi-threaded method calculating the full polarization tensor density in a given direction
-     * for a given X-ray photon energy taking into account electron transversal
-     * pulse spread
+     * A multi-threaded method calculating the full polarization tensor density
+     * in a given direction for a given X-ray photon energy taking into account
+     * electron transversal pulse spread
      *
      * @param n direction
      * @param v0 normalized electron velocity
@@ -1029,6 +1029,19 @@ public class ThompsonSource implements Cloneable {
      */
     public double getGeometricFactor() {
         return geometricFactor;
+    }
+
+    /**
+     * Approximate geometric factor calculated neglecting the "hourglass" effect. It assumes values from 0 to 1.
+     *
+     * @return the approximate geometricFactor
+     */
+    public double getApproxGeometricFactor() {
+        double cs2 = (1 + lp.getDirection().innerProduct(new BasicVector(new double[]{0, 0, 1}))) / 2;
+        double sn2 = (1 - lp.getDirection().innerProduct(new BasicVector(new double[]{0, 0, 1}))) / 2;
+        double w2 = lp.getWidth2(0) + eb.getWidth2(0);
+        double l2 = lp.getLength() * lp.getLength() + eb.getLength() * eb.getLength();
+        return Math.sqrt(w2 / (l2 * sn2 + w2 * cs2) / cs2);
     }
 
     /**

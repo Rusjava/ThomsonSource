@@ -30,7 +30,7 @@ import org.la4j.vector.dense.BasicVector;
  * system of units
  *
  * @author Ruslan Feshchenko
- * @version 1.2
+ * @version 1.3
  */
 public class ElectronBunch implements Cloneable {
 
@@ -112,17 +112,31 @@ public class ElectronBunch implements Cloneable {
     }
 
     /**
-     * @return the eps
+     * @return returning the emittance in the x direction
      */
-    public double getEps() {
-        return eps;
+    public double getEpsx() {
+        return epsx;
     }
 
     /**
-     * @param eps the eps to set
+     * @param epsx setting the emittance in the x direction
      */
-    public void setEps(double eps) {
-        this.eps = eps;
+    public void setEpsx(double epsx) {
+        this.epsx = epsx;
+    }
+    
+    /**
+     * @return returning the emittance in the y direction
+     */
+    public double getEpsy() {
+        return epsy;
+    }
+
+    /**
+     * @param epsy setting the emittance in the y direction
+     */
+    public void setEpsy(double epsy) {
+        this.epsy = epsy;
     }
 
     /**
@@ -174,7 +188,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the x direction
      */
     public double getxWidth(double z) {
-        return Math.sqrt((getBetax() + z * z / getBetax()) * getEps() / getGamma());
+        return Math.sqrt((getBetax() + z * z / getBetax()) * getEpsx() / getGamma());
     }
 
     /**
@@ -183,7 +197,7 @@ public class ElectronBunch implements Cloneable {
      * @param w width
      */
     public void setxWidth(double w) {
-        setBetax(w * w / getEps() * getGamma());
+        setBetax(w * w / getEpsx() * getGamma());
     }
 
     /**
@@ -193,7 +207,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the x direction squared
      */
     public double getxWidth2(double z) {
-        return (getBetax() + z * z / getBetax()) * getEps() / getGamma();
+        return (getBetax() + z * z / getBetax()) * getEpsx() / getGamma();
     }
 
     /**
@@ -202,7 +216,7 @@ public class ElectronBunch implements Cloneable {
      * @return velocity spread in the x direction
      */
     public double getXSpread() {
-        return Math.sqrt(getEps() / getGamma() / getBetax());
+        return Math.sqrt(getEpsx() / getGamma() / getBetax());
     }
 
     /**
@@ -212,7 +226,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the y direction
      */
     public double getyWidth(double z) {
-        return Math.sqrt((getBetay() + z * z / getBetay()) * getEps() / getGamma());
+        return Math.sqrt((getBetay() + z * z / getBetay()) * getEpsy() / getGamma());
     }
 
     /**
@@ -221,7 +235,7 @@ public class ElectronBunch implements Cloneable {
      * @param w width
      */
     public void setyWidth(double w) {
-        setBetay(w * w / getEps() * getGamma());
+        setBetay(w * w / getEpsy() * getGamma());
     }
 
     /**
@@ -231,7 +245,7 @@ public class ElectronBunch implements Cloneable {
      * @return width in the x direction squared
      */
     public double getyWidth2(double z) {
-        return (getBetay() + z * z / getBetay()) * getEps() / getGamma();
+        return (getBetay() + z * z / getBetay()) * getEpsy() / getGamma();
     }
 
     /**
@@ -240,7 +254,7 @@ public class ElectronBunch implements Cloneable {
      * @return velocity spread in the y direction
      */
     public double getYSpread() {
-        return Math.sqrt(getEps() / getGamma() / getBetay());
+        return Math.sqrt(getEpsy() / getGamma() / getBetay());
     }
 
     /**
@@ -307,9 +321,14 @@ public class ElectronBunch implements Cloneable {
     private double length = 0.0045;
 
     /**
-     * Electron transversal bunch emittance, m*rad
+     * Electron transversal bunch emittance in x direction, m*rad
      */
-    private double eps = 5e-6;
+    private double epsx = 5e-6;
+    
+    /**
+     * Electron transversal bunch emittance in y direction, m*rad
+     */
+    private double epsy = 5e-6;
 
     /**
      * Electron bunch beta function in x direction, m
@@ -330,4 +349,5 @@ public class ElectronBunch implements Cloneable {
      * The charge of electron
      */
     public static final double E = 1.602e-19;
+
 }
