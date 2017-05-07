@@ -617,25 +617,23 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double volumeFlux(Vector r) {
-        double u, z0, z, z1, x0, x, x1, y0, y, y1, sn, cs, K, len;
+        double u, z, z1, x, x1, y, y1, sn, cs, K, len;
         len = Math.sqrt(lp.getLength() * lp.getLength()
                 + eb.getLength() * eb.getLength());
         sn = lp.getDirection().get(1);
         cs = lp.getDirection().get(2);
-        x0 = eb.getShift().get(0);
-        y0 = eb.getShift().get(1);
-        z0 = eb.getShift().get(2);
         x = r.get(0);
         y = r.get(1);
         z = r.get(2);
+        Vector r1 = r.subtract(eb.getShift());
         x1 = x;
         y1 = -sn * z + cs * y;
         z1 = cs * z + sn * y;
-        K = Math.pow((z + z1 - z0 - lp.getDelay()) / len, 2);
+        K = Math.pow((z + r1.get(2) - lp.getDelay()) / len, 2);
         u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0)
                 + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0)
                 + eb.getyWidth2(0.0))) / len * Math.exp(-K)
-                * eb.tSpatialDistribution(r)
+                * eb.tSpatialDistribution(r1)
                 * lp.tSpatialDistribution(new BasicVector(new double[]{x1, y1, z1}));
         return new Double(u).isNaN() ? 0 : u;
     }
