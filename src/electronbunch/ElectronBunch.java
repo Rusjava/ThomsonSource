@@ -63,7 +63,6 @@ public class ElectronBunch extends AbstractElectronBunch {
     public double tSpatialDistribution(Vector r) {
         double K = Math.pow((r.get(0) - getShift().get(0)), 2) / getxWidth2(r.get(2) - getShift().get(2))
                 + Math.pow((r.get(1) - getShift().get(1)), 2) / getyWidth2(r.get(2) - getShift().get(2));
-
         return Math.exp(-K) / getxWidth(r.get(2) - getShift().get(2))
                 / getyWidth(r.get(2) - getShift().get(2)) / Math.PI;
     }

@@ -625,15 +625,14 @@ public class ThompsonSource implements Cloneable {
         x = r.get(0);
         y = r.get(1);
         z = r.get(2);
-        Vector r1 = r.subtract(eb.getShift());
         x1 = x;
         y1 = -sn * z + cs * y;
         z1 = cs * z + sn * y;
-        K = Math.pow((z + r1.get(2) - lp.getDelay()) / len, 2);
+        K = Math.pow((z + z1 - eb.getShift().get(2) - lp.getDelay()) / len, 2);
         u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0)
                 + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0)
                 + eb.getyWidth2(0.0))) / len * Math.exp(-K)
-                * eb.tSpatialDistribution(r1)
+                * eb.tSpatialDistribution(r)
                 * lp.tSpatialDistribution(new BasicVector(new double[]{x1, y1, z1}));
         return new Double(u).isNaN() ? 0 : u;
     }
