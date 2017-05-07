@@ -16,11 +16,15 @@
  */
 package thomsonsource;
 
+import laserpulse.LaserPulse;
+import electronbunch.AbstractElectronBunch;
+import electronbunch.ElectronBunch;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
+import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Vector;
@@ -35,7 +39,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.31
+ * @version 3.0
  */
 public class ThompsonSource implements Cloneable {
 
@@ -45,7 +49,7 @@ public class ThompsonSource implements Cloneable {
      * @param l
      * @param b
      */
-    public ThompsonSource(LaserPulse l, ElectronBunch b) {
+    public ThompsonSource(LaserPulse l, AbstractElectronBunch b) {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
@@ -134,8 +138,8 @@ public class ThompsonSource implements Cloneable {
      */
     private AtomicInteger counter;
 
-    private LaserPulse lp;
-    private ElectronBunch eb;
+    private AbstractLaserPulse lp;
+    private AbstractElectronBunch eb;
 
     private double[] ksi = null;
 
@@ -155,7 +159,7 @@ public class ThompsonSource implements Cloneable {
      *
      * @return
      */
-    public ElectronBunch getElectronBunch() {
+    public AbstractElectronBunch getElectronBunch() {
         return eb;
     }
 
@@ -164,7 +168,7 @@ public class ThompsonSource implements Cloneable {
      *
      * @return
      */
-    public LaserPulse getLaserPulse() {
+    public AbstractLaserPulse getLaserPulse() {
         return lp;
     }
 
@@ -627,12 +631,12 @@ public class ThompsonSource implements Cloneable {
         x1 = x;
         y1 = -sn * z + cs * y;
         z1 = cs * z + sn * y;
-        K = Math.pow((z + z1 - z0 - lp.getDelay()) / len, 2)
-                + Math.pow((x - x0), 2) / eb.getxWidth2(z - z0) + Math.pow((y - y0), 2) / eb.getyWidth2(z - z0)
-                + (Math.pow(x1, 2) + Math.pow(y1, 2)) / lp.getWidth2(z1);
-        u = 2.0 / Math.pow(Math.PI, 1.5) * Math.sqrt((lp.getWidth2(0.0)
+        K = Math.pow((z + z1 - z0 - lp.getDelay()) / len, 2);
+        u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0)
                 + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0)
-                + eb.getyWidth2(0.0))) / len / lp.getWidth2(z1) / eb.getxWidth(z - z0) / eb.getyWidth(z - z0) * Math.exp(-K);
+                + eb.getyWidth2(0.0))) / len * Math.exp(-K)
+                * eb.tSpatialDistribution(r)
+                * lp.tSpatialDistribution(new BasicVector(new double[]{x1, y1, z1}));
         return new Double(u).isNaN() ? 0 : u;
     }
 
@@ -1032,7 +1036,8 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Approximate geometric factor calculated neglecting the "hourglass" effect. It assumes values from 0 to 1.
+     * Approximate geometric factor calculated neglecting the "hourglass"
+     * effect. It assumes values from 0 to 1.
      *
      * @return the approximate geometricFactor
      */

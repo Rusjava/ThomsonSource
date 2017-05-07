@@ -16,6 +16,8 @@
  */
 package thomsonsource;
 
+import laserpulse.LaserPulse;
+import electronbunch.ElectronBunch;
 import java.text.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
