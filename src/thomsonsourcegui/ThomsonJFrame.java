@@ -69,7 +69,7 @@ import static TextUtilities.MyTextUtilities.*;
 import java.net.URL;
 import java.util.function.Function;
 import shadowfileconverter.ShadowFiles;
-import thomsonsource.ThompsonSource;
+import thomsonsource.LinearThomsonSource;
 
 /**
  *
@@ -86,7 +86,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION);
         this.ebunch = new ElectronBunch();
         this.lpulse = new LaserPulse();
-        this.tsource = new ThompsonSource(lpulse, ebunch);
+        this.tsource = new LinearThomsonSource(lpulse, ebunch);
         tsource.setPolarization(new double[]{0, 0, 0});
         this.xsize = 300;
         this.ysize = 200;
@@ -2008,7 +2008,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     private ElectronBunch ebunch;
     private LaserPulse lpulse;
-    private ThompsonSource tsource, tsourceRayClone = null;
+    private LinearThomsonSource tsource, tsourceRayClone = null;
 
     /**
      * Parameters for the calculation boxes
@@ -2022,7 +2022,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public int numberOfItems;
         public double minValue = 0, maxValue = 50, minValueClone, maxValueClone;
         public double[] conversionValues;
-        public ThompsonSource tsourceclone;
+        public LinearThomsonSource tsourceclone;
         public boolean espread = false;
         public boolean working = false;
         public SwingWorker<Void, Void> worker;
@@ -2051,7 +2051,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public void initialize() {
             working = true;
             try {
-                tsourceclone = (ThompsonSource) tsource.clone();
+                tsourceclone = (LinearThomsonSource) tsource.clone();
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -3015,7 +3015,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
         try {
-            tsourceRayClone = (ThompsonSource) tsource.clone();
+            tsourceRayClone = (LinearThomsonSource) tsource.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
@@ -3030,7 +3030,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
                 AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
-                try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
+                try (ShadowFiles shadowFile = new ShadowFiles(true, true, LinearThomsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
                     for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
                         if (isCancelled()) {
@@ -3576,7 +3576,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 });
                 double[] rescash = new double[]{1, 0, 0, 0};
                 double[] xpcash = new double[]{-1};
-                for (int i = 0; i < ThompsonSource.NUMBER_OF_POL_PARAM; i++) {
+                for (int i = 0; i < LinearThomsonSource.NUMBER_OF_POL_PARAM; i++) {
                     int[] ia = new int[]{i};
                     func.add(xp -> {
                         double[] res;

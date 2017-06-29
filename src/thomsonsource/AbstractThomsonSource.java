@@ -37,15 +37,30 @@ import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- *
- * @author Ruslan
+ * @version 1.0
+ * 
+ * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
     
     /**
+     * Constructor
+     *
+     * @param l
+     * @param b
+     */
+    public AbstractThomsonSource(LaserPulse l, AbstractElectronBunch b) {
+        this.threadNumber = Runtime.getRuntime().availableProcessors();
+        this.lp = l;
+        this.eb = b;
+        this.counter = new AtomicInteger();
+        this.partialFlux = new DoubleAdder();
+    }
+    
+    /**
      * Multiple for the range
      */
-    protected static final double INT_RANGE = 3;
+    private static final double INT_RANGE = 3;
     /**
      * The number of columns in Shadow files
      */
@@ -112,21 +127,30 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * Counter of ray iterations
      */
     protected AtomicInteger counter;
+    
+    /**
+     * A pointer for laser pulse
+     */  
     protected AbstractLaserPulse lp;
+    
+    /**
+     * A pointer for electron bunch
+     */
     protected AbstractElectronBunch eb;
+    
+    /**
+     * An array for laser pulse polarization state
+     */
     protected double[] ksi = null;
-
-    public AbstractThomsonSource() {
-    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((ThompsonSource) tm).eb = (ElectronBunch) this.eb.clone();
-        ((ThompsonSource) tm).lp = (LaserPulse) this.lp.clone();
-        ((ThompsonSource) tm).counter = new AtomicInteger();
-        ((ThompsonSource) tm).partialFlux = new DoubleAdder();
-        ((ThompsonSource) tm).ksi = (double[]) ksi.clone();
+        ((LinearThomsonSource) tm).eb = (ElectronBunch) this.eb.clone();
+        ((LinearThomsonSource) tm).lp = (LaserPulse) this.lp.clone();
+        ((LinearThomsonSource) tm).counter = new AtomicInteger();
+        ((LinearThomsonSource) tm).partialFlux = new DoubleAdder();
+        ((LinearThomsonSource) tm).ksi = (double[]) ksi.clone();
         return tm;
     }
 
@@ -888,5 +912,173 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         return pol;
     }
+   
+    /**
+     * An auxiliary class for Romberg integrator for flux calculations
+     */
+    private class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
+
+        private final double e;
+        private final Vector n, v0;
+        private final BaseAbstractUnivariateIntegrator inergrator;
+
+        public UnivariateFrequencyFluxSpreadOuter(double e, Vector v0, Vector n) {
+            this.e = e;
+            this.v0 = v0;
+            this.n = n;
+            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                    RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        }
+
+        @Override
+        public double value(double phi) {
+            UnivariateFunction func
+                    = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
+            try {
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+            } catch (TooManyEvaluationsException ex) {
+                return 0;
+            }
+        }
+    }
     
+    /**
+     * An auxiliary class for Romberg integrator for flux calculations
+     */
+    private class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
+
+        private final double snphi, csphi, e;
+        private final Vector n, v0;
+
+        public UnivariateFrequencyFluxSpreadInner(double phi, double e, Vector v0, Vector n) {
+            this.snphi = Math.sin(phi);
+            this.csphi = Math.cos(phi);
+            this.e = e;
+            this.n = n;
+            this.v0 = v0;
+        }
+
+        @Override
+        public double value(double theta) {
+            double u, sn = Math.sin(theta);
+            Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
+            Vector dv = v.subtract(v0);
+            u = theta * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+            return new Double(u).isNaN() ? 0 : u;
+        }
+    }
+    
+    /**
+     * An auxiliary class for Romberg integrator for polarization calculations
+     */
+    private class UnivariateFrequencyPolarizationSpreadOuter implements UnivariateFunction {
+
+        private final double e;
+        private final Vector n, v0;
+        private final int index;
+        private final BaseAbstractUnivariateIntegrator inergrator;
+
+        public UnivariateFrequencyPolarizationSpreadOuter(double e, Vector v0, Vector n, int index) {
+            this.e = e;
+            this.v0 = v0;
+            this.n = n;
+            this.index = index;
+            this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                    RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        }
+
+        @Override
+        public double value(double phi) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
+            UnivariateFunction func
+                    = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
+            try {
+                double rs = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                return rs;
+            } catch (TooManyEvaluationsException ex) {
+                return 0;
+            }
+        }
+    }
+    
+    /**
+     * An auxiliary class for Romberg integrator for polarization calculations
+     */
+    private class UnivariateFrequencyPolarizationSpreadInner implements UnivariateFunction {
+
+        private final double snphi, csphi, e;
+        private final int index;
+        private final Vector n, v0;
+
+        public UnivariateFrequencyPolarizationSpreadInner(double phi, double e, Vector v0, Vector n, int index) {
+            this.snphi = Math.sin(phi);
+            this.csphi = Math.cos(phi);
+            this.e = e;
+            this.n = n;
+            this.index = index;
+            this.v0 = v0;
+        }
+
+        @Override
+        public double value(double theta) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
+            double u, sn = Math.sin(theta);
+            Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
+            Vector dv = v.subtract(v0);
+            u = theta * directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1));
+            return new Double(u).isNaN() ? 0 : u;
+        }
+    }
+    
+    /**
+     * An auxiliary class for the brilliance calculations
+     */
+    private class UnivariateVolumeFlux implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+
+        public UnivariateVolumeFlux(Vector r0, Vector n0) {
+            this.r0 = r0;
+            this.n0 = n0;
+        }
+
+        @Override
+        public double value(double x) {
+            Vector r;
+            r = r0.add(n0.multiply(x));
+            double y = volumeFlux(r);
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            return y;
+        }
+    }
+    
+    /**
+     * A custom exception class
+     */
+    public static class LocalException extends RuntimeException {
+
+        // The x value that caused the problem.
+        private final double x;
+
+        /**
+         * A class for exceptions in custom functions
+         * @param x
+         */
+        public LocalException(double x) {
+            this.x = x;
+        }
+
+        public double getX() {
+            return x;
+        }
+    }
 }
