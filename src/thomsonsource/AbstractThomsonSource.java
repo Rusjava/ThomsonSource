@@ -37,8 +37,9 @@ import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * @version 1.0
+ * An abstract class for Thomson source. Methods that calculated scattering by one electron need to be defined.
  * 
+ * @version 1.0
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {

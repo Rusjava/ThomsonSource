@@ -21,7 +21,7 @@ import electronbunch.AbstractElectronBunch;
 import org.la4j.Vector;
 
 /**
- * The main class containing all physics of LEXG
+ * The main class containing all physics of LEXG in linear approximation
  *
  * @author Ruslan Feshchenko
  * @version 3.0

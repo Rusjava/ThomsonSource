@@ -16,10 +16,68 @@
  */
 package thomsonsource;
 
+import electronbunch.AbstractElectronBunch;
+import laserpulse.LaserPulse;
+import org.la4j.Vector;
+
 /**
+ * The main class containing all physics of LEXG in non-linear case
+ * 
  * @version 1.0
  * @author Ruslan Feshchenko
  */
-public class NonLinearThomsonSource {
+public class NonLinearThomsonSource extends AbstractThomsonSource {
+
+    /**
+     * Constructor
+     * 
+     * @param l
+     * @param b
+     * @param n - non-linear order number
+     */
+    /**
+     * The non-linear order number
+     */
+    private int n;
+    
+    public NonLinearThomsonSource(LaserPulse l, AbstractElectronBunch b, int n) {
+        super(l, b);
+    }
+
+    @Override
+    public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double directionFlux(Vector n, Vector v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double directionEnergy(Vector n, Vector v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Setting the non-linear order number
+     * @return the n
+     */
+    public int getN() {
+        return n;
+    }
+
+    /**
+     * Getting the non-linear order number
+     * @param n the n to set
+     */
+    public void setN(int n) {
+        this.n = n;
+    }
     
 }
