@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
 import laserpulse.AbstractLaserPulse;
-import laserpulse.LaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.BaseAbstractUnivariateIntegrator;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
@@ -50,7 +49,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param l
      * @param b
      */
-    public AbstractThomsonSource(LaserPulse l, AbstractElectronBunch b) {
+    public AbstractThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b) {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
@@ -79,6 +78,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * The full Thomson cross-section
      */
     public static final double SIGMA_T = 6.65e-29;
+    /**
+     * The saturating potential in CGS system
+     */
+    public static final double AS = 1.704509e3;
     /**
      * Angle range for rays exported for Shadow in the X-direction
      */
@@ -147,11 +150,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((LinearThomsonSource) tm).eb = (ElectronBunch) this.eb.clone();
-        ((LinearThomsonSource) tm).lp = (LaserPulse) this.lp.clone();
-        ((LinearThomsonSource) tm).counter = new AtomicInteger();
-        ((LinearThomsonSource) tm).partialFlux = new DoubleAdder();
-        ((LinearThomsonSource) tm).ksi = (double[]) ksi.clone();
+        ((AbstractThomsonSource) tm).eb = (AbstractElectronBunch) this.eb.clone();
+        ((AbstractThomsonSource) tm).lp = (AbstractLaserPulse) this.lp.clone();
+        ((AbstractThomsonSource) tm).counter = new AtomicInteger();
+        ((AbstractThomsonSource) tm).partialFlux = new DoubleAdder();
+        ((AbstractThomsonSource) tm).ksi = (double[]) ksi.clone();
         return tm;
     }
 

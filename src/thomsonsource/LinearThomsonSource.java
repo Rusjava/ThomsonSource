@@ -16,8 +16,8 @@
  */
 package thomsonsource;
 
-import laserpulse.LaserPulse;
 import electronbunch.AbstractElectronBunch;
+import laserpulse.AbstractLaserPulse;
 import org.la4j.Vector;
 
 /**
@@ -34,7 +34,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
      * @param l
      * @param b
      */
-    public LinearThomsonSource(LaserPulse l, AbstractElectronBunch b) {
+    public LinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b) {
         super(l,b);
         calculateTotalFlux();
         calculateGeometricFactor();

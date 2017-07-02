@@ -74,10 +74,10 @@ public abstract class AbstractElectronBunch implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((ElectronBunch) tm).setShift(new BasicVector(new double[]{0.0, 0.0, 0.0}));
-        ((ElectronBunch) tm).getShift().set(0, this.getShift().get(0));
-        ((ElectronBunch) tm).getShift().set(1, this.getShift().get(1));
-        ((ElectronBunch) tm).getShift().set(2, this.getShift().get(2));
+        ((AbstractElectronBunch) tm).setShift(new BasicVector(new double[]{0.0, 0.0, 0.0}));
+        ((AbstractElectronBunch) tm).getShift().set(0, this.getShift().get(0));
+        ((AbstractElectronBunch) tm).getShift().set(1, this.getShift().get(1));
+        ((AbstractElectronBunch) tm).getShift().set(2, this.getShift().get(2));
         return tm;
     }
 

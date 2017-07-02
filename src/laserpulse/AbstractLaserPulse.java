@@ -26,7 +26,7 @@ import org.la4j.vector.dense.BasicVector;
  * @version 1.0
  */
 public abstract class AbstractLaserPulse implements Cloneable {
-    
+
     /**
      * hc constant
      */
@@ -34,37 +34,43 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Photon energy, J
      */
-    protected double photonenergy;
+    private double photonenergy;
     /**
      * Number of photon in laser pulse
      */
-    protected double number;
+    private double number;
     /**
      * Laser pulse semi-length, m
      */
-    protected double length = 4.5e-3;
+    private double length = 4.5e-3;
     /**
      * Mean direction of the laser pulse
      */
-    protected Vector direction;
+    private Vector direction;
     /**
      * Laser pulse Rayleigh length, m
      */
-    protected double rlength = 5.4e-3;
+    private double rlength = 5.4e-3;
     /**
      * Pulse frequency, 1/s
      */
-    protected double fq = 7.9e7;
+    private double fq = 7.9e7;
     /**
      * Laser pulse delay, m
      */
-    protected double delay = 0;
+    private double delay = 0;
     /**
      * Stocks parameters
      */
-    protected double ksi1 = 0;
-    protected double ksi2 = 0;
-    protected double ksi3 = 0;
+    private double ksi1 = 0;
+    private double ksi2 = 0;
+    private double ksi3 = 0;
+    
+    /**
+     * Laser beam intensity, W/m^2
+     */
+    private double intensity = 0;
+
     protected double rk;
 
     public AbstractLaserPulse() {
@@ -77,10 +83,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((LaserPulse) tm).setDirection(new BasicVector(new double[]{0.0, 0.0, 0.0}));
-        ((LaserPulse) tm).getDirection().set(0, this.getDirection().get(0));
-        ((LaserPulse) tm).getDirection().set(1, this.getDirection().get(1));
-        ((LaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
+        ((AbstractLaserPulse) tm).setDirection(new BasicVector(new double[]{0.0, 0.0, 0.0}));
+        ((AbstractLaserPulse) tm).getDirection().set(0, this.getDirection().get(0));
+        ((AbstractLaserPulse) tm).getDirection().set(1, this.getDirection().get(1));
+        ((AbstractLaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
         return tm;
     }
 
@@ -275,7 +281,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     public double[] getPolarization() {
         return new double[]{ksi1, ksi2, ksi3};
     }
-    
+
     /**
      * The transversal spatial distribution of photons in the pulse
      *
@@ -283,4 +289,18 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return
      */
     public abstract double tSpatialDistribution(Vector r);
+
+    /**
+     * @return the intensity
+     */
+    public double getIntensity() {
+        return intensity;
+    }
+
+    /**
+     * @param intensity the intensity to set
+     */
+    public void setIntensity(double intensity) {
+        this.intensity = intensity;
+    }
 }

@@ -21,7 +21,6 @@ package electronbunch;
  *
  */
 import org.la4j.Vector;
-import org.la4j.vector.dense.BasicVector;
 
 /**
  * A class for the electron bunch properties. All properties are in the SI

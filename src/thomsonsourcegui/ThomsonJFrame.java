@@ -66,15 +66,20 @@ import org.la4j.*;
 import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
+import electronbunch.AbstractElectronBunch;
 import java.net.URL;
 import java.util.function.Function;
+import laserpulse.AbstractLaserPulse;
 import shadowfileconverter.ShadowFiles;
+import thomsonsource.AbstractThomsonSource;
 import thomsonsource.LinearThomsonSource;
+import thomsonsource.NonLinearThomsonSource;
 
 /**
+ * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 2.40
+ * @version 3.00
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -86,7 +91,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION);
         this.ebunch = new ElectronBunch();
         this.lpulse = new LaserPulse();
-        this.tsource = new LinearThomsonSource(lpulse, ebunch);
+        this.tsource = new NonLinearThomsonSource(lpulse, ebunch, 2);
         tsource.setPolarization(new double[]{0, 0, 0});
         this.xsize = 300;
         this.ysize = 200;
@@ -2006,9 +2011,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    private ElectronBunch ebunch;
-    private LaserPulse lpulse;
-    private LinearThomsonSource tsource, tsourceRayClone = null;
+    private AbstractElectronBunch ebunch;
+    private AbstractLaserPulse lpulse;
+    private AbstractThomsonSource tsource, tsourceRayClone = null;
 
     /**
      * Parameters for the calculation boxes
@@ -2022,7 +2027,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public int numberOfItems;
         public double minValue = 0, maxValue = 50, minValueClone, maxValueClone;
         public double[] conversionValues;
-        public LinearThomsonSource tsourceclone;
+        public AbstractThomsonSource tsourceclone;
         public boolean espread = false;
         public boolean working = false;
         public SwingWorker<Void, Void> worker;
@@ -2229,11 +2234,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /**
      * Main program parameters
      */
-    private int xsize, ysize, sliderposition = 50; /* The size of the graph in x or y direction */
+    private int xsize, ysize, sliderposition = 50;
+    /* The size of the graph in x or y direction */
 
-    private double xstep, ystep, estep, hoffset = 0; /* Step in x or y direction */
+    private double xstep, ystep, estep, hoffset = 0;
+    /* Step in x or y direction */
 
-    private int numberOfRays = 1000; /* Number of rays exported for Shadow */
+    private int numberOfRays = 1000;
+    /* Number of rays exported for Shadow */
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -2345,7 +2353,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 * 2 / 4);
-                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
+                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
+                            * 1e3 / ((NonLinearThomsonSource) tsource).getOrdernumber(), 0.0);
                     setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(),
                             (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
@@ -2471,7 +2480,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 @Override
                 protected Void doInBackground() throws Exception {
                     try {
-                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
+                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
+                                * 1e3 / ((NonLinearThomsonSource) tsource).getOrdernumber(), 0.0);
                         setStatusBar((int) 100);
                         xenergycrossdata.setup(xenergydata.getudata(), (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
                                 false, ysize, ystep, -ystep * ysize / 2);
@@ -3254,12 +3264,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                 if (GFValueSelectionBox.getSelectedIndex() == 1) {
                     gfForm.updateGraph(GFCalcGraph, " ");
-                    gfForm.getKeys()[0]="Geometric factor";
-                    gfForm.getKeys()[1]="Approximate geometric factor";
+                    gfForm.getKeys()[0] = "Geometric factor";
+                    gfForm.getKeys()[1] = "Approximate geometric factor";
                 } else {
                     gfForm.updateGraph(GFCalcGraph, "ph/s\u00B710\u00B9\u2075");
-                    gfForm.getKeys()[0]="Full flux";
-                    gfForm.getKeys()[1]="Approximate full flux";
+                    gfForm.getKeys()[0] = "Full flux";
+                    gfForm.getKeys()[1] = "Approximate full flux";
                 }
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
