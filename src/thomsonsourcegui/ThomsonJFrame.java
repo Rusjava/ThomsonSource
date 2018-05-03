@@ -292,8 +292,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
         jLabelPartialFlux = new javax.swing.JLabel();
-        buttonGroupPolarization = new javax.swing.ButtonGroup();
-        buttonGroupSkin = new javax.swing.ButtonGroup();
         brillianceCalcNonLinear = new javax.swing.JFrame();
         BrillianceParamNonLinear = new javax.swing.JPanel();
         BrillianceCalcBoxNonLinear = new javax.swing.JComboBox();
@@ -316,6 +314,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         OrderNumber = new javax.swing.JTextField();
         OrderNumberLabel = new javax.swing.JLabel();
         BrillianceCalcGraphNonLinear = new javax.swing.JPanel();
+        buttonGroupPolarization = new javax.swing.ButtonGroup();
+        buttonGroupSkin = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel_el = new javax.swing.JPanel();
@@ -395,6 +395,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemExit = new javax.swing.JMenuItem();
         jMenuCalc = new javax.swing.JMenu();
         jMenuItemBrilliance = new javax.swing.JMenuItem();
+        jMenuItemBrillianceNonLinear = new javax.swing.JMenuItem();
         jMenuItemGeometricFactor = new javax.swing.JMenuItem();
         jMenuItemPolarization = new javax.swing.JMenuItem();
         jMenuShadow = new javax.swing.JMenu();
@@ -1025,7 +1026,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         brillianceCalcNonLinear.setTitle("Non-linear brilliance box");
-        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(760, 313));
+        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(860, 313));
 
         BrillianceParamNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1144,48 +1145,47 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(BrillianceCalcBoxNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29))
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(BrilminvaluelabelNonLinear)
-                            .addComponent(OrderNumberLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(BrilminvaluelabelNonLinear)
                         .addGap(18, 18, 18)
-                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(BrilminvalueNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                            .addComponent(OrderNumber))
+                        .addComponent(BrilminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(BrilminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(BrilminvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(BrilmaxvaluelabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBoxSpreadNonLinear)
-                        .addGap(18, 18, 18)))
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(BrillianceCalcBoxNonLinear, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
                         .addComponent(BrillianceCalcStartNonLinear)
                         .addGap(31, 31, 31)
                         .addComponent(BrillianceCalcSaveNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                    .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jCheckBoxSpreadNonLinear)
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(OrderNumberLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(33, 33, 33)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jEnergyLabelNonLinear)
+                    .addComponent(jAngleLabelNonLinear))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(jAngleLabelNonLinear)
-                        .addGap(18, 18, 18)
-                        .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(jEnergyLabelNonLinear)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(energyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(17, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
         BrillianceParamNonLinearLayout.setVerticalGroup(
             BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1197,7 +1197,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     .addComponent(BrillianceCalcSaveNonLinear)
                     .addComponent(jAngleLabelNonLinear)
                     .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(OrderNumberLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
@@ -1208,18 +1210,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             .addComponent(BrilmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(OrderNumberLabel)))
+                        .addGap(20, 20, 20))
                     .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
                         .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(energyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jEnergyLabelNonLinear))
-                        .addContainerGap())))
+                            .addComponent(jEnergyLabelNonLinear)
+                            .addComponent(jCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(28, 28, 28))))
         );
 
         BrillianceCalcGraphNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Spectral brilliance", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1234,7 +1233,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
         BrillianceCalcGraphNonLinearLayout.setVerticalGroup(
             BrillianceCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 229, Short.MAX_VALUE)
+            .addGap(0, 259, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout brillianceCalcNonLinearLayout = new javax.swing.GroupLayout(brillianceCalcNonLinear.getContentPane());
@@ -1242,14 +1241,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         brillianceCalcNonLinearLayout.setHorizontalGroup(
             brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
+            .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
         );
         brillianceCalcNonLinearLayout.setVerticalGroup(
             brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(brillianceCalcNonLinearLayout.createSequentialGroup()
                 .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -2058,6 +2058,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuCalc.add(jMenuItemBrilliance);
+
+        jMenuItemBrillianceNonLinear.setText("Non-linear brilliance...");
+        jMenuItemBrillianceNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemBrillianceNonLinearActionPerformed(evt);
+            }
+        });
+        jMenuCalc.add(jMenuItemBrillianceNonLinear);
 
         jMenuItemGeometricFactor.setText("Full flux/Geometric factor...");
         jMenuItemGeometricFactor.addActionListener(new java.awt.event.ActionListener() {
@@ -4077,6 +4085,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_OrderNumberFocusLost
 
+    private void jMenuItemBrillianceNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceNonLinearActionPerformed
+        // TODO add your handling code here:
+        brillianceCalcNonLinear.setVisible(true);
+    }//GEN-LAST:event_jMenuItemBrillianceNonLinearActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation
      */
@@ -4557,6 +4570,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItemAbout;
     private javax.swing.JMenuItem jMenuItemBrilliance;
+    private javax.swing.JMenuItem jMenuItemBrillianceNonLinear;
     private javax.swing.JMenuItem jMenuItemConv;
     private javax.swing.JMenuItem jMenuItemExit;
     private javax.swing.JMenuItem jMenuItemGeometricFactor;
