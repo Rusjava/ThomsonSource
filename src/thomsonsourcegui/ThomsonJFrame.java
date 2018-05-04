@@ -178,6 +178,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
+        
+         /**
+         * Objects for the non-linear brilliance calculation
+         */
+        this.brilFormNonLinear = new CalcBoxParam(new String[]{"Spectral brilliance"});
+        this.brilFormNonLinear.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
+            "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
+        this.brilFormNonLinear.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+            "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
+            "X-ray energy, keV", "Observation angle, mrad"};
+        this.brilFormNonLinear.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
+        this.brilFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
+        this.brilFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.brilFormNonLinear.savetext = "Choose file to save spectral brilliance data";
+        this.brilFormNonLinear.numberOfItems = 12;
 
         /**
          * Objects for the exact and approximate GF calculations
@@ -254,6 +269,28 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         energyValue = new javax.swing.JTextField();
         energyValueUnitLable = new javax.swing.JLabel();
         BrillianceCalcGraph = new javax.swing.JPanel();
+        brillianceCalcNonLinear = new javax.swing.JFrame();
+        BrillianceParamNonLinear = new javax.swing.JPanel();
+        BrillianceCalcBoxNonLinear = new javax.swing.JComboBox();
+        BrillianceCalcStartNonLinear = new javax.swing.JButton();
+        BrillianceCalcSaveNonLinear = new javax.swing.JButton();
+        BrilminvalueNonLinear = new javax.swing.JTextField();
+        BrilminvaluelabelNonLinear = new javax.swing.JLabel();
+        BrilminvalueunitlabelNonLinear = new javax.swing.JLabel();
+        BrilmaxvalueunitlabelNonLinear = new javax.swing.JLabel();
+        BrilmaxvalueNonLinear = new javax.swing.JTextField();
+        BrilmaxvaluelabelNonLinear = new javax.swing.JLabel();
+        jCheckBoxSpreadNonLinear = new javax.swing.JCheckBox();
+        BrilProgressBarNonLinear = new javax.swing.JProgressBar();
+        jAngleLabelNonLinear = new javax.swing.JLabel();
+        angleValueNonLinear = new javax.swing.JTextField();
+        angleValueUnitLableNonLinear = new javax.swing.JLabel();
+        jEnergyLabelNonLinear = new javax.swing.JLabel();
+        energyValueNonLinear = new javax.swing.JTextField();
+        energyValueUnitLableNonLinear = new javax.swing.JLabel();
+        OrderNumber = new javax.swing.JTextField();
+        OrderNumberLabel = new javax.swing.JLabel();
+        BrillianceCalcGraphNonLinear = new javax.swing.JPanel();
         gfCalc = new javax.swing.JFrame();
         GFParam = new javax.swing.JPanel();
         GFCalcBox = new javax.swing.JComboBox();
@@ -292,28 +329,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
         jLabelPartialFlux = new javax.swing.JLabel();
-        brillianceCalcNonLinear = new javax.swing.JFrame();
-        BrillianceParamNonLinear = new javax.swing.JPanel();
-        BrillianceCalcBoxNonLinear = new javax.swing.JComboBox();
-        BrillianceCalcStartNonLinear = new javax.swing.JButton();
-        BrillianceCalcSaveNonLinear = new javax.swing.JButton();
-        BrilminvalueNonLinear = new javax.swing.JTextField();
-        BrilminvaluelabelNonLinear = new javax.swing.JLabel();
-        BrilminvalueunitlabelNonLinear = new javax.swing.JLabel();
-        BrilmaxvalueunitlabelNonLinear = new javax.swing.JLabel();
-        BrilmaxvalueNonLinear = new javax.swing.JTextField();
-        BrilmaxvaluelabelNonLinear = new javax.swing.JLabel();
-        jCheckBoxSpreadNonLinear = new javax.swing.JCheckBox();
-        BrilProgressBarNonLinear = new javax.swing.JProgressBar();
-        jAngleLabelNonLinear = new javax.swing.JLabel();
-        angleValueNonLinear = new javax.swing.JTextField();
-        angleValueUnitLableNonLinear = new javax.swing.JLabel();
-        jEnergyLabelNonLinear = new javax.swing.JLabel();
-        energyValueNonLinear = new javax.swing.JTextField();
-        energyValueUnitLableNonLinear = new javax.swing.JLabel();
-        OrderNumber = new javax.swing.JTextField();
-        OrderNumberLabel = new javax.swing.JLabel();
-        BrillianceCalcGraphNonLinear = new javax.swing.JPanel();
         buttonGroupPolarization = new javax.swing.ButtonGroup();
         buttonGroupSkin = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -628,6 +643,234 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addComponent(BrillianceParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+        );
+
+        brillianceCalcNonLinear.setTitle("Non-linear brilliance box");
+        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(860, 313));
+
+        BrillianceParamNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+
+        BrillianceCalcBoxNonLinear.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        BrillianceCalcBoxNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BrillianceCalcBoxNonLinearActionPerformed(evt);
+            }
+        });
+
+        BrillianceCalcStartNonLinear.setText("Calculate");
+        BrillianceCalcStartNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BrillianceCalcStartNonLinearActionPerformed(evt);
+            }
+        });
+
+        BrillianceCalcSaveNonLinear.setText("Save");
+        BrillianceCalcSaveNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BrillianceCalcSaveNonLinearActionPerformed(evt);
+            }
+        });
+
+        BrilminvalueNonLinear.setText("0");
+        BrilminvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                BrilminvalueNonLinearFocusLost(evt);
+            }
+        });
+        BrilminvalueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BrilminvalueNonLinearActionPerformed(evt);
+            }
+        });
+
+        BrilminvaluelabelNonLinear.setText("Min value");
+
+        BrilminvalueunitlabelNonLinear.setText("mrad");
+
+        BrilmaxvalueunitlabelNonLinear.setText("mrad");
+
+        BrilmaxvalueNonLinear.setText("50");
+        BrilmaxvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                BrilmaxvalueNonLinearFocusLost(evt);
+            }
+        });
+        BrilmaxvalueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BrilmaxvalueNonLinearActionPerformed(evt);
+            }
+        });
+
+        BrilmaxvaluelabelNonLinear.setText("Max value");
+
+        jCheckBoxSpreadNonLinear.setText("Spread");
+        jCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxSpreadNonLinearActionPerformed(evt);
+            }
+        });
+
+        jAngleLabelNonLinear.setText("Angle");
+
+        angleValueNonLinear.setText("0");
+        angleValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                angleValueNonLinearFocusLost(evt);
+            }
+        });
+        angleValueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                angleValueNonLinearActionPerformed(evt);
+            }
+        });
+
+        angleValueUnitLableNonLinear.setText("mrad");
+
+        jEnergyLabelNonLinear.setText("Energy");
+
+        energyValueNonLinear.setText("44");
+        energyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                energyValueNonLinearFocusLost(evt);
+            }
+        });
+        energyValueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                energyValueNonLinearActionPerformed(evt);
+            }
+        });
+
+        energyValueUnitLableNonLinear.setText("kev");
+
+        OrderNumber.setText("1");
+        OrderNumber.setToolTipText("");
+        OrderNumber.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                OrderNumberFocusLost(evt);
+            }
+        });
+        OrderNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OrderNumberActionPerformed(evt);
+            }
+        });
+
+        OrderNumberLabel.setText("Order");
+
+        javax.swing.GroupLayout BrillianceParamNonLinearLayout = new javax.swing.GroupLayout(BrillianceParamNonLinear);
+        BrillianceParamNonLinear.setLayout(BrillianceParamNonLinearLayout);
+        BrillianceParamNonLinearLayout.setHorizontalGroup(
+            BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(BrilminvaluelabelNonLinear)
+                        .addGap(18, 18, 18)
+                        .addComponent(BrilminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(BrilminvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(BrilmaxvaluelabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(BrillianceCalcBoxNonLinear, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(BrillianceCalcStartNonLinear)
+                        .addGap(31, 31, 31)
+                        .addComponent(BrillianceCalcSaveNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jCheckBoxSpreadNonLinear)
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(OrderNumberLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(33, 33, 33)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jEnergyLabelNonLinear)
+                    .addComponent(jAngleLabelNonLinear))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(energyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(52, Short.MAX_VALUE))
+        );
+        BrillianceParamNonLinearLayout.setVerticalGroup(
+            BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(BrillianceCalcBoxNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(BrillianceCalcStartNonLinear)
+                    .addComponent(BrillianceCalcSaveNonLinear)
+                    .addComponent(jAngleLabelNonLinear)
+                    .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(OrderNumberLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(BrilminvaluelabelNonLinear)
+                                .addComponent(BrilminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(BrilminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(BrilmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(20, 20, 20))
+                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
+                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(energyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jEnergyLabelNonLinear)
+                            .addComponent(jCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(28, 28, 28))))
+        );
+
+        BrillianceCalcGraphNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Spectral brilliance", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        BrillianceCalcGraphNonLinear.setPreferredSize(new java.awt.Dimension(639, 215));
+        BrillianceCalcGraphNonLinear.setRequestFocusEnabled(false);
+
+        javax.swing.GroupLayout BrillianceCalcGraphNonLinearLayout = new javax.swing.GroupLayout(BrillianceCalcGraphNonLinear);
+        BrillianceCalcGraphNonLinear.setLayout(BrillianceCalcGraphNonLinearLayout);
+        BrillianceCalcGraphNonLinearLayout.setHorizontalGroup(
+            BrillianceCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        BrillianceCalcGraphNonLinearLayout.setVerticalGroup(
+            BrillianceCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 259, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout brillianceCalcNonLinearLayout = new javax.swing.GroupLayout(brillianceCalcNonLinear.getContentPane());
+        brillianceCalcNonLinear.getContentPane().setLayout(brillianceCalcNonLinearLayout);
+        brillianceCalcNonLinearLayout.setHorizontalGroup(
+            brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
+        );
+        brillianceCalcNonLinearLayout.setVerticalGroup(
+            brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(brillianceCalcNonLinearLayout.createSequentialGroup()
+                .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                .addGap(9, 9, 9))
         );
 
         gfCalc.setTitle("Full flux box");
@@ -1023,233 +1266,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addComponent(jLabelPartialFlux)
                 .addContainerGap())
-        );
-
-        brillianceCalcNonLinear.setTitle("Non-linear brilliance box");
-        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(860, 313));
-
-        BrillianceParamNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-
-        BrillianceCalcBoxNonLinear.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
-        BrillianceCalcBoxNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BrillianceCalcBoxNonLinearActionPerformed(evt);
-            }
-        });
-
-        BrillianceCalcStartNonLinear.setText("Calculate");
-        BrillianceCalcStartNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BrillianceCalcStartNonLinearActionPerformed(evt);
-            }
-        });
-
-        BrillianceCalcSaveNonLinear.setText("Save");
-        BrillianceCalcSaveNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BrillianceCalcSaveNonLinearActionPerformed(evt);
-            }
-        });
-
-        BrilminvalueNonLinear.setText("0");
-        BrilminvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                BrilminvalueNonLinearFocusLost(evt);
-            }
-        });
-        BrilminvalueNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BrilminvalueNonLinearActionPerformed(evt);
-            }
-        });
-
-        BrilminvaluelabelNonLinear.setText("Min value");
-
-        BrilminvalueunitlabelNonLinear.setText("mrad");
-
-        BrilmaxvalueunitlabelNonLinear.setText("mrad");
-
-        BrilmaxvalueNonLinear.setText("50");
-        BrilmaxvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                BrilmaxvalueNonLinearFocusLost(evt);
-            }
-        });
-        BrilmaxvalueNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BrilmaxvalueNonLinearActionPerformed(evt);
-            }
-        });
-
-        BrilmaxvaluelabelNonLinear.setText("Max value");
-
-        jCheckBoxSpreadNonLinear.setText("Spread");
-        jCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxSpreadNonLinearActionPerformed(evt);
-            }
-        });
-
-        jAngleLabelNonLinear.setText("Angle");
-
-        angleValueNonLinear.setText("0");
-        angleValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                angleValueNonLinearFocusLost(evt);
-            }
-        });
-        angleValueNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                angleValueNonLinearActionPerformed(evt);
-            }
-        });
-
-        angleValueUnitLableNonLinear.setText("mrad");
-
-        jEnergyLabelNonLinear.setText("Energy");
-
-        energyValueNonLinear.setText("44");
-        energyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                energyValueNonLinearFocusLost(evt);
-            }
-        });
-        energyValueNonLinear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                energyValueNonLinearActionPerformed(evt);
-            }
-        });
-
-        energyValueUnitLableNonLinear.setText("kev");
-
-        OrderNumber.setText("1");
-        OrderNumber.setToolTipText("");
-        OrderNumber.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                OrderNumberFocusLost(evt);
-            }
-        });
-        OrderNumber.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                OrderNumberActionPerformed(evt);
-            }
-        });
-
-        OrderNumberLabel.setText("Order");
-
-        javax.swing.GroupLayout BrillianceParamNonLinearLayout = new javax.swing.GroupLayout(BrillianceParamNonLinear);
-        BrillianceParamNonLinear.setLayout(BrillianceParamNonLinearLayout);
-        BrillianceParamNonLinearLayout.setHorizontalGroup(
-            BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(BrilminvaluelabelNonLinear)
-                        .addGap(18, 18, 18)
-                        .addComponent(BrilminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(BrilminvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(BrilmaxvaluelabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(BrillianceCalcBoxNonLinear, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(BrillianceCalcStartNonLinear)
-                        .addGap(31, 31, 31)
-                        .addComponent(BrillianceCalcSaveNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jCheckBoxSpreadNonLinear)
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(OrderNumberLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(33, 33, 33)
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jEnergyLabelNonLinear)
-                    .addComponent(jAngleLabelNonLinear))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(energyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(52, Short.MAX_VALUE))
-        );
-        BrillianceParamNonLinearLayout.setVerticalGroup(
-            BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(BrillianceCalcBoxNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(BrillianceCalcStartNonLinear)
-                    .addComponent(BrillianceCalcSaveNonLinear)
-                    .addComponent(jAngleLabelNonLinear)
-                    .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(OrderNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(OrderNumberLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(BrilminvaluelabelNonLinear)
-                            .addComponent(BrilminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(BrilminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(BrilmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(BrilmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(BrilmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(BrilProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(20, 20, 20))
-                    .addGroup(BrillianceParamNonLinearLayout.createSequentialGroup()
-                        .addGroup(BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(energyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(energyValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jEnergyLabelNonLinear)
-                            .addComponent(jCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(28, 28, 28))))
-        );
-
-        BrillianceCalcGraphNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Spectral brilliance", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-        BrillianceCalcGraphNonLinear.setPreferredSize(new java.awt.Dimension(639, 215));
-        BrillianceCalcGraphNonLinear.setRequestFocusEnabled(false);
-
-        javax.swing.GroupLayout BrillianceCalcGraphNonLinearLayout = new javax.swing.GroupLayout(BrillianceCalcGraphNonLinear);
-        BrillianceCalcGraphNonLinear.setLayout(BrillianceCalcGraphNonLinearLayout);
-        BrillianceCalcGraphNonLinearLayout.setHorizontalGroup(
-            BrillianceCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        BrillianceCalcGraphNonLinearLayout.setVerticalGroup(
-            BrillianceCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 259, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout brillianceCalcNonLinearLayout = new javax.swing.GroupLayout(brillianceCalcNonLinear.getContentPane());
-        brillianceCalcNonLinear.getContentPane().setLayout(brillianceCalcNonLinearLayout);
-        brillianceCalcNonLinearLayout.setHorizontalGroup(
-            brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
-        );
-        brillianceCalcNonLinearLayout.setVerticalGroup(
-            brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(brillianceCalcNonLinearLayout.createSequentialGroup()
-                .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -1989,7 +2005,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2294,7 +2310,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public LinearChartParam chartParam;
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
-        double angle = 0, angleclone, energy = 44, energyclone;
+        public double angle = 0, angleclone, energy = 44, energyclone;
+        public int ordernumber = 1, ordernumberclone = 1;
         private File file = null;
 
         /**
@@ -2314,7 +2331,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public void initialize() {
             working = true;
             try {
-                tsourceclone = (LinearThomsonSource) tsource.clone();
+                tsourceclone = (AbstractThomsonSource) tsource.clone();
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -2323,6 +2340,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             maxValueClone = maxValue;
             angleclone = angle;
             energyclone = energy;
+            ordernumberclone = ordernumber;
             selectedItemIndexClone = selectedItemIndex;
         }
 
@@ -2508,7 +2526,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private final TitledBorder xrayenergyborder;
     private final String[] paramNames;
 
-    private final CalcBoxParam brilForm, gfForm, polForm;
+    private final CalcBoxParam brilForm, brilFormNonLinear, gfForm, polForm;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
     private boolean working = false, rayWorking = false;
     private SwingWorker<Void, Void> mainWorker, rayWorker;
@@ -4030,59 +4048,304 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_GFValueSelectionBoxActionPerformed
 
     private void BrillianceCalcBoxNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcBoxNonLinearActionPerformed
-        // TODO add your handling code here:
+        // Update boxes, labels and other items when parameters selection is performed
+        int sInd = BrillianceCalcBoxNonLinear.getSelectedIndex();
+        brilFormNonLinear.selectedItemIndex = sInd;
+        BrilminvalueunitlabelNonLinear.setText(brilFormNonLinear.valueUnitLabels[sInd]);
+        BrilmaxvalueunitlabelNonLinear.setText(brilFormNonLinear.valueUnitLabels[sInd]);
+        BrilminvalueNonLinear.setText(brilFormNonLinear.minValues[sInd]);
+        BrilmaxvalueNonLinear.setText(brilFormNonLinear.maxValues[sInd]);
+        brilFormNonLinear.minValue = Float.parseFloat(BrilminvalueNonLinear.getText());
+        brilFormNonLinear.maxValue = Float.parseFloat(BrilmaxvalueNonLinear.getText());
+        switch (sInd) {
+            case 10:
+                angleValueNonLinear.setEnabled(true);
+                energyValueNonLinear.setEnabled(false);
+                break;
+            case 11:
+                angleValueNonLinear.setEnabled(false);
+                energyValueNonLinear.setEnabled(true);
+                break;
+            default:
+                angleValueNonLinear.setEnabled(true);
+                energyValueNonLinear.setEnabled(true);
+        }
     }//GEN-LAST:event_BrillianceCalcBoxNonLinearActionPerformed
 
     private void BrillianceCalcStartNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcStartNonLinearActionPerformed
-        // TODO add your handling code here:
+        // Non-linear brilliance box calculations
+        // Checking if already running
+        if (brilFormNonLinear.working) {
+            brilFormNonLinear.cancel();
+            BrillianceCalcStartNonLinear.setText("Calculate");
+            BrillianceCalcSaveNonLinear.setEnabled(true);
+            return;
+        }    
+        BrilProgressBarNonLinear.setValue(0);
+        BrilProgressBarNonLinear.setStringPainted(true);
+        BrillianceCalcStartNonLinear.setText("Terminate");
+        BrillianceCalcSaveNonLinear.setEnabled(false);
+        brilFormNonLinear.initialize();
+        ((NonLinearThomsonSource)brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumberclone);
+
+        /**
+         * Calculating data array. Using SwingWorker class
+         */
+        brilFormNonLinear.worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                double step = (brilFormNonLinear.maxValueClone - brilFormNonLinear.minValueClone) / (xsize - 1);
+                double offset = brilFormNonLinear.minValueClone;
+                List<Function<Double, Double>> func = new ArrayList<>();
+                switch (brilFormNonLinear.selectedItemIndexClone) {
+                    case 0:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getLaserPulse().getDirection().set(2, Math.cos(x));
+                            brilFormNonLinear.tsourceclone.getLaserPulse().getDirection().set(1, Math.sin(x));
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 1:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getLaserPulse().setDelay(x);
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 2:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getElectronBunch().getShift().set(2, x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 3:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setBetax(x);
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setBetay(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 4:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 5:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 6:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 7:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getLaserPulse().setRlength(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 8:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getLaserPulse().setWidth(x);
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setxWidth(x);
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setyWidth(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 9:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.getElectronBunch().setDelgamma(x);
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 10:
+                        func.add(xp -> {
+                            double ang = brilFormNonLinear.angleclone * 1e-3;
+                            double e = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                    case 11:
+                        func.add(xp -> {
+                            double ang = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
+                            double e = brilFormNonLinear.energyclone * ElectronBunch.E * 1e3;
+                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            setStatusBar((xp - offset) / step / (xsize - 1));
+                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                    e) * 1e-15 * 1e-13;
+                        });
+                        break;
+                }
+                brilFormNonLinear.chartParam.setup(func, xsize, step, offset);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
+                brilFormNonLinear.updateGraph(BrillianceCalcGraphNonLinear,
+                        "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u00B3");
+                BrillianceCalcStartNonLinear.setText("Calculate");
+                BrillianceCalcSaveNonLinear.setEnabled(true);
+            }
+
+            /**
+             * Updating progress bar
+             *
+             * @param status
+             */
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> BrilProgressBarNonLinear.setValue((int) Math.round(100 * status)));
+            }
+        };
+        brilFormNonLinear.worker.execute();
     }//GEN-LAST:event_BrillianceCalcStartNonLinearActionPerformed
 
     private void BrillianceCalcSaveNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrillianceCalcSaveNonLinearActionPerformed
-        // TODO add your handling code here:
+        // Saving the brilliance plot data
+        if (brilFormNonLinear.chartPanel != null) {
+            brilFormNonLinear.save();
+        }
     }//GEN-LAST:event_BrillianceCalcSaveNonLinearActionPerformed
 
     private void BrilminvalueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilminvalueNonLinearFocusLost
         // TODO add your handling code here:
+        brilFormNonLinear.minValue = TestValueWithMemory(0, 1000, BrilminvalueNonLinear, brilFormNonLinear.minValues[brilFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueNonLinearFocusLost
 
     private void BrilminvalueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilminvalueNonLinearActionPerformed
         // TODO add your handling code here:
+        brilFormNonLinear.minValue = TestValueWithMemory(0, 1000, BrilminvalueNonLinear, brilFormNonLinear.minValues[brilFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueNonLinearActionPerformed
 
     private void BrilmaxvalueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilmaxvalueNonLinearFocusLost
         // TODO add your handling code here:
+        brilFormNonLinear.maxValue = TestValueWithMemory(0, 1000, BrilmaxvalueNonLinear, brilFormNonLinear.maxValues[brilFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueNonLinearFocusLost
 
     private void BrilmaxvalueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilmaxvalueNonLinearActionPerformed
         // TODO add your handling code here:
+        brilFormNonLinear.maxValue = TestValueWithMemory(0, 1000, BrilmaxvalueNonLinear, brilFormNonLinear.maxValues[brilFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueNonLinearActionPerformed
 
     private void jCheckBoxSpreadNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadNonLinearActionPerformed
         // TODO add your handling code here:
+        brilFormNonLinear.espread = jCheckBoxSpreadNonLinear.isSelected();
     }//GEN-LAST:event_jCheckBoxSpreadNonLinearActionPerformed
 
     private void angleValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_angleValueNonLinearFocusLost
         // TODO add your handling code here:
+        brilFormNonLinear.angle = TestValueWithMemory(0, 100, angleValueNonLinear, "0", oldStrings);
     }//GEN-LAST:event_angleValueNonLinearFocusLost
 
     private void angleValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_angleValueNonLinearActionPerformed
         // TODO add your handling code here:
+        brilFormNonLinear.angle = TestValueWithMemory(0, 100, angleValueNonLinear, "0", oldStrings);
     }//GEN-LAST:event_angleValueNonLinearActionPerformed
 
     private void energyValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueNonLinearFocusLost
         // TODO add your handling code here:
+        brilFormNonLinear.energy = TestValueWithMemory(20, 100, energyValueNonLinear, "44", oldStrings);
     }//GEN-LAST:event_energyValueNonLinearFocusLost
 
     private void energyValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueNonLinearActionPerformed
         // TODO add your handling code here:
+        brilFormNonLinear.energy = TestValueWithMemory(20, 100, energyValueNonLinear, "44", oldStrings);
     }//GEN-LAST:event_energyValueNonLinearActionPerformed
 
     private void OrderNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrderNumberActionPerformed
         // TODO add your handling code here:
+        brilFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 100, OrderNumber, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberActionPerformed
 
     private void OrderNumberFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_OrderNumberFocusLost
         // TODO add your handling code here:
+        brilFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 100, OrderNumber, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberFocusLost
 
     private void jMenuItemBrillianceNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceNonLinearActionPerformed
