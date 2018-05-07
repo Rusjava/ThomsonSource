@@ -35,9 +35,9 @@ public class LaserPulse extends AbstractLaserPulse {
     }
 
     /**
-     * Returns the Gaussian laser bunch width at position z
+     * Returns the Gaussian laser bunch width at position z, m
      *
-     * @param z coordinate
+     * @param z coordinate, m
      * @return
      */
     @Override
@@ -46,9 +46,9 @@ public class LaserPulse extends AbstractLaserPulse {
     }
 
     /**
-     * Getting the Gaussian laser bunch width squared as function of z
+     * Getting the Gaussian laser bunch width squared as function of z, m^2
      *
-     * @param z coordinate z
+     * @param z coordinate z, m
      * @return
      */
     @Override
@@ -59,7 +59,7 @@ public class LaserPulse extends AbstractLaserPulse {
     /**
      * The transversal spatial distribution of photons in the Gaussian pulse
      *
-     * @param r
+     * @param r, m
      * @return
      */
     @Override

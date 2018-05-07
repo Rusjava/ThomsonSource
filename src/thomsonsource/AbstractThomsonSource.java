@@ -36,13 +36,14 @@ import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * An abstract class for Thomson source. Methods that calculated scattering by one electron need to be defined.
- * 
+ * An abstract class for Thomson source. Methods that calculated scattering by
+ * one electron need to be defined.
+ *
  * @version 1.0
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
-    
+
     /**
      * Constructor
      *
@@ -56,7 +57,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.counter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
     }
-    
+
     /**
      * Multiple for the range
      */
@@ -82,7 +83,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * The saturating potential in CGS system
      */
     public static final double AS = 1.704509e3;
-    /**
+        /**
      * Angle range for rays exported for Shadow in the X-direction
      */
     protected double rayXAnglerange = 0.0003;
@@ -131,17 +132,17 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * Counter of ray iterations
      */
     protected AtomicInteger counter;
-    
+
     /**
      * A pointer for laser pulse
-     */  
+     */
     protected AbstractLaserPulse lp;
-    
+
     /**
      * A pointer for electron bunch
      */
     protected AbstractElectronBunch eb;
-    
+
     /**
      * An array for laser pulse polarization state
      */
@@ -916,7 +917,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         return pol;
     }
-   
+
     /**
      * An auxiliary class for Romberg integrator for flux calculations
      */
@@ -945,7 +946,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             }
         }
     }
-    
+
     /**
      * An auxiliary class for Romberg integrator for flux calculations
      */
@@ -971,7 +972,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             return new Double(u).isNaN() ? 0 : u;
         }
     }
-    
+
     /**
      * An auxiliary class for Romberg integrator for polarization calculations
      */
@@ -1007,7 +1008,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             }
         }
     }
-    
+
     /**
      * An auxiliary class for Romberg integrator for polarization calculations
      */
@@ -1039,7 +1040,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             return new Double(u).isNaN() ? 0 : u;
         }
     }
-    
+
     /**
      * An auxiliary class for the brilliance calculations
      */
@@ -1064,7 +1065,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             return y;
         }
     }
-    
+
     /**
      * A custom exception class
      */
@@ -1075,6 +1076,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         /**
          * A class for exceptions in custom functions
+         *
          * @param x
          */
         public LocalException(double x) {

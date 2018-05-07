@@ -32,6 +32,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
      */
     public static final double HC = 3.1614e-26;
     /**
+     * The speed of light, m/c
+     */
+    public static final double C = 299792458;
+    /**
      * Photon energy, J
      */
     private double photonenergy;
@@ -91,9 +95,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
     }
 
     /**
-     * Returns the laser bunch width at position z
+     * Returns the laser bunch width at position z, m
      *
-     * @param z coordinate
+     * @param z coordinate, m
      * @return
      */
     public abstract double getWidth(double z);
@@ -101,16 +105,16 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Sets the laser bunch width
      *
-     * @param w width
+     * @param w width, m
      */
     public void setWidth(double w) {
         setRlength(2 * w * w / rk);
     }
 
     /**
-     * Sets the laser bunch width squared
+     * Returns the laser bunch width at position z, m
      *
-     * @param z coordinate z
+     * @param z coordinate z, m
      * @return
      */
     public abstract double getWidth2(double z);
@@ -118,7 +122,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Sets the energy of laser photons
      *
-     * @param e photon energy
+     * @param e photon energy, J
      */
     public void setPhotonEnergy(double e) {
         this.photonenergy = e;
@@ -126,7 +130,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     }
 
     /**
-     * Return the energy of laser photons
+     * Return the energy of laser photons, J
      *
      * @return
      */
@@ -155,7 +159,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Sets the energy of laser pulse (by setting the photon number)
      *
-     * @param e energy of laser pulse
+     * @param e energy of laser pulse, J
      */
     public final void setPulseEnergy(double e) {
         this.number = e / this.photonenergy;
@@ -291,14 +295,14 @@ public abstract class AbstractLaserPulse implements Cloneable {
     public abstract double tSpatialDistribution(Vector r);
 
     /**
-     * @return the intensity
+     * @return the intensity, W/m^2
      */
     public double getIntensity() {
         return intensity;
     }
 
     /**
-     * @param intensity the intensity to set
+     * @param intensity the intensity to set, W/m^2
      */
     public void setIntensity(double intensity) {
         this.intensity = intensity;
