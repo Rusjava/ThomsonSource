@@ -292,6 +292,14 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * @return
      */
     public abstract double tSpatialDistribution(Vector r);
+    
+    /**
+     * The longitudinal spatial distribution of electrons in the bunch
+     *
+     * @param r
+     * @return
+     */
+    public abstract double lSpatialDistribution(Vector r);
 
     /**
      * Returning the width of the electron bunch in x direction at position z

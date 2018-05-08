@@ -19,52 +19,39 @@ package laserpulse;
 import org.la4j.Vector;
 
 /**
- * A class for laser pulse properties. All properties are in the SI system of
+ * A class for Gaussian laser pulse properties. All properties are in the SI system of
  * units
  *
  * @author Ruslan feshchenko
- * @version 3.0
+ * @version 4.0
  */
-public class LaserPulse extends AbstractLaserPulse {
+public class GaussianLaserPulse extends AbstractLaserPulse {
 
     /**
      * Constructor
      */
-    public LaserPulse() {
+    public GaussianLaserPulse() {
         super();
     }
 
-    /**
-     * Returns the Gaussian laser bunch width at position z, m
-     *
-     * @param z coordinate, m
-     * @return
-     */
     @Override
     public double getWidth(double z) {
         return Math.sqrt((getRlength() + z * z / getRlength()) * rk / 2);
     }
 
-    /**
-     * Getting the Gaussian laser bunch width squared as function of z, m^2
-     *
-     * @param z coordinate z, m
-     * @return
-     */
     @Override
     public double getWidth2(double z) {
         return (getRlength() + z * z / getRlength()) * rk / 2;
     }
 
-    /**
-     * The transversal spatial distribution of photons in the Gaussian pulse
-     *
-     * @param r, m
-     * @return
-     */
     @Override
     public double tSpatialDistribution(Vector r) {
-        double K = (Math.pow((r.get(0)), 2) + Math.pow((r.get(1)), 2)) / getWidth2(r.get(2));
+        double K = (Math.pow(r.get(0), 2) + Math.pow(r.get(1), 2)) / getWidth2(r.get(2));
         return Math.exp(-K) / getWidth2(r.get(2)) / Math.PI;
+    }
+
+    @Override
+    public double lSpatialDistribution(Vector r) {
+        return Math.exp(-Math.pow(r.get(2) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
     }
 }

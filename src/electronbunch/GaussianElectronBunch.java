@@ -23,18 +23,18 @@ package electronbunch;
 import org.la4j.Vector;
 
 /**
- * A class for the electron bunch properties. All properties are in the SI
+ * A class for properties of the Gaussian electron bunch. All properties are in the SI
  * system of units
  *
  * @author Ruslan Feshchenko
  * @version 3.0
  */
-public class ElectronBunch extends AbstractElectronBunch {
+public class GaussianElectronBunch extends AbstractElectronBunch {
 
     /**
      * Constructor
      */
-    public ElectronBunch() {
+    public GaussianElectronBunch() {
         super();
     }
 
@@ -130,5 +130,10 @@ public class ElectronBunch extends AbstractElectronBunch {
     @Override
     public double getWidth2(double z) {
         return Math.sqrt(getxWidth2(z) * getyWidth2(z));
+    }
+
+    @Override
+    public double lSpatialDistribution(Vector r) {
+        return Math.exp(-Math.pow(r.get(2) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
     }
 }

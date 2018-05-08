@@ -16,14 +16,15 @@
  */
 package laserpulse;
 
-import electronbunch.ElectronBunch;
+import electronbunch.GaussianElectronBunch;
+import org.apache.commons.math3.complex.Complex;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
  *
  * @author Ruslan
- * @version 1.0
+ * @version 2.0
  */
 public abstract class AbstractLaserPulse implements Cloneable {
 
@@ -71,14 +72,15 @@ public abstract class AbstractLaserPulse implements Cloneable {
     private double ksi3 = 0;
     
     /**
-     * Laser beam intensity, W/m^2
+     * Polarization parameters
      */
-    private double intensity = 0;
-
+    double K1,K2;
+    Complex[] A1,A2;
+    
     protected double rk;
 
     public AbstractLaserPulse() {
-        this.photonenergy = 1.1 * ElectronBunch.E;
+        this.photonenergy = 1.1 * GaussianElectronBunch.E;
         this.setPulseEnergy(2.0e-2);
         this.rk = HC / this.photonenergy;
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
@@ -293,18 +295,21 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return
      */
     public abstract double tSpatialDistribution(Vector r);
+    
+    /**
+     * The longitudinal spatial distribution of photons in the pulse
+     *
+     * @param r
+     * @return
+     */
+    public abstract double lSpatialDistribution(Vector r);
 
     /**
+     * Getting an average pulse intensity
+     * 
      * @return the intensity, W/m^2
      */
     public double getIntensity() {
-        return intensity;
-    }
-
-    /**
-     * @param intensity the intensity to set, W/m^2
-     */
-    public void setIntensity(double intensity) {
-        this.intensity = intensity;
+        return getPulseEnergy()/getLength()/Math.PI/getWidth2(0);
     }
 }

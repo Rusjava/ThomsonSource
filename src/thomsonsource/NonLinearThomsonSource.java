@@ -21,9 +21,9 @@ import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
 import org.la4j.Vector;
-import org.apache.commons.math3.complex.*;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Vectors;
+import org.la4j.vector.dense.BasicVector;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 
 /**
@@ -74,39 +74,96 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFlux(Vector n, Vector v) {
-        double gamma2;
         double mv, M;
         double K1 = lp.getIntensity() * lp.getPolarization()[0];
         double K2 = lp.getIntensity() * lp.getPolarization()[3];
-        double a1 = 1, a2 = 1, a3 = 1;
+        Vector A1 = new BasicVector(new double[]{0.0, 0.0, 0.0});
+        Vector A2 = new BasicVector(new double[]{0.0, 0.0, 0.0});
         double f01, f02, f11, f12, f21, f22, f31, f32;
-        Complex f0 = new Complex(1, 0), f1 = new Complex(1, 0), f2 = new Complex(1, 0), f3 = new Complex(1, 0);
-        //Calculating the fourie harmonics
+        double gamma2 = eb.getGamma() * eb.getGamma();
+        mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
+       
+        double a1 = directionEnergy(n, v) / lp.getPhotonEnergy() * n.innerProduct(A1)
+                / Math.sqrt(getsIntensity()) / (1 + mv) / eb.getGamma();
+        double a2 = directionEnergy(n, v) / lp.getPhotonEnergy() * n.innerProduct(A2)
+                / Math.sqrt(getsIntensity()) / (1 + mv) / eb.getGamma();
+        double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / getsIntensity() 
+                * (mv + n.innerProduct(v)) / Math.pow(eb.getGamma() * (1 + mv), 2) / mv / 8;
+         /*
+        Calculating the fourie harmonics
+         */
         // 01 component
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateFunction func = new UnivariateFourieHarmonics01(a1, a2, a3);
+        UnivariateFunction func = new UnivariateFourierHarmonics01(a1, a2, a3);
         try {
-            f01 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI);
+            f01 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
         // 02 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        func = new UnivariateFourieHarmonics02(a1, a2, a3);
+        func = new UnivariateFourierHarmonics02(a1, a2, a3);
         try {
-            f02 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI);
+            f02 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
-        gamma2 = eb.getGamma() * eb.getGamma();
-        mv = Math.sqrt(1.0 - 1.0 / gamma2);
+        // 11 component
+        integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        func = new UnivariateFourierHarmonics11(a1, a2, a3);
+        try {
+            f11 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+        // 12 component
+        integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        func = new UnivariateFourierHarmonics12(a1, a2, a3);
+        try {
+            f12 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+        // 21 component
+        integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        func = new UnivariateFourierHarmonics21(a1, a2, a3);
+        try {
+            f21 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+        // 22 component
+        integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        func = new UnivariateFourierHarmonics22(a1, a2, a3);
+        try {
+            f22 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+        // 31 component
+        integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        func = new UnivariateFourierHarmonics31(a1, a2, a3);
+        try {
+            f31 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI) / 2 / Math.PI;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+        // 32 component
+        integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        func = new UnivariateFourierHarmonics32(a1, a2, a3);
+        try {
+            f32 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0, 2 * Math.PI);
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+
         //Parameter of nolinearity
         M = lp.getIntensity() / getsIntensity() * (1 + n.innerProduct(v)) / 4 / gamma2 / (1 + mv);
         //Returning the total flux
         return -getTotalFlux() * 3 / 2 / Math.PI * SIGMA_T
                 / Math.pow((1 - n.innerProduct(v)) * (1 + M), 2) / (K1 + K2)
-                * ((Math.pow(f01, 2) + Math.pow(f02, 2)) * (Math.pow(AS, 2) + (K1 + K2) / 2) - Math.pow(f1.abs(), 2) * K1
-                - Math.pow(f2.abs(), 2) * K2 + f3.multiply(f0.conjugate()).getReal() * (K1 - K2) / 2);
+                * ((Math.pow(f01, 2) + Math.pow(f02, 2)) * (Math.pow(AS, 2) + (K1 + K2) / 2) - (Math.pow(f11, 2) + Math.pow(f12, 2)) * K1
+                - (Math.pow(f21, 2) + Math.pow(f22, 2)) * K2 + (f31 * f01 + f32 * f02) * (K1 - K2) / 2);
     }
 
     @Override
@@ -151,14 +208,14 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
-     * An auxiliary class 01 for Romberg integrator for Fourie harmonics
+     * An auxiliary class 01 for Romberg integrator for Fourier harmonics
      * calculations
      */
-    private class UnivariateFourieHarmonics01 implements UnivariateFunction {
+    private class UnivariateFourierHarmonics01 implements UnivariateFunction {
 
         private final double a1, a2, a3;
 
-        public UnivariateFourieHarmonics01(double a1, double a2, double a3) {
+        public UnivariateFourierHarmonics01(double a1, double a2, double a3) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -171,14 +228,14 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
-     * An auxiliary class 02 for Romberg integrator for Fourie harmonics
+     * An auxiliary class 02 for Romberg integrator for Fourier harmonics
      * calculations
      */
-    private class UnivariateFourieHarmonics02 implements UnivariateFunction {
+    private class UnivariateFourierHarmonics02 implements UnivariateFunction {
 
         private final double a1, a2, a3;
 
-        public UnivariateFourieHarmonics02(double a1, double a2, double a3) {
+        public UnivariateFourierHarmonics02(double a1, double a2, double a3) {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
@@ -187,6 +244,126 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             return Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+        }
+    }
+
+    /**
+     * An auxiliary class 11 for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics11 implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+
+        public UnivariateFourierHarmonics11(double a1, double a2, double a3) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+        }
+
+        @Override
+        public double value(double tau) {
+            return Math.cos(tau) * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+        }
+    }
+
+    /**
+     * An auxiliary class 12 for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics12 implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+
+        public UnivariateFourierHarmonics12(double a1, double a2, double a3) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+        }
+
+        @Override
+        public double value(double tau) {
+            return Math.cos(tau) * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+        }
+    }
+
+    /**
+     * An auxiliary class 21 for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics21 implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+
+        public UnivariateFourierHarmonics21(double a1, double a2, double a3) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+        }
+
+        @Override
+        public double value(double tau) {
+            return Math.sin(tau) * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+        }
+    }
+
+    /**
+     * An auxiliary class 22 for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics22 implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+
+        public UnivariateFourierHarmonics22(double a1, double a2, double a3) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+        }
+
+        @Override
+        public double value(double tau) {
+            return Math.sin(tau) * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+        }
+    }
+
+    /**
+     * An auxiliary class 31 for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics31 implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+
+        public UnivariateFourierHarmonics31(double a1, double a2, double a3) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+        }
+
+        @Override
+        public double value(double tau) {
+            return Math.cos(2 * tau) * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+        }
+    }
+
+    /**
+     * An auxiliary class 32 for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics32 implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+
+        public UnivariateFourierHarmonics32(double a1, double a2, double a3) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+        }
+
+        @Override
+        public double value(double tau) {
+            return Math.cos(2 * tau) * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
         }
     }
 }

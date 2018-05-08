@@ -17,7 +17,7 @@
 package thomsonsource;
 
 import electronbunch.AbstractElectronBunch;
-import electronbunch.ElectronBunch;
+import electronbunch.GaussianElectronBunch;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -94,11 +94,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Min ray energy
      */
-    protected double minEnergy = 36 * 1e3 * ElectronBunch.E;
+    protected double minEnergy = 36 * 1e3 * GaussianElectronBunch.E;
     /**
      * Max ray energy
      */
-    protected double maxEnergy = 46 * 1e3 * ElectronBunch.E;
+    protected double maxEnergy = 46 * 1e3 * GaussianElectronBunch.E;
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
      */
