@@ -91,7 +91,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION);
         this.ebunch = new GaussianElectronBunch();
         this.lpulse = new GaussianLaserPulse();
-        this.tsource = new NonLinearThomsonSource(lpulse, ebunch, 2);
+        this.tsource = new LinearThomsonSource(lpulse, ebunch);
         tsource.setPolarization(new double[]{0, 0, 0});
         this.xsize = 300;
         this.ysize = 200;
@@ -2630,7 +2630,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 * 2 / 4);
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                            * 1e3 / ((NonLinearThomsonSource) tsource).getOrdernumber(), 0.0);
+                            * 1e3, 0.0);
                     setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(),
                             (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
@@ -2757,7 +2757,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 protected Void doInBackground() throws Exception {
                     try {
                         fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                                * 1e3 / ((NonLinearThomsonSource) tsource).getOrdernumber(), 0.0);
+                                * 1e3, 0.0);
                         setStatusBar((int) 100);
                         xenergycrossdata.setup(xenergydata.getudata(), (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
                                 false, ysize, ystep, -ystep * ysize / 2);
