@@ -71,15 +71,11 @@ public abstract class AbstractLaserPulse implements Cloneable {
     private double ksi2 = 0;
     private double ksi3 = 0;
 
-    private double KA1;
-    private double KA2;
-    private double KB1;
-    private double KB2;
+    private double[] KA1;
+    private double[] KA2;
     private double p;
-    private Vector A1;
-    private Vector A2;
-    private Vector B1;
-    private Vector B2;
+    private Vector[] A1;
+    private Vector[] A2;
 
     protected double rk;
 
@@ -88,10 +84,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.setPulseEnergy(2.0e-2);
         this.rk = HC / this.photonenergy;
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
-        this.A1 = new BasicVector(new double[]{1.0, 0.0});
-        this.A2 = new BasicVector(new double[]{0.0, 1.0});
-        this.B1 = new BasicVector(new double[]{1.0, 0.0});
-        this.B2 = new BasicVector(new double[]{0.0, 1.0});
+        this.KA1 = new double[2];
+        this.KA2 = new double[2];
+        this.A1 = new Vector[]{new BasicVector(new double[]{1.0, 0.0}), new BasicVector(new double[]{1.0, 0.0})};
+        this.A2 = new Vector[]{new BasicVector(new double[]{1.0, 0.0}), new BasicVector(new double[]{1.0, 0.0})};
     }
 
     @Override
@@ -286,63 +282,44 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.ksi2 = ksi2;
         this.ksi3 = ksi3;
         this.p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi2 * ksi3);
-        //INtermidiate complex eigenvectors
-        Vector A11 = new BasicVector(new double[]{ksi1, ksi3 + getP()});
-        Vector A12 = new BasicVector(new double[]{-ksi2, 0});
-        Vector A21 = new BasicVector(new double[]{ksi1, ksi3 - getP()});
-        Vector A22 = new BasicVector(new double[]{-ksi2, 0});
-        A11.set(0, ksi1);
-        A11.set(1, ksi3 + p);
-        A12.set(0, -ksi2);
-        A12.set(1, 0);
-        A21.set(0, ksi1);
-        A21.set(1, ksi3 - p);
-        A22.set(0, -ksi2);
-        A22.set(1, 0);
-        double h1 = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + Math.pow(p + ksi3, 2));
-        double h2 = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + Math.pow(p - ksi3, 2));
-        A11 = A11.divide(h1);
-        A12 = A12.divide(h1);
-        A21 = A21.divide(h2);
-        A22 = A22.divide(h2);
-        //Orthogonal polarization vectors
-        double a1, a2, M, c1, c2;
-        if (A11.innerProduct(A12) == 0) {
-            A1 = A11.copy();
-            A2 = A12.copy();
-        } else {
-            a1 = A11.fold(Vectors.mkEuclideanNormAccumulator());
-            a2 = A12.fold(Vectors.mkEuclideanNormAccumulator());
-            M = (a1 - a2)
-                    / Math.sqrt(Math.pow(a1, 2) + Math.pow(a2, 2) - 2 * a1 * a2
-                            + 4 * Math.pow(A11.innerProduct(A12), 2));
-            c1 = (1 + M) / 2;
-            c2 = (1 - M) / 2;
-            this.getA1().set(0, c1 * A11.get(0) - c2 * A12.get(0));
-            this.getA1().set(1, c1 * A11.get(1) - c2 * A12.get(1));
-            this.getA2().set(0, c1 * A12.get(0) + c2 * A11.get(0));
-            this.getA2().set(1, c1 * A12.get(1) + c2 * A11.get(1));
+        double[] t = new double[]{p + ksi3, p - ksi3};
+        double[] kappa = new double[]{1 + p, 1 - p};
+        Vector[] AA1 = new Vector[2];
+        Vector[] AA2 = new Vector[2];
+        double a1, a2, M, c1, c2, h, coef;
+
+        //Auxialiry paremeters
+        for (int s = 0; s < 2; s++) {
+            h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
+            AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
+            AA2[s] = new BasicVector(new double[]{-ksi2, 0});
+            AA1[s] = AA1[s].divide(h);
+            AA2[s] = AA2[s].divide(h);
         }
-        if (A21.innerProduct(A22) == 0) {
-            B1 = A21.copy();
-            B2 = A22.copy();
-        } else {
-            a1 = A21.fold(Vectors.mkEuclideanNormAccumulator());
-            a2 = A22.fold(Vectors.mkEuclideanNormAccumulator());
-            M = (a1 - a2)
-                    / Math.sqrt(Math.pow(a1, 2) + Math.pow(a2, 2) - 2 * a1 * a2
-                            + 4 * Math.pow(A21.innerProduct(A22), 2));
-            c1 = (1 + M) / 2;
-            c2 = (1 - M) / 2;
-            this.getB1().set(0, c1 * A21.get(0) - c2 * A22.get(0));
-            this.getB1().set(1, c1 * A21.get(1) - c2 * A22.get(1));
-            this.getB2().set(0, c1 * A22.get(0) + c2 * A21.get(0));
-            this.getB2().set(1, c1 * A22.get(1) + c2 * A21.get(1));
+        //Orthogonal polarization vectors
+        for (int s = 0; s < 2; s++) {
+            if (AA1[s].innerProduct(AA2[s]) == 0) {
+                A1[s] = AA1[s].copy();
+                A2[s] = AA2[s].copy();
+            } else {
+                a1 = AA1[s].fold(Vectors.mkEuclideanNormAccumulator());
+                a2 = AA2[s].fold(Vectors.mkEuclideanNormAccumulator());
+                M = (a1 - a2)
+                        / Math.sqrt(Math.pow(a1, 2) + Math.pow(a2, 2) - 2 * a1 * a2
+                                + 4 * Math.pow(AA1[s].innerProduct(AA2[s]), 2));
+                c1 = (1 + M) / 2;
+                c2 = (1 - M) / 2;
+                this.A1[s].set(0, c1 * AA1[s].get(0) - c2 * AA2[s].get(0));
+                this.A1[s].set(1, c1 * AA1[s].get(1) - c2 * AA2[s].get(1));
+                this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
+                this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
+                coef=Math.sqrt(4*Math.PI*getIntensity()*kappa[s]/this.getPhotonEnergy()/C*HC);
+                this.A1[s].divide(coef);
+                this.A2[s].divide(coef);
+            }
             //Intensities of orthogonal polarizations
-            KA1 = A1.fold(Vectors.mkEuclideanNormAccumulator());
-            KA2 = A2.fold(Vectors.mkEuclideanNormAccumulator());
-            KB1 = B1.fold(Vectors.mkEuclideanNormAccumulator());
-            KB2 = B2.fold(Vectors.mkEuclideanNormAccumulator());
+            this.KA1[s] = A1[s].fold(Vectors.mkEuclideanNormAccumulator());
+            this.KA2[s] = A2[s].fold(Vectors.mkEuclideanNormAccumulator());
         }
     }
 
@@ -383,28 +360,14 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * @return the KA1
      */
-    public double getKA1() {
+    public double[] getKA1() {
         return KA1;
     }
 
     /**
      * @return the KA2
      */
-    public double getKA2() {
-        return KA2;
-    }
-
-    /**
-     * @return the KA1
-     */
-    public double getKB1() {
-        return KA1;
-    }
-
-    /**
-     * @return the KA2
-     */
-    public double getKB2() {
+    public double[] getKA2() {
         return KA2;
     }
 
@@ -418,28 +381,14 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * @return the A1
      */
-    public Vector getA1() {
+    public Vector[] getA1() {
         return A1;
     }
 
     /**
      * @return the A2
      */
-    public Vector getA2() {
+    public Vector[] getA2() {
         return A2;
-    }
-
-    /**
-     * @return the B1
-     */
-    public Vector getB1() {
-        return B1;
-    }
-
-    /**
-     * @return the B2
-     */
-    public Vector getB2() {
-        return B2;
     }
 }

@@ -3788,9 +3788,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
                     (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
         }
-        System.out.print(tsource.getLaserPulse().getA1().innerProduct(tsource.getLaserPulse().getA2())+"\n");
-        System.out.print(tsource.getLaserPulse().getA1().innerProduct(tsource.getLaserPulse().getA1())+"\n");
-        System.out.print(tsource.getLaserPulse().getA2().innerProduct(tsource.getLaserPulse().getA2())+"\n");
+        System.out.print(tsource.getLaserPulse().getA1()[0].innerProduct(tsource.getLaserPulse().getA2()[0])+"\n");
+        System.out.print(tsource.getLaserPulse().getA1()[0].innerProduct(tsource.getLaserPulse().getA1()[0])+"\n");
+        System.out.print(tsource.getLaserPulse().getA2()[0].innerProduct(tsource.getLaserPulse().getA2()[0])+"\n");
         
     }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
 
