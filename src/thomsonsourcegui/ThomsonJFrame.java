@@ -91,7 +91,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION);
         this.ebunch = new GaussianElectronBunch();
         this.lpulse = new GaussianLaserPulse();
-        this.tsource = new LinearThomsonSource(lpulse, ebunch);
+        this.tsource = new NonLinearThomsonSource(lpulse, ebunch, 2);
         tsource.setPolarization(new double[]{0, 0, 0});
         this.xsize = 300;
         this.ysize = 200;
@@ -178,8 +178,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
-        
-         /**
+
+        /**
          * Objects for the non-linear brilliance calculation
          */
         this.brilFormNonLinear = new CalcBoxParam(new String[]{"Spectral brilliance"});
@@ -2625,6 +2625,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
+                    ((NonLinearThomsonSource) tsource).setsIntensity();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
@@ -2653,7 +2654,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 } catch (InterruptedException | CancellationException ex) {
 
                 }
-                if (!isCancelled() || fluxChart != null) {
+                System.out.println(isCancelled());
+                if (fluxChart != null) {
                     //Creating or updating charts
                     if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
@@ -3301,7 +3303,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
         try {
-            tsourceRayClone = (LinearThomsonSource) tsource.clone();
+            tsourceRayClone = (AbstractThomsonSource) tsource.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
@@ -3788,10 +3790,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
                     (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
         }
-        System.out.print(tsource.getLaserPulse().getA1()[0].innerProduct(tsource.getLaserPulse().getA2()[0])+"\n");
-        System.out.print(tsource.getLaserPulse().getA1()[0].innerProduct(tsource.getLaserPulse().getA1()[0])+"\n");
-        System.out.print(tsource.getLaserPulse().getA2()[0].innerProduct(tsource.getLaserPulse().getA2()[0])+"\n");
-        
     }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
 
     private void jRadioButtonMenuItemAutoPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemAutoPolarizedItemStateChanged
@@ -4084,13 +4082,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             BrillianceCalcStartNonLinear.setText("Calculate");
             BrillianceCalcSaveNonLinear.setEnabled(true);
             return;
-        }    
+        }
         BrilProgressBarNonLinear.setValue(0);
         BrilProgressBarNonLinear.setStringPainted(true);
         BrillianceCalcStartNonLinear.setText("Terminate");
         BrillianceCalcSaveNonLinear.setEnabled(false);
         brilFormNonLinear.initialize();
-        ((NonLinearThomsonSource)brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumberclone);
+        ((NonLinearThomsonSource) brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumberclone);
 
         /**
          * Calculating data array. Using SwingWorker class

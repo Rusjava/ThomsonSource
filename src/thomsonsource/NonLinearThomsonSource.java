@@ -22,8 +22,6 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
 import org.la4j.Vector;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
-import org.la4j.Vectors;
-import org.la4j.vector.dense.BasicVector;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 
 /**
@@ -54,6 +52,8 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
     public NonLinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b, int ordernumber) {
         super(l, b);
         this.ordernumber = ordernumber;
+        calculateTotalFlux();
+        calculateGeometricFactor();
     }
 
     @Override
@@ -75,10 +75,10 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFlux(Vector n, Vector v) {
         double mv, M;
-        double K1 = lp.getIntensity() * lp.getPolarization()[0];
-        double K2 = lp.getIntensity() * lp.getPolarization()[3];
-        Vector A1 = new BasicVector(new double[]{0.0, 0.0, 0.0});
-        Vector A2 = new BasicVector(new double[]{0.0, 0.0, 0.0});
+        double K1 = lp.getKA1()[0];
+        double K2 = lp.getKA2()[0];
+        Vector A1 = lp.getA1()[0];
+        Vector A2 = lp.getA2()[0];
         double f01, f02, f11, f12, f21, f22, f31, f32;
         double gamma2 = eb.getGamma() * eb.getGamma();
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed

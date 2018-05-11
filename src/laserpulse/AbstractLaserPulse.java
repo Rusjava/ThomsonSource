@@ -86,8 +86,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
         this.KA1 = new double[2];
         this.KA2 = new double[2];
-        this.A1 = new Vector[]{new BasicVector(new double[]{1.0, 0.0}), new BasicVector(new double[]{1.0, 0.0})};
-        this.A2 = new Vector[]{new BasicVector(new double[]{1.0, 0.0}), new BasicVector(new double[]{1.0, 0.0})};
+        this.A1 = new Vector[]{new BasicVector(new double[]{1, 0, 0}), new BasicVector(new double[]{1, 0, 0})};
+        this.A2 = new Vector[]{new BasicVector(new double[]{1, 0, 0}), new BasicVector(new double[]{1, 0, 0})};
     }
 
     @Override
@@ -97,6 +97,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
         ((AbstractLaserPulse) tm).getDirection().set(0, this.getDirection().get(0));
         ((AbstractLaserPulse) tm).getDirection().set(1, this.getDirection().get(1));
         ((AbstractLaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
+        ((AbstractLaserPulse) tm).KA1 = new double[]{KA1[0], KA1[1]};
+        ((AbstractLaserPulse) tm).KA2 = new double[]{KA2[0], KA2[1]};
+        ((AbstractLaserPulse) tm).A1 = new Vector[]{A1[0], A1[1]};
+        ((AbstractLaserPulse) tm).A2 = new Vector[]{A2[0], A2[1]};
         return tm;
     }
 
@@ -290,11 +294,16 @@ public abstract class AbstractLaserPulse implements Cloneable {
 
         //Auxialiry paremeters
         for (int s = 0; s < 2; s++) {
-            h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
-            AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
-            AA2[s] = new BasicVector(new double[]{-ksi2, 0});
-            AA1[s] = AA1[s].divide(h);
-            AA2[s] = AA2[s].divide(h);
+            if (p == 0) {
+                AA1[s] = new BasicVector(new double[]{1, 0});
+                AA2[s] = new BasicVector(new double[]{0, 1});
+            } else {
+                h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
+                AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
+                AA2[s] = new BasicVector(new double[]{-ksi2, 0});
+                AA1[s] = AA1[s].divide(h);
+                AA2[s] = AA2[s].divide(h);
+            }
         }
         //Orthogonal polarization vectors
         for (int s = 0; s < 2; s++) {
@@ -313,7 +322,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 this.A1[s].set(1, c1 * AA1[s].get(1) - c2 * AA2[s].get(1));
                 this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
                 this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
-                coef=Math.sqrt(4*Math.PI*getIntensity()*kappa[s]/this.getPhotonEnergy()/C*HC);
+                coef = Math.sqrt(4 * Math.PI * getIntensity() * kappa[s] / this.getPhotonEnergy() / C * HC);
                 this.A1[s].divide(coef);
                 this.A2[s].divide(coef);
             }

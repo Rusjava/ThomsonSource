@@ -49,6 +49,12 @@ public abstract class ChartParam {
      */
     public void setup(int xsize, int ysize, double xstep, double ystep,
             double xoffset, double yoffset) throws InterruptedException {
+        this.xoffset = xoffset;
+        this.yoffset = yoffset;
+        this.xstep = xstep;
+        this.ystep = ystep;
+        this.xsize = xsize;
+        this.ysize = ysize;
         this.udata = new double[xsize][ysize];
         double x, y;
         for (int j = 0; j < xsize; j++) {
@@ -59,15 +65,10 @@ public abstract class ChartParam {
                 x = xoffset + xstep * (j - xsize / 2);
                 y = yoffset + ystep * (p - ysize / 2);
                 this.udata[j][p] = func(x, y);
+                System.out.println(j + " " + p + "\n");
             }
         }
         this.umax = this.udata[xsize / 2][ysize / 2];
-        this.xoffset = xoffset;
-        this.yoffset = yoffset;
-        this.xstep = xstep;
-        this.ystep = ystep;
-        this.xsize = xsize;
-        this.ysize = ysize;
     }
 
     /**
