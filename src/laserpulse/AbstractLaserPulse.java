@@ -322,7 +322,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 this.A1[s].set(1, c1 * AA1[s].get(1) - c2 * AA2[s].get(1));
                 this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
                 this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
-                coef = Math.sqrt(4 * Math.PI * getIntensity() * kappa[s] / this.getPhotonEnergy() / C * HC);
+                coef = Math.sqrt(getIntensity() * kappa[s] / 2);
                 this.A1[s].divide(coef);
                 this.A2[s].divide(coef);
             }
@@ -363,7 +363,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return the intensity, W/m^2
      */
     public double getIntensity() {
-        return getPulseEnergy() / getLength() / Math.PI / getWidth2(0);
+        return getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
     }
 
     /**

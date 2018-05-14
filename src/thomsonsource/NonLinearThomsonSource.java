@@ -82,14 +82,15 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         double f01, f02, f11, f12, f21, f22, f31, f32;
         double gamma2 = eb.getGamma() * eb.getGamma();
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
-       
+
         double a1 = directionEnergy(n, v) / lp.getPhotonEnergy() * n.innerProduct(A1)
                 / Math.sqrt(getsIntensity()) / (1 + mv) / eb.getGamma();
         double a2 = directionEnergy(n, v) / lp.getPhotonEnergy() * n.innerProduct(A2)
                 / Math.sqrt(getsIntensity()) / (1 + mv) / eb.getGamma();
-        double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / getsIntensity() 
+        double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / getsIntensity()
                 * (mv + n.innerProduct(v)) / Math.pow(eb.getGamma() * (1 + mv), 2) / mv / 8;
-         /*
+        System.out.println(directionEnergy(n, v) + "\n");
+        /*
         Calculating the fourie harmonics
          */
         // 01 component
