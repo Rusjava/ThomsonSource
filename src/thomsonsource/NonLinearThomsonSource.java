@@ -169,10 +169,12 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionEnergy(Vector n, Vector v) {
-        double mv, M;
-        mv = Math.sqrt(1.0 - 1.0 / eb.getGamma() / eb.getGamma());
-        M = lp.getIntensity() / getsIntensity() * (1 + n.innerProduct(v) / mv) / 4 / eb.getGamma() / eb.getGamma() / (1 + mv);
-        return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv + M);
+        double mv, M, pr, gamma_2;
+        gamma_2 = 1.0 / eb.getGamma() / eb.getGamma();
+        mv = Math.sqrt(1.0 - gamma_2);
+        pr = n.innerProduct(v);
+        M = lp.getIntensity() / getsIntensity() * (1 + pr) * gamma_2 / (1 + mv) / 4;
+        return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
     }
 
     /**
@@ -205,7 +207,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
      */
     public void setsIntensity() {
         double k = lp.getPhotonEnergy() / AbstractLaserPulse.HC;
-        this.sIntensity = 1e-3 * Math.pow(AbstractLaserPulse.C, 3) * k * k * AS * AS / 8 / Math.PI;
+        this.sIntensity = 1e-3 * AbstractLaserPulse.C * k * k * AS * AS / 8 / Math.PI;
     }
 
     /**

@@ -489,7 +489,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating X-ray energy in a given direction
      *
      * @param n direction
-     * @param v normalized electron velocity
+     * @param v normalized (to unity) electron velocity
      * @return
      */
     public abstract double directionEnergy(Vector n, Vector v);
@@ -499,7 +499,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param r0 spatial position for brightness
      * @param n direction
-     * @param v normalized electron velocity
+     * @param v normalized (to unity) electron velocity
      * @param e X-ray energy
      * @return
      */

@@ -77,6 +77,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
     private Vector[] A1;
     private Vector[] A2;
 
+    private double intensity = 0;
+
     protected double rk;
 
     public AbstractLaserPulse() {
@@ -363,7 +365,15 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return the intensity, W/m^2
      */
     public double getIntensity() {
-        return getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
+        return intensity;
+    }
+
+    /**
+     * Setting an average pulse intensity
+     *
+     */
+    public void setIntensity() {
+        intensity = getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
     }
 
     /**

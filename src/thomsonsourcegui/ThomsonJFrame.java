@@ -2625,6 +2625,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
+                    tsource.getLaserPulse().setIntensity();
                     ((NonLinearThomsonSource) tsource).setsIntensity();
                     //fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 / 4);
@@ -2654,7 +2655,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 } catch (InterruptedException | CancellationException ex) {
 
                 }
-                if (fluxChart != null) {
+                if (!isCancelled() || fluxChart != null) {
                     //Creating or updating charts
                     /*if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
@@ -2679,7 +2680,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                 + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
                         xenergycrosschart.fireChartChanged();
                     } else {
-                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata, 
+                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata,
                                 new String[]{"Energy cross section"}), "theta_y, mrad", "Energy, keV");
                         ChartPanel chartpanel = new ChartPanel(xenergycrosschart,
                                 (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
@@ -2692,9 +2693,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                     //fluxChart.getchartpanel().revalidate();
                     //fluxChart.getchartpanel().repaint();
-                    plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
+                    plotwidth = xEnergyChart.getchartpanel().getChartRenderingInfo().
                             getPlotInfo().getDataArea().getWidth();
-                    xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
+                    xrayenergyborder.setTitle("X-ray photon energy" + ". Order: " 
+                            + (new DecimalFormat("##")).format(((NonLinearThomsonSource) tsource).getOrdernumber()) + ", Max: " 
+                            + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
+                    jPanel_xenergy.repaint();
                     totalFluxLabel.setText("Total flux: "
                             + (new DecimalFormat("####.####")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
@@ -2785,10 +2789,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     //Updating charts
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
-                    }
+                    }*/
                     if (xEnergyChart != null) {
                         xEnergyChart.update();
-                    }*/
+                    }
                     if (xenergycrosschart != null) {
                         xenergycrosschart.getXYPlot().getRangeAxis().setRange(xenergycrossdata.getUMin(), xenergycrossdata.getUMax());
                         xenergycrosschart.fireChartChanged();
