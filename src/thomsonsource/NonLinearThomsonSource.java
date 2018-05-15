@@ -17,6 +17,7 @@
 package thomsonsource;
 
 import electronbunch.AbstractElectronBunch;
+import java.util.function.Function;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
@@ -49,9 +50,48 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
      */
     private double sIntensity = 1;
 
+    /**
+     * An array of functional objects
+     */
+    private final Function<Double[], Double>[] funcarray;
+
+    /**
+     * The saturating laser intensity
+     *
+     * @param l - laser pulse object
+     * @param b - electron bunch object
+     * @param ordernumber - the nonlinear order number
+     */
     public NonLinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b, int ordernumber) {
         super(l, b);
         this.ordernumber = ordernumber;
+        this.funcarray = new Function[8];
+        //Inoitializeing the array of functions used to calculate non-linear amplitudes
+        funcarray[0] = arg -> {
+            return 1 + Math.cos(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[1] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[2] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[3] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[4] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[5] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[6] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+        funcarray[7] = arg -> {
+            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        };
+
         calculateTotalFlux();
         calculateGeometricFactor();
     }
@@ -95,11 +135,10 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
          */
         // 01 component
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateFunction func = new UnivariateFourierHarmonics01(0, 0, 0);
+        UnivariateFunction func = new UnivariateFourierHarmonics01(a1, a2, a3);
         try {
-            f01 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f01 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f01");
             f01 = 0;
         }
         System.out.println(f01 + "\n");
@@ -109,7 +148,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f02 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f02");
             f02 = 0;
         }
         System.out.println(f02 + "\n");
@@ -119,7 +157,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f11 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f11");
             f11 = 0;
         }
         System.out.println(f11 + "\n");
@@ -129,7 +166,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f12 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f12");
             f12 = 0;
         }
         System.out.println(f12 + "\n");
@@ -139,7 +175,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f21 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f21");
             f21 = 0;
         }
         System.out.println(f21 + "\n");
@@ -149,7 +184,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f22 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f22");
             f22 = 0;
         }
         System.out.println(f22 + "\n");
@@ -159,7 +193,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f31 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f31");
             f31 = 0;
         }
         System.out.println(f31 + "\n");
@@ -169,7 +202,6 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         try {
             f32 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
-            System.out.println("f32");
             f32 = 0;
         }
         System.out.println(f32 + "\n");
@@ -241,8 +273,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
 
         @Override
         public double value(double tau) {
-            double ph = a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau);
-            return Math.cos(getOrdernumber() * tau);
+            return 1 + Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
         }
     }
 
