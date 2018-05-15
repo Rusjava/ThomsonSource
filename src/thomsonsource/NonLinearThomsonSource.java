@@ -95,7 +95,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
          */
         // 01 component
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateFunction func = new UnivariateFourierHarmonics01(a1, a2, a3);
+        UnivariateFunction func = new UnivariateFourierHarmonics01(0, 0, 0);
         try {
             f01 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
         } catch (TooManyEvaluationsException ex) {
@@ -241,7 +241,8 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
 
         @Override
         public double value(double tau) {
-            return Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+            double ph = a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau);
+            return Math.cos(getOrdernumber() * tau);
         }
     }
 
