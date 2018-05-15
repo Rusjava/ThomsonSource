@@ -2627,7 +2627,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     tsource.calculateGeometricFactor();
                     tsource.getLaserPulse().setIntensity();
                     ((NonLinearThomsonSource) tsource).setsIntensity();
-                    //fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
+                    fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 * 2 / 4);
@@ -2657,13 +2657,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 if (!isCancelled() || fluxChart != null) {
                     //Creating or updating charts
-                    /*if (fluxChart != null) {
+                    if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
                     } else {
                         fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
                                 jPanel_xflux_left, 0.75, true);
                     }
-                    if (fluxCrossChart != null) {
+                    /*if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
@@ -2691,8 +2691,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jPanel_xenergy_right.revalidate();
                         jPanel_xenergy_right.repaint();
                     }
-                    //fluxChart.getchartpanel().revalidate();
-                    //fluxChart.getchartpanel().repaint();
+                    fluxChart.getchartpanel().revalidate();
+                    fluxChart.getchartpanel().repaint();
                     plotwidth = xEnergyChart.getchartpanel().getChartRenderingInfo().
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Order: " 
