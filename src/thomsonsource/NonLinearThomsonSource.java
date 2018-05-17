@@ -130,10 +130,10 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
         coef = directionEnergy(n, v) / lp.getPhotonEnergy()
-                / Math.sqrt(getsIntensity()) / (1 + mv) / eb.getGamma();
+                / Math.sqrt(sIntensity) / (1 + mv) / eb.getGamma();
         double a1 = coef * n.innerProduct(A1);
         double a2 = coef * n.innerProduct(A2);
-        double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / getsIntensity()
+        double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / sIntensity
                 * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
 
         /*
@@ -204,11 +204,11 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
             f32 = 0;
         }
         //Parameter of nolinearity
-        M = lp.getIntensity() / getsIntensity() * (1 + pr) / 4 / gamma2 / (1 + mv);
+        M = lp.getIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
         //Returning the total flux
-        double tmp = getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+        double tmp = -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / (K1 + K2) / gamma2
-                * ((Math.pow(f01, 2) + Math.pow(f02, 2)) * (getsIntensity() + (K1 + K2) / 2) - (Math.pow(f11, 2) + Math.pow(f12, 2)) * K1
+                * ((Math.pow(f01, 2) + Math.pow(f02, 2)) * (sIntensity + (K1 + K2) / 2) - (Math.pow(f11, 2) + Math.pow(f12, 2)) * K1
                 - (Math.pow(f21, 2) + Math.pow(f22, 2)) * K2 + (f31 * f01 + f32 * f02) * (K1 - K2) / 2);
         System.out.println(tmp + "\n");
         return tmp;
@@ -254,7 +254,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
      */
     public void setsIntensity() {
         double k = lp.getPhotonEnergy() / AbstractLaserPulse.HC;
-        this.sIntensity = 1e-3 * AbstractLaserPulse.C * k * k * AS * AS / 8 / Math.PI;
+        this.sIntensity = 1e-5 * AbstractLaserPulse.C * k * k * AS * AS / 8 / Math.PI;
     }
 
     /**

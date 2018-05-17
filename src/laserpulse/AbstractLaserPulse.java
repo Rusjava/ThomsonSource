@@ -18,7 +18,6 @@ package laserpulse;
 
 import electronbunch.GaussianElectronBunch;
 import org.la4j.Vector;
-import org.la4j.Vectors;
 import org.la4j.vector.dense.BasicVector;
 
 /**
@@ -317,8 +316,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 A2[s].set(0, AA2[s].get(0));
                 A2[s].set(1, AA2[s].get(1));
             } else {
-                a1 = AA1[s].fold(Vectors.mkEuclideanNormAccumulator());
-                a2 = AA2[s].fold(Vectors.mkEuclideanNormAccumulator());
+                a1 = AA1[s].innerProduct(AA1[s]);
+                a2 = AA2[s].innerProduct(AA2[s]);
                 M = (a1 - a2)
                         / Math.sqrt(Math.pow(a1, 2) + Math.pow(a2, 2) - 2 * a1 * a2
                                 + 4 * Math.pow(AA1[s].innerProduct(AA2[s]), 2));
@@ -329,12 +328,12 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
                 this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
             }
-            coef = Math.sqrt(getIntensity() * kappa[s] / 2);
+            coef = Math.sqrt(intensity * kappa[s] / 2);
             this.A1[s] = A1[s].multiply(coef);
             this.A2[s] = A2[s].multiply(coef);
             //Intensities of orthogonal polarizations
-            this.KA1[s] = A1[s].fold(Vectors.mkEuclideanNormAccumulator());
-            this.KA2[s] = A2[s].fold(Vectors.mkEuclideanNormAccumulator());
+            this.KA1[s] = A1[s].innerProduct(A1[s]);
+            this.KA2[s] = A2[s].innerProduct(A2[s]);
         }
     }
 
