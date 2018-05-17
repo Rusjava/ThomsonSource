@@ -74,22 +74,28 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
             return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         };
         funcarray[2] = arg -> {
-            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            double cs = Math.cos(arg[0]);
+            return 1 + cs * Math.cos(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
         };
         funcarray[3] = arg -> {
-            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            double cs = Math.cos(arg[0]);
+            return 1 + cs * Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
         };
         funcarray[4] = arg -> {
-            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            double sn = Math.sin(arg[0]);
+            return 1 + sn * Math.cos(getOrdernumber() * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         };
         funcarray[5] = arg -> {
-            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            double sn = Math.sin(arg[0]);
+            return 1 + sn * Math.sin(getOrdernumber() * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         };
         funcarray[6] = arg -> {
-            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            double tau2 = 2 * arg[0];
+            return 1 + Math.cos(tau2) * Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         };
         funcarray[7] = arg -> {
-            return 1 + Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            double tau2 = 2 * arg[0];
+            return 1 + Math.cos(tau2) * Math.sin(getOrdernumber() * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         };
 
         calculateTotalFlux();
@@ -141,77 +147,71 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         } catch (TooManyEvaluationsException ex) {
             f01 = 0;
         }
-        System.out.println(f01 + "\n");
         // 02 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics02(a1, a2, a3);
         try {
-            f02 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f02 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f02 = 0;
         }
-        System.out.println(f02 + "\n");
         // 11 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics11(a1, a2, a3);
         try {
-            f11 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f11 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f11 = 0;
         }
-        System.out.println(f11 + "\n");
         // 12 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics12(a1, a2, a3);
         try {
-            f12 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f12 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f12 = 0;
         }
-        System.out.println(f12 + "\n");
         // 21 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics21(a1, a2, a3);
         try {
-            f21 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f21 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f21 = 0;
         }
-        System.out.println(f21 + "\n");
         // 22 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics22(a1, a2, a3);
         try {
-            f22 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f22 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f22 = 0;
         }
-        System.out.println(f22 + "\n");
         // 31 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics31(a1, a2, a3);
         try {
-            f31 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f31 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f31 = 0;
         }
-        System.out.println(f31 + "\n");
         // 32 component
         integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         func = new UnivariateFourierHarmonics32(a1, a2, a3);
         try {
-            f32 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI;
+            f32 = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
         } catch (TooManyEvaluationsException ex) {
             f32 = 0;
         }
-        System.out.println(f32 + "\n");
         //Parameter of nolinearity
         M = lp.getIntensity() / getsIntensity() * (1 + pr) / 4 / gamma2 / (1 + mv);
         //Returning the total flux
-        return -getTotalFlux() * 3 / 2 / Math.PI * SIGMA_T
-                / Math.pow((1 - pr * mv) * (1 + M), 2) / (K1 + K2)
+        double tmp = getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+                / Math.pow((1 - pr * mv) * (1 + M), 2) / (K1 + K2) / gamma2
                 * ((Math.pow(f01, 2) + Math.pow(f02, 2)) * (getsIntensity() + (K1 + K2) / 2) - (Math.pow(f11, 2) + Math.pow(f12, 2)) * K1
                 - (Math.pow(f21, 2) + Math.pow(f22, 2)) * K2 + (f31 * f01 + f32 * f02) * (K1 - K2) / 2);
+        System.out.println(tmp + "\n");
+        return tmp;
     }
 
     @Override
@@ -258,6 +258,28 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
+     * An auxiliary class for Romberg integrator for Fourier harmonics
+     * calculations
+     */
+    private class UnivariateFourierHarmonics implements UnivariateFunction {
+
+        private final double a1, a2, a3;
+        private final Function<Double[], Double> fn;
+
+        public UnivariateFourierHarmonics(double a1, double a2, double a3, int ind) {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3 = a3;
+            this.fn = funcarray[ind];
+        }
+
+        @Override
+        public double value(double tau) {
+            return fn.apply(new Double[]{tau, a1, a2, a3});
+        }
+    }
+
+    /**
      * An auxiliary class 01 for Romberg integrator for Fourier harmonics
      * calculations
      */
@@ -293,7 +315,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
 
         @Override
         public double value(double tau) {
-            return Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+            return 1 + Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
         }
     }
 
@@ -314,7 +336,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             double cs = Math.cos(tau);
-            return cs * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * cs + a3 * Math.sin(2 * tau));
+            return 1 + cs * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * cs + a3 * Math.sin(2 * tau));
         }
     }
 
@@ -335,7 +357,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             double cs = Math.cos(tau);
-            return cs * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * cs + a3 * Math.sin(2 * tau));
+            return 1 + cs * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * cs + a3 * Math.sin(2 * tau));
         }
     }
 
@@ -356,7 +378,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             double sn = Math.sin(tau);
-            return sn * Math.cos(getOrdernumber() * tau + a1 * sn - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+            return 1 + sn * Math.cos(getOrdernumber() * tau + a1 * sn - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
         }
     }
 
@@ -377,7 +399,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             double sn = Math.sin(tau);
-            return sn * Math.sin(getOrdernumber() * tau + a1 * sn - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
+            return 1 + sn * Math.sin(getOrdernumber() * tau + a1 * sn - a2 * Math.cos(tau) + a3 * Math.sin(2 * tau));
         }
     }
 
@@ -398,7 +420,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             double tau2 = 2 * tau;
-            return Math.cos(tau2) * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(tau2));
+            return 1 + Math.cos(tau2) * Math.cos(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(tau2));
         }
     }
 
@@ -419,7 +441,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             double tau2 = 2 * tau;
-            return Math.cos(tau2) * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(tau2));
+            return 1 + Math.cos(tau2) * Math.sin(getOrdernumber() * tau + a1 * Math.sin(tau) - a2 * Math.cos(tau) + a3 * Math.sin(tau2));
         }
     }
 }

@@ -67,9 +67,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Stocks parameters
      */
-    private double ksi1 = 0;
-    private double ksi2 = 0;
-    private double ksi3 = 0;
+    private double ksi1;
+    private double ksi2;
+    private double ksi3;
 
     private double[] KA1;
     private double[] KA2;
@@ -88,8 +88,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
         this.KA1 = new double[2];
         this.KA2 = new double[2];
-        this.A1 = new Vector[]{new BasicVector(new double[]{1, 0, 0}), new BasicVector(new double[]{1, 0, 0})};
-        this.A2 = new Vector[]{new BasicVector(new double[]{1, 0, 0}), new BasicVector(new double[]{1, 0, 0})};
+        this.A1 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};
+        this.A2 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};
+        setIntensity();
+        setPolarization(ksi1, ksi2, ksi3);
     }
 
     @Override
@@ -101,8 +103,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
         ((AbstractLaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
         ((AbstractLaserPulse) tm).KA1 = new double[]{KA1[0], KA1[1]};
         ((AbstractLaserPulse) tm).KA2 = new double[]{KA2[0], KA2[1]};
-        ((AbstractLaserPulse) tm).A1 = new Vector[]{A1[0], A1[1]};
-        ((AbstractLaserPulse) tm).A2 = new Vector[]{A2[0], A2[1]};
+        ((AbstractLaserPulse) tm).A1 = new Vector[]{A1[0], A1[1], A1[2]};
+        ((AbstractLaserPulse) tm).A2 = new Vector[]{A2[0], A2[1], A2[2]};
         return tm;
     }
 
@@ -283,7 +285,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @param ksi2
      * @param ksi3
      */
-    public void setPolarization(double ksi1, double ksi2, double ksi3) {
+    public final void setPolarization(double ksi1, double ksi2, double ksi3) {
         this.ksi1 = ksi1;
         this.ksi2 = ksi2;
         this.ksi3 = ksi3;
@@ -310,8 +312,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
         //Orthogonal polarization vectors
         for (int s = 0; s < 2; s++) {
             if (AA1[s].innerProduct(AA2[s]) == 0) {
-                A1[s] = AA1[s].copy();
-                A2[s] = AA2[s].copy();
+                A1[s].set(0, AA1[s].get(0));
+                A1[s].set(1, AA1[s].get(1));
+                A2[s].set(0, AA2[s].get(0));
+                A2[s].set(1, AA2[s].get(1));
             } else {
                 a1 = AA1[s].fold(Vectors.mkEuclideanNormAccumulator());
                 a2 = AA2[s].fold(Vectors.mkEuclideanNormAccumulator());
@@ -324,10 +328,10 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 this.A1[s].set(1, c1 * AA1[s].get(1) - c2 * AA2[s].get(1));
                 this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
                 this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
-                coef = Math.sqrt(getIntensity() * kappa[s] / 2);
-                this.A1[s].divide(coef);
-                this.A2[s].divide(coef);
             }
+            coef = Math.sqrt(getIntensity() * kappa[s] / 2);
+            this.A1[s] = A1[s].multiply(coef);
+            this.A2[s] = A2[s].multiply(coef);
             //Intensities of orthogonal polarizations
             this.KA1[s] = A1[s].fold(Vectors.mkEuclideanNormAccumulator());
             this.KA2[s] = A2[s].fold(Vectors.mkEuclideanNormAccumulator());
@@ -372,7 +376,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * Setting an average pulse intensity
      *
      */
-    public void setIntensity() {
+    public final void setIntensity() {
         intensity = getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
     }
 
