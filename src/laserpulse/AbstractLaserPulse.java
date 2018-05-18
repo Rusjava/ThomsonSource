@@ -212,7 +212,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return the direction
      */
     public Vector getDirection() {
-        return direction;
+        return direction.copy();
     }
 
     /**
