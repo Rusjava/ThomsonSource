@@ -178,7 +178,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating normalized total flux
+     * A method calculating the normalized total flux
      */
     public final void calculateTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq() 

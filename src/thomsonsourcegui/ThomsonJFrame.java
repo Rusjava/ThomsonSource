@@ -2624,7 +2624,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
-                    tsource.getLaserPulse().setIntensity();
                     ((NonLinearThomsonSource) tsource).setsIntensity();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 / 4);
