@@ -289,17 +289,17 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.ksi2 = ksi2;
         this.ksi3 = ksi3;
         this.p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi2 * ksi3);
-        double[] t = new double[]{p + ksi3, p - ksi3};
+        double[] t = new double[]{ksi3 + p, ksi3 - p};
         double[] kappa = new double[]{1 + p, 1 - p};
         Vector[] AA1 = new Vector[2];
         Vector[] AA2 = new Vector[2];
         double a1, a2, M, c1, c2, h, coef;
 
-        //Auxialiry paremeters
+        //Auxialiry parameters
         for (int s = 0; s < 2; s++) {
             if (p == 0) {
-                AA1[s] = new BasicVector(new double[]{1, 0});
-                AA2[s] = new BasicVector(new double[]{0, 1});
+                AA1[s] = (new BasicVector(new double[]{1, 1 - 2 * s})).divide(Math.sqrt(2));
+                AA2[s] = new BasicVector(new double[]{0, 0});
             } else {
                 h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
                 AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
@@ -311,16 +311,15 @@ public abstract class AbstractLaserPulse implements Cloneable {
         //Orthogonal polarization vectors
         for (int s = 0; s < 2; s++) {
             if (AA1[s].innerProduct(AA2[s]) == 0) {
-                A1[s].set(0, AA1[s].get(0));
-                A1[s].set(1, AA1[s].get(1));
-                A2[s].set(0, AA2[s].get(0));
-                A2[s].set(1, AA2[s].get(1));
+                this.A1[s].set(0, AA1[s].get(0));
+                this.A1[s].set(1, AA1[s].get(1));
+                this.A2[s].set(0, AA2[s].get(0));
+                this.A2[s].set(1, AA2[s].get(1));
             } else {
                 a1 = AA1[s].innerProduct(AA1[s]);
                 a2 = AA2[s].innerProduct(AA2[s]);
-                M = (a1 - a2)
-                        / Math.sqrt(Math.pow(a1, 2) + Math.pow(a2, 2) - 2 * a1 * a2
-                                + 4 * Math.pow(AA1[s].innerProduct(AA2[s]), 2));
+                M = Math.abs(a1 - a2) / Math.sqrt(a1 * a1 + a2 * a2 - 2 * a1 * a2
+                        + 4 * Math.pow(AA1[s].innerProduct(AA2[s]), 2));
                 c1 = (1 + M) / 2;
                 c2 = (1 - M) / 2;
                 this.A1[s].set(0, c1 * AA1[s].get(0) - c2 * AA2[s].get(0));

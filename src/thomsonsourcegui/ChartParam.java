@@ -16,11 +16,13 @@
  */
 package thomsonsourcegui;
 
+import org.la4j.vector.dense.BasicVector;
+
 /**
  * Class for color chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 1.0
+ * @version 1.1
  */
 public abstract class ChartParam {
 
@@ -65,10 +67,9 @@ public abstract class ChartParam {
                 x = xoffset + xstep * (j - xsize / 2);
                 y = yoffset + ystep * (p - ysize / 2);
                 this.udata[j][p] = func(x, y);
-                System.out.println(j + " " + p + "\n");
             }
         }
-        this.umax = this.udata[xsize / 2][ysize / 2];
+        setExtr();
     }
 
     /**
@@ -142,11 +143,23 @@ public abstract class ChartParam {
     public int getysize() {
         return this.ysize;
     }
+    
+    /**
+     * Calculating the max value of data
+     */
+    private void setExtr() {
+        int sz = udata.length;
+        double[] umaxt = new double[sz];
+        for (int k = 0; k < sz; k++) {
+            umaxt[k] = (new BasicVector(udata[k])).max();
+        }
+        umax = (new BasicVector(umaxt)).max();
+    }
 
     public abstract double func(double x, double y);
 
-    private double[][] udata;
-    private double umax;
+    private double[][] udata; // Data
+    private double umax;// Maximum of the data
     private double xoffset = 0.0;
     private double yoffset = 0.0;
     private double xstep;

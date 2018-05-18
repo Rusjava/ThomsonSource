@@ -137,7 +137,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
                 * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
 
         /*
-        Calculating the fourie harmonics
+        Calculating the Fourie harmonics
          */
         // 01 component
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
@@ -206,12 +206,10 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         //Parameter of nolinearity
         M = lp.getIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
         //Returning the total flux
-        double tmp = -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+        return -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / (K1 + K2) / gamma2
                 * ((Math.pow(f01, 2) + Math.pow(f02, 2)) * (sIntensity + (K1 + K2) / 2) - (Math.pow(f11, 2) + Math.pow(f12, 2)) * K1
                 - (Math.pow(f21, 2) + Math.pow(f22, 2)) * K2 + (f31 * f01 + f32 * f02) * (K1 - K2) / 2);
-        System.out.println(tmp + "\n");
-        return tmp;
     }
 
     @Override
@@ -220,7 +218,7 @@ public class NonLinearThomsonSource extends AbstractThomsonSource {
         gamma_2 = 1.0 / eb.getGamma() / eb.getGamma();
         mv = Math.sqrt(1.0 - gamma_2);
         pr = n.innerProduct(v);
-        M = lp.getIntensity() / getsIntensity() * (1 + pr) * gamma_2 / (1 + mv) / 4;
+        M = lp.getIntensity() / sIntensity * (1 + pr) * gamma_2 / (1 + mv) / 4;
         return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
     }
 
