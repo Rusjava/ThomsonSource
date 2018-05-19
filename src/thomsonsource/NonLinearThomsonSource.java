@@ -120,7 +120,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFlux(Vector n, Vector v) {
-        double mv, M, pr, gamma2, coef;
+        double mv, M, pr, gamma2, coef, xenergy;
         double K1 = lp.getKA1()[0];
         double K2 = lp.getKA2()[0];
         Vector A1 = lp.getA1()[0];
@@ -129,11 +129,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         gamma2 = eb.getGamma() * eb.getGamma();
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
-        coef = directionEnergy(n, v) / lp.getPhotonEnergy()
+        xenergy = directionEnergy(n, v);
+        coef = xenergy / lp.getPhotonEnergy()
                 / Math.sqrt(sIntensity) / (1 + mv) / eb.getGamma();
         double a1 = coef * n.innerProduct(A1);
         double a2 = coef * n.innerProduct(A2);
-        double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / sIntensity
+        double a3 = xenergy / lp.getPhotonEnergy() * (K1 - K2) / sIntensity
                 * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
         /*
         Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
@@ -157,7 +158,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         return -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
                 * ((f[0] * f[0] + f[1] * f[1]) * (sIntensity / (K1 + K2) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1 / (K1 + K2)
-                - (f[4] * f[4] + f[5] * f[5]) * K2 / (K1 + K2) + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2 / (K1 + K2));
+                - (f[4] * f[4] + f[5] * f[5]) * K2 / (K1 + K2) + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / (K1 + K2) / 2);
     }
 
     @Override

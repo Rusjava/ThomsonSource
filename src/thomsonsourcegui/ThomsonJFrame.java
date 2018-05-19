@@ -91,7 +91,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION);
         this.ebunch = new GaussianElectronBunch();
         this.lpulse = new GaussianLaserPulse();
-        this.tsource = new NonLinearThomsonSource(lpulse, ebunch, 2);
+        this.tsource = new NonLinearThomsonSource(lpulse, ebunch, 1);
         this.xsize = 300;
         this.ysize = 200;
         this.xstep = 20.0 / xsize;
@@ -99,6 +99,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
         rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
+        orderNumberBox = getIntegerFormattedTextField(1, 1, 10);
         rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
@@ -428,6 +429,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemNumerical = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItemOrderNumber = new javax.swing.JMenuItem();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuSkin = new javax.swing.JMenu();
@@ -2199,6 +2201,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuOptions.add(jMenuItemNumerical);
         jMenuOptions.add(jSeparator2);
 
+        jMenuItemOrderNumber.setText("Order number");
+        jMenuItemOrderNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemOrderNumberActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jMenuItemOrderNumber);
+
         jCheckBoxMenuItemSpread.setText("Velocity spread");
         jCheckBoxMenuItemSpread.setToolTipText("");
         jCheckBoxMenuItemSpread.addActionListener(new java.awt.event.ActionListener() {
@@ -2532,7 +2542,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
             gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
-            yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box;
+            yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box, orderNumberBox;
 
     private File bFile = null, pFile = null;
 
@@ -2544,6 +2554,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
         // TODO add your handling code here:
         lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * GaussianElectronBunch.E);
+        ((NonLinearThomsonSource) tsource).setsIntensity();
     }//GEN-LAST:event_phenergyvalueActionPerformed
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
@@ -2624,7 +2635,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
-                    ((NonLinearThomsonSource) tsource).setsIntensity();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
@@ -2693,8 +2703,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     fluxChart.getchartpanel().repaint();
                     plotwidth = xEnergyChart.getchartpanel().getChartRenderingInfo().
                             getPlotInfo().getDataArea().getWidth();
-                    xrayenergyborder.setTitle("X-ray photon energy" + ". Order: " 
-                            + (new DecimalFormat("##")).format(((NonLinearThomsonSource) tsource).getOrdernumber()) + ", Max: " 
+                    xrayenergyborder.setTitle("X-ray photon energy" + ". Order: "
+                            + (new DecimalFormat("##")).format(((NonLinearThomsonSource) tsource).getOrdernumber()) + ", Max: "
                             + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     jPanel_xenergy.repaint();
                     totalFluxLabel.setText("Total flux: "
@@ -4357,6 +4367,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         brillianceCalcNonLinear.setVisible(true);
     }//GEN-LAST:event_jMenuItemBrillianceNonLinearActionPerformed
 
+    private void jMenuItemOrderNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOrderNumberActionPerformed
+        // Order input
+        Object[] message = {
+            "Order number:", orderNumberBox
+        };
+        int option = JOptionPane.showConfirmDialog(null, message, "Non-linear parameters", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            ((NonLinearThomsonSource) tsource).setOrdernumber((int) orderNumberBox.getValue());
+        }
+    }//GEN-LAST:event_jMenuItemOrderNumberActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation
      */
@@ -4844,6 +4865,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemLaserPolarization;
     private javax.swing.JMenuItem jMenuItemLoadParam;
     private javax.swing.JMenuItem jMenuItemNumerical;
+    private javax.swing.JMenuItem jMenuItemOrderNumber;
     private javax.swing.JMenuItem jMenuItemPolarization;
     private javax.swing.JMenuItem jMenuItemSaveParam;
     private javax.swing.JMenuItem jMenuItemSize;
