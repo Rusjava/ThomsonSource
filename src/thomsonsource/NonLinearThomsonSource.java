@@ -123,10 +123,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double mv, M, pr, gamma2, coef;
         double K1 = lp.getKA1()[0];
         double K2 = lp.getKA2()[0];
-        Vector A1 = lp.getA1()[0].copy();
-        Vector A2 = lp.getA2()[0].copy();
+        Vector A1 = lp.getA1()[0];
+        Vector A2 = lp.getA2()[0];
         double[] f = new double[8]; //An array for integrals
-        RombergIntegrator integrator; // Integrator of Romberg type
         gamma2 = eb.getGamma() * eb.getGamma();
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
@@ -137,25 +136,28 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double a3 = directionEnergy(n, v) / lp.getPhotonEnergy() * (K1 - K2) / sIntensity
                 * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
         /*
-        Calculation of eight non-linear Fourier integrals necessary for cross-section determination
-        */
-        for (int t = 0; t < 8; t++) {
-            integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
-                    RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-            UnivariateFunction func = new UnivariateFourierHarmonics(a1, a2, a3, t);
+        Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
+         */
+        for (int t = 2; t < 8; t++) {
+            //Creating a Romberg integrator and a UnivariateFunction object and then integrating
             try {
-                f[t] = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -Math.PI, Math.PI) / 2 / Math.PI - 1;
+                f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                        RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                        new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
             } catch (TooManyEvaluationsException ex) {
                 f[t] = 0;
             }
         }
-        //Parameter of nolinearity
+        //Calculating f-0 using the relation between integrals f_i
+        f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
+        f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
+        //Parameter of non-linearity
         M = lp.getIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
         //Returning the total flux
         return -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
-                / Math.pow((1 - pr * mv) * (1 + M), 2) / (K1 + K2) / gamma2
-                * ((Math.pow(f[0], 2) + Math.pow(f[1], 2)) * (sIntensity + (K1 + K2) / 2) - (Math.pow(f[2], 2) + Math.pow(f[3], 2)) * K1
-                - (Math.pow(f[4], 2) + Math.pow(f[5], 2)) * K2 + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2);
+                / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
+                * ((f[0] * f[0] + f[1] * f[1]) * (sIntensity / (K1 + K2) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1 / (K1 + K2)
+                - (f[4] * f[4] + f[5] * f[5]) * K2 / (K1 + K2) + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2 / (K1 + K2));
     }
 
     @Override

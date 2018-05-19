@@ -292,14 +292,16 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.ksi3 = ksi3;
         this.p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi2 * ksi3);
         double[] t = new double[]{ksi3 + p, ksi3 - p};
-        double[] kappa = new double[]{1 + p, 1 - p};
+        //An array for polarization intensities
+        double[] coef = new double[]{Math.sqrt(intensity * (1 + p) / 2), Math.sqrt(intensity * (1 - p) / 2)};
+        //Arrays for real and imagenery parts of polarization vectors
         Vector[] AA1 = new Vector[2];
         Vector[] AA2 = new Vector[2];
-        double a1, a2, M, c1, c2, h, coef;
-
+        double a1, a2, M, c1, c2, h;
         //Auxialiry parameters
         for (int s = 0; s < 2; s++) {
             if (p == 0) {
+                //If non-polarizeda special treatment
                 AA1[s] = (new BasicVector(new double[]{1, 1 - 2 * s})).divide(Math.sqrt(2));
                 AA2[s] = new BasicVector(new double[]{0, 0});
             } else {
@@ -313,6 +315,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         //Orthogonal polarization vectors
         for (int s = 0; s < 2; s++) {
             if (AA1[s].innerProduct(AA2[s]) == 0) {
+                //If already orthogonal just copy
                 this.A1[s].set(0, AA1[s].get(0));
                 this.A1[s].set(1, AA1[s].get(1));
                 this.A2[s].set(0, AA2[s].get(0));
@@ -322,16 +325,15 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 a2 = AA2[s].innerProduct(AA2[s]);
                 M = Math.abs(a1 - a2) / Math.sqrt(a1 * a1 + a2 * a2 - 2 * a1 * a2
                         + 4 * Math.pow(AA1[s].innerProduct(AA2[s]), 2));
-                c1 = (1 + M) / 2;
-                c2 = (1 - M) / 2;
+                c1 = Math.sqrt((1 + M) / 2);
+                c2 = Math.sqrt((1 - M) / 2);
                 this.A1[s].set(0, c1 * AA1[s].get(0) - c2 * AA2[s].get(0));
                 this.A1[s].set(1, c1 * AA1[s].get(1) - c2 * AA2[s].get(1));
                 this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
                 this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
             }
-            coef = Math.sqrt(intensity * kappa[s] / 2);
-            this.A1[s] = A1[s].multiply(coef);
-            this.A2[s] = A2[s].multiply(coef);
+            this.A1[s] = A1[s].multiply(coef[s]);
+            this.A2[s] = A2[s].multiply(coef[s]);
             //Intensities of orthogonal polarizations
             this.KA1[s] = A1[s].innerProduct(A1[s]);
             this.KA2[s] = A2[s].innerProduct(A2[s]);
@@ -391,14 +393,14 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return the KA1
      */
     public double[] getKA1() {
-        return KA1;
+        return new double[]{KA1[0], KA1[1]};
     }
 
     /**
      * @return the KA2
      */
     public double[] getKA2() {
-        return KA2;
+        return new double[]{KA2[0], KA2[1]};
     }
 
     /**
@@ -412,13 +414,13 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @return the A1
      */
     public Vector[] getA1() {
-        return A1;
+        return new Vector[]{A1[0].copy(), A1[1].copy()};
     }
 
     /**
      * @return the A2
      */
     public Vector[] getA2() {
-        return A2;
+        return new Vector[]{A2[0].copy(), A2[1].copy()};
     }
 }
