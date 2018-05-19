@@ -17,6 +17,8 @@
 package thomsonsource;
 
 import electronbunch.AbstractElectronBunch;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
@@ -51,9 +53,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     private double sIntensity = 1;
 
     /**
-     * An array of functional objects
+     * A list of functional objects
      */
-    private final Function<Double[], Double>[] funcarray;
+    private final List<Function<Double[], Double>> funcarray;
 
     /**
      * The saturating laser intensity
@@ -65,38 +67,38 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public NonLinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b, int ordernumber) {
         super(l, b);
         this.ordernumber = ordernumber;
-        this.funcarray = new Function[8];
+        this.funcarray = new ArrayList<>();
         //Inoitializeing the array of functions used to calculate non-linear amplitudes
-        funcarray[0] = arg -> {
+        funcarray.add(arg -> {
             return 1 + Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[1] = arg -> {
+            });
+        funcarray.add(arg -> {
             return 1 + Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[2] = arg -> {
+        });
+        funcarray.add(arg -> {
             double cs = Math.cos(arg[0]);
             return 1 + cs * Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[3] = arg -> {
+        });
+        funcarray.add(arg -> {
             double cs = Math.cos(arg[0]);
             return 1 + cs * Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[4] = arg -> {
+        });
+        funcarray.add(arg -> {
             double sn = Math.sin(arg[0]);
             return 1 + sn * Math.cos(this.ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[5] = arg -> {
+        });
+        funcarray.add(arg -> {
             double sn = Math.sin(arg[0]);
             return 1 + sn * Math.sin(this.ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[6] = arg -> {
+        });
+        funcarray.add(arg -> {
             double tau2 = 2 * arg[0];
             return 1 + Math.cos(tau2) * Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        };
-        funcarray[7] = arg -> {
+        });
+        funcarray.add(arg -> {
             double tau2 = 2 * arg[0];
             return 1 + Math.cos(tau2) * Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        };
+        });
         setsIntensity();
         calculateTotalFlux();
         calculateGeometricFactor();
@@ -120,11 +122,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFlux(Vector n, Vector v) {
-        double mv, M, pr, gamma2, coef, xenergy;
-        double K1 = lp.getKA1()[0];
-        double K2 = lp.getKA2()[0];
-        Vector A1 = lp.getA1()[0];
-        Vector A2 = lp.getA2()[0];
+        double mv, M, pr, gamma2, coef, xenergy, result = 0;
+        double[] K1 = lp.getKA1();
+        double[] K2 = lp.getKA2();
+        Vector[] A1 = lp.getA1();
+        Vector[] A2 = lp.getA2();
         double[] f = new double[8]; //An array for integrals
         gamma2 = eb.getGamma() * eb.getGamma();
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
@@ -132,33 +134,41 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         xenergy = directionEnergy(n, v);
         coef = xenergy / lp.getPhotonEnergy()
                 / Math.sqrt(sIntensity) / (1 + mv) / eb.getGamma();
-        double a1 = coef * n.innerProduct(A1);
-        double a2 = coef * n.innerProduct(A2);
-        double a3 = xenergy / lp.getPhotonEnergy() * (K1 - K2) / sIntensity
-                * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
-        /*
-        Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
-         */
-        for (int t = 2; t < 8; t++) {
-            //Creating a Romberg integrator and a UnivariateFunction object and then integrating
-            try {
-                f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
-                        RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                        new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
-            } catch (TooManyEvaluationsException ex) {
-                f[t] = 0;
-            }
-        }
-        //Calculating f-0 using the relation between integrals f_i
-        f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
-        f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
         //Parameter of non-linearity
         M = lp.getIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
-        //Returning the total flux
-        return -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
-                / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
-                * ((f[0] * f[0] + f[1] * f[1]) * (sIntensity / (K1 + K2) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1 / (K1 + K2)
-                - (f[4] * f[4] + f[5] * f[5]) * K2 / (K1 + K2) + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / (K1 + K2) / 2);
+        /*
+        Cycling over two independent polarizations and adding their intensities
+         */
+        for (int s = 0; s < 2; s++) {
+            if (K1[s] != 0 || K2[s] != 0) {
+                double a1 = coef * n.innerProduct(A1[s]);
+                double a2 = coef * n.innerProduct(A2[s]);
+                double a3 = xenergy / lp.getPhotonEnergy() * (K1[s] - K2[s]) / sIntensity
+                        * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
+                /*
+                Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
+                 */
+                for (int t = 2; t < 8; t++) {
+                    //Creating a Romberg integrator and a UnivariateFunction object and then integrating
+                    try {
+                        f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                                RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                                new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
+                    } catch (TooManyEvaluationsException ex) {
+                        f[t] = 0;
+                    }
+                }
+                //Calculating f_0 using the relation between integrals f_i
+                f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
+                f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
+                //Returning the total flux
+                result += -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+                        / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
+                        * ((f[0] * f[0] + f[1] * f[1]) * (sIntensity / (K1[s] + K2[s]) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1[s] / (K1[s] + K2[s])
+                        - (f[4] * f[4] + f[5] * f[5]) * K2[s] / (K1[s] + K2[s]) + (f[6] * f[0] + f[7] * f[1]) * (K1[s] - K2[s]) / (K1[s] + K2[s]) / 2);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -217,7 +227,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             this.a1 = a1;
             this.a2 = a2;
             this.a3 = a3;
-            this.fn = funcarray[ind];
+            this.fn = funcarray.get(ind);
         }
 
         @Override

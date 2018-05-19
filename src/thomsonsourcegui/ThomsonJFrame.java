@@ -79,7 +79,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.00
+ * @version 3.03
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2201,7 +2201,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuOptions.add(jMenuItemNumerical);
         jMenuOptions.add(jSeparator2);
 
-        jMenuItemOrderNumber.setText("Order number");
+        jMenuItemOrderNumber.setText("Order number...");
         jMenuItemOrderNumber.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemOrderNumberActionPerformed(evt);
