@@ -290,7 +290,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.ksi1 = ksi1;
         this.ksi2 = ksi2;
         this.ksi3 = ksi3;
-        this.p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi2 * ksi3);
+        this.p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi3 * ksi3);
         double[] t = new double[]{ksi3 + p, ksi3 - p};
         //An array for polarization intensities
         double[] coef = new double[]{Math.sqrt(intensity * (1 + p) / 2), Math.sqrt(intensity * (1 - p) / 2)};
@@ -300,16 +300,22 @@ public abstract class AbstractLaserPulse implements Cloneable {
         double a1, a2, M, c1, c2, h;
         //Auxialiry parameters
         for (int s = 0; s < 2; s++) {
+            h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
             if (p == 0) {
                 //If non-polarizeda special treatment
                 AA1[s] = (new BasicVector(new double[]{1, 1 - 2 * s})).divide(Math.sqrt(2));
                 AA2[s] = new BasicVector(new double[]{0, 0});
             } else {
-                h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
-                AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
-                AA2[s] = new BasicVector(new double[]{-ksi2, 0});
-                AA1[s] = AA1[s].divide(h);
-                AA2[s] = AA2[s].divide(h);
+                if (h == 0) {
+                    AA1[s] = new BasicVector(new double[]{1, 0});
+                    AA2[s] = new BasicVector(new double[]{0, 0});
+                } else {
+
+                    AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
+                    AA2[s] = new BasicVector(new double[]{-ksi2, 0});
+                    AA1[s] = AA1[s].divide(h);
+                    AA2[s] = AA2[s].divide(h);
+                }
             }
         }
         //Orthogonal polarization vectors
