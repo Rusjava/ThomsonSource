@@ -56,6 +56,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.eb = b;
         this.counter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
+        this.ksi = new double[]{0, 0, 0};
     }
 
     /**
@@ -83,7 +84,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * The saturating potential in CGS system
      */
     public static final double AS = 1.704509e3;
-        /**
+    /**
      * Angle range for rays exported for Shadow in the X-direction
      */
     protected double rayXAnglerange = 0.0003;
@@ -181,7 +182,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating the normalized total flux
      */
     public final void calculateTotalFlux() {
-        this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq() 
+        this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq()
                 / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
 

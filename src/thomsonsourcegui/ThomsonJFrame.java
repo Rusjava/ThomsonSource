@@ -236,6 +236,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(this);
             SwingUtilities.updateComponentTreeUI(gfCalc);
             SwingUtilities.updateComponentTreeUI(brillianceCalc);
+            SwingUtilities.updateComponentTreeUI(brillianceCalcNonLinear);
             SwingUtilities.updateComponentTreeUI(polarizationCalc);
             SwingUtilities.updateComponentTreeUI(rayProgressFrame);
         });
@@ -2345,6 +2346,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
+            tsourceclone.calculateTotalFlux();
+            tsourceclone.calculateGeometricFactor();
             tsourceclone.seteSpread(espread);
             minValueClone = minValue;
             maxValueClone = maxValue;
