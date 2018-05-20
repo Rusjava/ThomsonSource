@@ -132,6 +132,12 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
         return Math.sqrt(getxWidth2(z) * getyWidth2(z));
     }
 
+    /**
+     * The longitudinal Gaussian spatial distribution of electrons in the bunch
+     *
+     * @param r
+     * @return
+     */
     @Override
     public double lSpatialDistribution(Vector r) {
         return Math.exp(-Math.pow(r.get(2) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
