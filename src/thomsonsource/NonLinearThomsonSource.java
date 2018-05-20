@@ -53,7 +53,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     private double sIntensity = 1;
 
     /**
-     * A list of functional objects
+     * The list of functional objects for numerical integration
      */
     private final List<Function<Double[], Double>> funcarray;
 

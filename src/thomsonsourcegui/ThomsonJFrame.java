@@ -92,6 +92,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ebunch = new GaussianElectronBunch();
         this.lpulse = new GaussianLaserPulse();
         this.tsource = new NonLinearThomsonSource(lpulse, ebunch, 1);
+        this.tsourcelinear = new LinearThomsonSource(lpulse, ebunch);
         this.xsize = 300;
         this.ysize = 200;
         this.xstep = 20.0 / xsize;
@@ -2296,7 +2297,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     private AbstractElectronBunch ebunch;
     private AbstractLaserPulse lpulse;
-    private AbstractThomsonSource tsource, tsourceRayClone = null;
+    private AbstractThomsonSource tsource, tsourcelinear, tsourceRayClone = null;
 
     /**
      * Parameters for the calculation boxes
@@ -2337,10 +2338,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Initializing code
          */
-        public void initialize() {
+        public void initialize(AbstractThomsonSource ts) {
             working = true;
             try {
-                tsourceclone = (AbstractThomsonSource) tsource.clone();
+                tsourceclone = (AbstractThomsonSource) ts.clone();
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -2914,7 +2915,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilProgressBar.setStringPainted(true);
         BrillianceCalcStart.setText("Terminate");
         BrillianceCalcSave.setEnabled(false);
-        brilForm.initialize();
+        brilForm.initialize(tsourcelinear);
 
         /**
          * Calculating data array. Using SwingWorker class
@@ -3315,7 +3316,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
         try {
-            tsourceRayClone = (AbstractThomsonSource) tsource.clone();
+            tsourceRayClone = (AbstractThomsonSource) tsourcelinear.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
@@ -3326,8 +3327,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 // Creating a pool of threads, a lock, an atomic interger and a latch
-                ExecutorService excs = Executors.newFixedThreadPool(tsource.getThreadNumber());
-                CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
+                ExecutorService excs = Executors.newFixedThreadPool(tsourcelinear.getThreadNumber());
+                CountDownLatch lt = new CountDownLatch(tsourcelinear.getThreadNumber());
                 AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
                 try (ShadowFiles shadowFile = new ShadowFiles(true, true, LinearThomsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
@@ -3456,7 +3457,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFCalcStart.setText("Terminate");
         GFCalcSave.setEnabled(false);
         GFValueSelectionBox.setEnabled(false);
-        gfForm.initialize();
+        gfForm.initialize(tsourcelinear);
         /**
          * Calculating data array. Using SwingWorker class
          */
@@ -3653,9 +3654,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
+            //Non-linear source
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsource.setPrecision((double) brilPrecisionBox.getValue());
             tsource.setThreadNumber((int) threadsNumberBox.getValue());
+            //Linear source
+            tsourcelinear.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
+            tsourcelinear.setPrecision((double) brilPrecisionBox.getValue());
+            tsourcelinear.setThreadNumber((int) threadsNumberBox.getValue());
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
@@ -3672,7 +3678,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         if (option == JOptionPane.OK_OPTION) {
             double eMin = (double) rayMinEnergyBox.getValue() * GaussianElectronBunch.E * 1e3;
             numberOfRays = (int) rayNumberBox.getValue();
+            //Setting linear and non-linear sources
             tsource.setRayRanges((double) rayXAngleRangeBox.getValue() * 1e-3,
+                    (double) rayYAngleRangeBox.getValue() * 1e-3, eMin,
+                    eMin + (double) rayEnergyRangeBox.getValue() * GaussianElectronBunch.E * 1e3);
+            tsourcelinear.setRayRanges((double) rayXAngleRangeBox.getValue() * 1e-3,
                     (double) rayYAngleRangeBox.getValue() * 1e-3, eMin,
                     eMin + (double) rayEnergyRangeBox.getValue() * GaussianElectronBunch.E * 1e3);
         }
@@ -3681,6 +3691,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jCheckBoxMenuItemSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemSpreadActionPerformed
         // TODO add your handling code here:
         tsource.seteSpread(jCheckBoxMenuItemSpread.isSelected());
+        tsourcelinear.seteSpread(jCheckBoxMenuItemSpread.isSelected());
     }//GEN-LAST:event_jCheckBoxMenuItemSpreadActionPerformed
 
     private void jRayStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRayStopButtonActionPerformed
@@ -3799,7 +3810,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must be not exceed unity!" : "";
         } while (p2 > 1 && option == JOptionPane.OK_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
+            lpulse.setPolarization((Double) ksi1Box.getValue(),
                     (Double) ksi2Box.getValue(), (Double) ksi3Box.getValue());
         }
     }//GEN-LAST:event_jMenuItemLaserPolarizationActionPerformed
@@ -3847,7 +3858,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polProgressBar.setStringPainted(true);
         polarizationCalcStart.setText("Terminate");
         polarizationCalcSave.setEnabled(false);
-        polForm.initialize();
+        polForm.initialize(tsourcelinear);
 
         /**
          * Calculating data array. Using SwingWorker class
@@ -4099,7 +4110,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilProgressBarNonLinear.setStringPainted(true);
         BrillianceCalcStartNonLinear.setText("Terminate");
         BrillianceCalcSaveNonLinear.setEnabled(false);
-        brilFormNonLinear.initialize();
+        brilFormNonLinear.initialize(tsource);
         ((NonLinearThomsonSource) brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumberclone);
 
         /**
@@ -4379,17 +4390,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemOrderNumberActionPerformed
 
     /*
-     * Setting up polarization of X-ray radiation
+     * Setting up polarization of X-ray radiation for linear and non-linear sources
      */
     private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(new double[]{0, 0, 0});
+            tsourcelinear.setPolarization(new double[]{0, 0, 0});
         } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
             tsource.setPolarization(new double[]{-1, 0, 0});
+            tsourcelinear.setPolarization(new double[]{-1, 0, 0});
         } else if (jRadioButtonMenuItemPPolarized.isSelected()) {
             tsource.setPolarization(new double[]{1, 0, 0});
+            tsourcelinear.setPolarization(new double[]{1, 0, 0});
         } else {
             tsource.setPolarization(null);
+            tsourcelinear.setPolarization(null);
         }
     }
 

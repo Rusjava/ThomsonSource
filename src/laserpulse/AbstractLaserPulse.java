@@ -100,8 +100,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
         ((AbstractLaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
         ((AbstractLaserPulse) tm).KA1 = new double[]{KA1[0], KA1[1]};
         ((AbstractLaserPulse) tm).KA2 = new double[]{KA2[0], KA2[1]};
-        ((AbstractLaserPulse) tm).A1 = new Vector[]{A1[0].copy(), A1[1].copy(), A1[2].copy()};
-        ((AbstractLaserPulse) tm).A2 = new Vector[]{A2[0].copy(), A2[1].copy(), A2[2].copy()};
+        ((AbstractLaserPulse) tm).A1 = new Vector[]{A1[0].copy(), A1[1].copy()};
+        ((AbstractLaserPulse) tm).A2 = new Vector[]{A2[0].copy(), A2[1].copy()};
         return tm;
     }
 
@@ -302,7 +302,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         for (int s = 0; s < 2; s++) {
             h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
             if (p == 0) {
-                //If non-polarizeda special treatment
+                //If unpolarized then special treatment
                 AA1[s] = (new BasicVector(new double[]{1, 1 - 2 * s})).divide(Math.sqrt(2));
                 AA2[s] = new BasicVector(new double[]{0, 0});
             } else {
@@ -318,8 +318,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 }
             }
         }
-        //Orthogonal polarization vectors
+        //Orthogonal real and imagenery parts of polarization vectors
         for (int s = 0; s < 2; s++) {
+            //If already orthogonal then just copy
             if (AA1[s].innerProduct(AA2[s]) == 0) {
                 //If already orthogonal just copy
                 this.A1[s].set(0, AA1[s].get(0));
@@ -338,6 +339,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
                 this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
                 this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
             }
+            //Normalizing to the intensity
             this.A1[s] = A1[s].multiply(coef[s]);
             this.A2[s] = A2[s].multiply(coef[s]);
             //Intensities of orthogonal polarizations

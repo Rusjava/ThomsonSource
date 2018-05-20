@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Ant-Version: Apache Ant 1.9.7
 Created-By: 1.8.0_131-b11 (Oracle Corporation)
 Implementation-Vendor: Ruslan Feshchenko
-Implementation-Version: 3.00
+Implementation-Version: 3.03
 Implementation-Title: Non-linear Thomson source simulation
-Built-Date: 2018-05-19
+Built-Date: 2018-05-20
 
