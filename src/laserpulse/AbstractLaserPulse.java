@@ -94,10 +94,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((AbstractLaserPulse) tm).setDirection(new BasicVector(new double[]{0.0, 0.0, 0.0}));
-        ((AbstractLaserPulse) tm).getDirection().set(0, this.getDirection().get(0));
-        ((AbstractLaserPulse) tm).getDirection().set(1, this.getDirection().get(1));
-        ((AbstractLaserPulse) tm).getDirection().set(2, this.getDirection().get(2));
+        ((AbstractLaserPulse) tm).setDirection(new BasicVector(new double[]{this.getDirection().get(0),
+            this.getDirection().get(1), this.getDirection().get(2)}));
         ((AbstractLaserPulse) tm).KA1 = new double[]{KA1[0], KA1[1]};
         ((AbstractLaserPulse) tm).KA2 = new double[]{KA2[0], KA2[1]};
         ((AbstractLaserPulse) tm).A1 = new Vector[]{A1[0].copy(), A1[1].copy()};

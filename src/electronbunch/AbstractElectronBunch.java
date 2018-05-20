@@ -25,7 +25,7 @@ import org.la4j.vector.dense.BasicVector;
  * @version 1.0
  */
 public abstract class AbstractElectronBunch implements Cloneable {
-    
+
     /**
      * The charge of electron
      */
@@ -74,10 +74,8 @@ public abstract class AbstractElectronBunch implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object tm = super.clone();
-        ((AbstractElectronBunch) tm).setShift(new BasicVector(new double[]{0.0, 0.0, 0.0}));
-        ((AbstractElectronBunch) tm).getShift().set(0, this.getShift().get(0));
-        ((AbstractElectronBunch) tm).getShift().set(1, this.getShift().get(1));
-        ((AbstractElectronBunch) tm).getShift().set(2, this.getShift().get(2));
+        ((AbstractElectronBunch) tm).setShift(new BasicVector(new double[]{this.getShift().get(0),
+            this.getShift().get(1), this.getShift().get(2)}));
         return tm;
     }
 
@@ -201,7 +199,7 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * @return the shift
      */
     public Vector getShift() {
-        return shift;
+        return shift.copy();
     }
 
     /**
@@ -210,7 +208,6 @@ public abstract class AbstractElectronBunch implements Cloneable {
     public void setShift(Vector shift) {
         this.shift = shift;
     }
-
 
     /**
      * Setting the width of the electron bunch in x direction
@@ -221,7 +218,6 @@ public abstract class AbstractElectronBunch implements Cloneable {
         setBetax(w * w / getEpsx() * getGamma());
     }
 
-
     /**
      * Returning the velocity spread of the electron bunch in x direction
      *
@@ -231,7 +227,6 @@ public abstract class AbstractElectronBunch implements Cloneable {
         return Math.sqrt(getEpsx() / getGamma() / getBetax());
     }
 
-
     /**
      * Setting the width of the electron bunch in y direction
      *
@@ -240,7 +235,6 @@ public abstract class AbstractElectronBunch implements Cloneable {
     public void setyWidth(double w) {
         setBetay(w * w / getEpsy() * getGamma());
     }
-
 
     /**
      * Returning the velocity spread of the electron bunch in y direction
@@ -284,7 +278,7 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * @return
      */
     public abstract double angleDistribution(double thetax, double thetay);
-    
+
     /**
      * The transversal spatial distribution of electrons in the bunch
      *
@@ -292,7 +286,7 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * @return
      */
     public abstract double tSpatialDistribution(Vector r);
-    
+
     /**
      * The longitudinal spatial distribution of electrons in the bunch
      *
@@ -310,7 +304,8 @@ public abstract class AbstractElectronBunch implements Cloneable {
     public abstract double getxWidth(double z);
 
     /**
-     * Returning the width squared of the electron bunch in x direction at position z
+     * Returning the width squared of the electron bunch in x direction at
+     * position z
      *
      * @param z coordinate z
      * @return width in the x direction squared
@@ -326,11 +321,12 @@ public abstract class AbstractElectronBunch implements Cloneable {
     public abstract double getyWidth(double z);
 
     /**
-     * Returning the width squared of the electron bunch in y direction at position z
+     * Returning the width squared of the electron bunch in y direction at
+     * position z
      *
      * @param z coordinate z
      * @return width in the x direction squared
      */
     public abstract double getyWidth2(double z);
-    
+
 }

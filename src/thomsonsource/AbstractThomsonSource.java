@@ -193,7 +193,6 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      */
     public final void calculateGeometricFactor() {
-        System.out.println(geometricFactor + "\n");
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         // We need to synchronize threads
         CountDownLatch lt = new CountDownLatch(threadNumber);
