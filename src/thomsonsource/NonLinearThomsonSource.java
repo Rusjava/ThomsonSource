@@ -71,7 +71,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //Inoitializeing the array of functions used to calculate non-linear amplitudes
         funcarray.add(arg -> {
             return 1 + Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-            });
+        });
         funcarray.add(arg -> {
             return 1 + Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
@@ -173,12 +173,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionEnergy(Vector n, Vector v) {
-        double mv, M, pr, gamma_2;
-        gamma_2 = 1.0 / eb.getGamma() / eb.getGamma();
-        mv = Math.sqrt(1.0 - gamma_2);
-        pr = n.innerProduct(v);
-        M = lp.getIntensity() / sIntensity * (1 + pr) * gamma_2 / (1 + mv) / 4;
-        return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
+        return directionEnergyBasic(n, v, eb.getGamma(), lp.getIntensity());
     }
 
     /**
@@ -212,6 +207,21 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public void setsIntensity() {
         double k = lp.getPhotonEnergy() / AbstractLaserPulse.HC;
         this.sIntensity = 1e-5 * AbstractLaserPulse.C * k * k * AS * AS / 8 / Math.PI;
+    }
+
+    /**
+     * Basic method for calculation of X-ray energy
+     *
+     * @param n
+     * @param v
+     * @return
+     */
+    private double directionEnergyBasic(Vector n, Vector v, double gamma, double inten) {
+        double mv, M, pr;
+        mv = Math.sqrt(1.0 - 1.0 / gamma / gamma);
+        pr = n.innerProduct(v);
+        M = inten / sIntensity * (1 + pr) * (1 - mv) / 4;
+        return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
     }
 
     /**
