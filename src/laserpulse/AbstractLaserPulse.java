@@ -87,7 +87,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.KA2 = new double[2];
         this.A1 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};
         this.A2 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};
-        setIntensity();
+        setAverageIntensity();
         setPolarization(ksi1, ksi2, ksi3);
     }
 
@@ -154,7 +154,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      */
     public void setPhotonNumber(double n) {
         this.number = n;
-        setIntensity();
+        setAverageIntensity();
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      */
     public final void setPulseEnergy(double e) {
         this.number = e / this.photonenergy;
-        setIntensity();
+        setAverageIntensity();
     }
 
     /**
@@ -201,7 +201,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      */
     public void setLength(double length) {
         this.length = length;
-        setIntensity();
+        setAverageIntensity();
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      */
     public void setRlength(double rlength) {
         this.rlength = rlength;
-        setIntensity();
+        setAverageIntensity();
     }
 
     /**
@@ -291,7 +291,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.p = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + ksi3 * ksi3);
         double[] t = new double[]{ksi3 + p, ksi3 - p};
         //An array for polarization intensities
-        double[] coef = new double[]{Math.sqrt(intensity * (1 + p) / 2), Math.sqrt(intensity * (1 - p) / 2)};
+        double[] coef = new double[]{Math.sqrt((1 + p) / 2), Math.sqrt((1 - p) / 2)};
         //Arrays for real and imagenery parts of polarization vectors
         Vector[] AA1 = new Vector[2];
         Vector[] AA2 = new Vector[2];
@@ -376,7 +376,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      *
      * @return the intensity, W/m^2
      */
-    public double getIntensity() {
+    public double getAverageIntensity() {
         return intensity;
     }
 
@@ -384,15 +384,18 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * Setting an average pulse intensity and updating polarization vectors
      *
      */
-    public final void setIntensity() {
-        double newIntensity = getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
-        for (int s = 0; s < 2; s++) {
-            this.A1[s] = A1[s].multiply(Math.sqrt(newIntensity / intensity));
-            this.A2[s] = A2[s].multiply(Math.sqrt(newIntensity / intensity));
-            this.KA1[s] = A1[s].innerProduct(A1[s]);
-            this.KA2[s] = A2[s].innerProduct(A2[s]);
-        }
-        this.intensity = newIntensity;
+    public final void setAverageIntensity() {
+        this.intensity = getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
+    }
+
+    /**
+     * Getting coordinate dependant pulse intensity
+     *
+     * @param r
+     * @return
+     */
+    public double getIntensity(Vector r) {
+        return getPulseEnergy() * tSpatialDistribution(r) * lSpatialDistribution(r) * AbstractLaserPulse.C;
     }
 
     /**

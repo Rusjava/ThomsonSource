@@ -106,13 +106,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        double K, th;
-        th = (1 - n.innerProduct(v)) * 2;
-        K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-        return getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
-                * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
-                / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+        return directionFluxBasic(n, v, e, calculateGamma(n, v, e, lp.getAverageIntensity()),
+                lp.getAverageIntensity());
     }
 
     @Override
@@ -122,58 +117,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFlux(Vector n, Vector v) {
-        double mv, M, pr, gamma2, coef, xenergy, result = 0;
-        double[] K1 = lp.getKA1();
-        double[] K2 = lp.getKA2();
-        Vector[] A1 = lp.getA1();
-        Vector[] A2 = lp.getA2();
-        double[] f = new double[8]; //An array for integrals
-        gamma2 = eb.getGamma() * eb.getGamma();
-        mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
-        pr = n.innerProduct(v);
-        xenergy = directionEnergy(n, v);
-        coef = xenergy / lp.getPhotonEnergy()
-                / Math.sqrt(sIntensity) / (1 + mv) / eb.getGamma();
-        //Parameter of non-linearity
-        M = lp.getIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
-        /*
-        Cycling over two independent polarizations and adding their intensities
-         */
-        for (int s = 0; s < 2; s++) {
-            if (K1[s] != 0 || K2[s] != 0) {
-                double a1 = coef * n.innerProduct(A1[s]);
-                double a2 = coef * n.innerProduct(A2[s]);
-                double a3 = xenergy / lp.getPhotonEnergy() * (K1[s] - K2[s]) / sIntensity
-                        * (1 + pr) / Math.pow(eb.getGamma() * (1 + mv), 2) / 8;
-                /*
-                Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
-                 */
-                for (int t = 2; t < 8; t++) {
-                    //Creating a Romberg integrator and a UnivariateFunction object and then integrating
-                    try {
-                        f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
-                                RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                                new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
-                    } catch (TooManyEvaluationsException ex) {
-                        f[t] = 0;
-                    }
-                }
-                //Calculating f_0 using the relation between integrals f_i
-                f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
-                f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
-                //Returning the total flux
-                result += -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
-                        / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
-                        * ((f[0] * f[0] + f[1] * f[1]) * (sIntensity / (K1[s] + K2[s]) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1[s] / (K1[s] + K2[s])
-                        - (f[4] * f[4] + f[5] * f[5]) * K2[s] / (K1[s] + K2[s]) + (f[6] * f[0] + f[7] * f[1]) * (K1[s] - K2[s]) / (K1[s] + K2[s]) / 2);
-            }
-        }
-        return result;
+        return directionFluxBasic(n, v, directionEnergy(n, v), eb.getGamma(), lp.getAverageIntensity());
     }
 
     @Override
     public double directionEnergy(Vector n, Vector v) {
-        return directionEnergyBasic(n, v, eb.getGamma(), lp.getIntensity());
+        return directionEnergyBasic(n, v, eb.getGamma(), lp.getAverageIntensity());
     }
 
     /**
@@ -214,6 +163,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      *
      * @param n
      * @param v
+     * @param gamma
+     * @param inten
      * @return
      */
     private double directionEnergyBasic(Vector n, Vector v, double gamma, double inten) {
@@ -222,6 +173,85 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         M = inten / sIntensity * (1 + pr) * (1 - mv) / 4;
         return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
+    }
+
+    /**
+     * Basic method for calculation of X-ray flux
+     *
+     * @param n
+     * @param v
+     * @param xenergy
+     * @param gamma
+     * @param inten
+     * @return
+     */
+    private double directionFluxBasic(Vector n, Vector v, double xenergy, double gamma, double inten) {
+        double mv, M, pr, gamma2, intratio, coef, result = 0;
+        double[] K1 = lp.getKA1();
+        double[] K2 = lp.getKA2();
+        Vector[] A1 = lp.getA1();
+        Vector[] A2 = lp.getA2();
+        double[] f = new double[8]; //An array for integrals
+        gamma2 = gamma * gamma;
+        mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
+        pr = n.innerProduct(v);
+        intratio = inten / sIntensity;
+        coef = xenergy / lp.getPhotonEnergy()
+                * Math.sqrt(intratio) / (1 + mv) / gamma;
+        //Parameter of non-linearity
+        M = lp.getAverageIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
+        /*
+        Cycling over two independent polarizations and adding their intensities
+         */
+        for (int s = 0; s < 2; s++) {
+            if (K1[s] != 0 || K2[s] != 0) {
+                double a1 = coef * n.innerProduct(A1[s]);
+                double a2 = coef * n.innerProduct(A2[s]);
+                double a3 = xenergy / lp.getPhotonEnergy() * (K1[s] - K2[s]) * intratio
+                        * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
+                /*
+                Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
+                 */
+                for (int t = 2; t < 8; t++) {
+                    //Creating a Romberg integrator and a UnivariateFunction object and then integrating
+                    try {
+                        f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                                RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                                new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
+                    } catch (TooManyEvaluationsException ex) {
+                        f[t] = 0;
+                    }
+                }
+                //Calculating f_0 using the relation between integrals f_i
+                f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
+                f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
+                //Returning the total flux
+                result += -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+                        / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
+                        * ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio / (K1[s] + K2[s]) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1[s] / (K1[s] + K2[s])
+                        - (f[4] * f[4] + f[5] * f[5]) * K2[s] / (K1[s] + K2[s]) + (f[6] * f[0] + f[7] * f[1]) * (K1[s] - K2[s]) / (K1[s] + K2[s]) / 2);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * A method calculating required gamma factor from X-ray energy, laser
+     * intensity and other parameters
+     *
+     * @param n
+     * @param v
+     * @param e
+     * @param inten
+     * @return
+     */
+    private double calculateGamma(Vector n, Vector v, double e, double inten) {
+        double mv, rho, pr, fqration;
+        pr = n.innerProduct(v);
+        rho = inten / sIntensity * (1 + pr) / 4;
+        fqration = e / ordernumber / lp.getPhotonEnergy();
+        mv = (fqration * (1 + rho) - 1) / (1 + fqration * (pr + rho));
+        return 1.0 / Math.sqrt(1 - mv * mv);
     }
 
     /**
