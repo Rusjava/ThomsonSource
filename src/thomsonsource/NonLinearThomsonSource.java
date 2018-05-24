@@ -231,8 +231,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 //Returning the total flux
                 result += -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
                         / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
-                        * ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio / (K1[s] + K2[s]) + 0.5) - (f[2] * f[2] + f[3] * f[3]) * K1[s] / (K1[s] + K2[s])
-                        - (f[4] * f[4] + f[5] * f[5]) * K2[s] / (K1[s] + K2[s]) + (f[6] * f[0] + f[7] * f[1]) * (K1[s] - K2[s]) / (K1[s] + K2[s]) / 2);
+                        * ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1[s] + K2[s]) / 2) - (f[2] * f[2] + f[3] * f[3]) * K1[s]
+                        - (f[4] * f[4] + f[5] * f[5]) * K2[s] + (f[6] * f[0] + f[7] * f[1]) * (K1[s] - K2[s]) / 2);
             }
         }
         return result;
@@ -259,6 +259,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     /**
      * A method calculating derivative of X-ray energy by gamma factor
+     * normalized by X-ray energy
      *
      * @param n
      * @param v
@@ -271,8 +272,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqration = e / ordernumber / lp.getPhotonEnergy();
-        return ordernumber * lp.getPhotonEnergy() 
-                * Math.sqrt(fqration * (1 + 2 * rho + pr) * (2 - fqration * (1 - pr)))
+        return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) / fqration)
                 * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
     }
 

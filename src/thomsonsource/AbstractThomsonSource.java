@@ -541,9 +541,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
         try {
-            u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            double tmp=directionFrequencyFluxNoSpread(n, v, e);
-            return u * tmp;
+            u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            return u * directionFrequencyFluxNoSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
