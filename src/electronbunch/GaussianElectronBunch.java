@@ -23,8 +23,8 @@ package electronbunch;
 import org.la4j.Vector;
 
 /**
- * A class for properties of the Gaussian electron bunch. All properties are in the SI
- * system of units
+ * A class for properties of the Gaussian electron bunch. All properties are in
+ * the SI system of units
  *
  * @author Ruslan Feshchenko
  * @version 3.0
@@ -67,7 +67,8 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
     }
 
     /**
-     * Returning the width of the Gaussian electron bunch in x direction at position z
+     * Returning the width of the Gaussian electron bunch in x direction at
+     * position z
      *
      * @param z coordinate z
      * @return width in the x direction
@@ -78,7 +79,8 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
     }
 
     /**
-     * Returning the width squared of the Gaussian electron bunch in x direction at position z
+     * Returning the width squared of the Gaussian electron bunch in x direction
+     * at position z
      *
      * @param z coordinate z
      * @return width in the x direction squared
@@ -89,7 +91,8 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
     }
 
     /**
-     * Returning the width of the Gaussian electron bunch in y direction at position z
+     * Returning the width of the Gaussian electron bunch in y direction at
+     * position z
      *
      * @param z coordinate z
      * @return width in the y direction
@@ -100,7 +103,8 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
     }
 
     /**
-     * Returning the width squared of the Gaussian electron bunch in y direction at position z
+     * Returning the width squared of the Gaussian electron bunch in y direction
+     * at position z
      *
      * @param z coordinate z
      * @return width in the x direction squared
@@ -122,7 +126,8 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
     }
 
     /**
-     * Returning the average squared width of the Gaussian electron bunch at position z
+     * Returning the average squared width of the Gaussian electron bunch at
+     * position z
      *
      * @param z coordinate z
      * @return average width squared
@@ -141,5 +146,17 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
     @Override
     public double lSpatialDistribution(Vector r) {
         return Math.exp(-Math.pow(r.get(2) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
+    }
+
+    /**
+     * Gaussian distribution of electrons by factor gamma
+     * 
+     * @param g - gamma factor
+     * @return
+     */
+    @Override
+    public double gammaDistribution(double g) {
+        return 1.0 / getDelGamma() / Math.sqrt(Math.PI)
+                * Math.exp(-Math.pow((g - getGamma()) / getDelGamma(), 2));
     }
 }

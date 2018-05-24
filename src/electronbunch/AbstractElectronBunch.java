@@ -114,7 +114,7 @@ public abstract class AbstractElectronBunch implements Cloneable {
     /**
      * @return the delgamma
      */
-    public double getDelgamma() {
+    public double getDelGamma() {
         return delgamma;
     }
 
@@ -328,5 +328,13 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * @return width in the x direction squared
      */
     public abstract double getyWidth2(double z);
+    
+    /**
+     * Distribution of electrons by factor gamma
+     * 
+     * @param g - gamma factor
+     * @return
+     */
+    public abstract double gammaDistribution(double g);
 
 }

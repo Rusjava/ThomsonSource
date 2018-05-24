@@ -3228,7 +3228,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             try (FileWriter fw = new FileWriter(pFile, false)) {
                 prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.512));
                 prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * GaussianElectronBunch.E * 1e9));
-                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
+                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelGamma()));
                 prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
                 prop.setProperty(paramNames[4], Double.toString(ebunch.getEpsx() * 1e6));
                 prop.setProperty(paramNames[5], Double.toString(ebunch.getEpsy() * 1e6));

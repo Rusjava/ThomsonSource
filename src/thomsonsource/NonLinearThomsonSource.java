@@ -106,8 +106,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        return directionFluxBasic(n, v, e, calculateGamma(n, v, e, lp.getAverageIntensity()),
-                lp.getAverageIntensity());
+        double avint = lp.getAverageIntensity();
+        double gamma = calculateGamma(n, v, e, avint);
+        double der = calculateGammaDerivative(n, v, e, avint);
+        return directionFluxBasic(n, v, e, gamma, avint)
+                * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, avint);
     }
 
     @Override
@@ -199,7 +202,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         coef = xenergy / lp.getPhotonEnergy()
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
         //Parameter of non-linearity
-        M = lp.getAverageIntensity() / sIntensity * (1 + pr) / 4 / gamma2 / (1 + mv);
+        M = lp.getAverageIntensity() / sIntensity * (1 + pr) / 4 * (1 - mv);
         /*
         Cycling over two independent polarizations and adding their intensities
          */
@@ -236,8 +239,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
-     * A method calculating required gamma factor from X-ray energy, laser
-     * intensity and other parameters
+     * A method calculating required gamma factor as function of X-ray energy,
+     * laser intensity and other parameters
      *
      * @param n
      * @param v
@@ -246,12 +249,31 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGamma(Vector n, Vector v, double e, double inten) {
-        double mv, rho, pr, fqration;
+        double rho, pr, fqration;
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqration = e / ordernumber / lp.getPhotonEnergy();
-        mv = (fqration * (1 + rho) - 1) / (1 + fqration * (pr + rho));
-        return 1.0 / Math.sqrt(1 - mv * mv);
+        return (fqration * (pr + rho) + 1)
+                / Math.sqrt(fqration * (1 + 2 * rho + pr) * (2 - fqration * (1 - pr)));
+    }
+
+    /**
+     * A method calculating derivative of X-ray energy by gamma factor
+     *
+     * @param n
+     * @param v
+     * @param e
+     * @param inten
+     * @return
+     */
+    private double calculateGammaDerivative(Vector n, Vector v, double e, double inten) {
+        double rho, pr, fqration;
+        pr = n.innerProduct(v);
+        rho = inten / sIntensity * (1 + pr) / 4;
+        fqration = e / ordernumber / lp.getPhotonEnergy();
+        return ordernumber * lp.getPhotonEnergy() 
+                * Math.sqrt(fqration * (1 + 2 * rho + pr) * (2 - fqration * (1 - pr)))
+                * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
     }
 
     /**

@@ -55,8 +55,8 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         double K, th;
         th = (1 - n.innerProduct(v)) * 2;
         K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-        return getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+                / 4 / Math.pow(eb.getGamma() * eb.getDelGamma(), 2);
+        return getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelGamma() / eb.getGamma() / lp.getPhotonEnergy()
                 * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
                 / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
     }
@@ -78,8 +78,8 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         th = (1 - n.innerProduct(v)) * 2;
         mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
         K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-        m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+                / 4 / Math.pow(eb.getGamma() * eb.getDelGamma(), 2);
+        m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelGamma() / eb.getGamma() / lp.getPhotonEnergy()
                 * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
         m12 = m11 * mlt;
         m22 = m12 * mlt;
