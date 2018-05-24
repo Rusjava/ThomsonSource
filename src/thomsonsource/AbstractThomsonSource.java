@@ -542,7 +542,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
         try {
             u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxNoSpread(n, v, e);
+            double tmp=directionFrequencyFluxNoSpread(n, v, e);
+            return u * tmp;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
