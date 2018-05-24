@@ -108,7 +108,6 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
         double avint = lp.getAverageIntensity();
         double gamma = calculateGamma(n, v, e, avint);
-        double der = calculateGammaDerivative(n, v, e, avint);
         return directionFluxBasic(n, v, e, gamma, avint)
                 * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, avint);
     }
@@ -272,7 +271,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqration = e / ordernumber / lp.getPhotonEnergy();
-        return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) / fqration)
+        return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) * fqration)
                 * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
     }
 

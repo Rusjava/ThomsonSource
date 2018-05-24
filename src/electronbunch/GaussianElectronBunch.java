@@ -150,13 +150,13 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
 
     /**
      * Gaussian distribution of electrons by factor gamma
-     * 
+     *
      * @param g - gamma factor
      * @return
      */
     @Override
     public double gammaDistribution(double g) {
-        return 1.0 / getDelGamma() / Math.sqrt(Math.PI)
-                * Math.exp(-Math.pow((g - getGamma()) / getDelGamma(), 2));
+        return 1.0 / getDelGamma() / getGamma() / Math.sqrt(Math.PI)
+                * Math.exp(-Math.pow((g - getGamma()) / getDelGamma() / getGamma(), 2));
     }
 }
