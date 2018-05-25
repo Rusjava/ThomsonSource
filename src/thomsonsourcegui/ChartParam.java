@@ -16,6 +16,16 @@
  */
 package thomsonsourcegui;
 
+import java.awt.Color;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.PaintScale;
+import org.jfree.chart.renderer.xy.XYBlockRenderer;
+import org.jfree.data.DomainOrder;
+import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.general.DatasetGroup;
+import org.jfree.data.xy.XYZDataset;
 import org.la4j.vector.dense.BasicVector;
 
 /**
@@ -166,4 +176,148 @@ public abstract class ChartParam {
     private double ystep;
     private int xsize;
     private int ysize;
+
+    /**
+     * Creates a color chart based on a given dataset
+     * 
+     * @param dataset the value of dataset
+     * @param xlabel the value of xlabel
+     * @param ylabel the value of ylabel
+     * @return 
+     */
+    public JFreeChart createChart(XYZDataset dataset, String xlabel, String ylabel) {
+        /* X axis */
+        NumberAxis xAxis = new NumberAxis(xlabel);
+        xAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+        xAxis.setLowerMargin(0.0);
+        xAxis.setUpperMargin(0.0);
+        xAxis.setAutoRangeIncludesZero(false);
+        /* Y axis */
+        NumberAxis yAxis = new NumberAxis(ylabel);
+        yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+        yAxis.setLowerMargin(0.0);
+        yAxis.setUpperMargin(0.0);
+        yAxis.setAutoRangeIncludesZero(false);
+        /* Renderer */
+        XYBlockRenderer renderer = new XYBlockRenderer();
+        PaintScale scale = new JetPaintScale(0, this.getumax());
+        renderer.setPaintScale(scale);
+        renderer.setBlockHeight(this.getystep());
+        renderer.setBlockWidth(this.getxstep());
+        /* Plot creation */
+        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+        plot.setBackgroundPaint(Color.white);
+        plot.setDomainGridlinesVisible(false);
+        plot.setRangeGridlinePaint(Color.black);
+        /* Chart creation */
+        JFreeChart chart = new JFreeChart(plot);
+        chart.removeLegend();
+        chart.setBackgroundPaint(Color.white);
+        return chart;
+    }
+
+    /**
+     * Creates a color bar for this chart
+     * 
+     * @param label the value of label
+     * @return 
+     */
+    public JFreeChart createColorBar(String label) {
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLowerMargin(0.0);
+        xAxis.setUpperMargin(0.0);
+        xAxis.setVisible(false);
+        NumberAxis yAxis = new NumberAxis(label);
+        yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+        yAxis.setLowerMargin(0.0);
+        yAxis.setUpperMargin(0.0);
+        XYZDataset dataset = new XYZDataset() {
+            @Override
+            public int getSeriesCount() {
+                return 1;
+            }
+
+            @Override
+            public int getItemCount(int series) {
+                return getysize();
+            }
+
+            @Override
+            public Number getX(int series, int item) {
+                return new Double(getXValue(series, item));
+            }
+
+            @Override
+            public double getXValue(int series, int item) {
+                return 0;
+            }
+
+            @Override
+            public Number getY(int series, int item) {
+                return new Double(getYValue(series, item));
+            }
+
+            @Override
+            public double getYValue(int series, int item) {
+                return item * getumax() / (getysize() - 1);
+            }
+
+            @Override
+            public Number getZ(int series, int item) {
+                return new Double(getZValue(series, item));
+            }
+
+            @Override
+            public double getZValue(int series, int item) {
+                return getYValue(series, item);
+            }
+
+            @Override
+            public void addChangeListener(DatasetChangeListener listener) {
+                // ignore - this dataset never changes
+            }
+
+            @Override
+            public void removeChangeListener(DatasetChangeListener listener) {
+                // ignore
+            }
+
+            @Override
+            public DatasetGroup getGroup() {
+                return null;
+            }
+
+            @Override
+            public void setGroup(DatasetGroup group) {
+                // ignore
+            }
+
+            @Override
+            public Comparable getSeriesKey(int series) {
+                return "colorbar";
+            }
+
+            @Override
+            public int indexOf(Comparable seriesKey) {
+                return 0;
+            }
+
+            @Override
+            public DomainOrder getDomainOrder() {
+                return DomainOrder.ASCENDING;
+            }
+        };
+        XYBlockRenderer renderer = new XYBlockRenderer();
+        PaintScale scale = new JetPaintScale(0, this.getumax());
+        renderer.setPaintScale(scale);
+        renderer.setBlockHeight((double) this.getumax() / (this.getysize() - 1));
+        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+        plot.setBackgroundPaint(Color.white);
+        plot.setDomainGridlinesVisible(false);
+        plot.setRangeGridlinePaint(Color.black);
+        JFreeChart chart = new JFreeChart("", plot);
+        chart.removeLegend();
+        chart.setBackgroundPaint(Color.white);
+        return chart;
+    }
 }

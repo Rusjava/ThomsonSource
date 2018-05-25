@@ -16,9 +16,19 @@
  */
 package thomsonsourcegui;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
 import java.util.List;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.DomainOrder;
+import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.general.DatasetGroup;
+import org.jfree.data.xy.XYDataset;
 
 /**
  * Class for linear chart parameters
@@ -195,5 +205,123 @@ public class LinearChartParam {
         }
         umax = (new BasicVector(umaxt)).max();
         umin = (new BasicVector(umint)).min();
+    }
+
+    /**
+     * Creating a line chart based on a dataset
+     * 
+     * @param dataset the value of dataset
+     * @param xlabel the value of xlabel
+     * @param ylabel the value of ylabel
+     * @return returning a JFreeChart
+     */
+    public static JFreeChart createLineChart(XYDataset dataset, String xlabel, String ylabel) {
+        /* X axis */
+        NumberAxis xAxis = new NumberAxis(xlabel);
+        xAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+        xAxis.setLowerMargin(0.0);
+        xAxis.setUpperMargin(0.0);
+        xAxis.setAutoRangeIncludesZero(false);
+        /* Y axis */
+        NumberAxis yAxis = new NumberAxis(ylabel);
+        yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+        yAxis.setLowerMargin(0.0);
+        yAxis.setUpperMargin(0.0);
+        yAxis.setAutoRangeIncludesZero(false);
+        /* Renderer */
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        for (int i = 0; i < dataset.getSeriesCount(); i++) {
+            renderer.setSeriesLinesVisible(i, true);
+            renderer.setSeriesShapesVisible(i, false);
+            renderer.setSeriesStroke(i, new BasicStroke(2.0F));
+        }
+        renderer.setSeriesPaint(0, Color.BLUE);
+        renderer.setSeriesPaint(1, Color.GREEN);
+        renderer.setSeriesPaint(2, Color.MAGENTA);
+        renderer.setSeriesPaint(3, Color.BLACK);
+        /* Plot creation */
+        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+        plot.setBackgroundPaint(Color.white);
+        plot.setRangeGridlinePaint(Color.black);
+        plot.setDomainGridlinePaint(Color.black);
+        /* Chart creation */
+        JFreeChart chart = new JFreeChart(plot);
+        chart.setBackgroundPaint(Color.white);
+        return chart;
+    }
+
+    /**
+     * Creating a dataset based on the data specified in this LinearChartParam type object
+     * 
+     * @param keys the value of keys
+     * @return 
+     */
+    public XYDataset createLineDataset(String[] keys) {
+        return new XYDataset() {
+            @Override
+            public int getSeriesCount() {
+                return getData().length;
+            }
+
+            @Override
+            public int getItemCount(int series) {
+                return getSize();
+            }
+
+            @Override
+            public Number getX(int series, int item) {
+                return new Double(getXValue(series, item));
+            }
+
+            @Override
+            public double getXValue(int series, int item) {
+                return item * getStep() + getOffset();
+            }
+
+            @Override
+            public Number getY(int series, int item) {
+                return new Double(getYValue(series, item));
+            }
+
+            @Override
+            public double getYValue(int series, int item) {
+                return getData()[series][item];
+            }
+
+            @Override
+            public void addChangeListener(DatasetChangeListener listener) {
+                // ignore - this dataset never changes
+            }
+
+            @Override
+            public void removeChangeListener(DatasetChangeListener listener) {
+                // ignore
+            }
+
+            @Override
+            public DatasetGroup getGroup() {
+                return null;
+            }
+
+            @Override
+            public void setGroup(DatasetGroup group) {
+                // ignore
+            }
+
+            @Override
+            public Comparable getSeriesKey(int series) {
+                return keys[series];
+            }
+
+            @Override
+            public int indexOf(Comparable seriesKey) {
+                return 0;
+            }
+
+            @Override
+            public DomainOrder getDomainOrder() {
+                return DomainOrder.ASCENDING;
+            }
+        };
     }
 }

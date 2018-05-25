@@ -2398,7 +2398,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 /*
                  * Creating chart and plot dataset
                  */
-                chart = createLineChart(createLineDataset(chartParam, keys), plotLabels[selectedItemIndexClone], label);
+                chart = LinearChartParam.createLineChart(chartParam.createLineDataset(keys), plotLabels[selectedItemIndexClone], label);
                 chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
                         chartParam.getUMax() + MIN_DIF);
                 chart.fireChartChanged();
@@ -2461,12 +2461,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * @param fraction
          */
         ColorChart(ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
-            this.chart = createChart(createDataset(data, slider), data, xlabel, ylabel);
+            this.chart = data.createChart(createDataset(data, slider), xlabel, ylabel);
             this.chartpanel = new ChartPanel(chart,
                     (int) (fraction * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
                     (int) (10 * jPanel.getWidth()), (int) (10 * jPanel.getHeight()),
                     false, true, true, true, true, true);
-            this.colorbarchart = createColorBar(data, colorBarlabel);
+            this.colorbarchart = data.createColorBar(colorBarlabel);
             JPanel fluxcolorbarpanel = new ChartPanel(colorbarchart,
                     (int) ((1 - fraction) * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
                     (int) (10 * jPanel.getWidth()), (int) (10 * jPanel.getHeight()),
@@ -2641,8 +2641,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 * 2 / 4);
-                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                            * 1e3, 0.0);
+                    /*fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
+                            * 1e3, 0.0);*/
                     setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(),
                             (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
@@ -2673,12 +2673,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
                                 jPanel_xflux_left, 0.75, true);
                     }
-                    if (fluxCrossChart != null) {
+                    /*if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
                                 "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
-                    }
+                    }*/
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
                     } else {
@@ -2690,8 +2690,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                 + xenergycrossdata.getSize() * xenergycrossdata.getStep() / 2, xenergycrossdata.getSize() * xenergycrossdata.getStep());
                         xenergycrosschart.fireChartChanged();
                     } else {
-                        xenergycrosschart = createLineChart(createLineDataset(xenergycrossdata,
-                                new String[]{"Energy cross section"}), "theta_y, mrad", "Energy, keV");
+                        xenergycrosschart = LinearChartParam.createLineChart(xenergycrossdata
+                                .createLineDataset(new String[]{"Energy cross section"}), "theta_y, mrad", "Energy, keV");
                         ChartPanel chartpanel = new ChartPanel(xenergycrosschart,
                                 (int) (jPanel_xenergy_right.getWidth()), (int) jPanel_xenergy_right.getHeight(), 0, 0,
                                 (int) (10 * jPanel_xenergy_right.getWidth()), (int) (10 * jPanel_xenergy_right.getHeight()),
@@ -4463,136 +4463,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
     }
 
-    private JFreeChart createChart(XYZDataset dataset, ChartParam data, String xlabel, String ylabel) {
-        /* X axis */
-        NumberAxis xAxis = new NumberAxis(xlabel);
-        xAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
-        xAxis.setLowerMargin(0.0);
-        xAxis.setUpperMargin(0.0);
-        xAxis.setAutoRangeIncludesZero(false);
-        /* Y axis */
-        NumberAxis yAxis = new NumberAxis(ylabel);
-        yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
-        yAxis.setLowerMargin(0.0);
-        yAxis.setUpperMargin(0.0);
-        yAxis.setAutoRangeIncludesZero(false);
-        /* Renderer */
-        XYBlockRenderer renderer = new XYBlockRenderer();
-        PaintScale scale = new JetPaintScale(0, data.getumax());
-        renderer.setPaintScale(scale);
-        renderer.setBlockHeight(data.getystep());
-        renderer.setBlockWidth(data.getxstep());
-        /* Plot creation */
-        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
-        plot.setBackgroundPaint(Color.white);
-        plot.setDomainGridlinesVisible(false);
-        plot.setRangeGridlinePaint(Color.black);
-        /* Chart creation */
-        JFreeChart chart = new JFreeChart(plot);
-        chart.removeLegend();
-        chart.setBackgroundPaint(Color.white);
-        return chart;
-    }
-
-    private JFreeChart createColorBar(final ChartParam data, String label) {
-        NumberAxis xAxis = new NumberAxis();
-        xAxis.setLowerMargin(0.0);
-        xAxis.setUpperMargin(0.0);
-        xAxis.setVisible(false);
-        NumberAxis yAxis = new NumberAxis(label);
-        yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
-        yAxis.setLowerMargin(0.0);
-        yAxis.setUpperMargin(0.0);
-        XYZDataset dataset = new XYZDataset() {
-            @Override
-            public int getSeriesCount() {
-                return 1;
-            }
-
-            @Override
-            public int getItemCount(int series) {
-                return data.getysize();
-            }
-
-            @Override
-            public Number getX(int series, int item) {
-                return new Double(getXValue(series, item));
-            }
-
-            @Override
-            public double getXValue(int series, int item) {
-                return 0;
-            }
-
-            @Override
-            public Number getY(int series, int item) {
-                return new Double(getYValue(series, item));
-            }
-
-            @Override
-            public double getYValue(int series, int item) {
-                return item * data.getumax() / (data.getysize() - 1);
-            }
-
-            @Override
-            public Number getZ(int series, int item) {
-                return new Double(getZValue(series, item));
-            }
-
-            @Override
-            public double getZValue(int series, int item) {
-                return getYValue(series, item);
-            }
-
-            @Override
-            public void addChangeListener(DatasetChangeListener listener) {
-                // ignore - this dataset never changes
-            }
-
-            @Override
-            public void removeChangeListener(DatasetChangeListener listener) {
-                // ignore
-            }
-
-            @Override
-            public DatasetGroup getGroup() {
-                return null;
-            }
-
-            @Override
-            public void setGroup(DatasetGroup group) {
-                // ignore
-            }
-
-            @Override
-            public Comparable getSeriesKey(int series) {
-                return "colorbar";
-            }
-
-            @Override
-            public int indexOf(Comparable seriesKey) {
-                return 0;
-            }
-
-            @Override
-            public DomainOrder getDomainOrder() {
-                return DomainOrder.ASCENDING;
-            }
-        };
-        XYBlockRenderer renderer = new XYBlockRenderer();
-        PaintScale scale = new JetPaintScale(0, data.getumax());
-        renderer.setPaintScale(scale);
-        renderer.setBlockHeight((double) data.getumax() / (data.getysize() - 1));
-        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
-        plot.setBackgroundPaint(Color.white);
-        plot.setDomainGridlinesVisible(false);
-        plot.setRangeGridlinePaint(Color.black);
-        JFreeChart chart = new JFreeChart("", plot);
-        chart.removeLegend();
-        chart.setBackgroundPaint(Color.white);
-        return chart;
-    }
-
     private XYZDataset createDataset(final ChartParam data, final boolean linemark) {
         return new XYZDataset() {
             @Override
@@ -4676,111 +4546,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             public Comparable getSeriesKey(int series) {
                 return "Flux";
-            }
-
-            @Override
-            public int indexOf(Comparable seriesKey) {
-                return 0;
-            }
-
-            @Override
-            public DomainOrder getDomainOrder() {
-                return DomainOrder.ASCENDING;
-            }
-        };
-    }
-
-    private JFreeChart createLineChart(XYDataset dataset, String xlabel, String ylabel) {
-        /* X axis */
-        NumberAxis xAxis = new NumberAxis(xlabel);
-        xAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
-        xAxis.setLowerMargin(0.0);
-        xAxis.setUpperMargin(0.0);
-        xAxis.setAutoRangeIncludesZero(false);
-        /* Y axis */
-        NumberAxis yAxis = new NumberAxis(ylabel);
-        yAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
-        yAxis.setLowerMargin(0.0);
-        yAxis.setUpperMargin(0.0);
-        yAxis.setAutoRangeIncludesZero(false);
-        /* Renderer */
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        for (int i = 0; i < dataset.getSeriesCount(); i++) {
-            renderer.setSeriesLinesVisible(i, true);
-            renderer.setSeriesShapesVisible(i, false);
-            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
-        }
-        renderer.setSeriesPaint(0, Color.BLUE);
-        renderer.setSeriesPaint(1, Color.GREEN);
-        renderer.setSeriesPaint(2, Color.MAGENTA);
-        renderer.setSeriesPaint(3, Color.BLACK);
-
-        /* Plot creation */
-        XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
-        plot.setBackgroundPaint(Color.white);
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setDomainGridlinePaint(Color.black);
-        /* Chart creation */
-        JFreeChart chart = new JFreeChart(plot);
-        chart.setBackgroundPaint(Color.white);
-        return chart;
-    }
-
-    private XYDataset createLineDataset(final LinearChartParam data, String[] keys) {
-        return new XYDataset() {
-            @Override
-            public int getSeriesCount() {
-                return data.getData().length;
-            }
-
-            @Override
-            public int getItemCount(int series) {
-                return data.getSize();
-            }
-
-            @Override
-            public Number getX(int series, int item) {
-                return new Double(getXValue(series, item));
-            }
-
-            @Override
-            public double getXValue(int series, int item) {
-                return item * data.getStep() + data.getOffset();
-            }
-
-            @Override
-            public Number getY(int series, int item) {
-                return new Double(getYValue(series, item));
-            }
-
-            @Override
-            public double getYValue(int series, int item) {
-                return data.getData()[series][item];
-            }
-
-            @Override
-            public void addChangeListener(DatasetChangeListener listener) {
-                // ignore - this dataset never changes
-            }
-
-            @Override
-            public void removeChangeListener(DatasetChangeListener listener) {
-                // ignore
-            }
-
-            @Override
-            public DatasetGroup getGroup() {
-                return null;
-            }
-
-            @Override
-            public void setGroup(DatasetGroup group) {
-                // ignore
-            }
-
-            @Override
-            public Comparable getSeriesKey(int series) {
-                return keys[series];
             }
 
             @Override
