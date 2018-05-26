@@ -252,6 +252,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqration = e / ordernumber / lp.getPhotonEnergy();
+        System.out.println(2 - fqration * (1 - pr) + " " + pr + " " + fqration + "\n");
         return (fqration * (pr + rho) + 1)
                 / Math.sqrt(fqration * (1 + 2 * rho + pr) * (2 - fqration * (1 - pr)));
     }

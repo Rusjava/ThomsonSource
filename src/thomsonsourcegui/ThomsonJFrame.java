@@ -134,7 +134,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                System.out.println(e + "\n");
                 return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, e * GaussianElectronBunch.E) / 1e10;
             }
         };
@@ -2633,8 +2632,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     setStatusBar((int) 100 * 2 / 4);
-                    /*fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                            * 1e3, 0.0);*/
+                    System.out.println(xenergydata.func(hoffset, 0.0) + "\n");
+                    fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
+                            * 1e3, 0.0);
                     setStatusBar((int) 100 * 3 / 4);
                     xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
                             false, ysize, ystep, -ystep * ysize / 2);
@@ -2664,12 +2664,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
                                 jPanel_xflux_left, 0.75, true);
                     }
-                    /*if (fluxCrossChart != null) {
+                    if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
                                 "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
-                    }*/
+                    }
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
                     } else {
@@ -2750,7 +2750,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         JSlider source = (JSlider) evt.getSource();
         fluxdata.setSliderposition(source.getValue());
         xenergydata.setSliderposition(source.getValue());
-        System.out.println(fluxdata.getSliderposition()+"\n");
+
         //Updating charts when the slider is moved
         if (!source.getValueIsAdjusting()) {
             if (working) {
@@ -2761,7 +2761,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             startbutton.setText("Stop");
             working = true;
 
-            hoffset = xsize * xstep * (fluxdata.getSliderposition() - 50) / 100;
+            hoffset = xsize * xstep * (source.getValue() - 50) / 100;
             mainWorker = new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
@@ -2791,7 +2791,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         fluxChart.update();
                     }
                     //Updating charts
-                   /* if (fluxCrossChart != null) {
+                    /* if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     }*/
                     if (xEnergyChart != null) {
