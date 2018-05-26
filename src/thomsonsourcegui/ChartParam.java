@@ -40,10 +40,16 @@ public abstract class ChartParam {
      * Constructor
      */
     public ChartParam() {
+        this.sliderposition = (getxsize() - 1) * 50 / 100;
 
     }
-
+    /**
+     * Constructor which allows one to directly specify the data array
+     * @param u data array
+     * @param um maximum value of data
+     */
     public ChartParam(double[][] u, double um) {
+        this.sliderposition = (getxsize() - 1) * 50 / 100;
         this.udata = u;
         this.umax = um;
     }
@@ -141,7 +147,7 @@ public abstract class ChartParam {
      *
      * @return
      */
-    public int getxsize() {
+    public final int getxsize() {
         return this.xsize;
     }
 
@@ -153,7 +159,7 @@ public abstract class ChartParam {
     public int getysize() {
         return this.ysize;
     }
-    
+
     /**
      * Calculating the max value of data
      */
@@ -176,14 +182,15 @@ public abstract class ChartParam {
     private double ystep;
     private int xsize;
     private int ysize;
+    private int sliderposition;
 
     /**
      * Creates a color chart based on a given dataset
-     * 
+     *
      * @param dataset the value of dataset
      * @param xlabel the value of xlabel
      * @param ylabel the value of ylabel
-     * @return 
+     * @return
      */
     public JFreeChart createChart(XYZDataset dataset, String xlabel, String ylabel) {
         /* X axis */
@@ -218,9 +225,9 @@ public abstract class ChartParam {
 
     /**
      * Creates a color bar for this chart
-     * 
+     *
      * @param label the value of label
-     * @return 
+     * @return
      */
     public JFreeChart createColorBar(String label) {
         NumberAxis xAxis = new NumberAxis();
@@ -319,5 +326,126 @@ public abstract class ChartParam {
         chart.removeLegend();
         chart.setBackgroundPaint(Color.white);
         return chart;
+    }
+
+    /**
+     * Returning the current slider position in scale from 0 to 1
+     * 
+     * @return the position of the slider
+     */
+    public int getSliderposition() {
+        return sliderposition;
+    }
+
+    /**
+     * Setting the current slider position
+     * 
+     * @param sliderposition the position of the slider to set in scale from 0 to 100
+     */
+    public void setSliderposition(int sliderposition) {
+        this.sliderposition = (getxsize() - 1) * sliderposition / 100;
+    }
+
+    /**
+     * Creates a dataset for a color chart
+     * 
+     * @param linemark flag indicating whether the position of the slider should be shown
+     * @return 
+     */
+    public XYZDataset createDataset(final boolean linemark) {
+        return new XYZDataset() {
+            @Override
+            public int getSeriesCount() {
+                return 1;
+            }
+
+            @Override
+            public int getItemCount(int series) {
+                return getxsize() * getysize();
+            }
+
+            @Override
+            public Number getX(int series, int item) {
+                return new Double(getXValue(series, item));
+            }
+
+            @Override
+            public double getXValue(int series, int item) {
+                return (getXindex(series, item) - getxsize() / 2) * getxstep() + getxoffset();
+            }
+
+            public int getXindex(int series, int item) {
+                return item / getysize();
+            }
+
+            @Override
+            public Number getY(int series, int item) {
+                return new Double(getYValue(series, item));
+            }
+
+            @Override
+            public double getYValue(int series, int item) {
+                return (getYindex(series, item) - getysize() / 2) * getystep() + getyoffset();
+            }
+
+            public int getYindex(int series, int item) {
+                return item - (item / getysize()) * getysize();
+            }
+
+            @Override
+            public Number getZ(int series, int item) {
+                return new Double(getZValue(series, item));
+            }
+
+            @Override
+            public double getZValue(int series, int item) {
+                int x = getXindex(series, item);
+                int y = getYindex(series, item);
+                if (!linemark) {
+                    return getudata()[x][y];
+                } else {
+                    if (x == sliderposition) {
+                        return getumax() / 2;
+                    } else {
+                        return getudata()[x][y];
+                    }
+                }
+            }
+
+            @Override
+            public void addChangeListener(DatasetChangeListener listener) {
+                // ignore - this dataset never changes
+            }
+
+            @Override
+            public void removeChangeListener(DatasetChangeListener listener) {
+                // ignore
+            }
+
+            @Override
+            public DatasetGroup getGroup() {
+                return null;
+            }
+
+            @Override
+            public void setGroup(DatasetGroup group) {
+                // ignore
+            }
+
+            @Override
+            public Comparable getSeriesKey(int series) {
+                return "Flux";
+            }
+
+            @Override
+            public int indexOf(Comparable seriesKey) {
+                return 0;
+            }
+
+            @Override
+            public DomainOrder getDomainOrder() {
+                return DomainOrder.ASCENDING;
+            }
+        };
     }
 }

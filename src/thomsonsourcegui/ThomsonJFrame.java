@@ -51,16 +51,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.DomainOrder;
-import org.jfree.data.general.DatasetChangeListener;
-import org.jfree.data.general.DatasetGroup;
-import org.jfree.data.xy.XYZDataset;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.chart.renderer.PaintScale;
 import org.jfree.chart.renderer.xy.XYBlockRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import org.la4j.*;
 import org.la4j.vector.dense.*;
@@ -2461,7 +2453,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * @param fraction
          */
         ColorChart(ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
-            this.chart = data.createChart(createDataset(data, slider), xlabel, ylabel);
+            this.chart = data.createChart(data.createDataset(slider), xlabel, ylabel);
             this.chartpanel = new ChartPanel(chart,
                     (int) (fraction * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
                     (int) (10 * jPanel.getWidth()), (int) (10 * jPanel.getHeight()),
@@ -2521,7 +2513,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /**
      * Main program parameters
      */
-    private int xsize, ysize, sliderposition = 50;
+    private int xsize, ysize;
     /* The size of the graph in x or y direction */
 
     private double xstep, ystep, estep, hoffset = 0;
@@ -2644,8 +2636,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     /*fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
                             * 1e3, 0.0);*/
                     setStatusBar((int) 100 * 3 / 4);
-                    xenergycrossdata.setup(xenergydata.getudata(),
-                            (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                    xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
                             false, ysize, ystep, -ystep * ysize / 2);
                     setStatusBar((int) 100);
                 } catch (InterruptedException e) {
@@ -2755,8 +2746,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
-        // TODO add your handling code here:
+        // Setting the slider position
         JSlider source = (JSlider) evt.getSource();
+        fluxdata.setSliderposition(source.getValue());
+        xenergydata.setSliderposition(source.getValue());
+        System.out.println(fluxdata.getSliderposition()+"\n");
+        //Updating charts when the slider is moved
         if (!source.getValueIsAdjusting()) {
             if (working) {
                 return;
@@ -2766,16 +2761,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             startbutton.setText("Stop");
             working = true;
 
-            sliderposition = (int) source.getValue();
-            hoffset = xsize * xstep * (sliderposition - 50) / 100;
+            hoffset = xsize * xstep * (fluxdata.getSliderposition() - 50) / 100;
             mainWorker = new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
                     try {
-                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                                * 1e3, 0.0);
+                        /*fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
+                                * 1e3, 0.0);*/
                         setStatusBar((int) 100);
-                        xenergycrossdata.setup(xenergydata.getudata(), (int) (xenergydata.getxsize() - 1) * sliderposition / 100,
+                        xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
                                 false, ysize, ystep, -ystep * ysize / 2);
                     } catch (InterruptedException e) {
 
@@ -2797,9 +2791,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         fluxChart.update();
                     }
                     //Updating charts
-                    if (fluxCrossChart != null) {
+                   /* if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
-                    }
+                    }*/
                     if (xEnergyChart != null) {
                         xEnergyChart.update();
                     }
@@ -4461,103 +4455,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             new ThomsonJFrame().setVisible(true);
         });
-    }
-
-    private XYZDataset createDataset(final ChartParam data, final boolean linemark) {
-        return new XYZDataset() {
-            @Override
-            public int getSeriesCount() {
-                return 1;
-            }
-
-            @Override
-            public int getItemCount(int series) {
-                return data.getxsize() * data.getysize();
-            }
-
-            @Override
-            public Number getX(int series, int item) {
-                return new Double(getXValue(series, item));
-            }
-
-            @Override
-            public double getXValue(int series, int item) {
-                return (getXindex(series, item) - data.getxsize() / 2) * data.getxstep() + data.getxoffset();
-            }
-
-            public int getXindex(int series, int item) {
-                return item / data.getysize();
-            }
-
-            @Override
-            public Number getY(int series, int item) {
-                return new Double(getYValue(series, item));
-            }
-
-            @Override
-            public double getYValue(int series, int item) {
-                return (getYindex(series, item) - data.getysize() / 2) * data.getystep() + data.getyoffset();
-            }
-
-            public int getYindex(int series, int item) {
-                return item - (item / data.getysize()) * data.getysize();
-            }
-
-            @Override
-            public Number getZ(int series, int item) {
-                return new Double(getZValue(series, item));
-            }
-
-            @Override
-            public double getZValue(int series, int item) {
-                int x = getXindex(series, item);
-                int y = getYindex(series, item);
-                if (!linemark) {
-                    return data.getudata()[x][y];
-                } else {
-                    if (x == (int) (data.getxsize() - 1) * sliderposition / 100) {
-                        return data.getumax() / 2;
-                    } else {
-                        return data.getudata()[x][y];
-                    }
-                }
-            }
-
-            @Override
-            public void addChangeListener(DatasetChangeListener listener) {
-                // ignore - this dataset never changes
-            }
-
-            @Override
-            public void removeChangeListener(DatasetChangeListener listener) {
-                // ignore
-            }
-
-            @Override
-            public DatasetGroup getGroup() {
-                return null;
-            }
-
-            @Override
-            public void setGroup(DatasetGroup group) {
-                // ignore
-            }
-
-            @Override
-            public Comparable getSeriesKey(int series) {
-                return "Flux";
-            }
-
-            @Override
-            public int indexOf(Comparable seriesKey) {
-                return 0;
-            }
-
-            @Override
-            public DomainOrder getDomainOrder() {
-                return DomainOrder.ASCENDING;
-            }
-        };
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
