@@ -108,8 +108,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
         double avint = lp.getAverageIntensity();
         double gamma = calculateGamma(n, v, e, avint);
-        return directionFluxBasic(n, v, e, gamma, avint)
-                * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, avint);
+        if (gamma == 0) {
+            //returning zero if gamma is zero
+            return 0;
+        } else {
+            return directionFluxBasic(n, v, e, gamma, avint)
+                    * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, avint);
+        }
     }
 
     @Override
@@ -188,6 +193,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double directionFluxBasic(Vector n, Vector v, double xenergy, double gamma, double inten) {
+        //If gamma is zero (negative expression under the root) then return zero
+        if (gamma == 0) {
+            return 0;
+        }
+        //Proceede
         double mv, M, pr, gamma2, intratio, coef, result = 0;
         double[] K1 = lp.getKA1();
         double[] K2 = lp.getKA2();
@@ -248,13 +258,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGamma(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqration;
+        double rho, pr, fqration, coef;
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqration = e / ordernumber / lp.getPhotonEnergy();
-        System.out.println(2 - fqration * (1 - pr) + " " + pr + " " + fqration + "\n");
-        return (fqration * (pr + rho) + 1)
-                / Math.sqrt(fqration * (1 + 2 * rho + pr) * (2 - fqration * (1 - pr)));
+        coef = 2 - fqration * (1 - pr);
+        if (coef <= 0) {
+            //Returning zero if the expression under the root is not positive
+            return 0;
+        } else {
+            return (fqration * (pr + rho) + 1)
+                    / Math.sqrt(fqration * (1 + 2 * rho + pr) * coef);
+        }
     }
 
     /**
@@ -268,12 +283,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGammaDerivative(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqration;
+        double rho, pr, fqration, coef;
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqration = e / ordernumber / lp.getPhotonEnergy();
-        return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) * fqration)
-                * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
+        coef = 2 - fqration * (1 - pr);
+        if (coef <= 0) {
+            //Returning unit if the expression under the root is not positive
+            return 1;
+        } else {
+            return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) * fqration)
+                    * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
+        }
     }
 
     /**

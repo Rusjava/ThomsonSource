@@ -40,7 +40,6 @@ public abstract class ChartParam {
      * Constructor
      */
     public ChartParam() {
-        this.sliderposition = (getxsize() - 1) * 50 / 100;
 
     }
     /**
@@ -49,7 +48,6 @@ public abstract class ChartParam {
      * @param um maximum value of data
      */
     public ChartParam(double[][] u, double um) {
-        this.sliderposition = (getxsize() - 1) * 50 / 100;
         this.udata = u;
         this.umax = um;
     }

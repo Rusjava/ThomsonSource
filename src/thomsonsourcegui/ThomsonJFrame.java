@@ -2629,10 +2629,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     tsource.calculateTotalFlux();
                     tsource.calculateGeometricFactor();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
+                    fluxdata.setSliderposition(50);
                     setStatusBar((int) 100 / 4);
                     xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
+                    xenergydata.setSliderposition(50);
                     setStatusBar((int) 100 * 2 / 4);
-                    System.out.println(xenergydata.func(hoffset, 0.0) + "\n");
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
                             * 1e3, 0.0);
                     setStatusBar((int) 100 * 3 / 4);
@@ -2668,7 +2669,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
-                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
+                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.73, false);
                     }
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
@@ -2766,8 +2767,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 @Override
                 protected Void doInBackground() throws Exception {
                     try {
-                        /*fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                                * 1e3, 0.0);*/
+                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
                         setStatusBar((int) 100);
                         xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
                                 false, ysize, ystep, -ystep * ysize / 2);
@@ -2791,9 +2791,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         fluxChart.update();
                     }
                     //Updating charts
-                    /* if (fluxCrossChart != null) {
+                    if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
-                    }*/
+                    }
                     if (xEnergyChart != null) {
                         xEnergyChart.update();
                     }
