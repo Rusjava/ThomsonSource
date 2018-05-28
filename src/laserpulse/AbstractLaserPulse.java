@@ -432,4 +432,20 @@ public abstract class AbstractLaserPulse implements Cloneable {
     public Vector[] getA2() {
         return new Vector[]{A2[0].copy(), A2[1].copy()};
     }
+
+    /**
+     * Orthogonalization of real and imaginary parts of a complex vector
+     *
+     * @param A1 real part
+     * @param A2 imaginary part
+     * @return array of orthogonal vectors
+     */
+    public Vector[] getOrthogonalPolarizationVectors(Vector A1, Vector A2) {
+        if (A1.innerProduct(A2) == 0) {
+            //If already orthogonal, return initial vectors
+            return new Vector[]{A1, A2};
+        } else {
+          return new Vector[]{A1, A2};  
+        }
+    }
 }
