@@ -197,8 +197,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         if (gamma == 0) {
             return 0;
         }
-        //Proceede
-        double mv, M, pr, gamma2, intratio, coef, result = 0;
+        //Proceed
+        double mv, M, pr, gamma2, intratio, coef1, coef2, coef3, result;
         double[] K1 = lp.getKA1();
         double[] K2 = lp.getKA2();
         Vector[] A1 = lp.getA1();
@@ -208,41 +208,70 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
         intratio = inten / sIntensity;
-        coef = xenergy / lp.getPhotonEnergy()
-                * Math.sqrt(intratio) / (1 + mv) / gamma;
         //Parameter of non-linearity
         M = lp.getAverageIntensity() / sIntensity * (1 + pr) / 4 * (1 - mv);
-        /*
-        Cycling over two independent polarizations and adding their intensities
-         */
-        for (int s = 0; s < 2; s++) {
-            if (K1[s] != 0 || K2[s] != 0) {
-                double a1 = coef * n.innerProduct(A1[s]);
-                double a2 = coef * n.innerProduct(A2[s]);
-                double a3 = xenergy / lp.getPhotonEnergy() * (K1[s] - K2[s]) * intratio
-                        * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
-                /*
-                Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
-                 */
-                for (int t = 2; t < 8; t++) {
-                    //Creating a Romberg integrator and a UnivariateFunction object and then integrating
-                    try {
-                        f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
-                                RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                                new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
-                    } catch (TooManyEvaluationsException ex) {
-                        f[t] = 0;
-                    }
+        //Coefficients
+        coef1 = xenergy / lp.getPhotonEnergy()
+                * Math.sqrt(intratio) / (1 + mv) / gamma;
+        coef2 = xenergy / lp.getPhotonEnergy() * intratio
+                * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
+        coef3 = -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+                / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
+        //Checking if the radiation is fully poolarized and then just calculating intensity
+        if (K1[0] == 0 && K2[0] == 0) {
+            result = directionFluxBasicPolarization(coef1, coef2, coef3, intratio, n, new Vector[]{A1[1], A2[1]});
+        } else if (K1[1] == 0 && K2[1] == 0) {
+            result = directionFluxBasicPolarization(coef1, coef2, coef3, intratio, n, new Vector[]{A1[0], A2[0]});
+        } else {
+            //If not fully polarized then everaging over all possible surpepositions of two independant polarizations
+            result = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                    RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                    RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                    new UnivariatePolarizationIntegration(coef1, coef2, coef3, intratio, n), -Math.PI, Math.PI) / 2 / Math.PI;
+        }
+        return result;
+    }
+
+   /**
+    * Basic method for calculation of X-ray flux with a given polarization
+    * 
+    * @param cf1
+    * @param cf2
+    * @param cf3
+    * @param intratio
+    * @param n
+    * @param B
+    * @return 
+    */
+    private double directionFluxBasicPolarization(double cf1, double cf2,
+            double cf3, double intratio, Vector n, Vector[] B) {
+        double K1, K2, a1, a2, a3, result = 0;
+        double[] f = new double[8];
+        K1 = B[0].innerProduct(B[0]);
+        K2 = B[1].innerProduct(B[1]);
+        //If the fieled is zero, rerurn zero
+        if (K1 != 0 || K2 != 0) {
+            a1 = cf1 * n.innerProduct(B[0]);
+            a2 = cf1 * n.innerProduct(B[1]);
+            a3 = cf2 * (K1 - K2);
+            //Calculation of six independent non-linear Fourier integrals necessary for cross-section determination
+            for (int t = 2; t < 8; t++) {
+                //Creating a Romberg integrator and a UnivariateFunction object and then integrating
+                try {
+                    f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                            RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                            new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
+                } catch (TooManyEvaluationsException ex) {
+                    f[t] = 0;
                 }
-                //Calculating f_0 using the relation between integrals f_i
-                f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
-                f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
-                //Returning the total flux
-                result += -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
-                        / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2
-                        * ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1[s] + K2[s]) / 2) - (f[2] * f[2] + f[3] * f[3]) * K1[s]
-                        - (f[4] * f[4] + f[5] * f[5]) * K2[s] + (f[6] * f[0] + f[7] * f[1]) * (K1[s] - K2[s]) / 2);
             }
+            //Calculating f_0 using the relation between integrals f_i
+            f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
+            f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
+            //Returning the total flux
+            result += cf3 * ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1 + K2) / 2)
+                    - (f[2] * f[2] + f[3] * f[3]) * K1 - (f[4] * f[4] + f[5] * f[5]) * K2
+                    + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2);
         }
         return result;
     }
@@ -316,6 +345,32 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double tau) {
             return fn.apply(new Double[]{tau, a1, a2, a3});
+        }
+    }
+
+    /**
+     * An auxiliary class for integration over all possible polarization
+     * superpositions calculations
+     */
+    private class UnivariatePolarizationIntegration implements UnivariateFunction {
+
+        private final double cf1, cf2, cf3, intratio;
+        private final Vector n;
+
+        public UnivariatePolarizationIntegration(double cf1, double cf2, double cf3, double intratio, Vector n) {
+            this.cf1 = cf1;
+            this.cf2 = cf2;
+            this.cf3 = cf3;
+            this.intratio = intratio;
+            this.n = n;
+        }
+
+        @Override
+        public double value(double phase) {
+            //Getting phase weighted superposition of polarizations
+            Vector[] B = lp.getPhaseWeightedPolarizationVectors(phase);
+            //Returning the calculated intensity
+            return directionFluxBasicPolarization(cf1, cf2, cf3, intratio, n, B);
         }
     }
 }

@@ -415,7 +415,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     }
 
     /**
-     * Orthogonalization of real and imaginary parts of a complex vector
+     * Orthogonalization of the real and imaginary parts of a complex vector
      *
      * @param AA1 real part
      * @param AA2 imaginary part
@@ -445,11 +445,11 @@ public abstract class AbstractLaserPulse implements Cloneable {
     }
 
     /**
-     * Returning orthogonalized real and imaginary parts of a linear combination
+     * Returning orthogonalized real and imaginary parts of a linear superposition
      * of two independent polarization states
      *
-     * @param phase mutual phase
-     * @return an array of polarization vectors
+     * @param phase mutual phase of two polarizations
+     * @return an array of polarization vectors (real and imaginary parts)
      */
     public Vector[] getPhaseWeightedPolarizationVectors(double phase) {
         Vector B1 = new BasicVector(new double[]{0, 0, 0});
