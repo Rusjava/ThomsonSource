@@ -100,7 +100,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             return 1 + Math.cos(tau2) * Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         setsIntensity();
-        calculateTotalFlux();
+        calculateLinearTotalFlux();
         calculateGeometricFactor();
     }
 
@@ -197,13 +197,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         if (gamma == 0) {
             return 0;
         }
-        //Proceed
-        double mv, M, pr, gamma2, intratio, coef1, coef2, coef3, result;
+        //If gamma is not zero then proceed
+        double mv, M, pr, gamma2, intratio, coef1, coef2, coef3, coef4, result;
         double[] K1 = lp.getKA1();
         double[] K2 = lp.getKA2();
         Vector[] A1 = lp.getA1();
         Vector[] A2 = lp.getA2();
-        double[] f = new double[8]; //An array for integrals
         gamma2 = gamma * gamma;
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
@@ -217,36 +216,37 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
         coef3 = -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
+        coef4 = coef3 / 2 / Math.PI;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
-            result = directionFluxBasicPolarization(coef1, coef2, coef3, intratio, n, new Vector[]{A1[1], A2[1]});
+            result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]});
         } else if (K1[1] == 0 && K2[1] == 0) {
-            result = directionFluxBasicPolarization(coef1, coef2, coef3, intratio, n, new Vector[]{A1[0], A2[0]});
+            result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
         } else {
             //If not fully polarized then everaging over all possible surpepositions of two independant polarizations
             result = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
                     RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                    new UnivariatePolarizationIntegration(coef1, coef2, coef3, intratio, n), -Math.PI, Math.PI) / 2 / Math.PI;
+                    new UnivariatePolarizationIntegration(coef1, coef2, intratio, n), -Math.PI, Math.PI) * coef4;
         }
         return result;
     }
 
-   /**
-    * Basic method for calculation of X-ray flux with a given polarization
-    * 
-    * @param cf1
-    * @param cf2
-    * @param cf3
-    * @param intratio
-    * @param n
-    * @param B
-    * @return 
-    */
-    private double directionFluxBasicPolarization(double cf1, double cf2,
-            double cf3, double intratio, Vector n, Vector[] B) {
+    /**
+     * Basic method for calculation of X-ray flux with a given polarization
+     *
+     * @param cf1
+     * @param cf2
+     * @param cf3
+     * @param intratio
+     * @param n
+     * @param B
+     * @return
+     */
+    private double directionFluxBasicAuxiliary(double cf1, double cf2, double intratio,
+            Vector n, Vector[] B) {
         double K1, K2, a1, a2, a3, result = 0;
-        double[] f = new double[8];
+        double[] f = new double[8]; //An array for integrals
         K1 = B[0].innerProduct(B[0]);
         K2 = B[1].innerProduct(B[1]);
         //If the fieled is zero, rerurn zero
@@ -269,7 +269,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
             f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
             //Returning the total flux
-            result += cf3 * ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1 + K2) / 2)
+            result += ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1 + K2) / 2)
                     - (f[2] * f[2] + f[3] * f[3]) * K1 - (f[4] * f[4] + f[5] * f[5]) * K2
                     + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2);
         }
@@ -354,23 +354,21 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      */
     private class UnivariatePolarizationIntegration implements UnivariateFunction {
 
-        private final double cf1, cf2, cf3, intratio;
+        private final double cf1, cf2, intratio;
         private final Vector n;
 
-        public UnivariatePolarizationIntegration(double cf1, double cf2, double cf3, double intratio, Vector n) {
+        public UnivariatePolarizationIntegration(double cf1, double cf2, double intratio, Vector n) {
             this.cf1 = cf1;
             this.cf2 = cf2;
-            this.cf3 = cf3;
             this.intratio = intratio;
             this.n = n;
         }
-
         @Override
         public double value(double phase) {
             //Getting phase weighted superposition of polarizations
             Vector[] B = lp.getPhaseWeightedPolarizationVectors(phase);
             //Returning the calculated intensity
-            return directionFluxBasicPolarization(cf1, cf2, cf3, intratio, n, B);
+            return directionFluxBasicAuxiliary(cf1, cf2, intratio, n, B);
         }
     }
 }

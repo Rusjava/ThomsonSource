@@ -66,9 +66,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Stocks parameters
      */
-    private double ksi1;
-    private double ksi2;
-    private double ksi3;
+    private double ksi1 = 1;
+    private double ksi2 = 0;
+    private double ksi3 = 0;
 
     private double[] KA1;
     private double[] KA2;
@@ -445,8 +445,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
     }
 
     /**
-     * Returning orthogonalized real and imaginary parts of a linear superposition
-     * of two independent polarization states
+     * Returning orthogonalized real and imaginary parts of a linear
+     * superposition of two independent polarization states
      *
      * @param phase mutual phase of two polarizations
      * @return an array of polarization vectors (real and imaginary parts)

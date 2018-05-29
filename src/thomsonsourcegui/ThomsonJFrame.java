@@ -105,7 +105,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
         rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
         threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
-        ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
         ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         /**
@@ -2117,7 +2117,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.setText("Polarization...");
 
         buttonGroupPolarization.add(jRadioButtonMenuItemUnPolarized);
-        jRadioButtonMenuItemUnPolarized.setSelected(true);
         jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
         jRadioButtonMenuItemUnPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -2127,6 +2126,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemSPolarized);
+        jRadioButtonMenuItemSPolarized.setSelected(true);
         jRadioButtonMenuItemSPolarized.setText("S-polarized");
         jRadioButtonMenuItemSPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -2626,7 +2626,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    tsource.calculateTotalFlux();
+                    tsource.calculateLinearTotalFlux();
                     tsource.calculateGeometricFactor();
                     fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
                     fluxdata.setSliderposition(50);
@@ -2931,7 +2931,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             dir.set(2, Math.cos(x));
                             dir.set(1, Math.sin(x));
                             brilForm.tsourceclone.getLaserPulse().setDirection(dir);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -2958,7 +2958,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             Vector sht = new BasicVector(new double[3]);
                             sht.set(2, x);
                             brilForm.tsourceclone.getElectronBunch().setShift(sht);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -2972,7 +2972,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getElectronBunch().setBetax(x);
                             brilForm.tsourceclone.getElectronBunch().setBetay(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -2986,7 +2986,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getElectronBunch().setEpsx(x);
                             brilForm.tsourceclone.getElectronBunch().setEpsy(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -2999,7 +2999,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilForm.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getElectronBunch().setEpsx(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -3012,7 +3012,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilForm.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getElectronBunch().setEpsy(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -3025,7 +3025,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilForm.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getLaserPulse().setRlength(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -3040,7 +3040,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getLaserPulse().setWidth(x);
                             brilForm.tsourceclone.getElectronBunch().setxWidth(x);
                             brilForm.tsourceclone.getElectronBunch().setyWidth(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -3053,7 +3053,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilForm.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getElectronBunch().setDelgamma(x);
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -3064,7 +3064,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         func.add(xp -> {
                             double ang = brilForm.angleclone * 1e-3;
                             double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
@@ -3075,7 +3075,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         func.add(xp -> {
                             double ang = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             double e = brilForm.energyclone * GaussianElectronBunch.E * 1e3;
-                            brilForm.tsourceclone.calculateTotalFlux();
+                            brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -3320,7 +3320,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         }
         final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());
-        tsourceRayClone.calculateTotalFlux();
+        tsourceRayClone.calculateLinearTotalFlux();
         rayWorking = true;
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
@@ -3502,7 +3502,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             break;
                     }
                     gfForm.tsourceclone.calculateGeometricFactor();
-                    gfForm.tsourceclone.calculateTotalFlux();
+                    gfForm.tsourceclone.calculateLinearTotalFlux();
                     setStatusBar((xp - offset) / step / (xsize - 1));
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getGeometricFactor()
                             : gfForm.tsourceclone.getGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
@@ -3542,7 +3542,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             gfForm.tsourceclone.getElectronBunch().setyWidth(x);
                             break;
                     }
-                    gfForm.tsourceclone.calculateTotalFlux();
+                    gfForm.tsourceclone.calculateLinearTotalFlux();
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getApproxGeometricFactor()
                             : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
                 });
@@ -3951,7 +3951,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                 break;
                         }
                         setStatusBar((xp - offset) / step / (xsize - 1));
-                        polForm.tsourceclone.calculateTotalFlux();
+                        polForm.tsourceclone.calculateLinearTotalFlux();
                         //If the same point, use the saved values
                         if (xpcash[0] != xp) {
                             try {
@@ -4143,7 +4143,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             dir.set(2, Math.cos(x));
                             dir.set(1, Math.sin(x));
                             brilFormNonLinear.tsourceclone.getLaserPulse().setDirection(dir);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4170,7 +4170,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             Vector sht = new BasicVector(new double[3]);
                             sht.set(2, x);
                             brilFormNonLinear.tsourceclone.getElectronBunch().setShift(sht);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4184,7 +4184,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getElectronBunch().setBetax(x);
                             brilFormNonLinear.tsourceclone.getElectronBunch().setBetay(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4198,7 +4198,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4211,7 +4211,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4224,7 +4224,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4237,7 +4237,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getLaserPulse().setRlength(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4252,7 +4252,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getLaserPulse().setWidth(x);
                             brilFormNonLinear.tsourceclone.getElectronBunch().setxWidth(x);
                             brilFormNonLinear.tsourceclone.getElectronBunch().setyWidth(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4265,7 +4265,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getElectronBunch().setDelgamma(x);
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
@@ -4276,7 +4276,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         func.add(xp -> {
                             double ang = brilFormNonLinear.angleclone * 1e-3;
                             double e = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
@@ -4287,7 +4287,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         func.add(xp -> {
                             double ang = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             double e = brilFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
-                            brilFormNonLinear.tsourceclone.calculateTotalFlux();
+                            brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),

@@ -36,7 +36,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
      */
     public LinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b) {
         super(l,b);
-        calculateTotalFlux();
+        calculateLinearTotalFlux();
         calculateGeometricFactor();
     }
 

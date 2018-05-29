@@ -81,9 +81,10 @@ public abstract class ChartParam {
                 x = xoffset + xstep * (j - xsize / 2);
                 y = yoffset + ystep * (p - ysize / 2);
                 this.udata[j][p] = func(x, y);
+                System.out.println(x+" "+y+"\n");
             }
-        }
-        setExtr();
+        }  
+        setExtr();// Finding the maximum value
     }
 
     /**

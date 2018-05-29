@@ -56,7 +56,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.eb = b;
         this.counter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
-        this.ksi = new double[]{0, 0, 0};
+        this.ksi = new double[]{0, 0, -1};
     }
 
     /**
@@ -181,13 +181,13 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating the normalized total flux
+     * A method calculating the linear total flux
      */
-    public final void calculateTotalFlux() {
+    public final void calculateLinearTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq()
                 / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
-
+    
     /**
      * A method calculating the geometric factor
      *
