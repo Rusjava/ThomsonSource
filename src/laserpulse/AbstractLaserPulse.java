@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Ruslan
+ * Copyright (BB) 2017 Ruslan
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -293,50 +293,31 @@ public abstract class AbstractLaserPulse implements Cloneable {
         //An array for polarization intensities
         double[] coef = new double[]{Math.sqrt((1 + p) / 2), Math.sqrt((1 - p) / 2)};
         //Arrays for real and imagenery parts of polarization vectors
-        Vector[] AA1 = new Vector[2];
-        Vector[] AA2 = new Vector[2];
-        double a1, a2, M, c1, c2, h;
+        Vector AA1, AA2;
+        Vector[] B;
+        double h;
         //Auxialiry parameters
         for (int s = 0; s < 2; s++) {
             h = Math.sqrt(ksi1 * ksi1 + ksi2 * ksi2 + t[s] * t[s]);
             if (p == 0) {
                 //If unpolarized then special treatment
-                AA1[s] = (new BasicVector(new double[]{1, 1 - 2 * s})).divide(Math.sqrt(2));
-                AA2[s] = new BasicVector(new double[]{0, 0});
+                AA1 = (new BasicVector(new double[]{1, 1 - 2 * s, 0})).divide(Math.sqrt(2));
+                AA2 = new BasicVector(new double[]{0, 0, 0});
             } else {
                 if (h == 0) {
-                    AA1[s] = new BasicVector(new double[]{1, 0});
-                    AA2[s] = new BasicVector(new double[]{0, 0});
+                    AA1 = new BasicVector(new double[]{1, 0, 0});
+                    AA2 = new BasicVector(new double[]{0, 0, 0});
                 } else {
-
-                    AA1[s] = new BasicVector(new double[]{ksi1, t[s]});
-                    AA2[s] = new BasicVector(new double[]{-ksi2, 0});
-                    AA1[s] = AA1[s].divide(h);
-                    AA2[s] = AA2[s].divide(h);
+                    AA1 = new BasicVector(new double[]{ksi1, t[s], 0});
+                    AA2 = new BasicVector(new double[]{-ksi2, 0, 0});
+                    AA1 = AA1.divide(h);
+                    AA2 = AA2.divide(h);
                 }
             }
-        }
-        //Orthogonal real and imagenery parts of polarization vectors
-        for (int s = 0; s < 2; s++) {
-            //If already orthogonal then just copy
-            if (AA1[s].innerProduct(AA2[s]) == 0) {
-                //If already orthogonal just copy
-                this.A1[s].set(0, AA1[s].get(0));
-                this.A1[s].set(1, AA1[s].get(1));
-                this.A2[s].set(0, AA2[s].get(0));
-                this.A2[s].set(1, AA2[s].get(1));
-            } else {
-                a1 = AA1[s].innerProduct(AA1[s]);
-                a2 = AA2[s].innerProduct(AA2[s]);
-                M = Math.abs(a1 - a2) / Math.sqrt(a1 * a1 + a2 * a2 - 2 * a1 * a2
-                        + 4 * Math.pow(AA1[s].innerProduct(AA2[s]), 2));
-                c1 = Math.sqrt((1 + M) / 2);
-                c2 = Math.sqrt((1 - M) / 2);
-                this.A1[s].set(0, c1 * AA1[s].get(0) - c2 * AA2[s].get(0));
-                this.A1[s].set(1, c1 * AA1[s].get(1) - c2 * AA2[s].get(1));
-                this.A2[s].set(0, c1 * AA2[s].get(0) + c2 * AA1[s].get(0));
-                this.A2[s].set(1, c1 * AA2[s].get(1) + c2 * AA1[s].get(1));
-            }
+            //Orthogonalizing real and imagenery parts of polarization vectors
+            B = getOrthogonalPolarizationVectors(AA1, AA2);
+            this.A1[s] = B[0];
+            this.A2[s] = B[1];
             //Normalizing to the intensity
             this.A1[s] = A1[s].multiply(coef[s]);
             this.A2[s] = A2[s].multiply(coef[s]);
@@ -436,16 +417,53 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Orthogonalization of real and imaginary parts of a complex vector
      *
-     * @param A1 real part
-     * @param A2 imaginary part
+     * @param AA1 real part
+     * @param AA2 imaginary part
      * @return array of orthogonal vectors
      */
-    public Vector[] getOrthogonalPolarizationVectors(Vector A1, Vector A2) {
-        if (A1.innerProduct(A2) == 0) {
+    public Vector[] getOrthogonalPolarizationVectors(Vector AA1, Vector AA2) {
+        Vector B1 = new BasicVector(new double[]{0, 0, 0});
+        Vector B2 = new BasicVector(new double[]{0, 0, 0});
+        double c1, c2, M, a1, a2;
+        if (AA1.innerProduct(AA2) == 0) {
             //If already orthogonal, return initial vectors
-            return new Vector[]{A1, A2};
+            return new Vector[]{AA1, AA2};
         } else {
-          return new Vector[]{A1, A2};  
+            //if not orthogonal, then making them orthogonal
+            a1 = AA1.innerProduct(AA1);
+            a2 = AA2.innerProduct(AA2);
+            M = Math.abs(a1 - a2) / Math.sqrt(a1 * a1 + a2 * a2 - 2 * a1 * a2
+                    + 4 * Math.pow(AA1.innerProduct(AA2), 2));
+            c1 = Math.sqrt((1 + M) / 2);
+            c2 = Math.sqrt((1 - M) / 2);
+            B1.set(0, c1 * AA1.get(0) - c2 * AA2.get(0));
+            B1.set(1, c1 * AA1.get(1) - c2 * AA2.get(1));
+            B2.set(0, c1 * AA2.get(0) + c2 * AA1.get(0));
+            B2.set(1, c1 * AA2.get(1) + c2 * AA1.get(1));
+            return new Vector[]{B1, B2};
         }
+    }
+
+    /**
+     * Returning orthogonalized real and imaginary parts of a linear combination
+     * of two independent polarization states
+     *
+     * @param phase mutual phase
+     * @return an array of polarization vectors
+     */
+    public Vector[] getPhaseWeightedPolarizationVectors(double phase) {
+        Vector B1 = new BasicVector(new double[]{0, 0, 0});
+        Vector B2 = new BasicVector(new double[]{0, 0, 0});
+        Vector[] BB;
+        double sn = Math.sin(phase / 2);
+        double cs = Math.cos(phase / 2);
+        //Calculating a sum of two independent polarizations with phase factors
+        for (int s = 0; s < 2; s++) {
+            sn *= 1 - 2 * s;
+            B1 = B1.add(A1[s].multiply(cs).subtract(A2[s].multiply(sn)));
+            B2 = B2.add(A1[s].multiply(sn).add(A2[s].multiply(cs)));
+        }
+        BB = getOrthogonalPolarizationVectors(B1, B2);
+        return new Vector[]{BB[0], BB[1]};
     }
 }
