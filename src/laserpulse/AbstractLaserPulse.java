@@ -454,7 +454,6 @@ public abstract class AbstractLaserPulse implements Cloneable {
     public Vector[] getPhaseWeightedPolarizationVectors(double phase) {
         Vector B1 = new BasicVector(new double[]{0, 0, 0});
         Vector B2 = new BasicVector(new double[]{0, 0, 0});
-        Vector[] BB;
         double sn = (Math.sin(phase) + Math.sin(2 * phase) + Math.sin(3 * phase) + Math.sin(4 * phase)) / 2;
         double cs = (Math.cos(phase) + Math.cos(2 * phase) + Math.cos(3 * phase) + Math.cos(4 * phase)) / 2;
         //Calculating a sum of two independent polarizations with phase factors
@@ -463,7 +462,6 @@ public abstract class AbstractLaserPulse implements Cloneable {
             B1 = B1.add(A1[s].multiply(cs).subtract(A2[s].multiply(sn)));
             B2 = B2.add(A1[s].multiply(sn).add(A2[s].multiply(cs)));
         }
-        BB = getOrthogonalPolarizationVectors(B1, B2);
-        return new Vector[]{BB[0], BB[1]};
+        return getOrthogonalPolarizationVectors(B1, B2);
     }
 }

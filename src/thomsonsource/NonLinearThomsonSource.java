@@ -216,7 +216,6 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
         coef3 = -getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
-        coef4 = coef3 / 2 / Math.PI;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
             result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]});
@@ -224,10 +223,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
         } else {
             //If not fully polarized then everaging over all possible surpepositions of two independant polarizations
-            result = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+            result = coef3 * (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
                     RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                    new UnivariatePolarizationIntegration(coef1, coef2, intratio, n), -Math.PI, Math.PI) * coef4;
+                    new UnivariatePolarizationIntegration(coef1, coef2, intratio, n), -Math.PI, Math.PI) / 2 / Math.PI;
         }
         return result;
     }
@@ -363,6 +362,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             this.intratio = intratio;
             this.n = n;
         }
+
         @Override
         public double value(double phase) {
             //Getting phase weighted superposition of polarizations
