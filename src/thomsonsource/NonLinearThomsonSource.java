@@ -214,7 +214,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
         coef2 = xenergy / lp.getPhotonEnergy() * intratio
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
-        coef3 = -getTotalFlux() * ordernumber * 3 / 2 / Math.PI
+        coef3 = -getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         coef4 = coef3 / 2 / Math.PI;
         //Checking if the radiation is fully poolarized and then just calculating intensity

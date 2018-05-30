@@ -2702,7 +2702,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     jPanel_xenergy.repaint();
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("####.####")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + (new DecimalFormat("####.####")).format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3505,7 +3505,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     gfForm.tsourceclone.calculateLinearTotalFlux();
                     setStatusBar((xp - offset) / step / (xsize - 1));
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getGeometricFactor()
-                            : gfForm.tsourceclone.getGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
+                            : gfForm.tsourceclone.getGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-15;
                 });
                 //Approximate geopmetric factor
                 func.add(xp -> {
@@ -3544,7 +3544,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                     gfForm.tsourceclone.calculateLinearTotalFlux();
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getApproxGeometricFactor()
-                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
+                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-15;
                 });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;

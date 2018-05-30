@@ -804,7 +804,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @return the totalFlux
      */
-    public double getTotalFlux() {
+    public double getLinearTotalFlux() {
         return totalFlux;
     }
 
