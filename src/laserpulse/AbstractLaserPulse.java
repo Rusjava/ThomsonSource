@@ -455,8 +455,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
         Vector B1 = new BasicVector(new double[]{0, 0, 0});
         Vector B2 = new BasicVector(new double[]{0, 0, 0});
         Vector[] BB;
-        double sn = (Math.sin(phase / 2) + Math.sin(phase)) / Math.sqrt(2);
-        double cs = Math.cos(phase / 2) + Math.sin(phase) / Math.sqrt(2);
+        double sn = (Math.sin(phase) + Math.sin(2 * phase) + Math.sin(3 * phase) + Math.sin(4 * phase)) / 2;
+        double cs = (Math.cos(phase) + Math.cos(2 * phase) + Math.cos(3 * phase) + Math.cos(4 * phase)) / 2;
         //Calculating a sum of two independent polarizations with phase factors
         for (int s = 0; s < 2; s++) {
             sn *= 1 - 2 * s;
