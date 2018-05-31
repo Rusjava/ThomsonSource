@@ -2314,7 +2314,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
         public double angle = 0, angleclone, energy = 44, energyclone;
-        public int ordernumber = 1, ordernumberclone = 1;
+        public int ordernumber = 1, ordernumberclone;
         private File file = null;
 
         /**
@@ -4380,12 +4380,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void OrderNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrderNumberActionPerformed
         // TODO add your handling code here:
-        brilFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 100, OrderNumber, "1", oldStrings));
+        brilFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 10, OrderNumber, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberActionPerformed
 
     private void OrderNumberFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_OrderNumberFocusLost
         // TODO add your handling code here:
-        brilFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 100, OrderNumber, "1", oldStrings));
+        brilFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 10, OrderNumber, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberFocusLost
 
     private void jMenuItemBrillianceNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceNonLinearActionPerformed
