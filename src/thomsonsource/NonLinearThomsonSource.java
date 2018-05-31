@@ -366,7 +366,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         @Override
         public double value(double phase) {
             //Getting phase weighted superposition of polarizations
-            Vector[] B = lp.getPhaseWeightedPolarizationVectors(phase);
+            Vector[] B = lp.getPhaseWeightedPolarizationVectors2(phase);
             //Returning the calculated intensity
             return directionFluxBasicAuxiliary(cf1, cf2, intratio, n, B);
         }

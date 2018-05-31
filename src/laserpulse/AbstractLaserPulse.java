@@ -451,16 +451,35 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @param phase mutual phase of two polarizations
      * @return an array of polarization vectors (real and imaginary parts)
      */
-    public Vector[] getPhaseWeightedPolarizationVectors(double phase) {
+    public Vector[] getPhaseWeightedPolarizationVectors1(double phase) {
         Vector B1 = new BasicVector(new double[]{0, 0, 0});
         Vector B2 = new BasicVector(new double[]{0, 0, 0});
-        double sn = (Math.sin(phase) + Math.sin(2 * phase) + Math.sin(3 * phase) + Math.sin(4 * phase)) / 2;
-        double cs = (Math.cos(phase) + Math.cos(2 * phase) + Math.cos(3 * phase) + Math.cos(4 * phase)) / 2;
+        double sn = Math.sin(phase);
+        double cs = Math.cos(phase);
         //Calculating a sum of two independent polarizations with phase factors
         for (int s = 0; s < 2; s++) {
             sn *= 1 - 2 * s;
             B1 = B1.add(A1[s].multiply(cs).subtract(A2[s].multiply(sn)));
             B2 = B2.add(A1[s].multiply(sn).add(A2[s].multiply(cs)));
+        }
+        return getOrthogonalPolarizationVectors(B1, B2);
+    }
+
+    /**
+     * Returning orthogonalized real and imaginary parts of a linear
+     * superposition of two independent polarization states
+     *
+     * @param phase mutual phase of two polarizations
+     * @return an array of polarization vectors (real and imaginary parts)
+     */
+    public Vector[] getPhaseWeightedPolarizationVectors2(double phase) {
+        Vector B1 = new BasicVector(new double[]{0, 0, 0});
+        Vector B2 = new BasicVector(new double[]{0, 0, 0});
+        double[] ff = new double[]{Math.cos(phase) * Math.sqrt(2), Math.sin(phase) * Math.sqrt(2)};
+        //Calculating a sum of two independent polarizations with phase factors
+        for (int s = 0; s < 2; s++) {
+            B1 = B1.add(A1[s].multiply(ff[s]));
+            B2 = B2.add(A2[s].multiply(ff[s]));
         }
         return getOrthogonalPolarizationVectors(B1, B2);
     }
