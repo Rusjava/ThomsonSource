@@ -405,8 +405,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuCalc = new javax.swing.JMenu();
         jMenuItemBrilliance = new javax.swing.JMenuItem();
         jMenuItemBrillianceNonLinear = new javax.swing.JMenuItem();
-        jMenuItemGeometricFactor = new javax.swing.JMenuItem();
         jMenuItemPolarization = new javax.swing.JMenuItem();
+        jMenuItemGeometricFactor = new javax.swing.JMenuItem();
         jMenuShadow = new javax.swing.JMenu();
         jMenuItemSource = new javax.swing.JMenuItem();
         jMenuItemSourceParam = new javax.swing.JMenuItem();
@@ -2061,7 +2061,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jMenuCalc.setText("Calculations");
 
-        jMenuItemBrilliance.setText("Brilliance...");
+        jMenuItemBrilliance.setText("Linear brilliance...");
         jMenuItemBrilliance.setToolTipText("");
         jMenuItemBrilliance.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2078,6 +2078,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuCalc.add(jMenuItemBrillianceNonLinear);
 
+        jMenuItemPolarization.setText("Linear polarization...");
+        jMenuItemPolarization.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemPolarizationActionPerformed(evt);
+            }
+        });
+        jMenuCalc.add(jMenuItemPolarization);
+
         jMenuItemGeometricFactor.setText("Full flux/Geometric factor...");
         jMenuItemGeometricFactor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2085,14 +2093,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuCalc.add(jMenuItemGeometricFactor);
-
-        jMenuItemPolarization.setText("Polarization...");
-        jMenuItemPolarization.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemPolarizationActionPerformed(evt);
-            }
-        });
-        jMenuCalc.add(jMenuItemPolarization);
 
         jMenuBarMain.add(jMenuCalc);
 
@@ -2314,7 +2314,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
         public double angle = 0, angleclone, energy = 44, energyclone;
-        public int ordernumber = 1, ordernumberclone;
+        public int ordernumber = 1;
         private File file = null;
 
         /**
@@ -2343,7 +2343,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             maxValueClone = maxValue;
             angleclone = angle;
             energyclone = energy;
-            ordernumberclone = ordernumber;
             selectedItemIndexClone = selectedItemIndex;
         }
 
@@ -4122,7 +4121,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceCalcStartNonLinear.setText("Terminate");
         BrillianceCalcSaveNonLinear.setEnabled(false);
         brilFormNonLinear.initialize(tsource);
-        ((NonLinearThomsonSource) brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumberclone);
+        ((NonLinearThomsonSource) brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumber);
 
         /**
          * Calculating data array. Using SwingWorker class

@@ -187,7 +187,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq()
                 / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
-    
+
     /**
      * A method calculating the geometric factor
      *
@@ -543,7 +543,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
         try {
             u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxNoSpread(n, v, e);
+            double tmp = directionFrequencyFluxNoSpread(n, v, e);
+            return u * tmp;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }

@@ -1210,7 +1210,7 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemBrilliance">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Brilliance..."/>
+                <Property name="text" type="java.lang.String" value="Linear brilliance..."/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
@@ -1225,20 +1225,20 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemBrillianceNonLinearActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemPolarization">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Linear polarization..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemPolarizationActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemGeometricFactor">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Full flux/Geometric factor..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemGeometricFactorActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemPolarization">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Polarization..."/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemPolarizationActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

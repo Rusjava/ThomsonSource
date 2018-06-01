@@ -62,42 +62,42 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      *
      * @param l - laser pulse object
      * @param b - electron bunch object
-     * @param ordernumber - the nonlinear order number
+     * @param ornum - the nonlinear order number
      */
-    public NonLinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b, int ordernumber) {
+    public NonLinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b, int ornum) {
         super(l, b);
-        this.ordernumber = ordernumber;
+        this.ordernumber = ornum;
         this.funcarray = new ArrayList<>();
         //Inoitializeing the array of functions used to calculate non-linear amplitudes
         funcarray.add(arg -> {
-            return 1 + Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         funcarray.add(arg -> {
-            return 1 + Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double cs = Math.cos(arg[0]);
-            return 1 + cs * Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         funcarray.add(arg -> {
             double cs = Math.cos(arg[0]);
-            return 1 + cs * Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + cs * Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
+        });
+        funcarray.add(arg -> {
+            double cs = Math.cos(arg[0]);
+            return 1 + cs * Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
         });
         funcarray.add(arg -> {
             double sn = Math.sin(arg[0]);
-            return 1 + sn * Math.cos(this.ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + sn * Math.cos(ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         funcarray.add(arg -> {
             double sn = Math.sin(arg[0]);
-            return 1 + sn * Math.sin(this.ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + sn * Math.sin(ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         funcarray.add(arg -> {
             double tau2 = 2 * arg[0];
-            return 1 + Math.cos(tau2) * Math.cos(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + Math.cos(tau2) * Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         funcarray.add(arg -> {
             double tau2 = 2 * arg[0];
-            return 1 + Math.cos(tau2) * Math.sin(this.ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+            return 1 + Math.cos(tau2) * Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
         });
         setsIntensity();
         calculateLinearTotalFlux();
@@ -108,12 +108,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
         double avint = lp.getAverageIntensity();
         double gamma = calculateGamma(n, v, e, avint);
+        double der = calculateGammaDerivative(n, v, e, avint);
         if (gamma == 0) {
             //returning zero if gamma is zero
             return 0;
         } else {
             return directionFluxBasic(n, v, e, gamma, avint)
-                    * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, avint);
+                    * eb.gammaDistribution(gamma) / der;
         }
     }
 
