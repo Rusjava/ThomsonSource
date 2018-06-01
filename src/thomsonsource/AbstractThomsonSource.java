@@ -543,8 +543,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         try {
             u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            double tmp = directionFrequencyFluxNoSpread(n, v, e);
-            return u * tmp;
+            return u * directionFrequencyFluxNoSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
