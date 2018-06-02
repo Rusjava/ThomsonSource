@@ -3221,60 +3221,40 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemLoadParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadParamActionPerformed
         // Loading LEXG parameters from a file
         JFileChooser fo = new JFileChooser();
+        Properties prop;
         fo.setDialogTitle("Choose file to load Thompson source parameters from");
         int ans = fo.showOpenDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
-            Properties prop = new Properties();
-            try (FileReader fr = new FileReader(pFile)) {
-                prop.load(fr);
+            try {
+                prop = tsource.loadProperties(pFile);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
                         JOptionPane.ERROR_MESSAGE);
-            }
-            try {
-                ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
-                energyvalue.setText(prop.getProperty(paramNames[0], "0"));
-                ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
-                chargevalue.setText(prop.getProperty(paramNames[1], "0"));
-                ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
-                spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
-                ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
-                elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
-                ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
-                eemitxvalue.setText(prop.getProperty(paramNames[4], "0"));
-                ebunch.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
-                eemityvalue.setText(prop.getProperty(paramNames[5], "0"));
-                ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
-                ebetaxvalue.setText(prop.getProperty(paramNames[6], "0"));
-                ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
-                ebetayvalue.setText(prop.getProperty(paramNames[7], "0"));
-                lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * GaussianElectronBunch.E);
-                phenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
-                lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
-                pulseenergyvalue.setText(prop.getProperty(paramNames[9], "0"));
-                lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
-                pulselengthvalue.setText(prop.getProperty(paramNames[10], "0"));
-                lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
-                pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
-                lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
-                pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
-                lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
-                pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
-                ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
-                eshiftxvalue.setText(prop.getProperty(paramNames[14], "0"));
-                ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
-                eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
-                ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
-                eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
-                lpulse.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")));
-                lpulse.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")));
-                lpulse.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")));
-                pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
+                return;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
                         JOptionPane.ERROR_MESSAGE);
+                return;
             }
+            energyvalue.setText(prop.getProperty(paramNames[0], "0"));
+            chargevalue.setText(prop.getProperty(paramNames[1], "0"));
+            spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
+            elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
+            eemitxvalue.setText(prop.getProperty(paramNames[4], "0"));
+            eemityvalue.setText(prop.getProperty(paramNames[5], "0"));
+            ebetaxvalue.setText(prop.getProperty(paramNames[6], "0"));
+            ebetayvalue.setText(prop.getProperty(paramNames[7], "0"));
+            phenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
+            pulseenergyvalue.setText(prop.getProperty(paramNames[9], "0"));
+            pulselengthvalue.setText(prop.getProperty(paramNames[10], "0"));
+            pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
+            pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
+            pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
+            eshiftxvalue.setText(prop.getProperty(paramNames[14], "0"));
+            eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
+            eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
+            pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed
 
