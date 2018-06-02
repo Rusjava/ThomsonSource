@@ -219,7 +219,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
-            "Y-shift_mm", "Z-shift_mm", "Laser-electron_angle_mrad"};
+            "Y-shift_mm", "Z-shift_mm", "Laser-electron_direction_x",
+            "Laser-electron_direction_y", "Laser-electron_direction_z"};
         this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
@@ -2362,17 +2363,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         return;
                     }
                 }
-                Formatter fm;
-                try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
-                    for (int i = 0; i < chartParam.getSize(); i++) {
-                        fm = new Formatter();
-                        fm.format("%f", i * chartParam.getStep() + chartParam.getOffset());
-                        for (double[] data : chartParam.getData()) {
-                            fm.format(" %f", data[i]);
-                        }
-                        pw.println(fm);
-                    }
-                    pw.close();
+                try {
+                    chartParam.save(file);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                             JOptionPane.ERROR_MESSAGE);
@@ -3216,28 +3208,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     return;
                 }
             }
-            //Creating Properties object to store program parameters
-            Properties prop = new Properties();
-            try (FileWriter fw = new FileWriter(pFile, false)) {
-                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.512));
-                prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * GaussianElectronBunch.E * 1e9));
-                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelGamma()));
-                prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
-                prop.setProperty(paramNames[4], Double.toString(ebunch.getEpsx() * 1e6));
-                prop.setProperty(paramNames[5], Double.toString(ebunch.getEpsy() * 1e6));
-                prop.setProperty(paramNames[6], Double.toString(ebunch.getBetax() * 1e3));
-                prop.setProperty(paramNames[7], Double.toString(ebunch.getBetay() * 1e3));
-                prop.setProperty(paramNames[8], Double.toString(lpulse.getPhotonEnergy() / GaussianElectronBunch.E));
-                prop.setProperty(paramNames[9], Double.toString(lpulse.getPulseEnergy() * 1e3));
-                prop.setProperty(paramNames[10], Double.toString(lpulse.getLength() * 2 / 3e-4));
-                prop.setProperty(paramNames[11], Double.toString(lpulse.getRlength() * 1e3));
-                prop.setProperty(paramNames[12], Double.toString(lpulse.getFq() * 1e-6));
-                prop.setProperty(paramNames[13], Double.toString(lpulse.getDelay() / 3e-4));
-                prop.setProperty(paramNames[14], Double.toString(ebunch.getShift().get(0) * 1e3));
-                prop.setProperty(paramNames[15], Double.toString(ebunch.getShift().get(1) * 1e3));
-                prop.setProperty(paramNames[16], Double.toString(ebunch.getShift().get(2) * 1e3));
-                prop.setProperty(paramNames[17], pulseanglevalue.getText());
-                prop.store(fw, "Thomson source parameters");
+            //Saving Thomson source parameters into the file
+            try {
+                tsource.savePropperties(pFile);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -3294,9 +3267,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
                 ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
                 eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
-                lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
-                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
-                pulseanglevalue.setText(prop.getProperty(paramNames[17], "0"));
+                lpulse.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")));
+                lpulse.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")));
+                lpulse.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")));
+                pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
                         JOptionPane.ERROR_MESSAGE);

@@ -55,7 +55,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     /**
      * The list of functional objects for numerical integration
      */
-    private final List<Function<Double[], Double>> funcarray;
+    private List<Function<Double[], Double>> funcarray;
 
     /**
      * The saturating laser intensity
@@ -67,41 +67,17 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public NonLinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b, int ornum) {
         super(l, b);
         this.ordernumber = ornum;
-        this.funcarray = new ArrayList<>();
-        //Inoitializeing the array of functions used to calculate non-linear amplitudes
-        funcarray.add(arg -> {
-            return 1 + Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            return 1 + Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double cs = Math.cos(arg[0]);
-            return 1 + cs * Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double cs = Math.cos(arg[0]);
-            return 1 + cs * Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double sn = Math.sin(arg[0]);
-            return 1 + sn * Math.cos(ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double sn = Math.sin(arg[0]);
-            return 1 + sn * Math.sin(ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double tau2 = 2 * arg[0];
-            return 1 + Math.cos(tau2) * Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
-        funcarray.add(arg -> {
-            double tau2 = 2 * arg[0];
-            return 1 + Math.cos(tau2) * Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
-        });
+        this.funcarray = generateFunctionList();
         setsIntensity();
         calculateLinearTotalFlux();
         calculateGeometricFactor();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object ts = super.clone();
+        ((NonLinearThomsonSource) ts).funcarray = ((NonLinearThomsonSource) ts).generateFunctionList();
+        return ts;
     }
 
     @Override
@@ -371,5 +347,47 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Returning the calculated intensity
             return directionFluxBasicAuxiliary(cf1, cf2, intratio, n, B);
         }
+    }
+
+    /**
+     * Generates a list of functions for parameters f_i
+     *
+     * @return
+     */
+    private List<Function<Double[], Double>> generateFunctionList() {
+        List<Function<Double[], Double>> fa = new ArrayList<>();
+        //Inoitializeing the array of functions used to calculate non-linear amplitudes
+        fa.add(arg -> {
+            return 1 + Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            return 1 + Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            double cs = Math.cos(arg[0]);
+            return 1 + cs * Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            double cs = Math.cos(arg[0]);
+            return 1 + cs * Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * cs + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            double sn = Math.sin(arg[0]);
+            return 1 + sn * Math.cos(ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            double sn = Math.sin(arg[0]);
+            return 1 + sn * Math.sin(ordernumber * arg[0] + arg[1] * sn - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            double tau2 = 2 * arg[0];
+            return 1 + Math.cos(tau2) * Math.cos(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        });
+        fa.add(arg -> {
+            double tau2 = 2 * arg[0];
+            return 1 + Math.cos(tau2) * Math.sin(ordernumber * arg[0] + arg[1] * Math.sin(arg[0]) - arg[2] * Math.cos(arg[0]) + arg[3] * Math.sin(2 * arg[0]));
+        });
+
+        return fa;
     }
 }

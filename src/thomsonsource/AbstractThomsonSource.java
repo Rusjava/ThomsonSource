@@ -18,11 +18,17 @@ package thomsonsource;
 
 import electronbunch.AbstractElectronBunch;
 import electronbunch.GaussianElectronBunch;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
+import javax.swing.JOptionPane;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.BaseAbstractUnivariateIntegrator;
@@ -57,8 +63,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.counter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
         this.ksi = new double[]{0, 0, -1};
+        this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
+            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
+            "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
+            "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
+            "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
+            "Y-shift_mm", "Z-shift_mm", "Laser-electron_direction_x",
+            "Laser-electron_direction_y", "Laser-electron_direction_z"};
     }
-
+    /**
+     * Names of Thomson source parameters
+     */
+    private final String [] paramNames;
     /**
      * Multiple for the range
      */
@@ -921,6 +937,83 @@ public abstract class AbstractThomsonSource implements Cloneable {
             pol[3] = e2.getArgument();
         }
         return pol;
+    }
+    /**
+     * Save Thomson source properties into a file
+     * 
+     * @param file file to save parameters to 
+     * @throws java.io.IOException 
+     */
+    public void savePropperties(File file) throws IOException {
+        //Creating Properties object to store program parameters
+            Properties prop = new Properties();
+            try (FileWriter fw = new FileWriter(file, false)) {
+                prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.512));
+                prop.setProperty(paramNames[1], Double.toString(eb.getNumber() * GaussianElectronBunch.E * 1e9));
+                prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma()));
+                prop.setProperty(paramNames[3], Double.toString(eb.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[4], Double.toString(eb.getEpsx() * 1e6));
+                prop.setProperty(paramNames[5], Double.toString(eb.getEpsy() * 1e6));
+                prop.setProperty(paramNames[6], Double.toString(eb.getBetax() * 1e3));
+                prop.setProperty(paramNames[7], Double.toString(eb.getBetay() * 1e3));
+                prop.setProperty(paramNames[8], Double.toString(lp.getPhotonEnergy() / GaussianElectronBunch.E));
+                prop.setProperty(paramNames[9], Double.toString(lp.getPulseEnergy() * 1e3));
+                prop.setProperty(paramNames[10], Double.toString(lp.getLength() * 2 / 3e-4));
+                prop.setProperty(paramNames[11], Double.toString(lp.getRlength() * 1e3));
+                prop.setProperty(paramNames[12], Double.toString(lp.getFq() * 1e-6));
+                prop.setProperty(paramNames[13], Double.toString(lp.getDelay() / 3e-4));
+                prop.setProperty(paramNames[14], Double.toString(eb.getShift().get(0) * 1e3));
+                prop.setProperty(paramNames[15], Double.toString(eb.getShift().get(1) * 1e3));
+                prop.setProperty(paramNames[16], Double.toString(eb.getShift().get(2) * 1e3));
+                prop.setProperty(paramNames[17], Double.toString(lp.getDirection().get(0)));
+                prop.setProperty(paramNames[18], Double.toString(lp.getDirection().get(1)));
+                prop.setProperty(paramNames[19], Double.toString(lp.getDirection().get(2)));
+                prop.store(fw, "Thomson source parameters");
+            } catch (IOException e) {
+                throw e;
+            }
+    }
+    
+    /**
+     * Reads the file and loads the parameters into object field
+     * 
+     * @param file file date to be read from
+     * @return
+     * @throws IOException
+     * @throws NumberFormatException
+     */
+    public Properties loadProperties(File file) throws IOException, NumberFormatException {
+        Properties prop = new Properties();
+        try (FileReader fr = new FileReader(file)) {
+                prop.load(fr);
+            } catch (IOException e) {
+                throw e;
+            }
+            try {
+                eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+                eb.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
+                eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
+                eb.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
+                eb.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
+                eb.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
+                eb.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
+                eb.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
+                lp.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * GaussianElectronBunch.E);
+                lp.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
+                lp.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
+                lp.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
+                lp.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
+                lp.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
+                eb.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+                eb.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+                eb.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
+                lp.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")));
+                lp.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")));
+                lp.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")));
+            } catch (NumberFormatException e) {
+                throw e;
+            }
+            return prop;
     }
 
     /**

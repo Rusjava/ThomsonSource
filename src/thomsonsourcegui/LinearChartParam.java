@@ -18,9 +18,15 @@ package thomsonsourcegui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Formatter;
 import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
 import java.util.List;
+import javax.swing.JOptionPane;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -208,8 +214,31 @@ public class LinearChartParam {
     }
 
     /**
+     * Saves results into a text file
+     *
+     * @param file file to save data to
+     * @throws java.io.IOException
+     */
+    public void save(File file) throws IOException {
+        Formatter fm;
+        try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+            for (int i = 0; i < getSize(); i++) {
+                fm = new Formatter();
+                fm.format("%f", i * getStep() + getOffset());
+                for (double[] d : getData()) {
+                    fm.format(" %f", d[i]);
+                }
+                pw.println(fm);
+            }
+            pw.close();
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
      * Creating a line chart based on a dataset
-     * 
+     *
      * @param dataset the value of dataset
      * @param xlabel the value of xlabel
      * @param ylabel the value of ylabel
@@ -251,10 +280,11 @@ public class LinearChartParam {
     }
 
     /**
-     * Creating a dataset based on the data specified in this LinearChartParam type object
-     * 
+     * Creating a dataset based on the data specified in this LinearChartParam
+     * type object
+     *
      * @param keys the value of keys
-     * @return 
+     * @return
      */
     public XYDataset createLineDataset(String[] keys) {
         return new XYDataset() {
