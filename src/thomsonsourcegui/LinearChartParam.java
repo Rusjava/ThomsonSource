@@ -26,7 +26,6 @@ import java.util.Formatter;
 import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
 import java.util.List;
-import javax.swing.JOptionPane;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
