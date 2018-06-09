@@ -24,11 +24,7 @@ import java.awt.event.ItemEvent;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import java.util.Formatter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -213,14 +209,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
-
-        this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
-            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
-            "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
-            "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
-            "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
-            "Y-shift_mm", "Z-shift_mm", "Laser-electron_direction_x",
-            "Laser-electron_direction_y", "Laser-electron_direction_z"};
         this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
@@ -2515,10 +2503,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
     private JFreeChart xenergycrosschart = null;
-
     private final TitledBorder xrayenergyborder;
-    private final String[] paramNames;
-
     private final CalcBoxParam brilForm, brilFormNonLinear, gfForm, polForm;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
     private boolean working = false, rayWorking = false;
@@ -3237,23 +3222,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            energyvalue.setText(prop.getProperty(paramNames[0], "0"));
-            chargevalue.setText(prop.getProperty(paramNames[1], "0"));
-            spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
-            elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
-            eemitxvalue.setText(prop.getProperty(paramNames[4], "0"));
-            eemityvalue.setText(prop.getProperty(paramNames[5], "0"));
-            ebetaxvalue.setText(prop.getProperty(paramNames[6], "0"));
-            ebetayvalue.setText(prop.getProperty(paramNames[7], "0"));
-            phenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
-            pulseenergyvalue.setText(prop.getProperty(paramNames[9], "0"));
-            pulselengthvalue.setText(prop.getProperty(paramNames[10], "0"));
-            pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
-            pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
-            pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
-            eshiftxvalue.setText(prop.getProperty(paramNames[14], "0"));
-            eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
-            eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
+            energyvalue.setText(prop.getProperty(tsource.getParamNames()[0], "0"));
+            chargevalue.setText(prop.getProperty(tsource.getParamNames()[1], "0"));
+            spreadvalue.setText(prop.getProperty(tsource.getParamNames()[2], "0"));
+            elengthvalue.setText(prop.getProperty(tsource.getParamNames()[3], "0"));
+            eemitxvalue.setText(prop.getProperty(tsource.getParamNames()[4], "0"));
+            eemityvalue.setText(prop.getProperty(tsource.getParamNames()[5], "0"));
+            ebetaxvalue.setText(prop.getProperty(tsource.getParamNames()[6], "0"));
+            ebetayvalue.setText(prop.getProperty(tsource.getParamNames()[7], "0"));
+            phenergyvalue.setText(prop.getProperty(tsource.getParamNames()[8], "0"));
+            pulseenergyvalue.setText(prop.getProperty(tsource.getParamNames()[9], "0"));
+            pulselengthvalue.setText(prop.getProperty(tsource.getParamNames()[10], "0"));
+            pulserelvalue.setText(prop.getProperty(tsource.getParamNames()[11], "0"));
+            pulsefreqvalue.setText(prop.getProperty(tsource.getParamNames()[12], "0"));
+            pulsedelayvalue.setText(prop.getProperty(tsource.getParamNames()[13], "0"));
+            eshiftxvalue.setText(prop.getProperty(tsource.getParamNames()[14], "0"));
+            eshiftyvalue.setText(prop.getProperty(tsource.getParamNames()[15], "0"));
+            eshiftzvalue.setText(prop.getProperty(tsource.getParamNames()[16], "0"));
             pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed

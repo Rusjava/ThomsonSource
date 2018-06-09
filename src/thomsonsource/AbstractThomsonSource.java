@@ -1017,6 +1017,13 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
+     * @return the paramNames
+     */
+    public String[] getParamNames() {
+        return paramNames;
+    }
+
+    /**
      * An auxiliary class for Romberg integrator for flux calculations
      */
     private class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
