@@ -28,7 +28,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import laserpulse.AbstractLaserPulse;
+import laserpulse.GaussianLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.BaseAbstractUnivariateIntegrator;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
@@ -39,6 +42,7 @@ import org.la4j.Vector;
 import org.la4j.Vectors;
 import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.dense.BasicVector;
+import shadowfileconverter.ShadowFiles;
 
 /**
  * An abstract class for Thomson source. Methods that calculated scattering by
@@ -60,6 +64,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.lp = l;
         this.eb = b;
         this.counter = new AtomicInteger();
+        this.rayCounter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
         this.ksi = new double[]{0, 0, -1};
         this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
@@ -73,7 +78,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Names of Thomson source parameters
      */
-    private final String [] paramNames;
+    private final String[] paramNames;
     /**
      * Multiple for the range
      */
@@ -148,6 +153,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * Counter of ray iterations
      */
     protected AtomicInteger counter;
+    /**
+     * Counter of rays
+     */
+    private AtomicInteger rayCounter;
 
     /**
      * A pointer for laser pulse
@@ -170,6 +179,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         ((AbstractThomsonSource) tm).eb = (AbstractElectronBunch) this.eb.clone();
         ((AbstractThomsonSource) tm).lp = (AbstractLaserPulse) this.lp.clone();
         ((AbstractThomsonSource) tm).counter = new AtomicInteger();
+        ((AbstractThomsonSource) tm).rayCounter = new AtomicInteger();
         ((AbstractThomsonSource) tm).partialFlux = new DoubleAdder();
         if (ksi != null) {
             ((AbstractThomsonSource) tm).ksi = (double[]) ksi.clone();
@@ -730,7 +740,59 @@ public abstract class AbstractThomsonSource implements Cloneable {
         ray[13] = pol[2];
         ray[14] = pol[3];
         partialFlux.add(sum * factor);
+        //Incrementing ray counter
+        rayCounter.incrementAndGet();
         return ray;
+    }
+
+    /**
+     * Writing a specific number of rays into a file
+     *
+     * @param shadowFile
+     * @param numberOfRays
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public boolean writeRays(ShadowFiles shadowFile, int numberOfRays) throws InterruptedException {
+        // Creating a pool of threads, a lock, an atomic interger and a latch
+        ExecutorService excs = Executors.newFixedThreadPool(getThreadNumber());
+        CountDownLatch lt = new CountDownLatch(getThreadNumber());
+        int rayNumber = getThreadNumber() * (numberOfRays / getThreadNumber());
+
+        for (int th = 0; th < getThreadNumber(); th++) {
+            if (Thread.currentThread().isInterrupted()) {
+                excs.shutdownNow();
+                throw new InterruptedException();
+            }
+            //Creating multiple threads to accelerate calculations
+            excs.execute(() -> {
+                for (int i = 0; i < rayNumber / getThreadNumber(); i++) {
+                    try {
+                        //Getting a ray
+                        double[] ray = getRay();
+                        //Units conversions
+                        ray[0] *= 1e2;
+                        ray[1] *= 1e2;
+                        ray[2] *= 1e2;
+                        ray[10] *= 1e-2 / GaussianLaserPulse.HC;
+                        ray[11] = i;
+                        shadowFile.write(ray);
+                    } catch (IOException | InterruptedException ex) {
+                        break;
+                    }
+                }
+                lt.countDown();
+            });
+        }
+        //If interrupted shutdown threads and rethrow the exception
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            excs.shutdownNow();
+            throw ex;
+        }
+
+        return true;
     }
 
     /**
@@ -937,45 +999,46 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         return pol;
     }
+
     /**
      * Save Thomson source properties into a file
-     * 
-     * @param file file to save parameters to 
-     * @throws java.io.IOException 
+     *
+     * @param file file to save parameters to
+     * @throws java.io.IOException
      */
     public void savePropperties(File file) throws IOException {
         //Creating Properties object to store program parameters
-            Properties prop = new Properties();
-            try (FileWriter fw = new FileWriter(file, false)) {
-                prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.512));
-                prop.setProperty(paramNames[1], Double.toString(eb.getNumber() * GaussianElectronBunch.E * 1e9));
-                prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma()));
-                prop.setProperty(paramNames[3], Double.toString(eb.getLength() * 2 / 3e-4));
-                prop.setProperty(paramNames[4], Double.toString(eb.getEpsx() * 1e6));
-                prop.setProperty(paramNames[5], Double.toString(eb.getEpsy() * 1e6));
-                prop.setProperty(paramNames[6], Double.toString(eb.getBetax() * 1e3));
-                prop.setProperty(paramNames[7], Double.toString(eb.getBetay() * 1e3));
-                prop.setProperty(paramNames[8], Double.toString(lp.getPhotonEnergy() / GaussianElectronBunch.E));
-                prop.setProperty(paramNames[9], Double.toString(lp.getPulseEnergy() * 1e3));
-                prop.setProperty(paramNames[10], Double.toString(lp.getLength() * 2 / 3e-4));
-                prop.setProperty(paramNames[11], Double.toString(lp.getRlength() * 1e3));
-                prop.setProperty(paramNames[12], Double.toString(lp.getFq() * 1e-6));
-                prop.setProperty(paramNames[13], Double.toString(lp.getDelay() / 3e-4));
-                prop.setProperty(paramNames[14], Double.toString(eb.getShift().get(0) * 1e3));
-                prop.setProperty(paramNames[15], Double.toString(eb.getShift().get(1) * 1e3));
-                prop.setProperty(paramNames[16], Double.toString(eb.getShift().get(2) * 1e3));
-                prop.setProperty(paramNames[17], Double.toString(lp.getDirection().get(0)));
-                prop.setProperty(paramNames[18], Double.toString(lp.getDirection().get(1)));
-                prop.setProperty(paramNames[19], Double.toString(lp.getDirection().get(2)));
-                prop.store(fw, "Thomson source parameters");
-            } catch (IOException e) {
-                throw e;
-            }
+        Properties prop = new Properties();
+        try (FileWriter fw = new FileWriter(file, false)) {
+            prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.512));
+            prop.setProperty(paramNames[1], Double.toString(eb.getNumber() * GaussianElectronBunch.E * 1e9));
+            prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma()));
+            prop.setProperty(paramNames[3], Double.toString(eb.getLength() * 2 / 3e-4));
+            prop.setProperty(paramNames[4], Double.toString(eb.getEpsx() * 1e6));
+            prop.setProperty(paramNames[5], Double.toString(eb.getEpsy() * 1e6));
+            prop.setProperty(paramNames[6], Double.toString(eb.getBetax() * 1e3));
+            prop.setProperty(paramNames[7], Double.toString(eb.getBetay() * 1e3));
+            prop.setProperty(paramNames[8], Double.toString(lp.getPhotonEnergy() / GaussianElectronBunch.E));
+            prop.setProperty(paramNames[9], Double.toString(lp.getPulseEnergy() * 1e3));
+            prop.setProperty(paramNames[10], Double.toString(lp.getLength() * 2 / 3e-4));
+            prop.setProperty(paramNames[11], Double.toString(lp.getRlength() * 1e3));
+            prop.setProperty(paramNames[12], Double.toString(lp.getFq() * 1e-6));
+            prop.setProperty(paramNames[13], Double.toString(lp.getDelay() / 3e-4));
+            prop.setProperty(paramNames[14], Double.toString(eb.getShift().get(0) * 1e3));
+            prop.setProperty(paramNames[15], Double.toString(eb.getShift().get(1) * 1e3));
+            prop.setProperty(paramNames[16], Double.toString(eb.getShift().get(2) * 1e3));
+            prop.setProperty(paramNames[17], Double.toString(lp.getDirection().get(0)));
+            prop.setProperty(paramNames[18], Double.toString(lp.getDirection().get(1)));
+            prop.setProperty(paramNames[19], Double.toString(lp.getDirection().get(2)));
+            prop.store(fw, "Thomson source parameters");
+        } catch (IOException e) {
+            throw e;
+        }
     }
-    
+
     /**
      * Reads the file and loads the parameters into object field
-     * 
+     *
      * @param file file date to be read from
      * @return
      * @throws IOException
@@ -984,35 +1047,35 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public Properties loadProperties(File file) throws IOException, NumberFormatException {
         Properties prop = new Properties();
         try (FileReader fr = new FileReader(file)) {
-                prop.load(fr);
-            } catch (IOException e) {
-                throw e;
-            }
-            try {
-                eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
-                eb.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
-                eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
-                eb.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
-                eb.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
-                eb.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
-                eb.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
-                eb.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
-                lp.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * GaussianElectronBunch.E);
-                lp.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
-                lp.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
-                lp.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
-                lp.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
-                lp.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
-                eb.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
-                eb.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
-                eb.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
-                lp.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")));
-                lp.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")));
-                lp.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")));
-            } catch (NumberFormatException e) {
-                throw e;
-            }
-            return prop;
+            prop.load(fr);
+        } catch (IOException e) {
+            throw e;
+        }
+        try {
+            eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+            eb.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
+            eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
+            eb.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
+            eb.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
+            eb.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
+            eb.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
+            eb.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
+            lp.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * GaussianElectronBunch.E);
+            lp.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
+            lp.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
+            lp.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
+            lp.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
+            lp.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
+            eb.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+            eb.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+            eb.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
+            lp.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")));
+            lp.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")));
+            lp.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")));
+        } catch (NumberFormatException e) {
+            throw e;
+        }
+        return prop;
     }
 
     /**
@@ -1020,6 +1083,13 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     public String[] getParamNames() {
         return paramNames;
+    }
+
+    /**
+     * @return the rayCounter
+     */
+    public AtomicInteger getRayCounter() {
+        return rayCounter;
     }
 
     /**

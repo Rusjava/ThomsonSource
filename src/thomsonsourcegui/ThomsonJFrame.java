@@ -3253,7 +3253,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
         try {
-            tsourceRayClone = (AbstractThomsonSource) tsourcelinear.clone();
+            tsourceRayClone = (AbstractThomsonSource) tsource.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
@@ -3264,11 +3264,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 // Creating a pool of threads, a lock, an atomic interger and a latch
-                ExecutorService excs = Executors.newFixedThreadPool(tsourcelinear.getThreadNumber());
-                CountDownLatch lt = new CountDownLatch(tsourcelinear.getThreadNumber());
+                ExecutorService excs = Executors.newFixedThreadPool(tsourceRayClone.getThreadNumber());
+                CountDownLatch lt = new CountDownLatch(tsourceRayClone.getThreadNumber());
                 AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
-                try (ShadowFiles shadowFile = new ShadowFiles(true, true, LinearThomsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
+                try (ShadowFiles shadowFile = new ShadowFiles(true, true, AbstractThomsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
                     for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
                         if (isCancelled()) {
