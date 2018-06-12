@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import laserpulse.AbstractLaserPulse;
@@ -750,19 +751,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param shadowFile
      * @param numberOfRays
+     * @param con
      * @return
      * @throws java.lang.InterruptedException
      */
-    public boolean writeRays(ShadowFiles shadowFile, int numberOfRays) throws InterruptedException {
+    public boolean writeRays(ShadowFiles shadowFile, int numberOfRays, Consumer<Integer> con) throws InterruptedException {
         // Creating a pool of threads, a lock, an atomic interger and a latch
         ExecutorService excs = Executors.newFixedThreadPool(getThreadNumber());
         CountDownLatch lt = new CountDownLatch(getThreadNumber());
         int rayNumber = getThreadNumber() * (numberOfRays / getThreadNumber());
-
+        //Creating the number of tasks equal to the number of threads
         for (int th = 0; th < getThreadNumber(); th++) {
             if (Thread.currentThread().isInterrupted()) {
                 excs.shutdownNow();
-                throw new InterruptedException();
+                throw new InterruptedException("wrireRays method interrupted!");
             }
             //Creating multiple threads to accelerate calculations
             excs.execute(() -> {
@@ -777,6 +779,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
                         ray[10] *= 1e-2 / GaussianLaserPulse.HC;
                         ray[11] = i;
                         shadowFile.write(ray);
+                        con.accept((int) 100 * (rayCounter.incrementAndGet() + 1) / rayNumber);
                     } catch (IOException | InterruptedException ex) {
                         break;
                     }
@@ -791,7 +794,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             excs.shutdownNow();
             throw ex;
         }
-
+        excs.shutdownNow();
         return true;
     }
 
@@ -934,7 +937,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return the partialFlux
      */
     public double getPartialFlux() {
-        return partialFlux.sum();
+        return partialFlux.sum() / (counter.get() == 0 ? 1 : counter.get());
     }
 
     /**

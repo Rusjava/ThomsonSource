@@ -40,10 +40,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -56,7 +53,6 @@ import org.la4j.vector.dense.*;
 import static TextUtilities.MyTextUtilities.*;
 import electronbunch.AbstractElectronBunch;
 import java.net.URL;
-import java.util.function.Function;
 import laserpulse.AbstractLaserPulse;
 import shadowfileconverter.ShadowFiles;
 import thomsonsource.AbstractThomsonSource;
@@ -3253,7 +3249,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
         try {
-            tsourceRayClone = (AbstractThomsonSource) tsource.clone();
+            tsourceRayClone = (AbstractThomsonSource) tsourcelinear.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
@@ -3263,53 +3259,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                // Creating a pool of threads, a lock, an atomic interger and a latch
-                ExecutorService excs = Executors.newFixedThreadPool(tsourceRayClone.getThreadNumber());
-                CountDownLatch lt = new CountDownLatch(tsourceRayClone.getThreadNumber());
-                AtomicInteger counter = new AtomicInteger();
                 // Open a file for rays
                 try (ShadowFiles shadowFile = new ShadowFiles(true, true, AbstractThomsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
-                    for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
-                        if (isCancelled()) {
-                            break;
-                        }
-                        //Creating multiple threads to accelerate calculations
-                        excs.execute(() -> {
-                            for (int i = 0; i < rayNumber / tsourceRayClone.getThreadNumber(); i++) {
-                                try {
-                                    //Getting a ray
-                                    double[] ray = tsourceRayClone.getRay();
-                                    //Units conversions
-                                    ray[0] *= 1e2;
-                                    ray[1] *= 1e2;
-                                    ray[2] *= 1e2;
-                                    ray[10] *= 1e-2 / GaussianLaserPulse.HC;
-                                    ray[11] = i;
-                                    shadowFile.write(ray);
-                                    setStatusBar((int) 100 * (counter.incrementAndGet() + 1) / rayNumber);
-                                } catch (IOException | InterruptedException ex) {
-                                    break;
-                                }
-                            }
-                            lt.countDown();
-                        });
-                    }
-                    lt.await();
-                } catch (InterruptedException ex) {
-                    excs.shutdownNow();
-                    throw ex;
+                    tsourceRayClone.writeRays(shadowFile, numberOfRays, this::setStatusBar);
                 }
-                excs.shutdownNow();
                 return null;
             }
 
             @Override
             protected void done() {
                 jRayStopButton.setEnabled(false);
-                int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
-                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
-                        / cn * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
+                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux() * 1e-12
+                        + " 10\u00B9\u00B2 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException | CancellationException e) {
