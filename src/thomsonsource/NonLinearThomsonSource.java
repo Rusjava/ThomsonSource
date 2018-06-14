@@ -25,12 +25,13 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
 import org.la4j.Vector;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
+import org.la4j.Vectors;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.0
+ * @version 1.1
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -81,8 +82,14 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        double avint = lp.getAverageIntensity();
+    public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
+        double avint;
+        //If vector r is null then use average intensity
+        if (r == null) {
+            avint = lp.getAverageIntensity();
+        } else {
+            avint = lp.getIntensity(r);
+        }
         double gamma = calculateGamma(n, v, e, avint);
         double der = calculateGammaDerivative(n, v, e, avint);
         if (gamma == 0) {
@@ -302,8 +309,34 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         }
     }
 
+    @Override
+    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
+        double u;
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFluxNoSpread(r0, n, v, e);
+        try {
+            return integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+    }
+
+    @Override
+    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
+        double u;
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFluxSpread(r0, n, v, e);
+        try {
+            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+    }
+
     /**
-     * An auxiliary class for eight Romberg integrators for Fourier harmonics
+     * An auxiliary class for eight Romberg integrators for Fourier polarization harmonics
      * calculations
      */
     private class UnivariateFourierHarmonics implements UnivariateFunction {
@@ -389,5 +422,60 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         });
 
         return fa;
+    }
+
+    /**
+     * An auxiliary class for the brilliance calculations without electron
+     * spread
+     */
+    private class UnivariateVolumeFluxNoSpread implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+        Vector v;
+        double e;
+
+        public UnivariateVolumeFluxNoSpread(Vector r0, Vector n0, Vector v, double e) {
+            super();
+            this.r0 = r0;
+            this.n0 = n0;
+            this.v = v;
+            this.e = e;
+        }
+
+        @Override
+        public double value(double x) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            return directionFrequencyVolumeFluxNoSpread(r0.add(n0.multiply(x)), n0, v, e);
+        }
+    }
+
+    /**
+     * An auxiliary class for the brilliance calculations with electron spread
+     */
+    private class UnivariateVolumeFluxSpread implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+        Vector v;
+        double e;
+
+        public UnivariateVolumeFluxSpread(Vector r0, Vector n0, Vector v, double e) {
+            super();
+            this.r0 = r0;
+            this.n0 = n0;
+            this.v = v;
+            this.e = e;
+        }
+
+        @Override
+        public double value(double x) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            return directionFrequencyVolumeFluxSpread(r0.add(n0.multiply(x)), n0, v, e);
+        }
     }
 }

@@ -18,7 +18,11 @@ package thomsonsource;
 
 import electronbunch.AbstractElectronBunch;
 import laserpulse.AbstractLaserPulse;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.integration.RombergIntegrator;
+import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Vector;
+import org.la4j.Vectors;
 
 /**
  * The main class containing all physics of LEXG in linear approximation
@@ -40,18 +44,8 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         calculateGeometricFactor();
     }
 
-    /**
-     * A method calculating the flux density in a given direction for a given
-     * X-ray photon energy without taking into account electron transversal
-     * pulse spread
-     *
-     * @param n direction
-     * @param v normalized electron velocity
-     * @param e X-ray energy
-     * @return
-     */
     @Override
-    public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
+    public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
         double K, th;
         th = (1 - n.innerProduct(v)) * 2;
         K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
@@ -61,16 +55,6 @@ public class LinearThomsonSource extends AbstractThomsonSource {
                 / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
     }
 
-    /**
-     * A method calculating the Stocks parameters density in a given direction
-     * for a given X-ray photon energy without taking into account electron
-     * transversal pulse spread
-     *
-     * @param n direction
-     * @param v normalized electron velocity
-     * @param e X-ray energy
-     * @return
-     */
     @Override
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
         double[] array = new double[NUMBER_OF_POL_PARAM];
@@ -105,13 +89,6 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         return array;
     }
 
-    /**
-     * A method giving the flux density in a given direction
-     *
-     * @param n direction
-     * @param v normalized electron velocity
-     * @return
-     */
     @Override
     public double directionFlux(Vector n, Vector v) {
         double gamma2, th;
@@ -121,17 +98,59 @@ public class LinearThomsonSource extends AbstractThomsonSource {
                 / Math.pow((1 + gamma2 * th), 4) * getGeometricFactor();
     }
 
-    /**
-     * A method calculating X-ray energy in a given direction
-     *
-     * @param n direction
-     * @param v normalized electron velocity
-     * @return
-     */
     @Override
     public double directionEnergy(Vector n, Vector v) {
         double mv;
         mv = Math.sqrt(1.0 - 1.0 / eb.getGamma() / eb.getGamma());
         return 2 * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv);
+    }
+
+    @Override
+    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
+        double u;
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
+        try {
+            u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            return u * directionFrequencyFluxNoSpread(n, v, null, e);
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+    }
+
+    @Override
+    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
+        double u;
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
+        try {
+            u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            return u * directionFrequencyFluxSpread(n, v, null, e);
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+    }
+
+    /**
+     * An auxiliary class for the brilliance calculations
+     */
+    private class UnivariateVolumeFlux implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+
+        public UnivariateVolumeFlux(Vector r0, Vector n0) {
+            super();
+            this.r0 = r0;
+            this.n0 = n0;
+        }
+
+        @Override
+        public double value(double x) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            return volumeFlux(r0.add(n0.multiply(x)));
+        }
     }
 }

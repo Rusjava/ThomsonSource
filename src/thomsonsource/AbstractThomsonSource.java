@@ -49,7 +49,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.0
+ * @version 1.1
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -267,11 +267,12 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n direction
      * @param v normalized electron velocity
+     * @param r spatial position
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyFlux(Vector n, Vector v, double e) {
-        return iseSpread() ? directionFrequencyFluxSpread(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
+    public double directionFrequencyFlux(Vector n, Vector v, Vector r, double e) {
+        return iseSpread() ? directionFrequencyFluxSpread(n, v, r, e) : directionFrequencyFluxNoSpread(n, v, r, e);
     }
 
     /**
@@ -295,10 +296,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n direction
      * @param v normalized electron velocity
+     * @param r spatial position
      * @param e X-ray energy
      * @return
      */
-    public abstract double directionFrequencyFluxNoSpread(Vector n, Vector v, double e);
+    public abstract double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e);
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -318,12 +320,13 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n direction
      * @param v0 normalized electron velocity
+     * @param r spatial position
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyFluxSpread(Vector n, Vector v0, double e) {
+    public double directionFrequencyFluxSpread(Vector n, Vector v0, Vector r, double e) {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, n);
+        UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, r, n);
         try {
             return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
         } catch (TooManyEvaluationsException ex) {
@@ -415,7 +418,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e) {
-        return directionFrequencyFluxNoSpread(n, v, e) * volumeFlux(r);
+        return directionFrequencyFluxNoSpread(n, v, r, e) * volumeFlux(r);
     }
 
     /**
@@ -450,7 +453,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
-        return directionFrequencyFluxSpread(n, v, e) * volumeFlux(r);
+        return directionFrequencyFluxSpread(n, v, r, e) * volumeFlux(r);
     }
 
     /**
@@ -562,18 +565,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
-        double u;
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
-        try {
-            u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxNoSpread(n, v, e);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
-    }
+    abstract public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e);
 
     /**
      * A method calculating spectral brilliance in a given direction without
@@ -612,17 +604,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
-        double u;
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
-        try {
-            u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxSpread(n, v, e);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
-    }
+    abstract public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e);
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
@@ -1101,23 +1083,23 @@ public abstract class AbstractThomsonSource implements Cloneable {
     private class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {
 
         private final double e;
-        private final Vector n, v0;
+        private final Vector n, r, v0;
         private final BaseAbstractUnivariateIntegrator inergrator;
 
-        public UnivariateFrequencyFluxSpreadOuter(double e, Vector v0, Vector n) {
+        public UnivariateFrequencyFluxSpreadOuter(double e, Vector v0, Vector r, Vector n) {
             this.e = e;
             this.v0 = v0;
             this.n = n;
+            this.r = r;
             this.inergrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         }
 
         @Override
         public double value(double phi) {
-            UnivariateFunction func
-                    = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, new UnivariateFrequencyFluxSpreadInner(phi, e, v0, r, n),
+                        0.0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -1130,13 +1112,14 @@ public abstract class AbstractThomsonSource implements Cloneable {
     private class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
 
         private final double snphi, csphi, e;
-        private final Vector n, v0;
+        private final Vector n, r, v0;
 
-        public UnivariateFrequencyFluxSpreadInner(double phi, double e, Vector v0, Vector n) {
+        public UnivariateFrequencyFluxSpreadInner(double phi, double e, Vector v0, Vector r, Vector n) {
             this.snphi = Math.sin(phi);
             this.csphi = Math.cos(phi);
             this.e = e;
             this.n = n;
+            this.r = r;
             this.v0 = v0;
         }
 
@@ -1145,7 +1128,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = theta * directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -1217,7 +1200,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             return new Double(u).isNaN() ? 0 : u;
         }
     }
-
+    
     /**
      * An auxiliary class for the brilliance calculations
      */
@@ -1227,19 +1210,17 @@ public abstract class AbstractThomsonSource implements Cloneable {
         Vector n0;
 
         public UnivariateVolumeFlux(Vector r0, Vector n0) {
+            super();
             this.r0 = r0;
             this.n0 = n0;
         }
 
         @Override
         public double value(double x) {
-            Vector r;
-            r = r0.add(n0.multiply(x));
-            double y = volumeFlux(r);
             if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
                 throw new LocalException(x);
             }
-            return y;
+            return volumeFlux(r0.add(n0.multiply(x)));
         }
     }
 
@@ -1264,4 +1245,6 @@ public abstract class AbstractThomsonSource implements Cloneable {
             return x;
         }
     }
+
+   
 }

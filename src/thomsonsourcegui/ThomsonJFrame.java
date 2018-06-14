@@ -126,7 +126,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, e * GaussianElectronBunch.E) / 1e10;
+                return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, null, e * GaussianElectronBunch.E) / 1e10;
             }
         };
 
