@@ -3794,8 +3794,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 });
                 double[] rescash = new double[]{1, 0, 0, 0};
                 double[] xpcash = new double[]{-1};
-                for (int i = 0; i < LinearThomsonSource.NUMBER_OF_POL_PARAM; i++) {
-                    int[] ia = new int[]{i};
+                for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
+                    final int[] ia = new int[]{i};
                     func.add(xp -> {
                         double[] res;
                         double ang, e, x;
@@ -3856,7 +3856,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         if (xpcash[0] != xp) {
                             try {
                                 res = polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
-                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), e);
+                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e);
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return fn.get(ia[0]).apply(rescash);

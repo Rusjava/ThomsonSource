@@ -20,6 +20,8 @@ import electronbunch.AbstractElectronBunch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
@@ -102,7 +104,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
+    public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -335,9 +337,41 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         }
     }
 
+    @Override
+    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) {
+        double[] array = new double[NUMBER_OF_POL_PARAM];
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func;
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
+            func = new UnivariateVolumePolarizationFluxNoSpread(r0, n, v, e, i);
+            try {
+                array[i] = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            } catch (TooManyEvaluationsException ex) {
+                array[i] = 0;
+            }
+        }
+        return array;
+    }
+
+    @Override
+    public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
+        double[] array = new double[NUMBER_OF_POL_PARAM];
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func;
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
+            func = new UnivariateVolumePolarizationFluxSpread(r0, n, v, e, i);
+            try {
+                array[i] = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            } catch (TooManyEvaluationsException ex) {
+                array[i] = 0;
+            }
+        }
+        return array;
+    }
+
     /**
-     * An auxiliary class for eight Romberg integrators for Fourier polarization harmonics
-     * calculations
+     * An auxiliary class for eight Romberg integrators for Fourier polarization
+     * harmonics calculations
      */
     private class UnivariateFourierHarmonics implements UnivariateFunction {
 
@@ -453,6 +487,36 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
+     * An auxiliary class for the brilliance calculations without electron
+     * spread but with polarization
+     */
+    private class UnivariateVolumePolarizationFluxNoSpread implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+        Vector v;
+        double e;
+        int index;
+
+        public UnivariateVolumePolarizationFluxNoSpread(Vector r0, Vector n0, Vector v, double e, int index) {
+            super();
+            this.r0 = r0;
+            this.n0 = n0;
+            this.v = v;
+            this.e = e;
+            this.index = index;
+        }
+
+        @Override
+        public double value(double x) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            return directionFrequencyVolumePolarizationNoSpread(r0.add(n0.multiply(x)), n0, v, e)[index];
+        }
+    }
+
+    /**
      * An auxiliary class for the brilliance calculations with electron spread
      */
     private class UnivariateVolumeFluxSpread implements UnivariateFunction {
@@ -476,6 +540,41 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 throw new LocalException(x);
             }
             return directionFrequencyVolumeFluxSpread(r0.add(n0.multiply(x)), n0, v, e);
+        }
+    }
+
+    /**
+     * An auxiliary class for the brilliance calculations with electron spread
+     * and with polarization
+     */
+    private class UnivariateVolumePolarizationFluxSpread implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+        Vector v;
+        double e;
+        int index;
+
+        public UnivariateVolumePolarizationFluxSpread(Vector r0, Vector n0, Vector v, double e, int index) {
+            super();
+            this.r0 = r0;
+            this.n0 = n0;
+            this.v = v;
+            this.e = e;
+            this.index = index;
+        }
+
+        @Override
+        public double value(double x) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            try {
+                return directionFrequencyVolumePolarizationSpread(r0.add(n0.multiply(x)), n0, v, e)[index];
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
         }
     }
 }

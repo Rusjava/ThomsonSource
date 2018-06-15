@@ -56,7 +56,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
+    public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
         double[] array = new double[NUMBER_OF_POL_PARAM];
         double K, th, m11, m22, m12, mlt, cs, sn;
         th = (1 - n.innerProduct(v)) * 2;
@@ -129,6 +129,40 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
+    }
+
+    @Override
+    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) {
+        double mlt;
+        double[] array = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
+        try {
+            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            mlt = 0;
+        }
+        for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
+            array[i] = mlt * directionFrequencyPolarizationNoSpread(n, v, null, e)[i];
+        }
+        return array;
+    }
+
+    @Override
+    public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
+        double mlt;
+        double[] array = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
+        try {
+            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            mlt = 0;
+        }
+        for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
+            array[i] = mlt * directionFrequencyPolarizationSpread(n, v, null, e)[i];
+        }
+        return array;
     }
 
     /**
