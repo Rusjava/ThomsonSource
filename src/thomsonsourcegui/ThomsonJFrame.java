@@ -419,7 +419,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         HelpItem = new javax.swing.JMenuItem();
         jMenuItemAbout = new javax.swing.JMenuItem();
 
-        brillianceCalc.setTitle("Brilliance box");
+        brillianceCalc.setTitle("Linear brilliance box");
         brillianceCalc.setMinimumSize(new java.awt.Dimension(760, 313));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1001,7 +1001,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addComponent(GFCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        polarizationCalc.setTitle("Polarization box");
+        polarizationCalc.setTitle("Linear polarization box");
         polarizationCalc.setMinimumSize(new java.awt.Dimension(760, 313));
 
         polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));

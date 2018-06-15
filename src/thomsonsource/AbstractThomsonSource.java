@@ -1122,7 +1122,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         private final int index;
         private final BaseAbstractUnivariateIntegrator inergrator;
 
-        public UnivariateFrequencyPolarizationSpreadOuter(double e, Vector v0, Vector r, Vector n, int index) {
+        public UnivariateFrequencyPolarizationSpreadOuter(double e, Vector v0, Vector n, Vector r, int index) {
             this.e = e;
             this.v0 = v0;
             this.n = n;
@@ -1139,7 +1139,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 return 0;
             }
             UnivariateFunction func
-                    = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, r, n, index);
+                    = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, r, index);
             try {
                 double rs = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
                 return rs;
@@ -1158,7 +1158,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         private final int index;
         private final Vector n, v0, r;
 
-        public UnivariateFrequencyPolarizationSpreadInner(double phi, double e, Vector v0, Vector r, Vector n, int index) {
+        public UnivariateFrequencyPolarizationSpreadInner(double phi, double e, Vector v0, Vector n, Vector r, int index) {
             this.snphi = Math.sin(phi);
             this.csphi = Math.cos(phi);
             this.e = e;

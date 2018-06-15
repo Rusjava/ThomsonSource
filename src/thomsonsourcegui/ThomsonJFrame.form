@@ -4,7 +4,7 @@
   <NonVisualComponents>
     <Container class="javax.swing.JFrame" name="brillianceCalc">
       <Properties>
-        <Property name="title" type="java.lang.String" value="Brilliance box"/>
+        <Property name="title" type="java.lang.String" value="Linear brilliance box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[760, 313]"/>
         </Property>
@@ -819,7 +819,7 @@
     </Container>
     <Container class="javax.swing.JFrame" name="polarizationCalc">
       <Properties>
-        <Property name="title" type="java.lang.String" value="Polarization box"/>
+        <Property name="title" type="java.lang.String" value="Linear polarization box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[760, 313]"/>
         </Property>
