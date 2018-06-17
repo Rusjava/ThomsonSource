@@ -317,6 +317,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public abstract double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e);
 
     /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy without taking into account electron
+     * transversal pulse spread
+     *
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     */
+    public abstract double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index);
+
+    /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy taking into account electron transversal pulse spread
      *
@@ -381,6 +395,34 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
+     * A multi-threaded method calculating the full polarization tensor density
+     * in a given direction for a given X-ray photon energy taking into account
+     * electron transversal pulse spread
+     *
+     * @param n direction
+     * @param v0 normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyPolarizationSpread(final Vector n, final Vector v0, final Vector r, final double e, int index) throws InterruptedException {
+        //The function to integrate
+        UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, r, index);
+        double res;
+        try {
+            //Creating an inegrator and integrating
+            res = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                    RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)
+                    .integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+        } catch (TooManyEvaluationsException ex) {
+            res = 0;
+        }
+        return res;
+    }
+
+    /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy for a given volume element
      *
@@ -407,6 +449,22 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     public double[] directionFrequencyVolumePolarization(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyVolumePolarizationSpread(r, n, v, e) : directionFrequencyVolumePolarizationNoSpread(r, n, v, e);
+    }
+
+    /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy for a given volume element
+     *
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyVolumePolarization(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException {
+        return iseSpread() ? directionFrequencyVolumePolarizationSpread(r, n, v, e, index) : directionFrequencyVolumePolarizationNoSpread(r, n, v, e, index);
     }
 
     /**
@@ -445,6 +503,22 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy for a given volume element without taking
+     * into account electron transversal pulse spread
+     *
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     */
+    public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index) {
+        return directionFrequencyPolarizationNoSpread(n, v, r, e, index) * volumeFlux(r);
+    }
+
+    /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy for a given volume element taking into account
      * electron transversal pulse spread
@@ -478,6 +552,23 @@ public abstract class AbstractThomsonSource implements Cloneable {
             stocks[i] *= vFlux;
         }
         return stocks;
+    }
+    
+    /**
+     * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy for a given volume element taking into
+     * account electron transversal pulse spread
+     *
+     * @param r spatial position
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException {
+        return directionFrequencyPolarizationSpread(n, v, r, e, index) * volumeFlux(r);
     }
 
     /**
@@ -561,6 +652,22 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public double[] directionFrequencyPolarizationBrilliance(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyBrilliancePolarizationSpread(r0, n, v, e) : directionFrequencyBrilliancePolarizationNoSpread(r0, n, v, e);
     }
+    
+    /**
+     * A method calculating spectral brilliance in a given direction with
+     * polarization
+     *
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyPolarizationBrilliance(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
+        return iseSpread() ? directionFrequencyBrilliancePolarizationSpread(r0, n, v, e, index) : directionFrequencyBrilliancePolarizationNoSpread(r0, n, v, e, index);
+    }
 
     /**
      * A method calculating spectral brilliance in a given direction without
@@ -586,6 +693,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      */
     abstract public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e);
+    
+    /**
+     * A method calculating spectral brilliance in a given direction without
+     * taking into account electron transversal pulse spread but with
+     * polarization
+     *
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     */
+    abstract public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index);
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
@@ -611,6 +732,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     abstract public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException;
+    
+    /**
+     * A method calculating spectral brilliance in a given direction taking into
+     * account electron transversal pulse spread nd with polarization
+     *
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param v normalized electron velocity
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    abstract public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException;
 
     /**
      * Returning a random ray

@@ -369,6 +369,21 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         return array;
     }
 
+    @Override
+    public double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * An auxiliary class for eight Romberg integrators for Fourier polarization
      * harmonics calculations

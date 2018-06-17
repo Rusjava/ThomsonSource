@@ -165,6 +165,37 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         return array;
     }
 
+    @Override
+    public double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index) {
+        return directionFrequencyPolarizationNoSpread(n, v, r, e)[index];
+    }
+
+    @Override
+    public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) {
+        double mlt;
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
+        try {
+            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            mlt = 0;
+        }
+        return mlt * directionFrequencyPolarizationNoSpread(n, v, null, e)[index];
+    }
+
+    @Override
+    public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
+        double mlt;
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
+        try {
+            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+        } catch (TooManyEvaluationsException ex) {
+            mlt = 0;
+        }
+        return mlt * directionFrequencyPolarizationSpread(n, v, null, e)[index];
+    }
+
     /**
      * An auxiliary class for the brilliance calculations
      */
