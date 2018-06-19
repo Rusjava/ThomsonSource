@@ -17,6 +17,10 @@
 package thomsonsourcegui;
 
 import java.awt.Color;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -42,14 +46,17 @@ public abstract class ChartParam {
     public ChartParam() {
 
     }
+
     /**
      * Constructor which allows one to directly specify the data array
+     *
      * @param u data array
      * @param um maximum value of data
      */
     public ChartParam(double[][] u, double um) {
         this.udata = u;
         this.umax = um;
+        this.threadNumber = Runtime.getRuntime().availableProcessors();
     }
 
     /**
@@ -61,10 +68,11 @@ public abstract class ChartParam {
      * @param ystep
      * @param xoffset
      * @param yoffset
+     * @param con a function to call
      * @throws java.lang.InterruptedException
      */
     public void setup(int xsize, int ysize, double xstep, double ystep,
-            double xoffset, double yoffset) throws InterruptedException {
+            double xoffset, double yoffset, Consumer<Integer> con) throws InterruptedException {
         this.xoffset = xoffset;
         this.yoffset = yoffset;
         this.xstep = xstep;
@@ -72,18 +80,46 @@ public abstract class ChartParam {
         this.xsize = xsize;
         this.ysize = ysize;
         this.udata = new double[xsize][ysize];
-        double x, y;
-        for (int j = 0; j < xsize; j++) {
-            for (int p = 0; p < ysize; p++) {
-                if (Thread.currentThread().isInterrupted()) {
-                    throw new InterruptedException();
-                }
-                x = xoffset + xstep * (j - xsize / 2);
-                y = yoffset + ystep * (p - ysize / 2);
-                this.udata[j][p] = func(x, y);
-                System.out.println(x+" "+y+"\n");
+        // Creating a pool of threads, a lock, an atomic interger and a latch
+        ExecutorService excs = Executors.newFixedThreadPool(getThreadNumber());
+        CountDownLatch lt = new CountDownLatch(getThreadNumber());
+        int pnumber = getThreadNumber() * (ysize / getThreadNumber());
+        //Creating the number of tasks equal to the number of threads
+        for (int th = 0; th < getThreadNumber(); th++) {
+            if (Thread.currentThread().isInterrupted()) {
+                excs.shutdownNow();
+                throw new InterruptedException("ChatParam setup method interrupted!");
             }
-        }  
+            //Creating multiple threads to accelerate calculations
+            excs.execute(() -> {
+                try {
+                    double x, y;
+                    //Calculationg the array for 2D plot
+                    for (int j = 0; j < pnumber / getThreadNumber(); j++) {
+                        for (int p = 0; p < ysize; p++) {
+                            if (Thread.currentThread().isInterrupted()) {
+                                throw new InterruptedException();
+                            }
+                            x = xoffset + xstep * (j - xsize / 2);
+                            y = yoffset + ystep * (p - ysize / 2);
+                            this.udata[j][p] = func(x, y);
+                        }
+                        con.accept((int) 100 * (j + 1) / pnumber);
+                    }
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+                lt.countDown();
+            });
+        }
+        //If interrupted shutdown threads and rethrow the exception
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            excs.shutdownNow();
+            throw ex;
+        }
+        excs.shutdownNow();
         setExtr();// Finding the maximum value
     }
 
@@ -182,6 +218,7 @@ public abstract class ChartParam {
     private int xsize;
     private int ysize;
     private int sliderposition;
+    private int threadNumber;
 
     /**
      * Creates a color chart based on a given dataset
@@ -329,7 +366,7 @@ public abstract class ChartParam {
 
     /**
      * Returning the current slider position in scale from 0 to 1
-     * 
+     *
      * @return the position of the slider
      */
     public int getSliderposition() {
@@ -338,8 +375,9 @@ public abstract class ChartParam {
 
     /**
      * Setting the current slider position
-     * 
-     * @param sliderposition the position of the slider to set in scale from 0 to 100
+     *
+     * @param sliderposition the position of the slider to set in scale from 0
+     * to 100
      */
     public void setSliderposition(int sliderposition) {
         this.sliderposition = (getxsize() - 1) * sliderposition / 100;
@@ -347,9 +385,10 @@ public abstract class ChartParam {
 
     /**
      * Creates a dataset for a color chart
-     * 
-     * @param linemark flag indicating whether the position of the slider should be shown
-     * @return 
+     *
+     * @param linemark flag indicating whether the position of the slider should
+     * be shown
+     * @return
      */
     public XYZDataset createDataset(final boolean linemark) {
         return new XYZDataset() {
@@ -446,5 +485,19 @@ public abstract class ChartParam {
                 return DomainOrder.ASCENDING;
             }
         };
+    }
+
+    /**
+     * @return the threadNumber
+     */
+    public int getThreadNumber() {
+        return threadNumber;
+    }
+
+    /**
+     * @param threadNumber the threadNumber to set
+     */
+    public void setThreadNumber(int threadNumber) {
+        this.threadNumber = threadNumber;
     }
 }

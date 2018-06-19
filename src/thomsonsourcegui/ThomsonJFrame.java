@@ -2600,15 +2600,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try {
                     tsource.calculateLinearTotalFlux();
                     tsource.calculateGeometricFactor();
-                    fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0);
+                    fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0, x -> {
+                        setStatusBar((int) x / 4);
+                    });
                     fluxdata.setSliderposition(50);
-                    setStatusBar((int) 100 / 4);
-                    xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0);
+
+                    xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0, x -> {
+                        setStatusBar((int) (x / 4 + 25));
+                    });
                     xenergydata.setSliderposition(50);
-                    setStatusBar((int) 100 * 2 / 4);
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                            * 1e3, 0.0);
-                    setStatusBar((int) 100 * 3 / 4);
+                            * 1e3, 0.0, x -> {
+                                setStatusBar((int) (x / 4 + 50));
+                            });
                     xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
                             false, ysize, ystep, -ystep * ysize / 2);
                     setStatusBar((int) 100);
@@ -2739,10 +2743,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 @Override
                 protected Void doInBackground() throws Exception {
                     try {
-                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3, 0.0);
-                        setStatusBar((int) 100);
+                        fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3,
+                                0.0, x -> {
+                                    setStatusBar((int) x / 2);
+                                });
                         xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
                                 false, ysize, ystep, -ystep * ysize / 2);
+                        setStatusBar((int) 100);
                     } catch (InterruptedException e) {
 
                     }
