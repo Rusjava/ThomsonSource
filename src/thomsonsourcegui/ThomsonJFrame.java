@@ -114,6 +114,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return 1e-6 * tsource.directionFlux(n, v) / 1e10;
             }
         };
+        fluxdata.setSliderposition(50);
         /**
          * An auxiliary method calculating the flux density in a given direction
          * for a given X-ray photon energy
@@ -144,6 +145,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return tsource.directionEnergy(n, v) / GaussianElectronBunch.E * 1e-3;
             }
         };
+        xenergydata.setSliderposition(50);
         /**
          * Auxiliary object for linear energy chart parameters
          */
@@ -2600,17 +2602,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try {
                     tsource.calculateLinearTotalFlux();
                     tsource.calculateGeometricFactor();
-                    fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0, x -> {
+                    fluxdata.setup(xsize, ysize, xstep, ystep, 0, 0, (x) -> {
                         setStatusBar((int) x / 4);
                     });
-                    fluxdata.setSliderposition(50);
-
-                    xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0, x -> {
+                    xenergydata.setup(xsize, ysize, xstep, ystep, 0, 0, (x) -> {
                         setStatusBar((int) (x / 4 + 25));
                     });
-                    xenergydata.setSliderposition(50);
                     fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0)
-                            * 1e3, 0.0, x -> {
+                            * 1e3, 0.0, (x) -> {
                                 setStatusBar((int) (x / 4 + 50));
                             });
                     xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
@@ -2744,7 +2743,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 protected Void doInBackground() throws Exception {
                     try {
                         fluxcrossdata.setup(xsize, ysize, estep, ystep, xenergydata.func(hoffset, 0.0) * 1e3,
-                                0.0, x -> {
+                                0.0, (x) -> {
                                     setStatusBar((int) x / 2);
                                 });
                         xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
@@ -3576,6 +3575,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             tsourcelinear.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsourcelinear.setPrecision((double) brilPrecisionBox.getValue());
             tsourcelinear.setThreadNumber((int) threadsNumberBox.getValue());
+            //ChatParam
+            fluxdata.setThreadNumber((int) threadsNumberBox.getValue());
+            fluxcrossdata.setThreadNumber((int) threadsNumberBox.getValue());
+            xenergydata.setThreadNumber((int) threadsNumberBox.getValue());
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed
 
