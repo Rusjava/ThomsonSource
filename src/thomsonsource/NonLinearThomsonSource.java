@@ -83,41 +83,41 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
-        double avint;
+        double intensity;
         //If vector r is null then use average intensity
         if (r == null) {
-            avint = lp.getAverageIntensity();
+            intensity = lp.getAverageIntensity();
         } else {
-            avint = lp.getIntensity(r);
+            intensity = lp.getIntensity(r);
         }
-        double gamma = calculateGamma(n, v, e, avint);
-        double der = calculateGammaDerivative(n, v, e, avint);
+        double gamma = calculateGamma(n, v, e, intensity);
+        double der = calculateGammaDerivative(n, v, e, intensity);
         if (gamma == 0) {
             //returning zero if gamma is zero
             return 0;
         } else {
-            return directionFluxBasic(n, v, e, gamma, avint)
+            return directionFluxBasic(n, v, e, gamma, intensity)
                     * eb.gammaDistribution(gamma) / der;
         }
     }
 
     @Override
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
-        double avint, factor;
+        double intensity, factor;
         double[] res = new double[]{0, 0, 0, 0};
         //If vector r is null then use average intensity
         if (r == null) {
-            avint = lp.getAverageIntensity();
+            intensity = lp.getAverageIntensity();
         } else {
-            avint = lp.getIntensity(r);
+            intensity = lp.getIntensity(r);
         }
-        double gamma = calculateGamma(n, v, e, avint);
-        double der = calculateGammaDerivative(n, v, e, avint);
+        double gamma = calculateGamma(n, v, e, intensity);
+        double der = calculateGammaDerivative(n, v, e, intensity);
         if (gamma == 0) {
             //returning zero if gamma is zero
             return res;
         } else {
-            res = directionPolarizationBasic(n, v, e, gamma, avint);
+            res = directionPolarizationBasic(n, v, e, gamma, intensity);
             factor = eb.gammaDistribution(gamma) / der;
             //Multiplying polarization matrix by gamma distribution
             return multiplyPolarizationParameters(res, factor);
@@ -215,7 +215,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         intratio = inten / sIntensity;
         //Parameter of non-linearity
-        M = lp.getAverageIntensity() / sIntensity * (1 + pr) / 4 * (1 - mv);
+        M = intratio * (1 + pr) / 4 * (1 - mv);
         //Coefficients
         coef1 = xenergy / lp.getPhotonEnergy()
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
@@ -223,19 +223,19 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
         coef3 = -getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
-        //Checking if the radiation is fully poolarized and then just calculating intensity
+        //Checking if the radiation is fully polarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
-            result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]});
+            result = directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]});
         } else if (K1[1] == 0 && K2[1] == 0) {
-            result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
+            result = directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
         } else {
             //If not fully polarized then everaging over all possible surpepositions of two independant polarizations
-            result = coef3 * (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+            result = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
                     RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
                     new UnivariatePolarizationIntegration(coef1, coef2, intratio, n), -Math.PI, Math.PI) / 2 / Math.PI;
         }
-        return result;
+        return coef3 * result;
     }
 
     /**
@@ -255,7 +255,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             return res;
         }
         //If gamma is not zero then proceed
-        double mv, M, pr, gamma2, intratio, coef1, coef2, coef3, coef4;
+        double mv, M, pr, gamma2, intratio, coef1, coef2, coef3;
         double[] result = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
         double[] K1 = lp.getKA1();
         double[] K2 = lp.getKA2();
@@ -266,7 +266,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         intratio = inten / sIntensity;
         //Parameter of non-linearity
-        M = lp.getAverageIntensity() / sIntensity * (1 + pr) / 4 * (1 - mv);
+        M = intratio * (1 + pr) / 4 * (1 - mv);
         //Coefficients
         coef1 = xenergy / lp.getPhotonEnergy()
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
@@ -276,21 +276,22 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
-            result = multiplyPolarizationParameters(directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
-                    n, new Vector[]{A1[1], A2[1]}), coef3);
+            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
+                    n, new Vector[]{A1[1], A2[1]}, gamma, v);
         } else if (K1[1] == 0 && K2[1] == 0) {
-            result = multiplyPolarizationParameters(directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
-                    n, new Vector[]{A1[0], A2[0]}), coef3);
+            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
+                    n, new Vector[]{A1[0], A2[0]}, gamma, v);
         } else {
             //If not fully polarized then everaging over all possible surpepositions of two independant polarizations
             for (int s = 0; s < AbstractThomsonSource.NUMBER_OF_POL_PARAM; s++) {
                 result[s] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                         RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
                         RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                        new UnivariatePolarizationIntegrationPolarization(coef1, coef2, intratio, n, s), -Math.PI, Math.PI) / 2 / Math.PI;
+                        new UnivariatePolarizationIntegrationPolarization(coef1, coef2,
+                                intratio, gamma, n, v, s), -Math.PI, Math.PI) / 2 / Math.PI;
             }
-            result = multiplyPolarizationParameters(result, coef3);
         }
+        result = multiplyPolarizationParameters(result, coef3);
         return result;
     }
 
@@ -331,7 +332,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
             f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
             //Calculating the total flux
-            result += ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1 + K2) / 2)
+            result = ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1 + K2) / 2)
                     - (f[2] * f[2] + f[3] * f[3]) * K1 - (f[4] * f[4] + f[5] * f[5]) * K2
                     + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2);
         }
@@ -344,16 +345,30 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      *
      * @param cf1
      * @param cf2
-     * @param cf3
      * @param intratio
      * @param n
      * @param B
+     * @param gamma
+     * @param v
      * @return
      */
     private double[] directionPolarizationBasicAuxiliary(double cf1, double cf2, double intratio,
-            Vector n, Vector[] B) {
-        double K1, K2, a1, a2, a3;
+            Vector n, Vector[] B, double gamma, Vector v) {
+        double K1, K2, a1, a2, a3, gamma2, mv, pr, sq, sqratio;
+        //Auxialiry parameters
+        gamma2 = gamma * gamma;
+        mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
+        pr = n.innerProduct(v);
+        sq = Math.sqrt(mv * mv - pr * pr);
+        sqratio = Math.sqrt(intratio);
+        //Arrays for real and imagenary parts of polarization vectors
+        double[] pol1 = new double[2];
+        double[] pol2 = new double[2];
+        //Ortogonal unity vectors
+        Vector e1 = crossProduct3D(n, v).divide(sq);
+        Vector e2 = crossProduct3D(e1, n);
         double[] result = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
+        //A vector for integral coefficients
         double[] f = new double[8]; //An array for integrals
         K1 = B[0].innerProduct(B[0]);
         K2 = B[1].innerProduct(B[1]);
@@ -376,12 +391,20 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Calculating f_0 using the relation between integrals f_i
             f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
             f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
+            //Calculating orthogonal polarization vectors
+            pol1[0] = e1.innerProduct(B[0]) * f[2] + e2.innerProduct(B[1]) * f[4];
+            pol1[1] = e1.innerProduct(B[0]) * f[3] + e2.innerProduct(B[1]) * f[5];
+            pol2[0] = gamma * Math.sqrt(intratio) * (1 - (K1 + K2) / 4 / intratio / gamma2 / mv / (1 + mv)) * sq * f[0]
+                    + (n.innerProduct(B[0]) * f[2] + n.innerProduct(B[1]) * f[4]) * pr / sq
+                    - (K1 - K2) / 4 / gamma / Math.sqrt(intratio) / mv / (1 + mv) * f[6] * sq;
+            pol2[1] = gamma * sqratio * (1 - (K1 + K2) / 4 / intratio / gamma2 / mv / (1 + mv)) * sq * f[1]
+                    + (n.innerProduct(B[0]) * f[3] + n.innerProduct(B[1]) * f[5]) * pr / sq
+                    - (K1 - K2) / 4 / gamma / sqratio / mv / (1 + mv) * f[7] * sq;
             //Calculating the elements of the polarization matrix
-            for (int s = 0; s < AbstractThomsonSource.NUMBER_OF_POL_PARAM; s++) {
-                result[s] += ((f[0] * f[0] + f[1] * f[1]) * (1.0 / intratio + (K1 + K2) / 2)
-                        - (f[2] * f[2] + f[3] * f[3]) * K1 - (f[4] * f[4] + f[5] * f[5]) * K2
-                        + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2);
-            }
+            result[0] = pol1[0] * pol1[0] + pol1[1] * pol1[1] + pol2[0] * pol2[0] + pol2[1] * pol2[1];
+            result[1] = pol1[0] * pol2[0] + pol1[1] * pol2[1];
+            result[2] = pol1[0] * pol2[1] - pol1[1] * pol2[0];
+            result[3] = pol2[0] * pol2[0] + pol2[1] * pol2[1] - pol1[0] * pol1[0] - pol1[1] * pol1[1];
         }
         return result;
     }
@@ -557,16 +580,19 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      */
     private class UnivariatePolarizationIntegrationPolarization implements UnivariateFunction {
 
-        private final double cf1, cf2, intratio;
-        private final Vector n;
+        private final double cf1, cf2, intratio, gamma;
+        private final Vector n, v;
         private final int index;
 
-        public UnivariatePolarizationIntegrationPolarization(double cf1, double cf2, double intratio, Vector n, int index) {
+        public UnivariatePolarizationIntegrationPolarization(double cf1, double cf2,
+                double intratio, double gamma, Vector n, Vector v, int index) {
             this.cf1 = cf1;
             this.cf2 = cf2;
             this.intratio = intratio;
             this.n = n;
             this.index = index;
+            this.v = v;
+            this.gamma = gamma;
         }
 
         @Override
@@ -574,7 +600,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Getting phase weighted superposition of polarizations
             Vector[] B = lp.getPhaseWeightedPolarizationVectors2(phase);
             //Returning the calculated intensity
-            return directionPolarizationBasicAuxiliary(cf1, cf2, intratio, n, B)[index];
+            return directionPolarizationBasicAuxiliary(cf1, cf2, intratio, n, B, gamma, v)[index];
         }
     }
 

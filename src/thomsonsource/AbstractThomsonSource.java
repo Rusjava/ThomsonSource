@@ -1205,6 +1205,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
+     * Calculates vector product of two vectors in 3D space
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    protected Vector crossProduct3D(Vector a, Vector b) {
+        return new BasicVector(new double[]{a.get(2) * b.get(3) - a.get(3) * b.get(2),
+            a.get(3) * b.get(1) - a.get(1) * b.get(3), a.get(1) * b.get(2) - a.get(2) * b.get(1)});
+    }
+
+    /**
      * An auxiliary class for Romberg integrator for flux calculations
      */
     private class UnivariateFrequencyFluxSpreadOuter implements UnivariateFunction {

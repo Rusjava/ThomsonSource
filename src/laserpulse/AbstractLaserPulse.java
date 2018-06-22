@@ -308,10 +308,8 @@ public abstract class AbstractLaserPulse implements Cloneable {
                     AA1 = new BasicVector(new double[]{1, 0, 0});
                     AA2 = new BasicVector(new double[]{0, 0, 0});
                 } else {
-                    AA1 = new BasicVector(new double[]{ksi1, t[s], 0});
-                    AA2 = new BasicVector(new double[]{-ksi2, 0, 0});
-                    AA1 = AA1.divide(h);
-                    AA2 = AA2.divide(h);
+                    AA1 = (new BasicVector(new double[]{ksi1, t[s], 0})).divide(h);
+                    AA2 = (new BasicVector(new double[]{-ksi2, 0, 0})).divide(h);
                 }
             }
             //Orthogonalizing real and imagenery parts of polarization vectors
