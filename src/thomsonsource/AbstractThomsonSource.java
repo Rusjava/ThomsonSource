@@ -553,7 +553,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         return stocks;
     }
-    
+
     /**
      * A method calculating the Stocks parameters density in a given direction
      * for a given X-ray photon energy for a given volume element taking into
@@ -652,7 +652,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public double[] directionFrequencyPolarizationBrilliance(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyBrilliancePolarizationSpread(r0, n, v, e) : directionFrequencyBrilliancePolarizationNoSpread(r0, n, v, e);
     }
-    
+
     /**
      * A method calculating spectral brilliance in a given direction with
      * polarization
@@ -693,7 +693,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      */
     abstract public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e);
-    
+
     /**
      * A method calculating spectral brilliance in a given direction without
      * taking into account electron transversal pulse spread but with
@@ -732,7 +732,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     abstract public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException;
-    
+
     /**
      * A method calculating spectral brilliance in a given direction taking into
      * account electron transversal pulse spread nd with polarization
@@ -1189,6 +1189,19 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     public AtomicInteger getRayCounter() {
         return rayCounter;
+    }
+
+    /**
+     *
+     * @param polParam polarization parameter vector to multiply
+     * @param factor factor to multiply by
+     * @return
+     */
+    protected double[] multiplyPolarizationParameters(double[] polParam, double factor) {
+        for (int s = 0; s < AbstractThomsonSource.NUMBER_OF_POL_PARAM; s++) {
+            polParam[s] *= factor;
+        }
+        return polParam;
     }
 
     /**
