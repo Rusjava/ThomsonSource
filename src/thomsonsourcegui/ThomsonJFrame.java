@@ -127,7 +127,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, null, e * GaussianElectronBunch.E) / 1e10;
+                try {
+                    return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, null, e * GaussianElectronBunch.E) / 1e10;
+                } catch (InterruptedException ex) {
+                    return 0;
+                }
             }
         };
 
@@ -2911,9 +2915,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getLaserPulse().setDirection(dir);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 1:
@@ -2923,9 +2932,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.getLaserPulse().setDelay(x);
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 2:
@@ -2938,9 +2952,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setShift(sht);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 3:
@@ -2952,9 +2971,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setBetay(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 4:
@@ -2966,9 +2990,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setEpsy(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 5:
@@ -2979,9 +3008,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setEpsx(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 6:
@@ -2992,9 +3026,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setEpsy(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 7:
@@ -3005,9 +3044,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getLaserPulse().setRlength(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 8:
@@ -3020,9 +3064,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setyWidth(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 9:
@@ -3033,9 +3082,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilForm.tsourceclone.getElectronBunch().setDelgamma(x);
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 10:
@@ -3044,9 +3098,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = xp * brilForm.conversionValues[brilForm.selectedItemIndexClone];
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 11:
@@ -3055,9 +3114,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilForm.energyclone * GaussianElectronBunch.E * 1e3;
                             brilForm.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                 }
@@ -4055,9 +4119,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getLaserPulse().setDirection(dir);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 1:
@@ -4067,9 +4136,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double x = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.getLaserPulse().setDelay(x);
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 2:
@@ -4082,9 +4156,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setShift(sht);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 3:
@@ -4096,9 +4175,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setBetay(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 4:
@@ -4110,9 +4194,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 5:
@@ -4123,9 +4212,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 6:
@@ -4136,9 +4230,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 7:
@@ -4149,9 +4248,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getLaserPulse().setRlength(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 8:
@@ -4164,9 +4268,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setyWidth(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 9:
@@ -4177,9 +4286,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.getElectronBunch().setDelgamma(x);
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 10:
@@ -4188,9 +4302,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = xp * brilFormNonLinear.conversionValues[brilFormNonLinear.selectedItemIndexClone];
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                     case 11:
@@ -4199,9 +4318,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             double e = brilFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
-                            return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
-                                    new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                            try {
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
+                                        new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
+                                        e) * 1e-15 * 1e-13;
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return 0.0;
+                            }
                         });
                         break;
                 }

@@ -106,11 +106,15 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
+    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double u;
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
+            }
             u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
             return u * directionFrequencyFluxNoSpread(n, v, null, e);
         } catch (TooManyEvaluationsException ex) {
@@ -119,12 +123,16 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
+    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double u;
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrillianceSpread!");
+            }
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
             return u * directionFrequencyFluxSpread(n, v, null, e);
@@ -134,13 +142,17 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) {
+    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double mlt;
         double[] array = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
+            }
             mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
@@ -159,6 +171,10 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
+            }
             mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
             mlt = 0;
@@ -243,7 +259,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
+    public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         return directionFrequencyFluxSpread(n, v, r, e) * volumeFlux(r);
     }
 

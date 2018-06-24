@@ -268,8 +268,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param r spatial position
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyFlux(Vector n, Vector v, Vector r, double e) {
+    public double directionFrequencyFlux(Vector n, Vector v, Vector r, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyFluxSpread(n, v, r, e) : directionFrequencyFluxNoSpread(n, v, r, e);
     }
 
@@ -337,11 +338,16 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param r spatial position
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyFluxSpread(Vector n, Vector v0, Vector r, double e) {
+    public double directionFrequencyFluxSpread(Vector n, Vector v0, Vector r, double e) throws InterruptedException {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, r, n);
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+               throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
+            }
             return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
         } catch (TooManyEvaluationsException ex) {
             return 0;
@@ -349,7 +355,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A multi-threaded method calculating the full polarization tensor density
+     * A method calculating the full polarization tensor density
      * in a given direction for a given X-ray photon energy taking into account
      * electron transversal pulse spread
      *
@@ -363,35 +369,15 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v0, final Vector r, final double e) throws InterruptedException {
         //An array for results
         double[] array = new double[NUMBER_OF_POL_PARAM];
-        //Creating a latch for threads
-        CountDownLatch lt = new CountDownLatch(NUMBER_OF_POL_PARAM);
-        //Creating a pool of threads for calculations
-        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         //Calculating the polarization tensor elements
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            int[] ia = new int[]{i};
-            execs.execute(() -> {
-                UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, r, ia[0]);
-                try {
-                    //Creating a separate inegrator for each thread
-                    array[ia[0]] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                            RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
-                            RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
-                            func, 0, 2 * Math.PI) - 2 * Math.PI * INT_RANGE * eb.getSpread() * getPrecision();
-                } catch (TooManyEvaluationsException ex) {
-                    array[ia[0]] = 0;
-                }
-                lt.countDown();
-            });
+            try {
+                //Calculating elements of polarization matrix
+                array[i] = directionFrequencyPolarizationSpread(n, v0, r, e, i);
+            } catch (TooManyEvaluationsException ex) {
+                array[i] = 0;
+            }
         }
-        //Waiting for an interruption and shuting down threads if interrupted
-        try {
-            lt.await();
-        } catch (InterruptedException ex) {
-            execs.shutdownNow();
-            throw ex;
-        }
-        execs.shutdownNow();
         return array;
     }
 
@@ -413,6 +399,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
         UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, r, index);
         double res;
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+               throw new InterruptedException("Interruption in directionFrequencyPolarizationSpread!");
+            }
             //Creating an inegrator and integrating
             res = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)
@@ -432,8 +422,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyVolumeFlux(Vector r, Vector n, Vector v, double e) {
+    public double directionFrequencyVolumeFlux(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyVolumeFluxSpread(r, n, v, e) : directionFrequencyVolumeFluxNoSpread(r, n, v, e);
     }
 
@@ -478,8 +469,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e);
+    abstract public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -491,8 +483,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e);
+    abstract public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -505,8 +498,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @param index polarization matrix element
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index);
+    abstract public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException;
 
     /**
      * A method calculating the flux density in a given direction for a given
@@ -518,8 +512,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e);
+    abstract public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -614,8 +609,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized (to unity) electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyBrilliance(Vector r0, Vector n, Vector v, double e) {
+    public double directionFrequencyBrilliance(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         return iseSpread() ? directionFrequencyBrillianceSpread(r0, n, v, e) : directionFrequencyBrillianceNoSpread(r0, n, v, e);
     }
 
@@ -659,8 +655,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e);
+    abstract public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e)  throws InterruptedException;
 
     /**
      * A method calculating spectral brilliance in a given direction without
@@ -672,8 +669,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e);
+    abstract public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
      * A method calculating spectral brilliance in a given direction without
@@ -686,8 +684,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @param index polarization matrix element
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index);
+    abstract public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException;
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
@@ -698,8 +697,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    abstract public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e);
+    abstract public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
@@ -1218,6 +1218,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             try {
                 return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, new UnivariateFrequencyFluxSpreadInner(phi, e, v0, r, n),
                         0.0, INT_RANGE * eb.getSpread());
@@ -1246,6 +1250,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         @Override
         public double value(double theta) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
@@ -1321,8 +1329,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
             return new Double(u).isNaN() ? 0 : u;
         }
     }
-    
-     /**
+
+    /**
      * An auxiliary class for the brilliance calculations
      */
     protected class UnivariateVolumeFlux implements UnivariateFunction {

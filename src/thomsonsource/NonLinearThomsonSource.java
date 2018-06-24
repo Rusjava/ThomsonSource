@@ -20,8 +20,6 @@ import electronbunch.AbstractElectronBunch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.RombergIntegrator;
@@ -29,7 +27,6 @@ import org.la4j.Vector;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Matrix;
 import org.la4j.Vectors;
-import org.la4j.vector.dense.BasicVector;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 
 /**
@@ -533,7 +530,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) {
+    public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         //Creating an anonymous class for the integrand
@@ -543,10 +540,19 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 if (n.get(0) + n.get(1) + n.get(2) == 0) {
                     throw new LocalException(x);
                 }
-                return directionFrequencyVolumeFluxNoSpread(r0.add(n.multiply(x)), n, v, e);
+                try {
+                    return directionFrequencyVolumeFluxNoSpread(r0.add(n.multiply(x)), n, v, e);
+                } catch (InterruptedException ex) {
+                    return 0;
+                }
             }
         };
+        //Integrating over a line
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
@@ -555,7 +561,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) {
+    public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         //Creating an anonymous class for the integrand
@@ -565,10 +571,19 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 if (n.get(0) + n.get(1) + n.get(2) == 0) {
                     throw new LocalException(x);
                 }
-                return directionFrequencyVolumeFluxSpread(r0.add(n.multiply(x)), n, v, e);
+                try {
+                    return directionFrequencyVolumeFluxSpread(r0.add(n.multiply(x)), n, v, e);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    return 0;
+                }
             }
         };
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrillianceSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
@@ -577,7 +592,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) {
+    public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double[] array = new double[NUMBER_OF_POL_PARAM];
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
@@ -592,10 +607,19 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     if (n.get(0) + n.get(1) + n.get(2) == 0) {
                         throw new LocalException(x);
                     }
-                    return directionFrequencyVolumePolarizationNoSpread(r0.add(n.multiply(x)), n, v, e, ia[0]);
+                    try {
+                        return directionFrequencyVolumePolarizationNoSpread(r0.add(n.multiply(x)), n, v, e, ia[0]);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        return 0;
+                    }
                 }
             };
             try {
+                //If interrupted, throw InterruptedException
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
+                }
                 array[i] = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                         r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
             } catch (TooManyEvaluationsException ex) {
@@ -629,6 +653,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             };
             try {
+                //If interrupted, throw InterruptedException
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
+                }
                 array[i] = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                         r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
             } catch (TooManyEvaluationsException ex) {
@@ -639,7 +667,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) {
+    public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func;
@@ -650,10 +678,19 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 if (n.get(0) + n.get(1) + n.get(2) == 0) {
                     throw new LocalException(x);
                 }
-                return directionFrequencyVolumePolarizationNoSpread(r0.add(n.multiply(x)), n, v, e, index);
+                try {
+                    return directionFrequencyVolumePolarizationNoSpread(r0.add(n.multiply(x)), n, v, e, index);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    return 0;
+                }
             }
         };
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
@@ -682,6 +719,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
@@ -690,7 +731,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e) {
+    public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
@@ -709,6 +750,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
                     INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
@@ -717,7 +762,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) {
+    public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         double[] stocks = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
@@ -741,6 +786,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             };
             try {
+                //If interrupted, throw InterruptedException
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("directionFrequencyVolumePolarizationNoSpread!");
+                }
                 stocks[i] = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
                         INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
             } catch (TooManyEvaluationsException ex) {
@@ -751,7 +800,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index) {
+    public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
@@ -770,6 +819,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyVolumePolarizationNoSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
                     INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
@@ -778,7 +831,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
+    public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
@@ -792,11 +845,20 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 //Coordinate transformation between laser and electron beams frames
                 re.set(2, re.get(2) - x);
                 rph.set(2, rph.get(2) - x);
-                return directionFrequencyFluxSpread(r, n, v, e) * eb.lSpatialDistribution(re)
-                        * lp.lSpatialDistribution(rph);
+                try {
+                    return directionFrequencyFluxSpread(r, n, v, e) * eb.lSpatialDistribution(re)
+                            * lp.lSpatialDistribution(rph);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    return 0;
+                }
             }
         };
         try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
+            }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
                     INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
