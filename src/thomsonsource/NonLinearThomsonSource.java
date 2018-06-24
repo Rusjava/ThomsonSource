@@ -688,8 +688,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 //Coordinate transformation between laser and electron beams frames
                 re.set(2, re.get(2) - x);
                 rph.set(2, rph.get(2) - x);
-                return directionFrequencyFluxNoSpread(r, n, v, e) * eb.lSpatialDistribution(re)
-                        * lp.lSpatialDistribution(rph);
+                return directionFrequencyFluxNoSpread(r, n, v, e) * eb.lSpatialDistribution(re) * lp.lSpatialDistribution(rph);
             }
         };
         try {
