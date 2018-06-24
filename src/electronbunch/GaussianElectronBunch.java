@@ -145,7 +145,7 @@ public class GaussianElectronBunch extends AbstractElectronBunch {
      */
     @Override
     public double lSpatialDistribution(Vector r) {
-        return Math.exp(-Math.pow(r.get(2) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
+        return Math.exp(-Math.pow((r.get(2) - getShift().get(2)) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
     }
 
     /**

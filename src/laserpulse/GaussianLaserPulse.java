@@ -19,8 +19,8 @@ package laserpulse;
 import org.la4j.Vector;
 
 /**
- * A class for Gaussian laser pulse properties. All properties are in the SI system of
- * units
+ * A class for Gaussian laser pulse properties. All properties are in the SI
+ * system of units
  *
  * @author Ruslan feshchenko
  * @version 4.0
@@ -52,6 +52,6 @@ public class GaussianLaserPulse extends AbstractLaserPulse {
 
     @Override
     public double lSpatialDistribution(Vector r) {
-        return Math.exp(-Math.pow(r.get(2) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
+        return Math.exp(-Math.pow((r.get(2) - getDelay()) / getLength(), 2)) / getLength() / Math.sqrt(Math.PI);
     }
 }

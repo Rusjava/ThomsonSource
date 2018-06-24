@@ -29,8 +29,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.DoubleAdder;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import laserpulse.AbstractLaserPulse;
 import laserpulse.GaussianLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
@@ -83,7 +81,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Multiple for the range
      */
-    private static final double INT_RANGE = 3;
+    protected static final double INT_RANGE = 3;
     /**
      * The number of columns in Shadow files
      */
@@ -376,7 +374,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, r, ia[0]);
                 try {
                     //Creating a separate inegrator for each thread
-                    array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+                    array[ia[0]] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                            RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                            RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                            func, 0, 2 * Math.PI) - 2 * Math.PI * INT_RANGE * eb.getSpread() * getPrecision();
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -478,9 +479,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e) {
-        return directionFrequencyFluxNoSpread(n, v, r, e) * volumeFlux(r);
-    }
+    abstract public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e);
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -493,14 +492,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @return
      */
-    public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) {
-        double[] stocks = directionFrequencyPolarizationNoSpread(n, v, r, e);
-        double vFlux = volumeFlux(r);
-        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            stocks[i] *= vFlux;
-        }
-        return stocks;
-    }
+    abstract public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e);
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -514,9 +506,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param index polarization matrix element
      * @return
      */
-    public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index) {
-        return directionFrequencyPolarizationNoSpread(n, v, r, e, index) * volumeFlux(r);
-    }
+    abstract public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index);
 
     /**
      * A method calculating the flux density in a given direction for a given
@@ -529,9 +519,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
-        return directionFrequencyFluxSpread(n, v, r, e) * volumeFlux(r);
-    }
+    abstract public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e);
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -545,14 +533,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
-        double[] stocks = directionFrequencyPolarizationSpread(n, v, r, e);
-        double vFlux = volumeFlux(r);
-        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            stocks[i] *= vFlux;
-        }
-        return stocks;
-    }
+    abstract public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
      * A method calculating the Stocks parameters density in a given direction
@@ -567,9 +548,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException {
-        return directionFrequencyPolarizationSpread(n, v, r, e, index) * volumeFlux(r);
-    }
+    abstract public double directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException;
 
     /**
      * An auxiliary method calculating volume density of the X-ray source
@@ -603,7 +582,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
         y1 = -sn * z + cs * y;
         z1 = cs * z + sn * y;
         K = Math.pow((z + z1 - eb.getShift().get(2) - lp.getDelay()) / len, 2);
-        u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) / len * Math.exp(-K) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(new BasicVector(new double[]{x1, y1, z1}));
+        u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
+                * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) / len * Math.exp(-K) * eb.tSpatialDistribution(r)
+                * lp.tSpatialDistribution(new BasicVector(new double[]{x1, y1, z1}));
         return new Double(u).isNaN() ? 0 : u;
     }
 
@@ -779,9 +760,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
-            ray[0] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
-            ray[2] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
-            ray[1] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
+            ray[0] = mult * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
+            ray[2] = mult * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
+            ray[1] = mult * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
             r.set(0, ray[0]);
             r.set(1, ray[2]);
             r.set(2, ray[1]);
@@ -819,6 +800,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculating the rotated polarization vector and getting the full polarizaation state
+        //n is defined here with y in longitudinal direction
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
         //Checking if polarization is pre-specified
@@ -1298,11 +1280,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 Thread.currentThread().interrupt();
                 return 0;
             }
-            UnivariateFunction func
-                    = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, r, index);
             try {
-                double rs = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
-                return rs;
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                        new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, r, index), 0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -1337,8 +1317,30 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = theta * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1)) + getPrecision();
             return new Double(u).isNaN() ? 0 : u;
+        }
+    }
+    
+     /**
+     * An auxiliary class for the brilliance calculations
+     */
+    protected class UnivariateVolumeFlux implements UnivariateFunction {
+
+        Vector r0;
+        Vector n0;
+
+        public UnivariateVolumeFlux(Vector r0, Vector n0) {
+            this.r0 = r0;
+            this.n0 = n0;
+        }
+
+        @Override
+        public double value(double x) {
+            if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            return volumeFlux(r0.add(n0.multiply(x)));
         }
     }
 
