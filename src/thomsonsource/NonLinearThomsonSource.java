@@ -547,14 +547,16 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
-        //Integrating over a line
+        //Integrating over a line to calculate spectral brilliance
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
+            return u;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -584,8 +586,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyBrillianceSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -635,7 +638,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
             }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -667,7 +671,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
             }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -679,16 +684,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = getTransform(v, lp.getDirection());
+        Matrix T = getTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                re.set(2, re.get(2) - x);
-                rph.set(2, rph.get(2) - x);
-                return directionFrequencyFluxNoSpread(r, n, v, e) * eb.lSpatialDistribution(re) * lp.lSpatialDistribution(rph);
+                Vector ree = re.copy();
+                ree.set(2, ree.get(2) - x + eb.getShift().get(2));
+                Vector rphh = rph.copy();
+                rphh.set(2, rphh.get(2) - x + lp.getDelay());
+                return directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
             }
         };
         try {
@@ -701,6 +708,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
+        //return directionFrequencyFluxNoSpread(n, v, r, e) * volumeFlux(r);
     }
 
     @Override
@@ -727,7 +735,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 //Coordinate transformation between laser and electron beams frames
                 re.set(2, re.get(2) - x);
                 rph.set(2, rph.get(2) - x);
-                return directionFrequencyPolarizationNoSpread(r, n, v, e, index) * eb.lSpatialDistribution(re)
+                return directionFrequencyPolarizationNoSpread(n, v, r, e, index) * eb.lSpatialDistribution(re)
                         * lp.lSpatialDistribution(rph);
             }
         };
@@ -759,7 +767,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 re.set(2, re.get(2) - x);
                 rph.set(2, rph.get(2) - x);
                 try {
-                    return directionFrequencyFluxSpread(r, n, v, e) * eb.lSpatialDistribution(re)
+                    return directionFrequencyFluxSpread(n, v, r, e) * eb.lSpatialDistribution(re)
                             * lp.lSpatialDistribution(rph);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
@@ -804,7 +812,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 re.set(2, re.get(2) - x);
                 rph.set(2, rph.get(2) - x);
                 try {
-                    return directionFrequencyPolarizationSpread(r, n, v, e, index) * eb.lSpatialDistribution(re)
+                    return directionFrequencyPolarizationSpread(n, v, r, e, index) * eb.lSpatialDistribution(re)
                             * lp.lSpatialDistribution(rph);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
