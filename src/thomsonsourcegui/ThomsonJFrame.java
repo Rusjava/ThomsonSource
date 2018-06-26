@@ -198,7 +198,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
         /**
-         * Objects for the polarization calculation
+         * Objects for the linear polarization calculation
          */
         this.polForm = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"});
         this.polForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
@@ -211,6 +211,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
+        /**
+         * Objects for the non-linear polarization calculation
+         */
+        this.polFormNonLinear = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"});
+        this.polFormNonLinear.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
+            "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
+        this.polFormNonLinear.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
+            "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
+            "X-ray energy, keV", "Observation angle, mrad"};
+        this.polFormNonLinear.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
+        this.polFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
+        this.polFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.polFormNonLinear.savetext = "Choose file to save polarization data";
+        this.polFormNonLinear.numberOfItems = 12;
+        //Setting default number of threads
         this.threadsNumberBox.setValue(new Integer(Runtime.getRuntime().availableProcessors()));
 
         initComponents();
@@ -310,6 +325,28 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polEnergyValue = new javax.swing.JTextField();
         polEnergyValueUnitLable = new javax.swing.JLabel();
         polarizationCalcGraph = new javax.swing.JPanel();
+        polarizationCalcNonLinear = new javax.swing.JFrame();
+        polarizationParamcNonLinear = new javax.swing.JPanel();
+        polarizationCalcBoxNonLinear = new javax.swing.JComboBox();
+        polarizationCalcStartNonLinear = new javax.swing.JButton();
+        polarizationCalcSaveNonLinear = new javax.swing.JButton();
+        polminvalueNonLinear = new javax.swing.JTextField();
+        polminvaluelabelNonLinear = new javax.swing.JLabel();
+        polminvalueunitlabelNonLinear = new javax.swing.JLabel();
+        polmaxvalueunitlabelNonLinear = new javax.swing.JLabel();
+        polmaxvalueNonLinear = new javax.swing.JTextField();
+        polmaxvaluelabelNonLinear = new javax.swing.JLabel();
+        jPolCheckBoxSpreadNonLinear = new javax.swing.JCheckBox();
+        polProgressBarNonLinear = new javax.swing.JProgressBar();
+        jPolAngleLabelNonLinear = new javax.swing.JLabel();
+        polAngleValueNonLinear = new javax.swing.JTextField();
+        polAngleValueUnitLableNonLinear = new javax.swing.JLabel();
+        jPolEnergyLabelNonLinear = new javax.swing.JLabel();
+        polEnergyValueNonLinear = new javax.swing.JTextField();
+        polEnergyValueUnitLableNonLinear = new javax.swing.JLabel();
+        OrderNumberNonLinear = new javax.swing.JTextField();
+        OrderNumberLabelNonLinear = new javax.swing.JLabel();
+        polarizationCalcGraphcNonLinear = new javax.swing.JPanel();
         rayProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
@@ -397,6 +434,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemBrilliance = new javax.swing.JMenuItem();
         jMenuItemBrillianceNonLinear = new javax.swing.JMenuItem();
         jMenuItemPolarization = new javax.swing.JMenuItem();
+        jMenuItemPolarizationNonLinear = new javax.swing.JMenuItem();
         jMenuItemGeometricFactor = new javax.swing.JMenuItem();
         jMenuShadow = new javax.swing.JMenu();
         jMenuItemSource = new javax.swing.JMenuItem();
@@ -1213,6 +1251,234 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addComponent(polarizationCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         );
 
+        polarizationCalcNonLinear.setTitle("Non-linear polarization box");
+        polarizationCalcNonLinear.setFocusTraversalPolicyProvider(true);
+        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(760, 313));
+
+        polarizationParamcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+
+        polarizationCalcBoxNonLinear.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        polarizationCalcBoxNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcBoxNonLinearActionPerformed(evt);
+            }
+        });
+
+        polarizationCalcStartNonLinear.setText("Calculate");
+        polarizationCalcStartNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcStartNonLinearActionPerformed(evt);
+            }
+        });
+
+        polarizationCalcSaveNonLinear.setText("Save");
+        polarizationCalcSaveNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polarizationCalcSaveNonLinearActionPerformed(evt);
+            }
+        });
+
+        polminvalueNonLinear.setText("0");
+        polminvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polminvalueNonLinearFocusLost(evt);
+            }
+        });
+        polminvalueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polminvalueNonLinearActionPerformed(evt);
+            }
+        });
+
+        polminvaluelabelNonLinear.setText("Min value");
+
+        polminvalueunitlabelNonLinear.setText("mrad");
+
+        polmaxvalueunitlabelNonLinear.setText("mrad");
+
+        polmaxvalueNonLinear.setText("50");
+        polmaxvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polmaxvalueNonLinearFocusLost(evt);
+            }
+        });
+        polmaxvalueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polmaxvalueNonLinearActionPerformed(evt);
+            }
+        });
+
+        polmaxvaluelabelNonLinear.setText("Max value");
+
+        jPolCheckBoxSpreadNonLinear.setText("Spread");
+        jPolCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPolCheckBoxSpreadNonLinearActionPerformed(evt);
+            }
+        });
+
+        jPolAngleLabelNonLinear.setText("Angle");
+
+        polAngleValueNonLinear.setText("0");
+        polAngleValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polAngleValueNonLinearFocusLost(evt);
+            }
+        });
+        polAngleValueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polAngleValueNonLinearActionPerformed(evt);
+            }
+        });
+
+        polAngleValueUnitLableNonLinear.setText("mrad");
+
+        jPolEnergyLabelNonLinear.setText("Energy");
+
+        polEnergyValueNonLinear.setText("44");
+        polEnergyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                polEnergyValueNonLinearFocusLost(evt);
+            }
+        });
+        polEnergyValueNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                polEnergyValueNonLinearActionPerformed(evt);
+            }
+        });
+
+        polEnergyValueUnitLableNonLinear.setText("kev");
+
+        OrderNumberNonLinear.setText("1");
+        OrderNumberNonLinear.setToolTipText("");
+        OrderNumberNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                OrderNumberNonLinearFocusLost(evt);
+            }
+        });
+        OrderNumberNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OrderNumberNonLinearActionPerformed(evt);
+            }
+        });
+
+        OrderNumberLabelNonLinear.setText("Order");
+
+        javax.swing.GroupLayout polarizationParamcNonLinearLayout = new javax.swing.GroupLayout(polarizationParamcNonLinear);
+        polarizationParamcNonLinear.setLayout(polarizationParamcNonLinearLayout);
+        polarizationParamcNonLinearLayout.setHorizontalGroup(
+            polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addComponent(polminvaluelabelNonLinear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polminvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polmaxvaluelabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(polarizationCalcBoxNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addComponent(polarizationCalcStartNonLinear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(polarizationCalcSaveNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(polProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addComponent(OrderNumberLabelNonLinear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(OrderNumberNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(jPolEnergyLabelNonLinear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polEnergyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polEnergyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jPolAngleLabelNonLinear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(polAngleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polAngleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+        polarizationParamcNonLinearLayout.setVerticalGroup(
+            polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(polarizationCalcBoxNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(polarizationCalcStartNonLinear)
+                    .addComponent(polarizationCalcSaveNonLinear)
+                    .addComponent(jPolAngleLabelNonLinear)
+                    .addComponent(polAngleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(polAngleValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(OrderNumberNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(OrderNumberLabelNonLinear))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(polminvaluelabelNonLinear)
+                            .addComponent(polminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(polProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(8, 8, 8))
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(polEnergyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(polEnergyValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPolEnergyLabelNonLinear))
+                        .addGap(37, 37, 37))))
+        );
+
+        polarizationCalcGraphcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Polarization parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        polarizationCalcGraphcNonLinear.setPreferredSize(new java.awt.Dimension(639, 215));
+        polarizationCalcGraphcNonLinear.setRequestFocusEnabled(false);
+
+        javax.swing.GroupLayout polarizationCalcGraphcNonLinearLayout = new javax.swing.GroupLayout(polarizationCalcGraphcNonLinear);
+        polarizationCalcGraphcNonLinear.setLayout(polarizationCalcGraphcNonLinearLayout);
+        polarizationCalcGraphcNonLinearLayout.setHorizontalGroup(
+            polarizationCalcGraphcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        polarizationCalcGraphcNonLinearLayout.setVerticalGroup(
+            polarizationCalcGraphcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 210, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout polarizationCalcNonLinearLayout = new javax.swing.GroupLayout(polarizationCalcNonLinear.getContentPane());
+        polarizationCalcNonLinear.getContentPane().setLayout(polarizationCalcNonLinearLayout);
+        polarizationCalcNonLinearLayout.setHorizontalGroup(
+            polarizationCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(polarizationParamcNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(polarizationCalcGraphcNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
+        );
+        polarizationCalcNonLinearLayout.setVerticalGroup(
+            polarizationCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(polarizationCalcNonLinearLayout.createSequentialGroup()
+                .addComponent(polarizationParamcNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(polarizationCalcGraphcNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
+        );
+
         rayProgressFrame.setTitle("Ray generation progress");
         rayProgressFrame.setAlwaysOnTop(true);
         rayProgressFrame.setMinimumSize(new java.awt.Dimension(400, 100));
@@ -1991,7 +2257,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2076,6 +2342,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuCalc.add(jMenuItemPolarization);
+
+        jMenuItemPolarizationNonLinear.setText("Non-linear polarization...");
+        jMenuItemPolarizationNonLinear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemPolarizationNonLinearActionPerformed(evt);
+            }
+        });
+        jMenuCalc.add(jMenuItemPolarizationNonLinear);
 
         jMenuItemGeometricFactor.setText("Full flux/Geometric factor...");
         jMenuItemGeometricFactor.addActionListener(new java.awt.event.ActionListener() {
@@ -2506,7 +2780,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private final LinearChartParam xenergycrossdata;
     private JFreeChart xenergycrosschart = null;
     private final TitledBorder xrayenergyborder;
-    private final CalcBoxParam brilForm, brilFormNonLinear, gfForm, polForm;
+    private final CalcBoxParam brilForm, brilFormNonLinear, gfForm, polForm, polFormNonLinear;
     private ColorChart fluxChart, fluxCrossChart, xEnergyChart;
     private boolean working = false, rayWorking = false;
     private SwingWorker<Void, Void> mainWorker, rayWorker;
@@ -4438,6 +4712,88 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItemOrderNumberActionPerformed
 
+    private void polarizationCalcBoxNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcBoxNonLinearActionPerformed
+        // Update boxes, labels and other items when parameters selection is performed
+        int sInd = polarizationCalcBoxNonLinear.getSelectedIndex();
+        polFormNonLinear.selectedItemIndex = sInd;
+        polminvalueunitlabelNonLinear.setText(polFormNonLinear.valueUnitLabels[sInd]);
+        polmaxvalueunitlabelNonLinear.setText(polFormNonLinear.valueUnitLabels[sInd]);
+        polminvalueNonLinear.setText(polFormNonLinear.minValues[sInd]);
+        polmaxvalueNonLinear.setText(polFormNonLinear.maxValues[sInd]);
+        polFormNonLinear.minValue = Float.parseFloat(polminvalueNonLinear.getText());
+        polFormNonLinear.maxValue = Float.parseFloat(polmaxvalueNonLinear.getText());
+        switch (sInd) {
+            case 10:
+                polAngleValueNonLinear.setEnabled(true);
+                polEnergyValueNonLinear.setEnabled(false);
+                break;
+            case 11:
+                polAngleValueNonLinear.setEnabled(false);
+                polEnergyValueNonLinear.setEnabled(true);
+                break;
+            default:
+                polAngleValueNonLinear.setEnabled(true);
+                polEnergyValueNonLinear.setEnabled(true);
+        }
+    }//GEN-LAST:event_polarizationCalcBoxNonLinearActionPerformed
+
+    private void polarizationCalcStartNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcStartNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polarizationCalcStartNonLinearActionPerformed
+
+    private void polarizationCalcSaveNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcSaveNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polarizationCalcSaveNonLinearActionPerformed
+
+    private void polminvalueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polminvalueNonLinearFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polminvalueNonLinearFocusLost
+
+    private void polminvalueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polminvalueNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polminvalueNonLinearActionPerformed
+
+    private void polmaxvalueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polmaxvalueNonLinearFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polmaxvalueNonLinearFocusLost
+
+    private void polmaxvalueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polmaxvalueNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polmaxvalueNonLinearActionPerformed
+
+    private void jPolCheckBoxSpreadNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPolCheckBoxSpreadNonLinearActionPerformed
+
+    private void polAngleValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polAngleValueNonLinearFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polAngleValueNonLinearFocusLost
+
+    private void polAngleValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polAngleValueNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polAngleValueNonLinearActionPerformed
+
+    private void polEnergyValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polEnergyValueNonLinearFocusLost
+
+    private void polEnergyValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_polEnergyValueNonLinearActionPerformed
+
+    private void jMenuItemPolarizationNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationNonLinearActionPerformed
+        // TODO add your handling code here:
+        polarizationCalcNonLinear.setVisible(true);
+    }//GEN-LAST:event_jMenuItemPolarizationNonLinearActionPerformed
+
+    private void OrderNumberNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_OrderNumberNonLinearFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_OrderNumberNonLinearFocusLost
+
+    private void OrderNumberNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrderNumberNonLinearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_OrderNumberNonLinearActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation for linear and non-linear sources
      */
@@ -4533,6 +4889,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JProgressBar MainProgressBar;
     private javax.swing.JTextField OrderNumber;
     private javax.swing.JLabel OrderNumberLabel;
+    private javax.swing.JLabel OrderNumberLabelNonLinear;
+    private javax.swing.JTextField OrderNumberNonLinear;
     private javax.swing.JTextField angleValue;
     private javax.swing.JTextField angleValueNonLinear;
     private javax.swing.JLabel angleValueUnitLable;
@@ -4599,6 +4957,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItemNumerical;
     private javax.swing.JMenuItem jMenuItemOrderNumber;
     private javax.swing.JMenuItem jMenuItemPolarization;
+    private javax.swing.JMenuItem jMenuItemPolarizationNonLinear;
     private javax.swing.JMenuItem jMenuItemSaveParam;
     private javax.swing.JMenuItem jMenuItemSize;
     private javax.swing.JMenuItem jMenuItemSource;
@@ -4620,8 +4979,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_xflux_left;
     private javax.swing.JPanel jPanel_xflux_right;
     private javax.swing.JLabel jPolAngleLabel;
+    private javax.swing.JLabel jPolAngleLabelNonLinear;
     private javax.swing.JCheckBox jPolCheckBoxSpread;
+    private javax.swing.JCheckBox jPolCheckBoxSpreadNonLinear;
     private javax.swing.JLabel jPolEnergyLabel;
+    private javax.swing.JLabel jPolEnergyLabelNonLinear;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemAutoPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
@@ -4643,22 +5005,39 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel phenergyunitlabel;
     private javax.swing.JTextField phenergyvalue;
     private javax.swing.JTextField polAngleValue;
+    private javax.swing.JTextField polAngleValueNonLinear;
     private javax.swing.JLabel polAngleValueUnitLable;
+    private javax.swing.JLabel polAngleValueUnitLableNonLinear;
     private javax.swing.JTextField polEnergyValue;
+    private javax.swing.JTextField polEnergyValueNonLinear;
     private javax.swing.JLabel polEnergyValueUnitLable;
+    private javax.swing.JLabel polEnergyValueUnitLableNonLinear;
     private javax.swing.JProgressBar polProgressBar;
+    private javax.swing.JProgressBar polProgressBarNonLinear;
     private javax.swing.JFrame polarizationCalc;
     private javax.swing.JComboBox polarizationCalcBox;
+    private javax.swing.JComboBox polarizationCalcBoxNonLinear;
     private javax.swing.JPanel polarizationCalcGraph;
+    private javax.swing.JPanel polarizationCalcGraphcNonLinear;
+    private javax.swing.JFrame polarizationCalcNonLinear;
     private javax.swing.JButton polarizationCalcSave;
+    private javax.swing.JButton polarizationCalcSaveNonLinear;
     private javax.swing.JButton polarizationCalcStart;
+    private javax.swing.JButton polarizationCalcStartNonLinear;
     private javax.swing.JPanel polarizationParam;
+    private javax.swing.JPanel polarizationParamcNonLinear;
     private javax.swing.JTextField polmaxvalue;
+    private javax.swing.JTextField polmaxvalueNonLinear;
     private javax.swing.JLabel polmaxvaluelabel;
+    private javax.swing.JLabel polmaxvaluelabelNonLinear;
     private javax.swing.JLabel polmaxvalueunitlabel;
+    private javax.swing.JLabel polmaxvalueunitlabelNonLinear;
     private javax.swing.JTextField polminvalue;
+    private javax.swing.JTextField polminvalueNonLinear;
     private javax.swing.JLabel polminvaluelabel;
+    private javax.swing.JLabel polminvaluelabelNonLinear;
     private javax.swing.JLabel polminvalueunitlabel;
+    private javax.swing.JLabel polminvalueunitlabelNonLinear;
     private javax.swing.JLabel pulseanglelabel;
     private javax.swing.JLabel pulseangleunitlabel;
     private javax.swing.JTextField pulseanglevalue;

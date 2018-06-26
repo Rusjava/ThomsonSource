@@ -1104,6 +1104,316 @@
         </Container>
       </SubComponents>
     </Container>
+    <Container class="javax.swing.JFrame" name="polarizationCalcNonLinear">
+      <Properties>
+        <Property name="title" type="java.lang.String" value="Non-linear polarization box"/>
+        <Property name="focusTraversalPolicyProvider" type="boolean" value="true"/>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[760, 313]"/>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="polarizationParamcNonLinear" alignment="0" max="32767" attributes="0"/>
+              <Component id="polarizationCalcGraphcNonLinear" alignment="0" pref="762" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="polarizationParamcNonLinear" min="-2" pref="113" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="polarizationCalcGraphcNonLinear" pref="233" max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="polarizationParamcNonLinear">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder justification="2" title="Plot parameter selection"/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="polminvaluelabelNonLinear" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="polminvalueNonLinear" min="-2" pref="45" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="polminvalueunitlabelNonLinear" min="-2" pref="54" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="polmaxvaluelabelNonLinear" min="-2" pref="57" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="polmaxvalueNonLinear" min="-2" pref="43" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="polmaxvalueunitlabelNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="polarizationCalcBoxNonLinear" min="-2" pref="283" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="polarizationCalcStartNonLinear" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="polarizationCalcSaveNonLinear" min="-2" pref="77" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="polProgressBarNonLinear" min="-2" pref="185" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="OrderNumberLabelNonLinear" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="OrderNumberNonLinear" min="-2" pref="28" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="jPolCheckBoxSpreadNonLinear" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                              <Component id="jPolEnergyLabelNonLinear" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="polEnergyValueNonLinear" min="-2" pref="33" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="polEnergyValueUnitLableNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                              <Component id="jPolAngleLabelNonLinear" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="polAngleValueNonLinear" min="-2" pref="33" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="polAngleValueUnitLableNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace pref="13" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="polarizationCalcBoxNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="polarizationCalcStartNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="polarizationCalcSaveNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jPolAngleLabelNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="polAngleValueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="polAngleValueUnitLableNonLinear" alignment="3" max="32767" attributes="0"/>
+                          <Component id="OrderNumberNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="OrderNumberLabelNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="polminvaluelabelNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="polminvalueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="polminvalueunitlabelNonLinear" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="polmaxvaluelabelNonLinear" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="polmaxvalueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="polmaxvalueunitlabelNonLinear" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="polProgressBarNonLinear" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="jPolCheckBoxSpreadNonLinear" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="polEnergyValueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="polEnergyValueUnitLableNonLinear" alignment="3" max="32767" attributes="0"/>
+                                  <Component id="jPolEnergyLabelNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JComboBox" name="polarizationCalcBoxNonLinear">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="12">
+                    <StringItem index="0" value="Laser-electron angle"/>
+                    <StringItem index="1" value="Delay"/>
+                    <StringItem index="2" value="Z-shift"/>
+                    <StringItem index="3" value="Beta function"/>
+                    <StringItem index="4" value="Emittance"/>
+                    <StringItem index="5" value="X-emittance"/>
+                    <StringItem index="6" value="Y-emittance"/>
+                    <StringItem index="7" value="Rayleigh length"/>
+                    <StringItem index="8" value="Waist semi-width"/>
+                    <StringItem index="9" value="Energy spread"/>
+                    <StringItem index="10" value="X-ray energy"/>
+                    <StringItem index="11" value="Observation angle"/>
+                  </StringArray>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polarizationCalcBoxNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="polarizationCalcStartNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Calculate"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polarizationCalcStartNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="polarizationCalcSaveNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polarizationCalcSaveNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JTextField" name="polminvalueNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="0"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polminvalueNonLinearFocusLost"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polminvalueNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="polminvaluelabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Min value"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="polminvalueunitlabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="mrad"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="polmaxvalueunitlabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="mrad"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="polmaxvalueNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="50"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polmaxvalueNonLinearFocusLost"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polmaxvalueNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="polmaxvaluelabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Max value"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="jPolCheckBoxSpreadNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Spread"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jPolCheckBoxSpreadNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JProgressBar" name="polProgressBarNonLinear">
+            </Component>
+            <Component class="javax.swing.JLabel" name="jPolAngleLabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Angle"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="polAngleValueNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="0"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polAngleValueNonLinearFocusLost"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polAngleValueNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="polAngleValueUnitLableNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="mrad"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jPolEnergyLabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Energy"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="polEnergyValueNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="44"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polEnergyValueNonLinearFocusLost"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polEnergyValueNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="polEnergyValueUnitLableNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="kev"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="OrderNumberNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="1"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="OrderNumberNonLinearFocusLost"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OrderNumberNonLinearActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="OrderNumberLabelNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Order"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="polarizationCalcGraphcNonLinear">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder justification="2" title="Polarization parameters"/>
+              </Border>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[639, 215]"/>
+            </Property>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="210" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
+      </SubComponents>
+    </Container>
     <Container class="javax.swing.JFrame" name="rayProgressFrame">
       <Properties>
         <Property name="title" type="java.lang.String" value="Ray generation progress"/>
@@ -1231,6 +1541,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemPolarizationActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemPolarizationNonLinear">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Non-linear polarization..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemPolarizationNonLinearActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemGeometricFactor">
