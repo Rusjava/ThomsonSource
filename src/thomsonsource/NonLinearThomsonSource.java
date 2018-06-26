@@ -692,19 +692,25 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
                 Vector ree = re.copy();
-                ree.set(2, ree.get(2) - x + eb.getShift().get(2));
+                ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
-                rphh.set(2, rphh.get(2) - x + lp.getDelay());
-                return directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                rphh.set(2, rphh.get(2) - x);
+                return directionFrequencyFluxNoSpread(n, v, rphh, e)
+                        * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
             }
         };
+        //Defining the upper nad lower integration limits
+        double zmin = -INT_RANGE * eb.getLength()
+                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double zmax = INT_RANGE * eb.getLength()
+                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
-                    INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
+                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -733,19 +739,26 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                re.set(2, re.get(2) - x);
-                rph.set(2, rph.get(2) - x);
-                return directionFrequencyPolarizationNoSpread(n, v, r, e, index) * eb.lSpatialDistribution(re)
-                        * lp.lSpatialDistribution(rph);
+                Vector ree = re.copy();
+                ree.set(2, ree.get(2) - x);
+                Vector rphh = rph.copy();
+                rphh.set(2, rphh.get(2) - x);
+                return directionFrequencyPolarizationNoSpread(n, v, rphh, e, index)
+                        * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
             }
         };
+        //Defining the upper nad lower integration limits
+        double zmin = -INT_RANGE * eb.getLength()
+                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double zmax = INT_RANGE * eb.getLength()
+                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyVolumePolarizationNoSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
-                    INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
+                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -764,24 +777,31 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                re.set(2, re.get(2) - x);
-                rph.set(2, rph.get(2) - x);
+                Vector ree = re.copy();
+                ree.set(2, ree.get(2) - x);
+                Vector rphh = rph.copy();
+                rphh.set(2, rphh.get(2) - x);
                 try {
-                    return directionFrequencyFluxSpread(n, v, r, e) * eb.lSpatialDistribution(re)
-                            * lp.lSpatialDistribution(rph);
+                    return directionFrequencyFluxSpread(n, v, rphh, e)
+                            * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                     return 0;
                 }
             }
         };
+        //Defining the upper nad lower integration limits
+        double zmin = -INT_RANGE * eb.getLength()
+                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double zmax = INT_RANGE * eb.getLength()
+                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
-                    INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
+                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -809,20 +829,27 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                re.set(2, re.get(2) - x);
-                rph.set(2, rph.get(2) - x);
+                Vector ree = re.copy();
+                ree.set(2, ree.get(2) - x);
+                Vector rphh = rph.copy();
+                rphh.set(2, rphh.get(2) - x);
                 try {
-                    return directionFrequencyPolarizationSpread(n, v, r, e, index) * eb.lSpatialDistribution(re)
-                            * lp.lSpatialDistribution(rph);
+                    return directionFrequencyPolarizationSpread(n, v, rphh, e, index)
+                            * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                     return 0;
                 }
             }
         };
+        //Defining the upper nad lower integration limits
+        double zmin = -INT_RANGE * eb.getLength()
+                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double zmax = INT_RANGE * eb.getLength()
+                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
         try {
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getLength(),
-                    INT_RANGE * eb.getLength()) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
+                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
