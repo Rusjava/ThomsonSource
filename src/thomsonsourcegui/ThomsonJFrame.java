@@ -464,7 +464,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemAbout = new javax.swing.JMenuItem();
 
         brillianceCalc.setTitle("Linear brilliance box");
-        brillianceCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+        brillianceCalc.setMinimumSize(new java.awt.Dimension(860, 313));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1046,7 +1046,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         polarizationCalc.setTitle("Linear polarization box");
-        polarizationCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+        polarizationCalc.setMinimumSize(new java.awt.Dimension(860, 313));
 
         polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1253,7 +1253,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polarizationCalcNonLinear.setTitle("Non-linear polarization box");
         polarizationCalcNonLinear.setFocusTraversalPolicyProvider(true);
-        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(760, 313));
+        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(860, 313));
 
         polarizationParamcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1391,28 +1391,27 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(polarizationCalcSaveNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(polProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
-                .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
-                        .addComponent(OrderNumberLabelNonLinear)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(OrderNumberNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(jPolEnergyLabelNonLinear)
+                        .addGap(20, 20, 20)
+                        .addComponent(OrderNumberLabelNonLinear)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(polEnergyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(polEnergyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addComponent(OrderNumberNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(14, 14, 14)
                         .addComponent(jPolAngleLabelNonLinear)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(polAngleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(polAngleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(polAngleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPolEnergyLabelNonLinear)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(polEnergyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(polEnergyValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(13, Short.MAX_VALUE))
         );
         polarizationParamcNonLinearLayout.setVerticalGroup(
@@ -1432,22 +1431,24 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
                         .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(polProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(polminvaluelabelNonLinear)
                                 .addComponent(polminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(polminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(polmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(polmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(polmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(polmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
+                                .addComponent(polProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(8, 8, 8))
                     .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
                         .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(polEnergyValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(polEnergyValueUnitLableNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPolEnergyLabelNonLinear))
-                        .addGap(37, 37, 37))))
+                            .addComponent(jPolEnergyLabelNonLinear)
+                            .addComponent(jPolCheckBoxSpreadNonLinear))
+                        .addGap(35, 35, 35))))
         );
 
         polarizationCalcGraphNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Polarization parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -2258,7 +2259,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()

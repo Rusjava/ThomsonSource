@@ -6,7 +6,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Linear brilliance box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[760, 313]"/>
+          <Dimension value="[860, 313]"/>
         </Property>
       </Properties>
 
@@ -821,7 +821,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Linear polarization box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[760, 313]"/>
+          <Dimension value="[860, 313]"/>
         </Property>
       </Properties>
 
@@ -1109,7 +1109,7 @@
         <Property name="title" type="java.lang.String" value="Non-linear polarization box"/>
         <Property name="focusTraversalPolicyProvider" type="boolean" value="true"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[760, 313]"/>
+          <Dimension value="[860, 313]"/>
         </Property>
       </Properties>
 
@@ -1170,31 +1170,28 @@
                           </Group>
                           <Component id="polProgressBarNonLinear" min="-2" pref="185" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                               <Component id="OrderNumberLabelNonLinear" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="OrderNumberNonLinear" min="-2" pref="28" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="jPolCheckBoxSpreadNonLinear" max="32767" attributes="0"/>
-                      </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                              <Component id="jPolEnergyLabelNonLinear" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="polEnergyValueNonLinear" min="-2" pref="33" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="polEnergyValueUnitLableNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                               <Component id="jPolAngleLabelNonLinear" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="polAngleValueNonLinear" min="-2" pref="33" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="polAngleValueUnitLableNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                              <Component id="jPolCheckBoxSpreadNonLinear" min="-2" pref="66" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jPolEnergyLabelNonLinear" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="polEnergyValueNonLinear" min="-2" pref="33" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                              <Component id="polEnergyValueUnitLableNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace pref="13" max="32767" attributes="0"/>
@@ -1219,8 +1216,6 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="polProgressBarNonLinear" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="jPolCheckBoxSpreadNonLinear" alignment="0" max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="polminvaluelabelNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="polminvalueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1228,6 +1223,10 @@
                                       <Component id="polmaxvaluelabelNonLinear" alignment="3" max="32767" attributes="0"/>
                                       <Component id="polmaxvalueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="polmaxvalueunitlabelNonLinear" alignment="3" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="polProgressBarNonLinear" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
@@ -1237,8 +1236,9 @@
                                   <Component id="polEnergyValueNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="polEnergyValueUnitLableNonLinear" alignment="3" max="32767" attributes="0"/>
                                   <Component id="jPolEnergyLabelNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jPolCheckBoxSpreadNonLinear" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
