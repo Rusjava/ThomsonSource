@@ -346,7 +346,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polEnergyValueUnitLableNonLinear = new javax.swing.JLabel();
         OrderNumberNonLinear = new javax.swing.JTextField();
         OrderNumberLabelNonLinear = new javax.swing.JLabel();
-        polarizationCalcGraphcNonLinear = new javax.swing.JPanel();
+        polarizationCalcGraphNonLinear = new javax.swing.JPanel();
         rayProgressFrame = new javax.swing.JFrame();
         jRayProgressBar = new javax.swing.JProgressBar();
         jRayStopButton = new javax.swing.JButton();
@@ -1431,15 +1431,16 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
-                        .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(polminvaluelabelNonLinear)
-                            .addComponent(polminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(polminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(polmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(polmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(polmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(polProgressBarNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPolCheckBoxSpreadNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(polminvaluelabelNonLinear)
+                                .addComponent(polminvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(polminvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(polmaxvaluelabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(polmaxvalueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(polmaxvalueunitlabelNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGap(8, 8, 8))
                     .addGroup(polarizationParamcNonLinearLayout.createSequentialGroup()
                         .addGroup(polarizationParamcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1449,18 +1450,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addGap(37, 37, 37))))
         );
 
-        polarizationCalcGraphcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Polarization parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-        polarizationCalcGraphcNonLinear.setPreferredSize(new java.awt.Dimension(639, 215));
-        polarizationCalcGraphcNonLinear.setRequestFocusEnabled(false);
+        polarizationCalcGraphNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Polarization parameters", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        polarizationCalcGraphNonLinear.setPreferredSize(new java.awt.Dimension(639, 215));
+        polarizationCalcGraphNonLinear.setRequestFocusEnabled(false);
 
-        javax.swing.GroupLayout polarizationCalcGraphcNonLinearLayout = new javax.swing.GroupLayout(polarizationCalcGraphcNonLinear);
-        polarizationCalcGraphcNonLinear.setLayout(polarizationCalcGraphcNonLinearLayout);
-        polarizationCalcGraphcNonLinearLayout.setHorizontalGroup(
-            polarizationCalcGraphcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout polarizationCalcGraphNonLinearLayout = new javax.swing.GroupLayout(polarizationCalcGraphNonLinear);
+        polarizationCalcGraphNonLinear.setLayout(polarizationCalcGraphNonLinearLayout);
+        polarizationCalcGraphNonLinearLayout.setHorizontalGroup(
+            polarizationCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        polarizationCalcGraphcNonLinearLayout.setVerticalGroup(
-            polarizationCalcGraphcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        polarizationCalcGraphNonLinearLayout.setVerticalGroup(
+            polarizationCalcGraphNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 210, Short.MAX_VALUE)
         );
 
@@ -1469,14 +1470,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polarizationCalcNonLinearLayout.setHorizontalGroup(
             polarizationCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(polarizationParamcNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(polarizationCalcGraphcNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
+            .addComponent(polarizationCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
         );
         polarizationCalcNonLinearLayout.setVerticalGroup(
             polarizationCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(polarizationCalcNonLinearLayout.createSequentialGroup()
                 .addComponent(polarizationParamcNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(polarizationCalcGraphcNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
+                .addComponent(polarizationCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
         );
 
         rayProgressFrame.setTitle("Ray generation progress");
@@ -2257,7 +2258,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -4285,22 +4286,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jPolCheckBoxSpreadActionPerformed
 
     private void polAngleValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polAngleValueFocusLost
-        // TODO add your handling code here:
+        // Setting scattering angle in polarization form:
         polForm.angle = TestValueWithMemory(0, 100, polAngleValue, "0", oldStrings);
     }//GEN-LAST:event_polAngleValueFocusLost
 
     private void polAngleValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polAngleValueActionPerformed
-        // TODO add your handling code here:
+        // Setting scattering angle in polarization form:
         polForm.angle = TestValueWithMemory(0, 100, polAngleValue, "0", oldStrings);
     }//GEN-LAST:event_polAngleValueActionPerformed
 
     private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
-        // TODO add your handling code here:
+        //Setting energy in polarization form:
         polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
-        // TODO add your handling code here:
+         //Setting energy in polarization form:
         polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
@@ -4738,47 +4739,211 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_polarizationCalcBoxNonLinearActionPerformed
 
     private void polarizationCalcStartNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcStartNonLinearActionPerformed
-        // TODO add your handling code here:
+        //Polarization box calculations
+        // Checking if already running
+        if (polFormNonLinear.working) {
+            polFormNonLinear.cancel();
+            polarizationCalcStartNonLinear.setText("Calculate");
+            polarizationCalcSaveNonLinear.setEnabled(true);
+            return;
+        }
+        polProgressBarNonLinear.setValue(0);
+        polProgressBarNonLinear.setStringPainted(true);
+        polarizationCalcStartNonLinear.setText("Terminate");
+        polarizationCalcSaveNonLinear.setEnabled(false);
+        polFormNonLinear.initialize(tsource);
+
+        /**
+         * Calculating data array. Using SwingWorker class
+         */
+        polFormNonLinear.worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                double step = (polFormNonLinear.maxValueClone - polFormNonLinear.minValueClone) / (xsize - 1);
+                double offset = polFormNonLinear.minValueClone;
+                //A list of functions calculating intensity and polarization
+                List<Function<Double, Double>> func = new ArrayList<>();
+                //A list of auxiliary functions
+                List<Function<double[], Double>> fn = new ArrayList<>();
+                fn.add(x -> {
+                    return x[1] / x[0];
+                });
+                fn.add(x -> {
+                    return x[2] / x[0];
+                });
+                fn.add(x -> {
+                    return x[3] / x[0];
+                });
+                fn.add(x -> {
+                    return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
+                            + (x[3] / x[0]) * (x[3] / x[0]));
+                });
+                double[] rescash = new double[]{1, 0, 0, 0};
+                double[] xpcash = new double[]{-1};
+                for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
+                    final int[] ia = new int[]{i};
+                    func.add(xp -> {
+                        double[] res;
+                        double ang, e, x;
+                        x = xp * polFormNonLinear.conversionValues[polFormNonLinear.selectedItemIndexClone];
+                        ang = polFormNonLinear.angleclone * 1e-3;
+                        e = polFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
+                        switch (polFormNonLinear.selectedItemIndexClone) {
+                            case 0:
+                                Vector dir = new BasicVector(new double[3]);
+                                dir.set(2, Math.cos(x));
+                                dir.set(1, Math.sin(x));
+                                polFormNonLinear.tsourceclone.getLaserPulse().setDirection(dir);
+                                break;
+                            case 1:
+                                polFormNonLinear.tsourceclone.getLaserPulse().setDelay(x);
+                                break;
+                            case 2:
+                                Vector sht = new BasicVector(new double[3]);
+                                sht.set(2, x);
+                                polFormNonLinear.tsourceclone.getElectronBunch().setShift(sht);
+                                break;
+                            case 3:
+                                polFormNonLinear.tsourceclone.getElectronBunch().setBetax(x);
+                                polFormNonLinear.tsourceclone.getElectronBunch().setBetay(x);
+                                break;
+                            case 4:
+                                polFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
+                                polFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
+                                break;
+                            case 5:
+                                polFormNonLinear.tsourceclone.getElectronBunch().setEpsx(x);
+                                break;
+                            case 6:
+                                polFormNonLinear.tsourceclone.getElectronBunch().setEpsy(x);
+                                break;
+                            case 7:
+                                polFormNonLinear.tsourceclone.getLaserPulse().setRlength(x);
+                                break;
+                            case 8:
+                                polFormNonLinear.tsourceclone.getLaserPulse().setWidth(x);
+                                polFormNonLinear.tsourceclone.getElectronBunch().setxWidth(x);
+                                polFormNonLinear.tsourceclone.getElectronBunch().setyWidth(x);
+                                break;
+                            case 9:
+                                polFormNonLinear.tsourceclone.getElectronBunch().setDelgamma(x);
+                                break;
+                            case 10:
+                                ang = polFormNonLinear.angleclone * 1e-3;
+                                e = xp * polFormNonLinear.conversionValues[polFormNonLinear.selectedItemIndexClone];
+                                break;
+                            case 11:
+                                ang = xp * polFormNonLinear.conversionValues[polFormNonLinear.selectedItemIndexClone];
+                                break;
+                        }
+                        setStatusBar((xp - offset) / step / (xsize - 1));
+                        polFormNonLinear.tsourceclone.calculateLinearTotalFlux();
+                        //If the same point, use the saved values
+                        if (xpcash[0] != xp) {
+                            try {
+                                res = polFormNonLinear.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
+                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                                return fn.get(ia[0]).apply(rescash);
+                            }
+                        } else {
+                            return fn.get(ia[0]).apply(rescash);
+                        }
+                        //If NaNs use the saved values
+                        if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
+                                || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
+                            return fn.get(ia[0]).apply(rescash);
+                        }
+                        xpcash[0] = xp;
+                        System.arraycopy(res, 0, rescash, 0, 4);
+                        return fn.get(ia[0]).apply(res);
+                    });
+                }
+                polFormNonLinear.chartParam.setup(func, xsize, step, offset);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException | CancellationException ex) {
+
+                }
+                polFormNonLinear.updateGraph(polarizationCalcGraphNonLinear, "Polarization parameters");
+                polarizationCalcStartNonLinear.setText("Calculate");
+                polarizationCalcSaveNonLinear.setEnabled(true);
+            }
+
+            /**
+             * Updating progress bar
+             *
+             * @param status
+             */
+            public void setStatusBar(final double status) {
+                SwingUtilities.invokeLater(() -> polProgressBarNonLinear.setValue((int) Math.round(100 * status)));
+            }
+        };
+        polForm.worker.execute();
     }//GEN-LAST:event_polarizationCalcStartNonLinearActionPerformed
 
     private void polarizationCalcSaveNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcSaveNonLinearActionPerformed
-        // TODO add your handling code here:
+        // Saving the brilliance plot data
+        if (polFormNonLinear.chartPanel != null) {
+            polFormNonLinear.save();
+        }
     }//GEN-LAST:event_polarizationCalcSaveNonLinearActionPerformed
 
     private void polminvalueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polminvalueNonLinearFocusLost
         // TODO add your handling code here:
+        polFormNonLinear.minValue = TestValueWithMemory(0, 1000, polminvalueNonLinear,
+                polFormNonLinear.minValues[polFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polminvalueNonLinearFocusLost
 
     private void polminvalueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polminvalueNonLinearActionPerformed
         // TODO add your handling code here:
+        polFormNonLinear.minValue = TestValueWithMemory(0, 1000, polminvalueNonLinear,
+                polFormNonLinear.minValues[polFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polminvalueNonLinearActionPerformed
 
     private void polmaxvalueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polmaxvalueNonLinearFocusLost
         // TODO add your handling code here:
+        polFormNonLinear.maxValue = TestValueWithMemory(0, 1000, polmaxvalueNonLinear,
+                polFormNonLinear.maxValues[polFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polmaxvalueNonLinearFocusLost
 
     private void polmaxvalueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polmaxvalueNonLinearActionPerformed
         // TODO add your handling code here:
+        polFormNonLinear.maxValue = TestValueWithMemory(0, 1000, polmaxvalueNonLinear,
+                polFormNonLinear.maxValues[polFormNonLinear.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polmaxvalueNonLinearActionPerformed
 
     private void jPolCheckBoxSpreadNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadNonLinearActionPerformed
-        // TODO add your handling code here:
+        // Cheking spread check box
+        polFormNonLinear.espread = jPolCheckBoxSpreadNonLinear.isSelected();
     }//GEN-LAST:event_jPolCheckBoxSpreadNonLinearActionPerformed
 
     private void polAngleValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polAngleValueNonLinearFocusLost
-        // TODO add your handling code here:
+        // Setting scattering angle in polarization form:
+        polFormNonLinear.angle = TestValueWithMemory(0, 100, polAngleValueNonLinear, "0", oldStrings);
     }//GEN-LAST:event_polAngleValueNonLinearFocusLost
 
     private void polAngleValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polAngleValueNonLinearActionPerformed
-        // TODO add your handling code here:
+        // Setting scattering angle in polarization form:
+        polFormNonLinear.angle = TestValueWithMemory(0, 100, polAngleValueNonLinear, "0", oldStrings);
     }//GEN-LAST:event_polAngleValueNonLinearActionPerformed
 
     private void polEnergyValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearFocusLost
-        // TODO add your handling code here:
+        //Setting energy in polarization form:
+        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "44", oldStrings);                                      
     }//GEN-LAST:event_polEnergyValueNonLinearFocusLost
 
     private void polEnergyValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearActionPerformed
-        // TODO add your handling code here:
+        //Setting energy in polarization form:
+        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "44", oldStrings);
     }//GEN-LAST:event_polEnergyValueNonLinearActionPerformed
 
     private void jMenuItemPolarizationNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationNonLinearActionPerformed
@@ -4788,10 +4953,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void OrderNumberNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_OrderNumberNonLinearFocusLost
         // TODO add your handling code here:
+        polFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 10, OrderNumberNonLinear, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberNonLinearFocusLost
 
     private void OrderNumberNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrderNumberNonLinearActionPerformed
         // TODO add your handling code here:
+        polFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 10, OrderNumberNonLinear, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberNonLinearActionPerformed
 
     /*
@@ -5018,7 +5185,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox polarizationCalcBox;
     private javax.swing.JComboBox polarizationCalcBoxNonLinear;
     private javax.swing.JPanel polarizationCalcGraph;
-    private javax.swing.JPanel polarizationCalcGraphcNonLinear;
+    private javax.swing.JPanel polarizationCalcGraphNonLinear;
     private javax.swing.JFrame polarizationCalcNonLinear;
     private javax.swing.JButton polarizationCalcSave;
     private javax.swing.JButton polarizationCalcSaveNonLinear;
