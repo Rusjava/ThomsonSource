@@ -101,6 +101,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         /**
+         * Defining polarization transformation functions
+         */
+        fn = new ArrayList<>();
+        fn.add(x -> {
+            return x[1] / x[0];
+        });
+        fn.add(x -> {
+            return x[2] / x[0];
+        });
+        fn.add(x -> {
+            return x[3] / x[0];
+        });
+        fn.add(x -> {
+            return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
+                    + (x[3] / x[0]) * (x[3] / x[0]));
+        });
+        /**
          * An auxiliary method giving the flux density in a given direction
          *
          */
@@ -153,12 +170,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Auxiliary object for linear energy chart parameters
          */
-        this.xenergycrossdata = new LinearChartParam();
+        this.xenergycrossdata = new LinearChartParam(null);
 
         /**
          * Objects for the brilliance calculation
          */
-        this.brilForm = new CalcBoxParam(new String[]{"Spectral brilliance"});
+        this.brilForm = new CalcBoxParam(new String[]{"Spectral brilliance"}, null);
         this.brilForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
             "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
         this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
@@ -173,7 +190,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the non-linear brilliance calculation
          */
-        this.brilFormNonLinear = new CalcBoxParam(new String[]{"Spectral brilliance"});
+        this.brilFormNonLinear = new CalcBoxParam(new String[]{"Spectral brilliance"}, null);
         this.brilFormNonLinear.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
             "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
         this.brilFormNonLinear.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
@@ -188,7 +205,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the exact and approximate GF calculations
          */
-        this.gfForm = new CalcBoxParam(new String[]{"Full flux", "Approximate full flux"});
+        this.gfForm = new CalcBoxParam(new String[]{"Full flux", "Approximate full flux"}, null);
         this.gfForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm", "<html>&mu;m</html>"};
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
@@ -200,7 +217,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the linear polarization calculation
          */
-        this.polForm = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"});
+        this.polForm = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"}, fn);
         this.polForm.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
             "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
         this.polForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
@@ -214,7 +231,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         /**
          * Objects for the non-linear polarization calculation
          */
-        this.polFormNonLinear = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"});
+        this.polFormNonLinear = new CalcBoxParam(new String[]{"\u03BE1", "\u03BE2", "\u03BE3", "polarization degree"}, fn);
         this.polFormNonLinear.valueUnitLabels = new String[]{"mrad", "ps", "mm", "mm", "mm mrad", "mm mrad", "mm mrad",
             "mm", "<html>&mu;m</html>", "", "keV", "mrad"};
         this.polFormNonLinear.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
@@ -2589,10 +2606,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          *
          * @param keys
          */
-        public CalcBoxParam(String[] keys) {
+        public CalcBoxParam(String[] keys, List<Function<double[], Double>> trfunc) {
             super();
             this.keys = keys;
-            this.chartParam = new LinearChartParam();
+            this.chartParam = new LinearChartParam(trfunc);
         }
 
         /**
@@ -2790,7 +2807,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
             gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
             yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box, orderNumberBox;
-
+    List<Function<double[], Double>> fn;
     private File bFile = null, pFile = null;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
@@ -4127,27 +4144,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 double offset = polForm.minValueClone;
                 //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
-                //A list of auxiliary functions
-                List<Function<double[], Double>> fn = new ArrayList<>();
-                fn.add(x -> {
-                    return x[1] / x[0];
-                });
-                fn.add(x -> {
-                    return x[2] / x[0];
-                });
-                fn.add(x -> {
-                    return x[3] / x[0];
-                });
-                fn.add(x -> {
-                    return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
-                            + (x[3] / x[0]) * (x[3] / x[0]));
-                });
-                double[] rescash = new double[]{1, 0, 0, 0};
-                double[] xpcash = new double[]{-1};
                 for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
                     final int[] ia = new int[]{i};
                     func.add(xp -> {
-                        double[] res;
                         double ang, e, x;
                         x = xp * polForm.conversionValues[polForm.selectedItemIndexClone];
                         ang = polForm.angleclone * 1e-3;
@@ -4202,26 +4201,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         polForm.tsourceclone.calculateLinearTotalFlux();
-                        //If the same point, use the saved values
-                        if (xpcash[0] != xp) {
-                            try {
-                                res = polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
-                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e);
-                            } catch (InterruptedException ex) {
-                                Thread.currentThread().interrupt();
-                                return fn.get(ia[0]).apply(rescash);
-                            }
-                        } else {
-                            return fn.get(ia[0]).apply(rescash);
+                        //Calculating and returning the intensity multiplied Stocks parameter
+                        try {
+                            return polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}),
+                                            new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                            return 0.0;
                         }
-                        //If NaNs use the saved values
-                        if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                            return fn.get(ia[0]).apply(rescash);
-                        }
-                        xpcash[0] = xp;
-                        System.arraycopy(res, 0, rescash, 0, 4);
-                        return fn.get(ia[0]).apply(res);
                     });
                 }
                 polForm.chartParam.setup(func, xsize, step, offset);
@@ -4302,7 +4289,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
-         //Setting energy in polarization form:
+        //Setting energy in polarization form:
         polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
@@ -4939,7 +4926,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearFocusLost
         //Setting energy in polarization form:
-        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "44", oldStrings);                                      
+        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "44", oldStrings);
     }//GEN-LAST:event_polEnergyValueNonLinearFocusLost
 
     private void polEnergyValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearActionPerformed

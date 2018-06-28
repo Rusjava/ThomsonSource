@@ -45,10 +45,17 @@ public class LinearChartParam {
 
     /**
      * Default constructor
+     *
+     * @param trfunc
      */
-    public LinearChartParam() {
-
+    public LinearChartParam(List <Function<double[], Double>> trfunc) {
+        this.trfunc = trfunc;
     }
+
+    /**
+     * Transformation functions
+     */
+    private final List <Function<double[], Double>> trfunc;
 
     /**
      * Size of the plot
@@ -314,7 +321,17 @@ public class LinearChartParam {
 
             @Override
             public double getYValue(int series, int item) {
-                return getData()[series][item];
+                //If trasformation functions are not defined then just return data
+                if (trfunc == null) {
+                    return getData()[series][item];
+                } else {
+                    //If exist, apply them
+                    double[] res = new double[keys.length];
+                    for (int s = 0; s < keys.length; s++) {
+                        res[s] = data[s][item];
+                    }
+                    return trfunc.get(series).apply(res);
+                }
             }
 
             @Override
