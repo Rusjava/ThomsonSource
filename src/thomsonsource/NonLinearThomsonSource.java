@@ -429,7 +429,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         gamma2 = gamma * gamma;
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
-        sq = Math.sqrt(mv * mv - pr * pr);
+        sq = Math.sqrt(1.0 - pr * pr);
         sqratio = Math.sqrt(intratio);
         //Arrays for real and imagenary parts of polarization vectors
         double[] pol1 = new double[2];
@@ -464,17 +464,17 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Calculating orthogonal polarization vectors
             pol1[0] = e1.innerProduct(B[0]) * f[2] + e2.innerProduct(B[1]) * f[4];
             pol1[1] = e1.innerProduct(B[0]) * f[3] + e2.innerProduct(B[1]) * f[5];
-            pol2[0] = gamma * Math.sqrt(intratio) * (1 - (K1 + K2) / 4 / intratio / gamma2 / mv / (1 + mv)) * sq * f[0]
+            pol2[0] = gamma * sqratio * (mv - (K1 + K2) / 4 / intratio / gamma2 / (1 + mv)) * sq * f[0]
                     + (n.innerProduct(B[0]) * f[2] + n.innerProduct(B[1]) * f[4]) * pr / sq
-                    - (K1 - K2) / 4 / gamma / Math.sqrt(intratio) / mv / (1 + mv) * f[6] * sq;
-            pol2[1] = gamma * sqratio * (1 - (K1 + K2) / 4 / intratio / gamma2 / mv / (1 + mv)) * sq * f[1]
+                    - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[6] * sq;
+            pol2[1] = gamma * sqratio * (mv - (K1 + K2) / 4 / intratio / gamma2 / (1 + mv)) * sq * f[1]
                     + (n.innerProduct(B[0]) * f[3] + n.innerProduct(B[1]) * f[5]) * pr / sq
-                    - (K1 - K2) / 4 / gamma / sqratio / mv / (1 + mv) * f[7] * sq;
+                    - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[7] * sq;
             //Calculating the elements of the polarization matrix
-            result[0] = pol1[0] * pol1[0] + pol1[1] * pol1[1] + pol2[0] * pol2[0] + pol2[1] * pol2[1];
+            result[0] = (pol1[0] * pol1[0] + pol1[1] * pol1[1] + pol2[0] * pol2[0] + pol2[1] * pol2[1]) / 2;
             result[1] = pol1[0] * pol2[0] + pol1[1] * pol2[1];
             result[2] = pol1[0] * pol2[1] - pol1[1] * pol2[0];
-            result[3] = pol2[0] * pol2[0] + pol2[1] * pol2[1] - pol1[0] * pol1[0] - pol1[1] * pol1[1];
+            result[3] = (pol2[0] * pol2[0] + pol2[1] * pol2[1] - pol1[0] * pol1[0] - pol1[1] * pol1[1]) / 2;
         }
         return result;
     }

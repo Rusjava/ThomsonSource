@@ -4133,7 +4133,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polarizationCalcStart.setText("Terminate");
         polarizationCalcSave.setEnabled(false);
         polForm.initialize(tsourcelinear);
-
         /**
          * Calculating data array. Using SwingWorker class
          */
@@ -4144,6 +4143,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 double offset = polForm.minValueClone;
                 //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
+                //Itterating over polarization parameters
                 for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
                     final int[] ia = new int[]{i};
                     func.add(xp -> {
@@ -4204,7 +4204,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         //Calculating and returning the intensity multiplied Stocks parameter
                         try {
                             return polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}),
-                                            new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
+                                    new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
                             return 0.0;
@@ -4360,7 +4360,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceCalcSaveNonLinear.setEnabled(false);
         brilFormNonLinear.initialize(tsource);
         ((NonLinearThomsonSource) brilFormNonLinear.tsourceclone).setOrdernumber(brilFormNonLinear.ordernumber);
-
         /**
          * Calculating data array. Using SwingWorker class
          */
@@ -4751,27 +4750,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 double offset = polFormNonLinear.minValueClone;
                 //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
-                //A list of auxiliary functions
-                List<Function<double[], Double>> fn = new ArrayList<>();
-                fn.add(x -> {
-                    return x[1] / x[0];
-                });
-                fn.add(x -> {
-                    return x[2] / x[0];
-                });
-                fn.add(x -> {
-                    return x[3] / x[0];
-                });
-                fn.add(x -> {
-                    return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
-                            + (x[3] / x[0]) * (x[3] / x[0]));
-                });
-                double[] rescash = new double[]{1, 0, 0, 0};
-                double[] xpcash = new double[]{-1};
+                //Itterating over polarization parameters
                 for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
                     final int[] ia = new int[]{i};
                     func.add(xp -> {
-                        double[] res;
                         double ang, e, x;
                         x = xp * polFormNonLinear.conversionValues[polFormNonLinear.selectedItemIndexClone];
                         ang = polFormNonLinear.angleclone * 1e-3;
@@ -4826,26 +4808,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         polFormNonLinear.tsourceclone.calculateLinearTotalFlux();
-                        //If the same point, use the saved values
-                        if (xpcash[0] != xp) {
-                            try {
-                                res = polFormNonLinear.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
-                                    0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e);
-                            } catch (InterruptedException ex) {
-                                Thread.currentThread().interrupt();
-                                return fn.get(ia[0]).apply(rescash);
-                            }
-                        } else {
-                            return fn.get(ia[0]).apply(rescash);
+                        //Calculating and returning the intensity multiplied Stocks parameter
+                        try {
+                            return polFormNonLinear.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
+                                0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                            return 0.0;
                         }
-                        //If NaNs use the saved values
-                        if (res[0] == 0 || new Double(res[0]).isNaN() || new Double(res[1]).isNaN()
-                                || new Double(res[2]).isNaN() || new Double(res[3]).isNaN()) {
-                            return fn.get(ia[0]).apply(rescash);
-                        }
-                        xpcash[0] = xp;
-                        System.arraycopy(res, 0, rescash, 0, 4);
-                        return fn.get(ia[0]).apply(res);
                     });
                 }
                 polFormNonLinear.chartParam.setup(func, xsize, step, offset);
@@ -4875,7 +4845,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> polProgressBarNonLinear.setValue((int) Math.round(100 * status)));
             }
         };
-        polForm.worker.execute();
+        polFormNonLinear.worker.execute();
     }//GEN-LAST:event_polarizationCalcStartNonLinearActionPerformed
 
     private void polarizationCalcSaveNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polarizationCalcSaveNonLinearActionPerformed
