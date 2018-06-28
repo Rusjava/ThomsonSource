@@ -213,9 +213,17 @@ public class LinearChartParam {
         int sz = (func != null) ? func.size() : 1;
         double[] umaxt = new double[sz];
         double[] umint = new double[sz];
+        double[] tdata = new double[getSize()];
+        double[] tmp = new double[sz];
         for (int k = 0; k < sz; k++) {
-            umaxt[k] = (new BasicVector(data[k])).max();
-            umint[k] = (new BasicVector(data[k])).min();
+            for (int i = 0; i < getSize(); i++) {
+                for (int s = 0; s < sz; s++) {
+                    tmp[s] = getData()[s][i];
+                }
+                tdata[i] = trfunc.get(k).apply(tmp);
+            }
+            umaxt[k] = (new BasicVector(tdata)).max();
+            umint[k] = (new BasicVector(tdata)).min();
         }
         umax = (new BasicVector(umaxt)).max();
         umin = (new BasicVector(umint)).min();
