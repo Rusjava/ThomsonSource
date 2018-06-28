@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
@@ -48,14 +50,14 @@ public class LinearChartParam {
      *
      * @param trfunc
      */
-    public LinearChartParam(List <Function<double[], Double>> trfunc) {
+    public LinearChartParam(List<Function<double[], Double>> trfunc) {
         this.trfunc = trfunc;
     }
 
     /**
      * Transformation functions
      */
-    private final List <Function<double[], Double>> trfunc;
+    private final List<Function<double[], Double>> trfunc;
 
     /**
      * Size of the plot
@@ -220,6 +222,23 @@ public class LinearChartParam {
     }
 
     /**
+     * Getting transformed data
+     */
+    private double getTransformedData(int k, int i) {
+        //If trasformation functions are not defined then just return data
+        if (trfunc == null) {
+            return getData()[k][i];
+        } else {
+            //If exist, apply them
+            double[] res = new double[data.length];
+            for (int s = 0; s < data.length; s++) {
+                res[s] = data[s][i];
+            }
+            return trfunc.get(k).apply(res);
+        }
+    }
+
+    /**
      * Saves results into a text file
      *
      * @param file file to save data to
@@ -231,8 +250,8 @@ public class LinearChartParam {
             for (int i = 0; i < getSize(); i++) {
                 fm = new Formatter();
                 fm.format("%f", i * getStep() + getOffset());
-                for (double[] d : getData()) {
-                    fm.format(" %f", d[i]);
+                for (int s = 0; s < getSize(); s++) {
+                    fm.format(" %f", getTransformedData(s, i));
                 }
                 pw.println(fm);
             }
@@ -321,17 +340,7 @@ public class LinearChartParam {
 
             @Override
             public double getYValue(int series, int item) {
-                //If trasformation functions are not defined then just return data
-                if (trfunc == null) {
-                    return getData()[series][item];
-                } else {
-                    //If exist, apply them
-                    double[] res = new double[keys.length];
-                    for (int s = 0; s < keys.length; s++) {
-                        res[s] = data[s][item];
-                    }
-                    return trfunc.get(series).apply(res);
-                }
+                return getTransformedData(series, item);
             }
 
             @Override
