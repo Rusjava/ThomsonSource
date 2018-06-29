@@ -214,9 +214,8 @@ public class LinearChartParam {
         double[] umaxt = new double[sz];
         double[] umint = new double[sz];
         double[] tdata = new double[getSize()];
-        double[] tmp = new double[sz];
         for (int k = 0; k < sz; k++) {
-            for (int i = 0; i < getSize(); i++) {      
+            for (int i = 0; i < getSize(); i++) {
                 tdata[i] = getTransformedData(k, i);
             }
             umaxt[k] = (new BasicVector(tdata)).max();

@@ -462,18 +462,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
             f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
             //Calculating orthogonal polarization vectors
-            pol1[0] = e1.innerProduct(B[0]) * f[2] + e2.innerProduct(B[1]) * f[4];
-            pol1[1] = e1.innerProduct(B[0]) * f[3] + e2.innerProduct(B[1]) * f[5];
-            pol2[0] = gamma * sqratio * (mv - (K1 + K2) / 4 / intratio / gamma2 / (1 + mv)) * sq * f[0]
+            pol1[0] = -e1.innerProduct(B[0]) * f[2] - e1.innerProduct(B[1]) * f[4];
+            pol1[1] = -e1.innerProduct(B[0]) * f[3] - e1.innerProduct(B[1]) * f[5];
+            pol2[0] = gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqratio
                     + (n.innerProduct(B[0]) * f[2] + n.innerProduct(B[1]) * f[4]) * pr / sq
                     - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[6] * sq;
-            pol2[1] = gamma * sqratio * (mv - (K1 + K2) / 4 / intratio / gamma2 / (1 + mv)) * sq * f[1]
+            pol2[1] = gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqratio
                     + (n.innerProduct(B[0]) * f[3] + n.innerProduct(B[1]) * f[5]) * pr / sq
-                    - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[7] * sq;
+                    - sqratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[7] * sq;
             //Calculating the elements of the polarization matrix
             result[0] = (pol1[0] * pol1[0] + pol1[1] * pol1[1] + pol2[0] * pol2[0] + pol2[1] * pol2[1]) / 2;
             result[1] = pol1[0] * pol2[0] + pol1[1] * pol2[1];
-            result[2] = pol1[0] * pol2[1] - pol1[1] * pol2[0];
+            result[2] = pol1[1] * pol2[0] - pol1[0] * pol2[1];
             result[3] = (pol2[0] * pol2[0] + pol2[1] * pol2[1] - pol1[0] * pol1[0] - pol1[1] * pol1[1]) / 2;
         }
         return result;
