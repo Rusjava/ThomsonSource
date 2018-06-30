@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.31
+ * @version 2.32
  */
 public class ThompsonSource implements Cloneable {
 
@@ -146,7 +146,9 @@ public class ThompsonSource implements Cloneable {
         ((ThompsonSource) tm).lp = (LaserPulse) this.lp.clone();
         ((ThompsonSource) tm).counter = new AtomicInteger();
         ((ThompsonSource) tm).partialFlux = new DoubleAdder();
-        ((ThompsonSource) tm).ksi = (double[]) ksi.clone();
+        if (ksi != null) {
+            ((ThompsonSource) tm).ksi = (double[]) ksi.clone();
+        }
         return tm;
     }
 
@@ -179,7 +181,7 @@ public class ThompsonSource implements Cloneable {
     public final void calculateTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber()
                 * lp.getFq() / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                        * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
+                * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
 
     /**
@@ -308,12 +310,12 @@ public class ThompsonSource implements Cloneable {
         double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
         double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
         //Calculating Stocks parameters
-        array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[0] + sn2 * lp.getPolarization()[1]) * (m11 - m22)) / 2;
-        array[1] = (cs2 * (m22 - m11) + lp.getPolarization()[0] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
-                + lp.getPolarization()[1] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
-        array[2] = (sn2 * (m22 - m11) + lp.getPolarization()[1] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
+        array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[2] + sn2 * lp.getPolarization()[0]) * (m11 - m22)) / 2;
+        array[3] = (cs2 * (m22 - m11) + lp.getPolarization()[2] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
                 + lp.getPolarization()[0] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
-        array[3] = lp.getPolarization()[2] * m12;
+        array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
+                + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
+        array[2] = lp.getPolarization()[1] * m12;
         return array;
     }
 
@@ -1032,7 +1034,8 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Approximate geometric factor calculated neglecting the "hourglass" effect. It assumes values from 0 to 1.
+     * Approximate geometric factor calculated neglecting the "hourglass"
+     * effect. It assumes values from 0 to 1.
      *
      * @return the approximate geometricFactor
      */
