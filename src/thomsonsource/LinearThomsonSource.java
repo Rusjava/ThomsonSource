@@ -80,12 +80,12 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
         double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
         //Calculating Stocks parameters multiplied by intensity
-        array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[0] + sn2 * lp.getPolarization()[1]) * (m11 - m22)) / 2;
-        array[1] = (cs2 * (m22 - m11) + lp.getPolarization()[0] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
-                + lp.getPolarization()[1] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
-        array[2] = (sn2 * (m22 - m11) + lp.getPolarization()[1] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
+        array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[2] + sn2 * lp.getPolarization()[0]) * (m11 - m22)) / 2;
+        array[3] = (cs2 * (m22 - m11) + lp.getPolarization()[2] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
                 + lp.getPolarization()[0] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
-        array[3] = lp.getPolarization()[2] * m12;
+        array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
+                + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
+        array[2] = lp.getPolarization()[1] * m12;
         return array;
     }
 
