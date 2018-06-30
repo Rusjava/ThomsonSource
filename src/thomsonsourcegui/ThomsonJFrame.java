@@ -63,7 +63,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.03
+ * @version 3.1
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 

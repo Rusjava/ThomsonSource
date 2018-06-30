@@ -27,12 +27,13 @@ import org.la4j.Vector;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Matrix;
 import org.la4j.Vectors;
+import org.la4j.vector.dense.BasicVector;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.1
+ * @version 1.2
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -432,11 +433,20 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         sq = Math.sqrt(1.0 - pr * pr);
         sqratio = Math.sqrt(intratio);
         //Arrays for real and imagenary parts of polarization vectors
-        double[] pol1 = new double[2];
-        double[] pol2 = new double[2];
+        Vector pol1 = new BasicVector(new double[]{0, 0});
+        Vector pol2 = new BasicVector(new double[]{0, 0});
+        Matrix T;
+        Vector e0 = new BasicVector(new double[]{0, 1, 0});
         //Ortogonal unity vectors
-        Vector e1 = crossProduct3D(n, v).divide(sq);
-        Vector e2 = crossProduct3D(e1, n);
+        Vector e1;
+        if (sq != 0) {
+            e1 = crossProduct3D(n, v);
+            e1 = e1.divide(e1.fold(Vectors.mkEuclideanNormAccumulator()));
+        } else {
+            e1 = e0;
+        }
+        Vector e2 = crossProduct3D(n, e1);
+        //An array for results
         double[] result = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
         //A vector for integral coefficients
         double[] f = new double[8]; //An array for integrals
@@ -462,19 +472,23 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             f[0] = -(a1 * f[2] + a2 * f[4] + 2 * a3 * f[6]) / ordernumber;
             f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
             //Calculating orthogonal polarization vectors
-            pol1[0] = -e1.innerProduct(B[0]) * f[2] - e1.innerProduct(B[1]) * f[4];
-            pol1[1] = -e1.innerProduct(B[0]) * f[3] - e1.innerProduct(B[1]) * f[5];
-            pol2[0] = gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqratio
-                    + (n.innerProduct(B[0]) * f[2] + n.innerProduct(B[1]) * f[4]) * pr / sq
-                    - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[6] * sq;
-            pol2[1] = gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqratio
-                    + (n.innerProduct(B[0]) * f[3] + n.innerProduct(B[1]) * f[5]) * pr / sq
-                    - sqratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[7] * sq;
+            pol1.set(0, -e1.innerProduct(B[0]) * f[2] - e1.innerProduct(B[1]) * f[4]);
+            pol1.set(1, -e1.innerProduct(B[0]) * f[3] - e1.innerProduct(B[1]) * f[5]);
+            pol2.set(0, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqratio
+                    + (e2.innerProduct(B[0]) * f[2] + e2.innerProduct(B[1]) * f[4])
+                    - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[6] * sq);
+            pol2.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqratio
+                    + (e2.innerProduct(B[0]) * f[3] + e2.innerProduct(B[1]) * f[5])
+                    - sqratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[7] * sq);
+            //Transforming pol1 and pol2 into the initial coordinate system
+            T = get2DTransform(e1, e0);
+            pol1 = T.multiply(pol1);
+            pol2 = T.multiply(pol2);
             //Calculating the elements of the polarization matrix
-            result[0] = (pol1[0] * pol1[0] + pol1[1] * pol1[1] + pol2[0] * pol2[0] + pol2[1] * pol2[1]) / 2;
-            result[1] = pol1[0] * pol2[0] + pol1[1] * pol2[1];
-            result[2] = pol1[1] * pol2[0] - pol1[0] * pol2[1];
-            result[3] = (pol2[0] * pol2[0] + pol2[1] * pol2[1] - pol1[0] * pol1[0] - pol1[1] * pol1[1]) / 2;
+            result[0] = (pol1.get(0) * pol1.get(0) + pol1.get(1) * pol1.get(1) + pol2.get(0) * pol2.get(0) + pol2.get(1) * pol2.get(1)) / 2;
+            result[1] = pol1.get(0) * pol2.get(0) + pol1.get(1) * pol2.get(1);
+            result[2] = pol1.get(1) * pol2.get(0) - pol1.get(0) * pol2.get(1);
+            result[3] = (pol2.get(0) * pol2.get(0) + pol2.get(1) * pol2.get(1) - pol1.get(0) * pol1.get(0) - pol1.get(1) * pol1.get(1)) / 2;
         }
         return result;
     }
@@ -684,7 +698,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = getTransform(v, lp.getDirection().multiply(-1));
+        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -732,7 +746,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = getTransform(v, lp.getDirection());
+        Matrix T = get3DTransform(v, lp.getDirection());
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -770,7 +784,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = getTransform(v, lp.getDirection());
+        Matrix T = get3DTransform(v, lp.getDirection());
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -822,7 +836,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = getTransform(v, lp.getDirection());
+        Matrix T = get3DTransform(v, lp.getDirection());
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {

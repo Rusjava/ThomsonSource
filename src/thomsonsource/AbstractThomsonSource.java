@@ -39,7 +39,6 @@ import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Matrix;
 import org.la4j.Vector;
 import org.la4j.Vectors;
-import org.la4j.matrix.dense.Basic1DMatrix;
 import org.la4j.vector.dense.BasicVector;
 import shadowfileconverter.ShadowFiles;
 
@@ -820,7 +819,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         // Calculating the rotated polarization vector and getting the full polarizaation state
         //n is defined here with y in longitudinal direction
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
-        T = getTransform(n, n0);
+        T = get3DTransform(n, n0);
         //Checking if polarization is pre-specified
         pol = (ksi != null) ? getPolarization(ksi) : getPolarization(new double[]{polParam[1] / polParam[0], polParam[2] / polParam[0], polParam[3] / polParam[0]});
         //Rotating the ray electrical vectors
@@ -916,18 +915,31 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param n0
      * @return transformation matrix
      */
-    protected Matrix getTransform(Vector n, Vector n0) {
+    protected Matrix get3DTransform(Vector n, Vector n0) {
         Matrix D;
         Matrix A;
-        Matrix I = new Basic1DMatrix(3, 3);
-        I.set(0, 0, 1.0);
-        I.set(1, 1, 1.0);
-        I.set(2, 2, 1.0);
-        double innerProduct;
-        innerProduct = n.innerProduct(n0);
+        Matrix I = Matrix.identity(3);
+        double innerProduct = n.innerProduct(n0);
         D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).add(n0.outerProduct(n0))).divide(innerProduct * innerProduct - 1.0);
         A = n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
         return I.subtract(D).multiply(1 - innerProduct).add(A);
+    }
+
+    /**
+     * Returning the matrix of 2D rotation based on two unity vectors
+     *
+     * @param n
+     * @param n0
+     * @return transformation matrix
+     */
+    protected Matrix get2DTransform(Vector n, Vector n0) {
+        Matrix I = Matrix.identity(2);
+        double cs = n.innerProduct(n0);
+        double sn = Math.sqrt(1 - cs * cs);
+        I = I.multiply(cs);
+        I.set(0, 1, sn);
+        I.set(1, 0, -sn);
+        return I;
     }
 
     /**
