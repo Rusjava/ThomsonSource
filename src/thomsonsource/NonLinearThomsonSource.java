@@ -105,7 +105,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
-        double intensity, factor;
+        double intensity, factor, gamma;
         double[] res = new double[]{0, 0, 0, 0};
         //If vector r is null then use average intensity
         if (r == null) {
@@ -113,36 +113,44 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         } else {
             intensity = lp.getIntensity(r);
         }
-        double gamma = calculateGamma(n, v, e, intensity);
-        double der = calculateGammaDerivative(n, v, e, intensity);
+        gamma = calculateGamma(n, v, e, intensity);
+        factor = eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
         if (gamma == 0) {
-            //returning zero if gamma is zero
+            //Returning zero if gamma is zero
             return res;
         } else {
-            res = directionPolarizationBasic(n, v, e, gamma, intensity);
-            factor = eb.gammaDistribution(gamma) / der;
+            res = multiplyPolarizationParameters(directionPolarizationBasic(n, v, e, gamma, intensity), factor);
+            //If intensity is zero returning unity
+            if (res[0] == 0) {
+                res[0] = 1;
+            }
             //Multiplying polarization matrix by gamma distribution
-            return multiplyPolarizationParameters(res, factor);
+            return res;
         }
     }
 
     @Override
     public double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index) {
-        double intensity;
+        double intensity, res, gamma;
         //If vector r is null then use average intensity
         if (r == null) {
             intensity = lp.getAverageIntensity();
         } else {
             intensity = lp.getIntensity(r);
         }
-        double gamma = calculateGamma(n, v, e, intensity);
-        double der = calculateGammaDerivative(n, v, e, intensity);
+        gamma = calculateGamma(n, v, e, intensity);
         if (gamma == 0) {
             //returning zero if gamma is zero
             return 0;
         } else {
             //Multiplying polarization matrix by gamma distribution and returning the result
-            return directionPolarizationBasic(n, v, e, gamma, intensity, index) * eb.gammaDistribution(gamma) / der;
+            res = directionPolarizationBasic(n, v, e, gamma, intensity, index) * eb.gammaDistribution(gamma)
+                    / calculateGammaDerivative(n, v, e, intensity);
+            //If intensity is zero returning unity
+            if (res == 0 && index == 0) {
+                res = 1;
+            }
+            return res;
         }
     }
 
@@ -436,16 +444,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         Vector pol1 = new BasicVector(new double[]{0, 0});
         Vector pol2 = new BasicVector(new double[]{0, 0});
         Matrix T;
-        Vector e0 = new BasicVector(new double[]{0, 1, 0});
-        //Ortogonal unity vectors
-        Vector e1;
+        //Defining a vector orthogonal to e_x and n
+        Vector e0 = crossProduct3D(new BasicVector(new double[]{1, 0, 0}), n);
+        e0 = e0.divide(e0.fold(Vectors.mkEuclideanNormAccumulator()));
+        //Defining ortogonal unity vectors
+        Vector e1, e2;
         if (sq != 0) {
             e1 = crossProduct3D(n, v);
             e1 = e1.divide(e1.fold(Vectors.mkEuclideanNormAccumulator()));
         } else {
             e1 = e0;
         }
-        Vector e2 = crossProduct3D(n, e1);
+        e2 = crossProduct3D(n, e1);
         //An array for results
         double[] result = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
         //A vector for integral coefficients

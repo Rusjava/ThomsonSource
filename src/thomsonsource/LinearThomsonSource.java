@@ -39,7 +39,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
      * @param b
      */
     public LinearThomsonSource(AbstractLaserPulse l, AbstractElectronBunch b) {
-        super(l,b);
+        super(l, b);
         calculateLinearTotalFlux();
         calculateGeometricFactor();
     }
@@ -86,6 +86,9 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
+        if (array[0] == 0) {
+            array[0] = 1;
+        }
         return array;
     }
 

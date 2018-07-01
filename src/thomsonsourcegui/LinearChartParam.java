@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.function.Function;
 import org.la4j.vector.dense.BasicVector;
