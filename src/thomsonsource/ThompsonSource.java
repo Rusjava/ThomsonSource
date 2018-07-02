@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.32
+ * @version 2.33
  */
 public class ThompsonSource implements Cloneable {
 
@@ -316,6 +316,10 @@ public class ThompsonSource implements Cloneable {
         array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
+        //If intensity is zero tehn set it as unity
+        if (array[0] == 0) {
+            array[0] = 1;
+        }
         return array;
     }
 
