@@ -483,8 +483,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             f[1] = -(a1 * f[3] + a2 * f[5] + 2 * a3 * f[7]) / ordernumber;
             //Calculating orthogonal polarization vectors
             pol1.set(0, -e1.innerProduct(B[0]) * f[2] - e1.innerProduct(B[1]) * f[4]);
-            pol1.set(1, -e1.innerProduct(B[0]) * f[3] - e1.innerProduct(B[1]) * f[5]);
-            pol2.set(0, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqratio
+            pol2.set(0, -e1.innerProduct(B[0]) * f[3] - e1.innerProduct(B[1]) * f[5]);
+            pol1.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqratio
                     + (e2.innerProduct(B[0]) * f[2] + e2.innerProduct(B[1]) * f[4])
                     - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[6] * sq);
             pol2.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqratio
@@ -495,10 +495,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             pol1 = T.multiply(pol1);
             pol2 = T.multiply(pol2);
             //Calculating the elements of the polarization matrix
-            result[0] = (pol1.get(0) * pol1.get(0) + pol1.get(1) * pol1.get(1) + pol2.get(0) * pol2.get(0) + pol2.get(1) * pol2.get(1)) / 2;
-            result[1] = pol1.get(0) * pol2.get(0) + pol1.get(1) * pol2.get(1);
-            result[2] = pol1.get(1) * pol2.get(0) - pol1.get(0) * pol2.get(1);
-            result[3] = (pol2.get(0) * pol2.get(0) + pol2.get(1) * pol2.get(1) - pol1.get(0) * pol1.get(0) - pol1.get(1) * pol1.get(1)) / 2;
+            result[0] = (pol1.get(0) * pol1.get(0) + pol2.get(0) * pol2.get(0) + pol1.get(1) * pol1.get(1) + pol2.get(1) * pol2.get(1)) / 2;
+            result[1] = pol1.get(0) * pol1.get(1) + pol2.get(0) * pol2.get(1);
+            result[2] = pol2.get(0) * pol1.get(1) - pol1.get(0) * pol2.get(1);
+            result[3] = (pol1.get(1) * pol1.get(1) + pol2.get(1) * pol2.get(1) - pol1.get(0) * pol1.get(0) - pol2.get(0) * pol2.get(0)) / 2;
         }
         return result;
     }
