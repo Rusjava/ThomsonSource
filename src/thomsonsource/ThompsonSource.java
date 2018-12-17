@@ -138,6 +138,8 @@ public class ThompsonSource implements Cloneable {
     private ElectronBunch eb;
 
     private double[] ksi = null;
+    
+    private int[] itr = null;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -181,7 +183,7 @@ public class ThompsonSource implements Cloneable {
     public final void calculateTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber()
                 * lp.getFq() / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
+                        * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
 
     /**
@@ -362,6 +364,7 @@ public class ThompsonSource implements Cloneable {
         CountDownLatch lt = new CountDownLatch(NUMBER_OF_POL_PARAM);
         //Creating a pool of threads for calculations
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        itr = new int[4];
         //Calculating the polarization tensor elements
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             int[] ia = new int[]{i};
@@ -371,7 +374,7 @@ public class ThompsonSource implements Cloneable {
                     //Creating a separate inegrator for each thread
                     array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
-                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI) - 2 * Math.PI * 1e15;
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -386,6 +389,8 @@ public class ThompsonSource implements Cloneable {
             throw ex;
         }
         execs.shutdownNow();
+        System.out.println(Integer.toString(itr[0]) + " " + Integer.toString(itr[1])
+                + " " + Integer.toString(itr[2]) + " " + Integer.toString(itr[3]));
         return array;
     }
 
@@ -443,11 +448,13 @@ public class ThompsonSource implements Cloneable {
                 Thread.currentThread().interrupt();
                 return 0;
             }
+            itr[index]++;
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
-                double rs = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
-                return rs;
+                double u = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                System.out.println(u + " " + index);
+                return u + 1e15;
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -475,7 +482,7 @@ public class ThompsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = sn * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
             return new Double(u).isNaN() ? 0 : u;
         }
     }
