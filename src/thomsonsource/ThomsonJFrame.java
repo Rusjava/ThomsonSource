@@ -101,7 +101,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
+        rayMinEnergyBox = getDoubleFormattedTextField(25.0, 0.0, 100.0, false);
         rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
         threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
         ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
@@ -166,8 +166,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
-        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "25", "0"};
+        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "35", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
 
@@ -193,8 +193,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
-        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "25", "0"};
+        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "35", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
 
@@ -1023,7 +1023,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         energylabel.setText("Electron energy");
 
-        energyvalue.setText("51.2");
+        energyvalue.setText("42.96");
         energyvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyvalueFocusLost(evt);
@@ -1734,7 +1734,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2031,7 +2031,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public LinearChartParam chartParam;
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
-        double angle = 0, angleclone, energy = 44, energyclone;
+        double angle = 0, angleclone, energy = 30, energyclone;
         private File file = null;
 
         /**
@@ -2255,7 +2255,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "42.96", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -2265,7 +2265,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "42.96", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost

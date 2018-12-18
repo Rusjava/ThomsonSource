@@ -124,7 +124,7 @@ public class ElectronBunch implements Cloneable {
     public void setEpsx(double epsx) {
         this.epsx = epsx;
     }
-    
+
     /**
      * @return returning the emittance in the y direction
      */
@@ -303,7 +303,7 @@ public class ElectronBunch implements Cloneable {
     /**
      * Mean electron bunch gamma
      */
-    private double gamma = 100;
+    private double gamma = 42.96 / 0.512;
 
     /**
      * Number of electrons in the bunch
@@ -324,7 +324,7 @@ public class ElectronBunch implements Cloneable {
      * Electron transversal bunch emittance in x direction, m*rad
      */
     private double epsx = 5e-6;
-    
+
     /**
      * Electron transversal bunch emittance in y direction, m*rad
      */

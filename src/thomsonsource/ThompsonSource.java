@@ -81,12 +81,12 @@ public class ThompsonSource implements Cloneable {
     /**
      * Min ray energy
      */
-    private double minEnergy = 36 * 1e3 * ElectronBunch.E;
+    private double minEnergy = 25 * 1e3 * ElectronBunch.E;
 
     /**
      * Max ray energy
      */
-    private double maxEnergy = 46 * 1e3 * ElectronBunch.E;
+    private double maxEnergy = 35 * 1e3 * ElectronBunch.E;
 
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
@@ -98,8 +98,11 @@ public class ThompsonSource implements Cloneable {
      * polarization
      */
     public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 1000000;
-    
-    private static final double SHIFT = 1e19;
+
+    /**
+     * A shift factor to improve numerical integral convergence
+     */
+    private double shiftfactor = 1;
     /**
      * Precision in calculations of the brilliance
      */
@@ -373,8 +376,8 @@ public class ThompsonSource implements Cloneable {
                     //Creating a separate inegrator for each thread
                     array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
-                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI) 
-                            - SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
+                            - shiftfactor * 1e22 * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -390,6 +393,24 @@ public class ThompsonSource implements Cloneable {
         }
         execs.shutdownNow();
         return array;
+    }
+
+    /**
+     * Getting a numerical factor to improve integral convergence
+     *
+     * @return the factor
+     */
+    public double getShiftfactor() {
+        return shiftfactor;
+    }
+
+    /**
+     * Setting a numerical factor to improve integral convergence
+     *
+     * @param shift the factor to set
+     */
+    public void setShiftfactor(double shift) {
+        this.shiftfactor = shift;
     }
 
     /**
@@ -449,9 +470,7 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
-                double u = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
-                System.out.println(u + " " + index + " " + phi / Math.PI / 2 * 180);
-                return u;
+                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -513,7 +532,8 @@ public class ThompsonSource implements Cloneable {
             Vector dv = v.subtract(v0);
             // Normalization to the peak value
             u = theta * (directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
-                    + SHIFT);
+                    + getShiftfactor() * 1e22);
+            System.out.println(u / theta - getShiftfactor() * 1e22 + " "  + index);
             return new Double(u).isNaN() ? 0 : u;
         }
     }
