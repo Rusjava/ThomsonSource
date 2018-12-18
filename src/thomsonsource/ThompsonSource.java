@@ -377,7 +377,7 @@ public class ThompsonSource implements Cloneable {
                     array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
                             integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                            - shiftfactor * 1e22 * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                            - getShiftfactor() * 1e21 * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -532,8 +532,7 @@ public class ThompsonSource implements Cloneable {
             Vector dv = v.subtract(v0);
             // Normalization to the peak value
             u = theta * (directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
-                    + getShiftfactor() * 1e22);
-            System.out.println(u / theta - getShiftfactor() * 1e22 + " "  + index);
+                    + getShiftfactor() * 1e21);
             return new Double(u).isNaN() ? 0 : u;
         }
     }

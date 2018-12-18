@@ -395,7 +395,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         brillianceCalc.setTitle("Brilliance box");
         brillianceCalc.setMinimumSize(new java.awt.Dimension(800, 500));
-        brillianceCalc.setPreferredSize(new java.awt.Dimension(800, 500));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -477,7 +476,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jEnergyLabel.setText("Energy");
 
-        energyValue.setText("44");
+        energyValue.setText("30");
         energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueFocusLost(evt);
@@ -602,7 +601,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         gfCalc.setTitle("Full flux box");
         gfCalc.setMinimumSize(new java.awt.Dimension(800, 500));
-        gfCalc.setPreferredSize(new java.awt.Dimension(800, 500));
 
         GFParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -751,7 +749,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polarizationCalc.setTitle("Polarization box");
         polarizationCalc.setMinimumSize(new java.awt.Dimension(800, 500));
-        polarizationCalc.setPreferredSize(new java.awt.Dimension(800, 500));
 
         polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -833,7 +830,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jPolEnergyLabel.setText("Energy");
 
-        polEnergyValue.setText("44");
+        polEnergyValue.setText("30");
         polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueFocusLost(evt);
@@ -1734,7 +1731,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -3412,12 +3409,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "30", oldStrings);
     }//GEN-LAST:event_energyValueFocusLost
 
     private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "30", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
@@ -3726,12 +3723,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
     private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
