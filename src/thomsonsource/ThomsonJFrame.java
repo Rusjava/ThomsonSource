@@ -394,7 +394,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemAbout = new javax.swing.JMenuItem();
 
         brillianceCalc.setTitle("Brilliance box");
-        brillianceCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+        brillianceCalc.setMinimumSize(new java.awt.Dimension(800, 500));
+        brillianceCalc.setPreferredSize(new java.awt.Dimension(800, 500));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -535,7 +536,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(energyValue, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(energyValueUnitLable, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
         BrillianceParamLayout.setVerticalGroup(
             BrillianceParamLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -581,7 +582,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
         BrillianceCalcGraphLayout.setVerticalGroup(
             BrillianceCalcGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 213, Short.MAX_VALUE)
+            .addGap(0, 361, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout brillianceCalcLayout = new javax.swing.GroupLayout(brillianceCalc.getContentPane());
@@ -589,18 +590,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         brillianceCalcLayout.setHorizontalGroup(
             brillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(BrillianceParam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+            .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
         );
         brillianceCalcLayout.setVerticalGroup(
             brillianceCalcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(brillianceCalcLayout.createSequentialGroup()
                 .addComponent(BrillianceParam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+                .addComponent(BrillianceCalcGraph, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE))
         );
 
         gfCalc.setTitle("Full flux box");
-        gfCalc.setMinimumSize(new java.awt.Dimension(700, 313));
+        gfCalc.setMinimumSize(new java.awt.Dimension(800, 500));
+        gfCalc.setPreferredSize(new java.awt.Dimension(800, 500));
 
         GFParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -748,7 +750,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         polarizationCalc.setTitle("Polarization box");
-        polarizationCalc.setMinimumSize(new java.awt.Dimension(760, 313));
+        polarizationCalc.setMinimumSize(new java.awt.Dimension(800, 500));
+        polarizationCalc.setPreferredSize(new java.awt.Dimension(800, 500));
 
         polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
