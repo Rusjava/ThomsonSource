@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.33
+ * @version 2.5
  */
 public class ThompsonSource implements Cloneable {
 
@@ -67,6 +67,11 @@ public class ThompsonSource implements Cloneable {
      * The number of polarization parameters
      */
     public static final int NUMBER_OF_POL_PARAM = 4;
+    
+    /**
+     * A numerical shift to improve convergence of polarization angular integrals
+     */
+    public static final double SHIFT = 1e21;
 
     /**
      * Angle range for rays exported for Shadow in the X-direction
@@ -100,7 +105,7 @@ public class ThompsonSource implements Cloneable {
     public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 1000000;
 
     /**
-     * A shift factor to improve numerical integral convergence
+     * A shift factor to improve numerical integral convergence in polarization calculations
      */
     private double shiftfactor = 1;
     /**
@@ -377,7 +382,7 @@ public class ThompsonSource implements Cloneable {
                     array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
                             integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                            - getShiftfactor() * 1e21 * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -532,7 +537,7 @@ public class ThompsonSource implements Cloneable {
             Vector dv = v.subtract(v0);
             // Normalization to the peak value
             u = theta * (directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
-                    + getShiftfactor() * 1e21);
+                    + getShiftfactor() * SHIFT);
             return new Double(u).isNaN() ? 0 : u;
         }
     }

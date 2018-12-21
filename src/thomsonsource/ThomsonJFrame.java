@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.42
+ * @version 2.5
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -91,22 +91,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ystep = 20.0 / ysize;
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
-        rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
-        rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
-        brilPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
-        xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
-        ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
-        xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        rayMinEnergyBox = getDoubleFormattedTextField(25.0, 0.0, 100.0, false);
-        rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
-        threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
-        ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
-        ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
-        ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
+        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
+        this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
+        this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e10, true);
+        this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
+        this.ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
+        this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        this.yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        this.xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
+        this.rayMinEnergyBox = getDoubleFormattedTextField(25.0, 0.0, 100.0, false);
+        this.rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
+        this.threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
+        this.ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         /**
          * An auxiliary method giving the flux density in a given direction
          *
@@ -2245,7 +2246,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
-            gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
+            gfMonteCarloNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
             yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box;
 
     private File bFile = null, pFile = null;
@@ -3345,13 +3346,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
-            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", brilPrecisionBox,
+            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
+            "<html>A multiplication factor for numerical shift<br/> in the polarization angular integral</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
-            tsource.setPrecision((double) brilPrecisionBox.getValue());
+            tsource.setPrecision((double) numericallPrecisionBox.getValue());
+            tsource.setShiftfactor((double) shiftFactorBox.getValue());
             tsource.setThreadNumber((int) threadsNumberBox.getValue());
         }
     }//GEN-LAST:event_jMenuItemNumericalActionPerformed

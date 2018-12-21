@@ -16,12 +16,6 @@
  */
 package thomsonsource;
 
-/**
- * The package for the laser-electron source simulation
- *
- * @author Ruslan Feshchenko
- * @version 2.0
- */
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
@@ -30,7 +24,7 @@ import org.la4j.vector.dense.BasicVector;
  * system of units
  *
  * @author Ruslan Feshchenko
- * @version 1.3
+ * @version 2.1
  */
 public class ElectronBunch implements Cloneable {
 
