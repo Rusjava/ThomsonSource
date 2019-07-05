@@ -3347,7 +3347,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
-            "<html>A multiplication factor for numerical shift<br/> in the polarization angular integral</html>", shiftFactorBox,
+            "<html>A multiplication factor for numerical shift<br/> in the polarization angular integral:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
