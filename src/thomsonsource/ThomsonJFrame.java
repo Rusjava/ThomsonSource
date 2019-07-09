@@ -71,7 +71,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.51
+ * @version 2.52
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2303,12 +2303,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulseenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 100000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueActionPerformed
 
     private void pulseenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 100000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueFocusLost
 
     private void pulselengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulselengthvalueActionPerformed
