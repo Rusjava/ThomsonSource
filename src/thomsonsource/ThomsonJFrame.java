@@ -3334,12 +3334,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
@@ -3412,12 +3412,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "30", oldStrings);
+        brilForm.energy = TestValueWithMemory(0, 100, energyValue, "30", oldStrings);
     }//GEN-LAST:event_energyValueFocusLost
 
     private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "30", oldStrings);
+        brilForm.energy = TestValueWithMemory(0, 100, energyValue, "30", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
@@ -3726,12 +3726,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "30", oldStrings);
+        polForm.energy = TestValueWithMemory(0, 100, polEnergyValue, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "30", oldStrings);
+        polForm.energy = TestValueWithMemory(0, 100, polEnergyValue, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
     private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
