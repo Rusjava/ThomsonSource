@@ -2035,9 +2035,11 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
                           <Component id="jSlider_pickup" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
-                          <Component id="totalFluxLabel" min="-2" pref="240" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="totalFluxLabel" max="32767" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="totalFluxAngleLabel" min="-2" pref="186" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2045,11 +2047,15 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jSlider_pickup" max="32767" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="totalFluxAngleLabel" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="jSlider_pickup" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
                               <Component id="totalFluxLabel" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2063,6 +2069,11 @@
                 <Component class="javax.swing.JLabel" name="totalFluxLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Total flux:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="totalFluxAngleLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Within limits: "/>
                   </Properties>
                 </Component>
               </SubComponents>

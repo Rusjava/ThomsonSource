@@ -345,6 +345,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_slider = new javax.swing.JPanel();
         jSlider_pickup = new javax.swing.JSlider();
         totalFluxLabel = new javax.swing.JLabel();
+        totalFluxAngleLabel = new javax.swing.JLabel();
         jPanel_sh = new javax.swing.JPanel();
         eshiftxlabel = new javax.swing.JLabel();
         eshiftylabel = new javax.swing.JLabel();
@@ -1574,6 +1575,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         totalFluxLabel.setText("Total flux:");
 
+        totalFluxAngleLabel.setText("Within limits: ");
+
         javax.swing.GroupLayout jPanel_sliderLayout = new javax.swing.GroupLayout(jPanel_slider);
         jPanel_slider.setLayout(jPanel_sliderLayout);
         jPanel_sliderLayout.setHorizontalGroup(
@@ -1581,18 +1584,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
                 .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(94, 94, 94)
-                .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(totalFluxLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(totalFluxAngleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel_sliderLayout.setVerticalGroup(
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jSlider_pickup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(totalFluxAngleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel_sliderLayout.createSequentialGroup()
+                        .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(totalFluxLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jPanel_sh.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Relative position", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -1732,7 +1740,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2227,11 +2235,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /**
      * Main program parameters
      */
-    private int xsize, ysize, sliderposition = 50; /* The size of the graph in x or y direction */
+    private int xsize, ysize, sliderposition = 50;
+    /* The size of the graph in x or y direction */
 
-    private double xstep, ystep, estep, hoffset = 0; /* Step in x or y direction */
+    private double xstep, ystep, estep, hoffset = 0;
+    /* Step in x or y direction */
 
-    private int numberOfRays = 1000; /* Number of rays exported for Shadow */
+    private int numberOfRays = 1000;
+    /* Number of rays exported for Shadow */
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -2407,7 +2418,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("##.#########")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + (new DecimalFormat("##.#######")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                    totalFluxAngleLabel.setText("Within ngle: "
+                            + (new DecimalFormat("##.#######"))
+                            .format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep, ysize * ystep)) * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3252,12 +3267,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                 if (GFValueSelectionBox.getSelectedIndex() == 1) {
                     gfForm.updateGraph(GFCalcGraph, " ");
-                    gfForm.getKeys()[0]="Geometric factor";
-                    gfForm.getKeys()[1]="Approximate geometric factor";
+                    gfForm.getKeys()[0] = "Geometric factor";
+                    gfForm.getKeys()[1] = "Approximate geometric factor";
                 } else {
                     gfForm.updateGraph(GFCalcGraph, "ph/s\u00B710\u00B9\u2075");
-                    gfForm.getKeys()[0]="Full flux";
-                    gfForm.getKeys()[1]="Approximate full flux";
+                    gfForm.getKeys()[0] = "Full flux";
+                    gfForm.getKeys()[1] = "Approximate full flux";
                 }
                 GFCalcStart.setText("Calculate");
                 GFCalcSave.setEnabled(true);
@@ -3991,12 +4006,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 int y = getYindex(series, item);
                 if (!linemark) {
                     return data.getudata()[x][y];
+                } else if (x == (int) (data.getxsize() - 1) * sliderposition / 100) {
+                    return data.getumax() / 2;
                 } else {
-                    if (x == (int) (data.getxsize() - 1) * sliderposition / 100) {
-                        return data.getumax() / 2;
-                    } else {
-                        return data.getudata()[x][y];
-                    }
+                    return data.getudata()[x][y];
                 }
             }
 
@@ -4308,6 +4321,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel spreadlabel;
     private javax.swing.JTextField spreadvalue;
     private javax.swing.JButton startbutton;
+    private javax.swing.JLabel totalFluxAngleLabel;
     private javax.swing.JLabel totalFluxLabel;
     // End of variables declaration//GEN-END:variables
 }
