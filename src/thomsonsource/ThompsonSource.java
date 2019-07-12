@@ -193,6 +193,15 @@ public class ThompsonSource implements Cloneable {
                 * lp.getFq() / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
                         * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
+    
+    /**
+     * A method calculating normalized total flux within a certain angle
+     * @param maxAngle
+     * @return 
+     */
+    public final double calculateAngleTotalFlux(double maxAngle) {
+        return getTotalFlux() * getGeometricFactor();
+    }
 
     /**
      * A method calculating the geometric factor
