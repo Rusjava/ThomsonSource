@@ -1217,7 +1217,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="jPanel_slider" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jTabbedPane1" alignment="0" pref="675" max="32767" attributes="0"/>
+                                  <Component id="jTabbedPane1" alignment="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -2036,10 +2036,9 @@
                           <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
                           <Component id="jSlider_pickup" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="totalFluxLabel" max="32767" attributes="0"/>
+                          <Component id="totalFluxLabel" min="-2" pref="178" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="totalFluxAngleLabel" min="-2" pref="186" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="totalFluxAngleLabel" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

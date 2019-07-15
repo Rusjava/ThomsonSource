@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.5
+ * @version 2.6
  */
 public class ThompsonSource implements Cloneable {
 
@@ -67,9 +67,10 @@ public class ThompsonSource implements Cloneable {
      * The number of polarization parameters
      */
     public static final int NUMBER_OF_POL_PARAM = 4;
-    
+
     /**
-     * A numerical shift to improve convergence of polarization angular integrals
+     * A numerical shift to improve convergence of polarization angular
+     * integrals
      */
     public static final double SHIFT = 1e21;
 
@@ -105,7 +106,8 @@ public class ThompsonSource implements Cloneable {
     public static final int MAXIMAL_NUMBER_OF_EVALUATIONS = 1000000;
 
     /**
-     * A shift factor to improve numerical integral convergence in polarization calculations
+     * A shift factor to improve numerical integral convergence in polarization
+     * calculations
      */
     private double shiftfactor = 1;
     /**
@@ -191,16 +193,23 @@ public class ThompsonSource implements Cloneable {
     public final void calculateTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber()
                 * lp.getFq() / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                        * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
+                * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
-    
+
     /**
      * A method calculating normalized total flux within a certain angle
+     *
      * @param maxAngle
-     * @return 
+     * @return
      */
     public final double calculateAngleTotalFlux(double maxAngle) {
-        return getTotalFlux() * getGeometricFactor();
+        double gamma2 = eb.getGamma() * eb.getGamma();
+        double v = Math.sqrt(1 - 1 / gamma2);
+        double cs = Math.cos(maxAngle);
+        return 3.0 / 4 / gamma2 * ((1 - cs) / (1 - v * cs) / (1 - v)
+                * (5.0 / 6 + 1.0 / 6 / v / v - 1.0 / 6 / gamma2 / v / v * (1 - v * v * cs) / (1 - v) / (1 - v * cs))
+                + 1.0 / 6 / gamma2 / v * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
+                * getTotalFlux() * getGeometricFactor();
     }
 
     /**
