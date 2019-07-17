@@ -66,6 +66,7 @@ import org.la4j.vector.dense.*;
 import static TextUtilities.MyTextUtilities.*;
 import java.net.URL;
 import java.util.function.Function;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import shadowfileconverter.ShadowFiles;
 
 /**
@@ -216,6 +217,17 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(polarizationCalc);
             SwingUtilities.updateComponentTreeUI(rayProgressFrame);
         });
+
+        //Get the current path for the java program and trying to open the "my.ini" file
+        try {
+            pFile = new File(new File(".").getCanonicalPath() + File.separator + "my.ini");
+        } catch (IOException ex) {
+           //Do nothing;
+        }
+        if (pFile.exists() && pFile.isFile()) {
+            loadParameters(pFile);
+        }
+
     }
 
     /**
@@ -2919,15 +2931,37 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
         // Saving the LEXG parameters into a file
         JFileChooser fo = new JFileChooser(pFile);
-        fo.setDialogTitle("Choose file to save Thompson source parameters");
+        fo.setDialogTitle("Choose a file to save Thompson source parameters");
+        fo.setFileFilter(new FileNameExtensionFilter("ini file", "ini"));
         int ans = fo.showSaveDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
             if (pFile.exists()) {
+                if (!pFile.isFile()) {
+                    //If not a file then do nothing
+                    return;
+                }
                 int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (n == JOptionPane.NO_OPTION) {
                     return;
+                }
+            } else {
+                String extension = "";
+                int ind = pFile.getName().lastIndexOf('.');
+                if (ind > -1) {
+                    //If the file has extension then get it
+                    extension = pFile.getName().substring(ind + 1);
+                }
+                //If the extension is not 'ini' then add the 'ini' extension to the file name
+                if (!extension.equals("ini")) {
+                    try {
+
+                        pFile = (ind != -1) ? new File(pFile.getCanonicalPath().substring(0, ind + 1) + ".ini")
+                                : new File(pFile.getCanonicalPath() + ".ini");
+                    } catch (IOException ex) {
+                        //Do nothing
+                    }
                 }
             }
             //Creating Properties object to store program parameters
@@ -2961,60 +2995,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemLoadParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadParamActionPerformed
         // Loading LEXG parameters from a file
-        JFileChooser fo = new JFileChooser();
-        fo.setDialogTitle("Choose file to load Thompson source parameters from");
+        JFileChooser fo = new JFileChooser(pFile);
+        fo.setDialogTitle("Choose a file to load Thompson source parameters from");
+        fo.setFileFilter(new FileNameExtensionFilter("ini file", "ini"));
         int ans = fo.showOpenDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
-            Properties prop = new Properties();
-            try (FileReader fr = new FileReader(pFile)) {
-                prop.load(fr);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-            try {
-                ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
-                energyvalue.setText(prop.getProperty(paramNames[0], "0"));
-                ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
-                chargevalue.setText(prop.getProperty(paramNames[1], "0"));
-                ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
-                spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
-                ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
-                elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
-                ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
-                eemitxvalue.setText(prop.getProperty(paramNames[4], "0"));
-                ebunch.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
-                eemityvalue.setText(prop.getProperty(paramNames[5], "0"));
-                ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
-                ebetaxvalue.setText(prop.getProperty(paramNames[6], "0"));
-                ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
-                ebetayvalue.setText(prop.getProperty(paramNames[7], "0"));
-                lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * ElectronBunch.E);
-                phenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
-                lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
-                pulseenergyvalue.setText(prop.getProperty(paramNames[9], "0"));
-                lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
-                pulselengthvalue.setText(prop.getProperty(paramNames[10], "0"));
-                lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
-                pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
-                lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
-                pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
-                lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
-                pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
-                ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
-                eshiftxvalue.setText(prop.getProperty(paramNames[14], "0"));
-                ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
-                eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
-                ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
-                eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
-                lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
-                lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
-                pulseanglevalue.setText(prop.getProperty(paramNames[17], "0"));
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
+            loadParameters(pFile);
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed
 
@@ -4153,6 +4140,63 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 return DomainOrder.ASCENDING;
             }
         };
+    }
+
+    /**
+     * Loading the Thomson parameters form a file
+     *
+     * @param fl
+     */
+    private void loadParameters(File fl) {
+        Properties prop = new Properties();
+        try (FileReader fr = new FileReader(pFile)) {
+            prop.load(fr);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        try {
+            ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+            energyvalue.setText(prop.getProperty(paramNames[0], "0"));
+            ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
+            chargevalue.setText(prop.getProperty(paramNames[1], "0"));
+            ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
+            spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
+            ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
+            elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
+            ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
+            eemitxvalue.setText(prop.getProperty(paramNames[4], "0"));
+            ebunch.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
+            eemityvalue.setText(prop.getProperty(paramNames[5], "0"));
+            ebunch.setBetax(Float.parseFloat(prop.getProperty(paramNames[6], "0")) * 1e-3);
+            ebetaxvalue.setText(prop.getProperty(paramNames[6], "0"));
+            ebunch.setBetay(Float.parseFloat(prop.getProperty(paramNames[7], "0")) * 1e-3);
+            ebetayvalue.setText(prop.getProperty(paramNames[7], "0"));
+            lpulse.setPhotonEnergy(Float.parseFloat(prop.getProperty(paramNames[8], "0")) * ElectronBunch.E);
+            phenergyvalue.setText(prop.getProperty(paramNames[8], "0"));
+            lpulse.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
+            pulseenergyvalue.setText(prop.getProperty(paramNames[9], "0"));
+            lpulse.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
+            pulselengthvalue.setText(prop.getProperty(paramNames[10], "0"));
+            lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
+            pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
+            lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
+            pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
+            lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
+            pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
+            ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+            eshiftxvalue.setText(prop.getProperty(paramNames[14], "0"));
+            ebunch.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+            eshiftyvalue.setText(prop.getProperty(paramNames[15], "0"));
+            ebunch.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
+            eshiftzvalue.setText(prop.getProperty(paramNames[16], "0"));
+            lpulse.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
+            lpulse.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3));
+            pulseanglevalue.setText(prop.getProperty(paramNames[17], "0"));
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error in the source parameter file!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
