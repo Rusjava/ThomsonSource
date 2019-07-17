@@ -15,7 +15,7 @@
     <target name="-pre-init">
         <manifest file="MANIFEST.MF">
                 <attribute name="Implementation-Vendor" value="Ruslan Feshchenko"/>
-                <attribute name="Implementation-Version" value="2.6"/>
+                <attribute name="Implementation-Version" value="2.61"/>
                 <attribute name="Implementation-Title" value="Thomson source simulation"/>
                 <attribute name="Built-Date" value="${TODAY}"/>
         </manifest>

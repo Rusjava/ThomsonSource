@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.6
+ * @version 2.61
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -227,6 +227,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         if (pFile.exists() && pFile.isFile()) {
             loadParameters(pFile);
         }
+        pFile = new File(".");
 
     }
 
