@@ -52,7 +52,9 @@ import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
 import electronbunch.AbstractElectronBunch;
+import java.io.FileReader;
 import java.net.URL;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import laserpulse.AbstractLaserPulse;
 import shadowfileconverter.ShadowFiles;
 import thomsonsource.AbstractThomsonSource;
@@ -254,6 +256,19 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(brillianceCalcNonLinear);
             SwingUtilities.updateComponentTreeUI(polarizationCalc);
             SwingUtilities.updateComponentTreeUI(rayProgressFrame);
+        });
+
+        //Get the current path for the java program and trying to open the "my.ini" file  
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                pFile = new File(new File(".").getCanonicalPath() + File.separator + "my.ini");
+            } catch (IOException ex) {
+                //Do nothing;
+            }
+            if (pFile.exists() && pFile.isFile()) {
+                loadParameters(pFile);
+            }
+            pFile = new File(".");
         });
     }
 
@@ -3565,40 +3580,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemLoadParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadParamActionPerformed
         // Loading LEXG parameters from a file
         JFileChooser fo = new JFileChooser();
-        Properties prop;
         fo.setDialogTitle("Choose file to load Thompson source parameters from");
+        fo.setFileFilter(new FileNameExtensionFilter("ini file", "ini"));
         int ans = fo.showOpenDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
-            try {
-                prop = tsource.loadProperties(pFile);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            energyvalue.setText(prop.getProperty(tsource.getParamNames()[0], "0"));
-            chargevalue.setText(prop.getProperty(tsource.getParamNames()[1], "0"));
-            spreadvalue.setText(prop.getProperty(tsource.getParamNames()[2], "0"));
-            elengthvalue.setText(prop.getProperty(tsource.getParamNames()[3], "0"));
-            eemitxvalue.setText(prop.getProperty(tsource.getParamNames()[4], "0"));
-            eemityvalue.setText(prop.getProperty(tsource.getParamNames()[5], "0"));
-            ebetaxvalue.setText(prop.getProperty(tsource.getParamNames()[6], "0"));
-            ebetayvalue.setText(prop.getProperty(tsource.getParamNames()[7], "0"));
-            phenergyvalue.setText(prop.getProperty(tsource.getParamNames()[8], "0"));
-            pulseenergyvalue.setText(prop.getProperty(tsource.getParamNames()[9], "0"));
-            pulselengthvalue.setText(prop.getProperty(tsource.getParamNames()[10], "0"));
-            pulserelvalue.setText(prop.getProperty(tsource.getParamNames()[11], "0"));
-            pulsefreqvalue.setText(prop.getProperty(tsource.getParamNames()[12], "0"));
-            pulsedelayvalue.setText(prop.getProperty(tsource.getParamNames()[13], "0"));
-            eshiftxvalue.setText(prop.getProperty(tsource.getParamNames()[14], "0"));
-            eshiftyvalue.setText(prop.getProperty(tsource.getParamNames()[15], "0"));
-            eshiftzvalue.setText(prop.getProperty(tsource.getParamNames()[16], "0"));
-            pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
+            loadParameters(pFile);
         }
     }//GEN-LAST:event_jMenuItemLoadParamActionPerformed
 
@@ -4935,6 +4922,21 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         } else {
             tsource.setPolarization(null);
             tsourcelinear.setPolarization(null);
+        }
+    }
+
+    /**
+     * Loading the Thomson parameters form a file
+     *
+     * @param fl
+     */
+    private void loadParameters(File fl) {
+        Properties prop = new Properties();
+        try (FileReader fr = new FileReader(pFile)) {
+            prop.load(fr);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
