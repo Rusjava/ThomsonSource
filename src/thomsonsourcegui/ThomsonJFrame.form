@@ -6,7 +6,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Linear brilliance box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[860, 313]"/>
+          <Dimension value="[800, 500]"/>
         </Property>
       </Properties>
 
@@ -247,7 +247,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="energyValue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="44"/>
+                <Property name="text" type="java.lang.String" value="30"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="energyValueFocusLost"/>
@@ -293,7 +293,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Non-linear brilliance box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[860, 313]"/>
+          <Dimension value="[800, 500]"/>
         </Property>
       </Properties>
 
@@ -544,7 +544,8 @@
             </Component>
             <Component class="javax.swing.JTextField" name="energyValueNonLinear">
               <Properties>
-                <Property name="text" type="java.lang.String" value="44"/>
+                <Property name="text" type="java.lang.String" value="30"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="energyValueNonLinearFocusLost"/>
@@ -605,7 +606,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Full flux box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[700, 313]"/>
+          <Dimension value="[800, 500]"/>
         </Property>
       </Properties>
 
@@ -821,7 +822,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Linear polarization box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[860, 313]"/>
+          <Dimension value="[800, 500]"/>
         </Property>
       </Properties>
 
@@ -1062,7 +1063,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="polEnergyValue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="44"/>
+                <Property name="text" type="java.lang.String" value="30"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polEnergyValueFocusLost"/>
@@ -1109,7 +1110,7 @@
         <Property name="title" type="java.lang.String" value="Non-linear polarization box"/>
         <Property name="focusTraversalPolicyProvider" type="boolean" value="true"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[860, 313]"/>
+          <Dimension value="[800, 500]"/>
         </Property>
       </Properties>
 
@@ -1359,7 +1360,8 @@
             </Component>
             <Component class="javax.swing.JTextField" name="polEnergyValueNonLinear">
               <Properties>
-                <Property name="text" type="java.lang.String" value="44"/>
+                <Property name="text" type="java.lang.String" value="30"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polEnergyValueNonLinearFocusLost"/>
@@ -2040,7 +2042,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="energyvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="51.2"/>
+                    <Property name="text" type="java.lang.String" value="42.96"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="energyvalueFocusLost"/>
@@ -2683,8 +2685,10 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
                           <Component id="jSlider_pickup" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
-                          <Component id="totalFluxLabel" min="-2" pref="240" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="totalFluxLabel" min="-2" pref="149" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="totalFluxAngleLabel" min="-2" pref="183" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -2695,9 +2699,12 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jSlider_pickup" max="32767" attributes="0"/>
-                              <Component id="totalFluxLabel" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="totalFluxLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="totalFluxAngleLabel" alignment="3" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="13" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2711,6 +2718,11 @@
                 <Component class="javax.swing.JLabel" name="totalFluxLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Total flux:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="totalFluxAngleLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Within limits: "/>
                   </Properties>
                 </Component>
               </SubComponents>

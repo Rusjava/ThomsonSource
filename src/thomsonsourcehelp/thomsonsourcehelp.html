@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-version: 1.0
+version: 1.5
 -->
 <html lang="en">
    <head> 
@@ -80,6 +80,10 @@ version: 1.0
 	<p>The left color plot shows the X-ray photon energy (in keV) as a function of the X-ray photon direction relative to the direction of the electron bunch.
 	 The right plot shows the cross-section of X-ray photon energy (in keV) at the angular position corresponding to the slider position below 
 	 the left plot.</p>
+        
+        <h3>Status bar</h3>
+        <p>The status bar below the graphs shows the total photon flux in the 4&pi; solid angle
+            and the flux within the solid angle limited by the maximal angle &theta;.</p>
 	 
 	 <h2>File menu</h2>
 	 <p>This menu allows one to save (<em>File</em> -> <em>Save parameters</em>) the source parameters from the main window to a file and load (<em>File</em> 
@@ -107,7 +111,7 @@ version: 1.0
 	<h2>Option menu</h2>
 	<p>Option menu provides access to additional graph parameters via <em>Options</em> -> <em>Laser polarization...</em> (Stocks 
             parameters for the laser radiation), <em>Options</em> -> <em>Graph parameters...</em> as well as to the numerical integration 
-            precision, the number of used threads and the number of points in Monte-Carlo calculation of the geometric factor via 
+            precision, the shift factor used in the angular integration of polarization calculations, the number of used threads and the number of points in Monte-Carlo calculation of the geometric factor via 
             <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> specifies whether the transversal
             velocity spread is taken into account in the main window calculations as well while generating a set of rays for Shadow.</p>
     </div>

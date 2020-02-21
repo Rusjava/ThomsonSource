@@ -103,6 +103,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     public static final double AS = 1.704509e3;
     /**
+     * A numerical shift to improve convergence of polarization angular
+     * integrals
+     */
+    public static final double SHIFT = 1e21;
+    /**
      * Angle range for rays exported for Shadow in the X-direction
      */
     protected double rayXAnglerange = 0.0003;
@@ -113,15 +118,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Min ray energy
      */
-    protected double minEnergy = 36 * 1e3 * GaussianElectronBunch.E;
+    protected double minEnergy = 25 * 1e3 * GaussianElectronBunch.E;
     /**
      * Max ray energy
      */
-    protected double maxEnergy = 46 * 1e3 * GaussianElectronBunch.E;
+    protected double maxEnergy = 35 * 1e3 * GaussianElectronBunch.E;
     /**
      * Number of points in Monte Carlo calculation of the geometric factor
      */
     protected int npGeometricFactor = 50000;
+    /**
+     * A shift factor to improve numerical integral convergence in polarization
+     * calculations
+     */
+    private double shiftfactor = 1;
     /**
      * Precision in calculations of the brilliance
      */
@@ -209,6 +219,22 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public final void calculateLinearTotalFlux() {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq()
                 / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
+    }
+    
+    /**
+     * A method calculating normalized total flux within a certain angle
+     *
+     * @param maxAngle
+     * @return
+     */
+    public final double calculateAngleTotalFlux(double maxAngle) {
+        double gamma2 = eb.getGamma() * eb.getGamma();
+        double v = Math.sqrt(1 - 1 / gamma2);
+        double cs = Math.cos(maxAngle);
+        return 3.0 / 4 / gamma2 * ((1 - cs) / (1 - v * cs) / (1 - v)
+                * (5.0 / 6 + 1.0 / 6 / v / v - 1.0 / 6 / gamma2 / v / v * (1 - v * v * cs) / (1 - v) / (1 - v * cs))
+                + 1.0 / 6 / gamma2 / v * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
+                * getLinearTotalFlux() * getGeometricFactor();
     }
 
     /**
@@ -364,7 +390,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
             }
-            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
++                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -423,7 +450,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
             //Creating an inegrator and integrating
             res = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)
-                    .integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+                    .integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
++                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
         } catch (TooManyEvaluationsException ex) {
             res = 0;
         }
@@ -1227,6 +1255,24 @@ public abstract class AbstractThomsonSource implements Cloneable {
         return new BasicVector(new double[]{a.get(1) * b.get(2) - a.get(2) * b.get(1),
             a.get(2) * b.get(0) - a.get(0) * b.get(2), a.get(0) * b.get(1) - a.get(1) * b.get(0)});
     }
+    
+    /**
+     * Getting a numerical factor to improve integral convergence
+     *
+     * @return the factor
+     */
+    public double getShiftfactor() {
+        return shiftfactor;
+    }
+
+    /**
+     * Setting a numerical factor to improve integral convergence
+     *
+     * @param shift the factor to set
+     */
+    public void setShiftfactor(double shift) {
+        this.shiftfactor = shift;
+    }
 
     /**
      * An auxiliary class for Romberg integrator for flux calculations
@@ -1287,7 +1333,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = sn * directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -1355,7 +1401,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = theta * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1)) + getPrecision();
+            u = sn * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1)) + getPrecision();
             return new Double(u).isNaN() ? 0 : u;
         }
     }

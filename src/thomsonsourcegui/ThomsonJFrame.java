@@ -52,7 +52,6 @@ import org.la4j.vector.dense.*;
 
 import static TextUtilities.MyTextUtilities.*;
 import electronbunch.AbstractElectronBunch;
-import java.io.FileReader;
 import java.net.URL;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import laserpulse.AbstractLaserPulse;
@@ -85,23 +84,25 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ystep = 20.0 / ysize;
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
-        rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
-        orderNumberBox = getIntegerFormattedTextField(1, 1, 10);
-        rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
-        brilPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
-        xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
-        ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
-        xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
-        rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
-        threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
-        ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
-        ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
-        ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
+        this.orderNumberBox = getIntegerFormattedTextField(1, 1, 10);
+        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
+        this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
+        this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e10, true);
+        this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
+        this.ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
+        this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        this.yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
+        this.xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
+        this.rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
+        this.rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
+        this.threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
+        this.ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
+        this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.parametersIniFileName = "My.ini";
         /**
          * Defining polarization transformation functions
          */
@@ -184,8 +185,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
+        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
 
@@ -199,8 +200,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.brilFormNonLinear.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.brilFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.brilFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.brilFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
+        this.brilFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
         this.brilFormNonLinear.savetext = "Choose file to save spectral brilliance data";
         this.brilFormNonLinear.numberOfItems = 12;
 
@@ -226,8 +227,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
+        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
         /**
@@ -261,7 +262,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         //Get the current path for the java program and trying to open the "my.ini" file  
         java.awt.EventQueue.invokeLater(() -> {
             try {
-                pFile = new File(new File(".").getCanonicalPath() + File.separator + "my.ini");
+                pFile = new File(new File(".").getCanonicalPath() + File.separator + parametersIniFileName);
             } catch (IOException ex) {
                 //Do nothing;
             }
@@ -443,6 +444,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jPanel_slider = new javax.swing.JPanel();
         jSlider_pickup = new javax.swing.JSlider();
         totalFluxLabel = new javax.swing.JLabel();
+        totalFluxAngleLabel = new javax.swing.JLabel();
         jPanel_sh = new javax.swing.JPanel();
         eshiftxlabel = new javax.swing.JLabel();
         eshiftylabel = new javax.swing.JLabel();
@@ -496,7 +498,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemAbout = new javax.swing.JMenuItem();
 
         brillianceCalc.setTitle("Linear brilliance box");
-        brillianceCalc.setMinimumSize(new java.awt.Dimension(860, 313));
+        brillianceCalc.setMinimumSize(new java.awt.Dimension(800, 500));
 
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -578,7 +580,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jEnergyLabel.setText("Energy");
 
-        energyValue.setText("44");
+        energyValue.setText("30");
         energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueFocusLost(evt);
@@ -702,7 +704,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         brillianceCalcNonLinear.setTitle("Non-linear brilliance box");
-        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(860, 313));
+        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(800, 500));
 
         BrillianceParamNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -784,7 +786,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jEnergyLabelNonLinear.setText("Energy");
 
-        energyValueNonLinear.setText("44");
+        energyValueNonLinear.setText("30");
+        energyValueNonLinear.setToolTipText("");
         energyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueNonLinearFocusLost(evt);
@@ -930,7 +933,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         gfCalc.setTitle("Full flux box");
-        gfCalc.setMinimumSize(new java.awt.Dimension(700, 313));
+        gfCalc.setMinimumSize(new java.awt.Dimension(800, 500));
 
         GFParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1078,7 +1081,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         polarizationCalc.setTitle("Linear polarization box");
-        polarizationCalc.setMinimumSize(new java.awt.Dimension(860, 313));
+        polarizationCalc.setMinimumSize(new java.awt.Dimension(800, 500));
 
         polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1160,7 +1163,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jPolEnergyLabel.setText("Energy");
 
-        polEnergyValue.setText("44");
+        polEnergyValue.setText("30");
         polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueFocusLost(evt);
@@ -1285,7 +1288,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polarizationCalcNonLinear.setTitle("Non-linear polarization box");
         polarizationCalcNonLinear.setFocusTraversalPolicyProvider(true);
-        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(860, 313));
+        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(800, 500));
 
         polarizationParamcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -1367,7 +1370,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jPolEnergyLabelNonLinear.setText("Energy");
 
-        polEnergyValueNonLinear.setText("44");
+        polEnergyValueNonLinear.setText("30");
+        polEnergyValueNonLinear.setToolTipText("");
         polEnergyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueNonLinearFocusLost(evt);
@@ -1580,7 +1584,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         energylabel.setText("Electron energy");
 
-        energyvalue.setText("51.2");
+        energyvalue.setText("42.96");
         energyvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyvalueFocusLost(evt);
@@ -2133,6 +2137,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         totalFluxLabel.setText("Total flux:");
 
+        totalFluxAngleLabel.setText("Within limits: ");
+
         javax.swing.GroupLayout jPanel_sliderLayout = new javax.swing.GroupLayout(jPanel_slider);
         jPanel_slider.setLayout(jPanel_sliderLayout);
         jPanel_sliderLayout.setHorizontalGroup(
@@ -2140,8 +2146,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             .addGroup(jPanel_sliderLayout.createSequentialGroup()
                 .addGap(69, 69, 69)
                 .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(94, 94, 94)
-                .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(totalFluxAngleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel_sliderLayout.setVerticalGroup(
@@ -2150,8 +2158,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jSlider_pickup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(totalFluxLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(totalFluxLabel)
+                        .addComponent(totalFluxAngleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         jPanel_sh.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Relative position", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -2612,7 +2622,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public LinearChartParam chartParam;
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
-        public double angle = 0, angleclone, energy = 44, energyclone;
+        public double angle = 0, angleclone, energy = 30, energyclone;
         public int ordernumber = 1;
         private File file = null;
 
@@ -2809,6 +2819,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private int numberOfRays = 1000;
     /* Number of rays exported for Shadow */
+    
+    private String parametersIniFileName;
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -2820,14 +2832,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
-            gfMonteCarloNumberBox, brilPrecisionBox, xSizeBox, ySizeBox, xRangeBox,
+            gfMonteCarloNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
             yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box, orderNumberBox;
     List<Function<double[], Double>> fn;
     private File bFile = null, pFile = null;
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "42.96", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -2838,7 +2850,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "51.2", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 100, energyvalue, "42.96", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
@@ -2878,12 +2890,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulseenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 10000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueActionPerformed
 
     private void pulseenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(TestValueWithMemory(0, 1000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 10000, pulseenergyvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueFocusLost
 
     private void pulselengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulselengthvalueActionPerformed
@@ -2989,7 +3001,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     jPanel_xenergy.repaint();
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("####.####")).format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + (new DecimalFormat("##.#######")).format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-15)
+                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                    totalFluxAngleLabel.setText("Within angle: "
+                            + (new DecimalFormat("##.#######"))
+                                    .format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
+                                            ysize * ystep) * 1e-3 / 2) * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3556,15 +3573,37 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
         // Saving the LEXG parameters into a file
         JFileChooser fo = new JFileChooser(pFile);
-        fo.setDialogTitle("Choose file to save Thompson source parameters");
+        fo.setDialogTitle("Choose a file to save Thompson source parameters");
+        fo.setFileFilter(new FileNameExtensionFilter("ini file", "ini"));
         int ans = fo.showSaveDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
             if (pFile.exists()) {
+                if (!pFile.isFile()) {
+                    //If not a file then do nothing
+                    return;
+                }
                 int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (n == JOptionPane.NO_OPTION) {
                     return;
+                }
+            } else  {
+                String extension = "";
+                int ind = pFile.getName().lastIndexOf('.');
+                if (ind > -1) {
+                    //If the file has extension then get it
+                    extension = pFile.getName().substring(ind + 1);
+                }
+                //If the extension is not 'ini' then add the 'ini' extension to the file name
+                if (!extension.equals("ini")) {
+                    try {
+
+                        pFile = (ind != -1) ? new File(pFile.getCanonicalPath().substring(0, ind + 1) + ".ini")
+                                : new File(pFile.getCanonicalPath() + ".ini");
+                    } catch (IOException ex) {
+                        //Do nothing
+                    }
                 }
             }
             //Saving Thomson source parameters into the file
@@ -3579,8 +3618,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuItemLoadParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLoadParamActionPerformed
         // Loading LEXG parameters from a file
-        JFileChooser fo = new JFileChooser();
-        fo.setDialogTitle("Choose file to load Thompson source parameters from");
+        JFileChooser fo = new JFileChooser(pFile);
+        fo.setDialogTitle("Choose a file to load Thompson source parameters from");
         fo.setFileFilter(new FileNameExtensionFilter("ini file", "ini"));
         int ans = fo.showOpenDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
@@ -3894,30 +3933,33 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
-            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", brilPrecisionBox,
+            "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
+            "<html>A multiplication factor for numerical shift<br/> in the polarization angular integral:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             //Non-linear source
+            tsource.setPrecision((double) numericallPrecisionBox.getValue());
+            tsource.setShiftfactor((double) shiftFactorBox.getValue());
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
-            tsource.setPrecision((double) brilPrecisionBox.getValue());
             tsource.setThreadNumber((int) threadsNumberBox.getValue());
             //Linear source
+            tsourcelinear.setPrecision((double) numericallPrecisionBox.getValue());
+            tsourcelinear.setShiftfactor((double) shiftFactorBox.getValue());
             tsourcelinear.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
-            tsourcelinear.setPrecision((double) brilPrecisionBox.getValue());
             tsourcelinear.setThreadNumber((int) threadsNumberBox.getValue());
             //ChatParam
             fluxdata.setThreadNumber((int) threadsNumberBox.getValue());
@@ -3984,12 +4026,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "30", oldStrings);
     }//GEN-LAST:event_energyValueFocusLost
 
     private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "44", oldStrings);
+        brilForm.energy = TestValueWithMemory(20, 100, energyValue, "30", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
@@ -4272,12 +4314,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
         //Setting energy in polarization form:
-        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
         //Setting energy in polarization form:
-        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "44", oldStrings);
+        polForm.energy = TestValueWithMemory(20, 100, polEnergyValue, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
     private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
@@ -4653,12 +4695,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueNonLinearFocusLost
         // TODO add your handling code here:
-        brilFormNonLinear.energy = TestValueWithMemory(20, 100, energyValueNonLinear, "44", oldStrings);
+        brilFormNonLinear.energy = TestValueWithMemory(20, 100, energyValueNonLinear, "30", oldStrings);
     }//GEN-LAST:event_energyValueNonLinearFocusLost
 
     private void energyValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueNonLinearActionPerformed
         // TODO add your handling code here:
-        brilFormNonLinear.energy = TestValueWithMemory(20, 100, energyValueNonLinear, "44", oldStrings);
+        brilFormNonLinear.energy = TestValueWithMemory(20, 100, energyValueNonLinear, "30", oldStrings);
     }//GEN-LAST:event_energyValueNonLinearActionPerformed
 
     private void OrderNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OrderNumberActionPerformed
@@ -4883,12 +4925,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueNonLinearFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearFocusLost
         //Setting energy in polarization form:
-        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "44", oldStrings);
+        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueNonLinearFocusLost
 
     private void polEnergyValueNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueNonLinearActionPerformed
         //Setting energy in polarization form:
-        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "44", oldStrings);
+        polFormNonLinear.energy = TestValueWithMemory(20, 100, polEnergyValueNonLinear, "30", oldStrings);
     }//GEN-LAST:event_polEnergyValueNonLinearActionPerformed
 
     private void jMenuItemPolarizationNonLinearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationNonLinearActionPerformed
@@ -4926,18 +4968,39 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Loading the Thomson parameters form a file
-     *
-     * @param fl
+     * + * Loading the Thomson parameters form a file + * + * @param fl +
      */
     private void loadParameters(File fl) {
-        Properties prop = new Properties();
-        try (FileReader fr = new FileReader(pFile)) {
-            prop.load(fr);
+        Properties prop;
+        try {
+            prop = tsource.loadProperties(fl);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error while reading from the file!", "Error",
                     JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error in the parameter file!", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        energyvalue.setText(prop.getProperty(tsource.getParamNames()[0], "0"));
+        chargevalue.setText(prop.getProperty(tsource.getParamNames()[1], "0"));
+        spreadvalue.setText(prop.getProperty(tsource.getParamNames()[2], "0"));
+        elengthvalue.setText(prop.getProperty(tsource.getParamNames()[3], "0"));
+        eemitxvalue.setText(prop.getProperty(tsource.getParamNames()[4], "0"));
+        eemityvalue.setText(prop.getProperty(tsource.getParamNames()[5], "0"));
+        ebetaxvalue.setText(prop.getProperty(tsource.getParamNames()[6], "0"));
+        ebetayvalue.setText(prop.getProperty(tsource.getParamNames()[7], "0"));
+        phenergyvalue.setText(prop.getProperty(tsource.getParamNames()[8], "0"));
+        pulseenergyvalue.setText(prop.getProperty(tsource.getParamNames()[9], "0"));
+        pulselengthvalue.setText(prop.getProperty(tsource.getParamNames()[10], "0"));
+        pulserelvalue.setText(prop.getProperty(tsource.getParamNames()[11], "0"));
+        pulsefreqvalue.setText(prop.getProperty(tsource.getParamNames()[12], "0"));
+        pulsedelayvalue.setText(prop.getProperty(tsource.getParamNames()[13], "0"));
+        eshiftxvalue.setText(prop.getProperty(tsource.getParamNames()[14], "0"));
+        eshiftyvalue.setText(prop.getProperty(tsource.getParamNames()[15], "0"));
+        eshiftzvalue.setText(prop.getProperty(tsource.getParamNames()[16], "0"));
+        pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
     }
 
     /**
@@ -5187,6 +5250,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel spreadlabel;
     private javax.swing.JTextField spreadvalue;
     private javax.swing.JButton startbutton;
+    private javax.swing.JLabel totalFluxAngleLabel;
     private javax.swing.JLabel totalFluxLabel;
     // End of variables declaration//GEN-END:variables
 }
