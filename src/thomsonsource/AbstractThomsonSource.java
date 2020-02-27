@@ -71,7 +71,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
             "Y-shift_mm", "Z-shift_mm", "Laser-electron_direction_x",
-            "Laser-electron_direction_y", "Laser-electron_direction_z"};
+            "Laser-electron_direction_y", "Laser-electron_direction_z","Laser-electron_angle_mrad"};
     }
     /**
      * Names of Thomson source parameters
@@ -220,7 +220,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.totalFlux = SIGMA_T * eb.getNumber() * lp.getPhotonNumber() * lp.getFq()
                 / Math.PI / Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)));
     }
-    
+
     /**
      * A method calculating normalized total flux within a certain angle
      *
@@ -315,8 +315,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating a Stocks parameter density in a given direction
-     * for a given X-ray photon energy
+     * A method calculating a Stocks parameter density in a given direction for
+     * a given X-ray photon energy
      *
      * @param n direction
      * @param v normalized electron velocity
@@ -358,8 +358,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public abstract double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e);
 
     /**
-     * A method calculating a Stocks parameter density in a given direction
-     * for a given X-ray photon energy without taking into account electron
+     * A method calculating a Stocks parameter density in a given direction for
+     * a given X-ray photon energy without taking into account electron
      * transversal pulse spread
      *
      * @param n direction
@@ -391,7 +391,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
             }
             return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-+                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                    + -getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -425,9 +425,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A multi-threaded method calculating a Stocks parameter density
-     * in a given direction for a given X-ray photon energy taking into account
-     * electron transversal pulse spread
+     * A multi-threaded method calculating a Stocks parameter density in a given
+     * direction for a given X-ray photon energy taking into account electron
+     * transversal pulse spread
      *
      * @param n direction
      * @param v0 normalized electron velocity
@@ -451,7 +451,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             res = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)
                     .integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-+                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                    + -getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
         } catch (TooManyEvaluationsException ex) {
             res = 0;
         }
@@ -489,8 +489,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating a Stocks parameter density in a given direction
-     * for a given X-ray photon energy for a given volume element
+     * A method calculating a Stocks parameter density in a given direction for
+     * a given X-ray photon energy for a given volume element
      *
      * @param r spatial position
      * @param n direction
@@ -533,8 +533,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     abstract public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
-     * A method calculating a Stocks parameter density in a given direction
-     * for a given X-ray photon energy for a given volume element without taking
+     * A method calculating a Stocks parameter density in a given direction for
+     * a given X-ray photon energy for a given volume element without taking
      * into account electron transversal pulse spread
      *
      * @param r spatial position
@@ -576,8 +576,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     abstract public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
-     * A method calculating a Stocks parameter density in a given direction
-     * for a given X-ray photon energy for a given volume element taking into
+     * A method calculating a Stocks parameter density in a given direction for
+     * a given X-ray photon energy for a given volume element taking into
      * account electron transversal pulse spread
      *
      * @param r spatial position
@@ -1208,9 +1208,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
             eb.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
             eb.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
             eb.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
-            lp.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")));
-            lp.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")));
-            lp.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")));
+            lp.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3);
+            lp.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")) * 1e-3);
+            lp.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")) * 1e-3);
+            lp.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[20], "0")) * 1e-3));
+            lp.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[20], "0")) * 1e-3));
         } catch (NumberFormatException e) {
             throw e;
         }
@@ -1255,7 +1257,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         return new BasicVector(new double[]{a.get(1) * b.get(2) - a.get(2) * b.get(1),
             a.get(2) * b.get(0) - a.get(0) * b.get(2), a.get(0) * b.get(1) - a.get(1) * b.get(0)});
     }
-    
+
     /**
      * Getting a numerical factor to improve integral convergence
      *
@@ -1333,7 +1335,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = sn * directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = sn * directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1))
+                    + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -1401,7 +1404,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = sn * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1)) + getPrecision();
+            u = sn * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
+                    + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }
     }

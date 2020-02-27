@@ -102,7 +102,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
         this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
-        this.parametersIniFileName = "My.ini";
+        this.parametersIniFileName = "my.ini";
         /**
          * Defining polarization transformation functions
          */
