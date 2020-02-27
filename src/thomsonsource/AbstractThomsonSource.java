@@ -46,7 +46,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.1
+ * @version 1.2
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -227,7 +227,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param maxAngle
      * @return
      */
-    public final double calculateAngleTotalFlux(double maxAngle) {
+    public final double calculateAngleLinearTotalFlux(double maxAngle) {
         double gamma2 = eb.getGamma() * eb.getGamma();
         double v = Math.sqrt(1 - 1 / gamma2);
         double cs = Math.cos(maxAngle);
@@ -315,7 +315,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating the Stocks parameters density in a given direction
+     * A method calculating a Stocks parameter density in a given direction
      * for a given X-ray photon energy
      *
      * @param n direction
@@ -358,7 +358,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public abstract double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e);
 
     /**
-     * A method calculating the Stocks parameters density in a given direction
+     * A method calculating a Stocks parameter density in a given direction
      * for a given X-ray photon energy without taking into account electron
      * transversal pulse spread
      *
@@ -425,7 +425,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A multi-threaded method calculating the full polarization tensor density
+     * A multi-threaded method calculating a Stocks parameter density
      * in a given direction for a given X-ray photon energy taking into account
      * electron transversal pulse spread
      *
@@ -489,7 +489,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * A method calculating the Stocks parameters density in a given direction
+     * A method calculating a Stocks parameter density in a given direction
      * for a given X-ray photon energy for a given volume element
      *
      * @param r spatial position
@@ -533,7 +533,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     abstract public double[] directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
-     * A method calculating the Stocks parameters density in a given direction
+     * A method calculating a Stocks parameter density in a given direction
      * for a given X-ray photon energy for a given volume element without taking
      * into account electron transversal pulse spread
      *
@@ -576,7 +576,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     abstract public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException;
 
     /**
-     * A method calculating the Stocks parameters density in a given direction
+     * A method calculating a Stocks parameter density in a given direction
      * for a given X-ray photon energy for a given volume element taking into
      * account electron transversal pulse spread
      *

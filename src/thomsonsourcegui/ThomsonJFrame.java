@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.1
+ * @version 3.2
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -3005,7 +3005,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
                             + (new DecimalFormat("##.#######"))
-                                    .format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
+                                    .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
                                             ysize * ystep) * 1e-3 / 2) * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
