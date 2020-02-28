@@ -71,7 +71,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
             "Y-shift_mm", "Z-shift_mm", "Laser-electron_direction_x",
-            "Laser-electron_direction_y", "Laser-electron_direction_z","Laser-electron_angle_mrad"};
+            "Laser-electron_direction_y", "Laser-electron_direction_z", "Laser-electron_angle_mrad"};
     }
     /**
      * Names of Thomson source parameters
@@ -1205,14 +1205,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
             lp.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
             lp.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
             lp.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
-            eb.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
-            eb.getShift().set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
-            eb.getShift().set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
-            lp.getDirection().set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3);
-            lp.getDirection().set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")) * 1e-3);
-            lp.getDirection().set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")) * 1e-3);
-            lp.getDirection().set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[20], "0")) * 1e-3));
-            lp.getDirection().set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[20], "0")) * 1e-3));
+            Vector sht = new BasicVector(new double[3]);
+            sht.set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
+            sht.set(1, Float.parseFloat(prop.getProperty(paramNames[15], "0")) * 1e-3);
+            sht.set(2, Float.parseFloat(prop.getProperty(paramNames[16], "0")) * 1e-3);
+            eb.setShift(sht);
+            Vector dir = new BasicVector(new double[3]);
+            dir.set(0, Float.parseFloat(prop.getProperty(paramNames[17], "0")) * 1e-3);
+            dir.set(1, Float.parseFloat(prop.getProperty(paramNames[18], "0")) * 1e-3);
+            dir.set(2, Float.parseFloat(prop.getProperty(paramNames[19], "0")) * 1e-3);
+            dir.set(1, Math.sin(Float.parseFloat(prop.getProperty(paramNames[20], "0")) * 1e-3));
+            dir.set(2, Math.cos(Float.parseFloat(prop.getProperty(paramNames[20], "0")) * 1e-3));
+            lp.setDirection(dir);
         } catch (NumberFormatException e) {
             throw e;
         }

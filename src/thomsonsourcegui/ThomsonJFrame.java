@@ -2819,7 +2819,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private int numberOfRays = 1000;
     /* Number of rays exported for Shadow */
-    
+
     private String parametersIniFileName;
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
@@ -3005,8 +3005,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
                             + (new DecimalFormat("##.#######"))
-                                    .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-15)
+                            .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
+                                    ysize * ystep) * 1e-3 / 2) * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3157,46 +3157,68 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eshiftxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.getShift().set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
+        Double value = TestValueWithMemory(0, 1000, eshiftxvalue, "0", oldStrings) * 1e-3;
+        Vector dir = ebunch.getShift();
+        dir.set(0, value);
+        ebunch.setShift(dir);
     }//GEN-LAST:event_eshiftxvalueFocusLost
 
     private void eshiftxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.getShift().set(0, TestValueWithMemory(0, 10, eshiftxvalue, "0", oldStrings) * 1e-3);
+        Double value = TestValueWithMemory(0, 1000, eshiftxvalue, "0", oldStrings) * 1e-3;
+        Vector dir = ebunch.getShift();
+        dir.set(0, value);
+        ebunch.setShift(dir);
     }//GEN-LAST:event_eshiftxvalueActionPerformed
 
     private void eshiftyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.getShift().set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
+        Double value = TestValueWithMemory(0, 1000, eshiftyvalue, "0", oldStrings) * 1e-3;
+        Vector dir = ebunch.getShift();
+        dir.set(1, value);
+        ebunch.setShift(dir);
     }//GEN-LAST:event_eshiftyvalueFocusLost
 
     private void eshiftyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.getShift().set(1, TestValueWithMemory(0, 10, eshiftyvalue, "0", oldStrings) * 1e-3);
+        Double value = TestValueWithMemory(0, 1000, eshiftyvalue, "0", oldStrings) * 1e-3;
+        Vector dir = ebunch.getShift();
+        dir.set(1, value);
+        ebunch.setShift(dir);
     }//GEN-LAST:event_eshiftyvalueActionPerformed
 
     private void eshiftzvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eshiftzvalueFocusLost
         // TODO add your handling code here:
-        ebunch.getShift().set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
+        Double value = TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3;
+        Vector dir = ebunch.getShift();
+        dir.set(2, value);
+        ebunch.setShift(dir);
     }//GEN-LAST:event_eshiftzvalueFocusLost
 
     private void eshiftzvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eshiftzvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.getShift().set(2, TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3);
+        Double value = TestValueWithMemory(0, 1000, eshiftzvalue, "0", oldStrings) * 1e-3;
+        Vector dir = new BasicVector(new double[3]);
+        dir.set(2, value);
+        ebunch.setShift(dir);
     }//GEN-LAST:event_eshiftzvalueActionPerformed
 
     private void pulseanglevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseanglevalueFocusLost
         // TODO add your handling code here:
         Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
-        lpulse.getDirection().set(2, Math.cos(value));
-        lpulse.getDirection().set(1, Math.sin(value));
+        Vector dir = new BasicVector(new double[3]);
+        dir.set(2, Math.cos(value));
+        dir.set(1, Math.sin(value));
+        lpulse.setDirection(dir);
     }//GEN-LAST:event_pulseanglevalueFocusLost
 
     private void pulseanglevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseanglevalueActionPerformed
         // TODO add your handling code here:
         Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
-        lpulse.getDirection().set(2, Math.cos(value));
-        lpulse.getDirection().set(1, Math.sin(value));
+        Vector dir = new BasicVector(new double[3]);
+        dir.set(2, Math.cos(value));
+        dir.set(1, Math.sin(value));
+        lpulse.setDirection(dir);
     }//GEN-LAST:event_pulseanglevalueActionPerformed
 
     private void jMenuItemBrillianceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemBrillianceActionPerformed
@@ -3588,7 +3610,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 if (n == JOptionPane.NO_OPTION) {
                     return;
                 }
-            } else  {
+            } else {
                 String extension = "";
                 int ind = pFile.getName().lastIndexOf('.');
                 if (ind > -1) {
@@ -5000,7 +5022,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         eshiftxvalue.setText(prop.getProperty(tsource.getParamNames()[14], "0"));
         eshiftyvalue.setText(prop.getProperty(tsource.getParamNames()[15], "0"));
         eshiftzvalue.setText(prop.getProperty(tsource.getParamNames()[16], "0"));
-        pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2))));
+        pulseanglevalue.setText(Double.toString(Math.acos(lpulse.getDirection().get(2)) * 1e3));
     }
 
     /**
