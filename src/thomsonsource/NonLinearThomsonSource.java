@@ -565,7 +565,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     throw new LocalException(x);
                 }
                 try {
-                    return directionFrequencyVolumeFluxNoSpread(r0.add(n.multiply(x)), n, v, e);
+                    return directionFrequencyVolumeFluxNoSpread(r0.add(n.multiply(x)), n, v, e) + SHIFT * getShiftfactor();
                 } catch (InterruptedException ex) {
                     return 0;
                 }
@@ -579,7 +579,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
             double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength())
+                    - 2 * INT_RANGE * eb.getLength() * SHIFT * getShiftfactor();
             return u;
         } catch (TooManyEvaluationsException ex) {
             return 0;
