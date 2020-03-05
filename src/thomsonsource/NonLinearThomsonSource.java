@@ -108,11 +108,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double intensity, factor, gamma;
         double[] res = new double[]{0, 0, 0, 0};
         //If vector r is null then use average intensity
-        if (r == null) {
-            intensity = lp.getAverageIntensity();
-        } else {
-            intensity = lp.getIntensity(r);
-        }
+        intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
+        //Calculating factor gamma
         gamma = calculateGamma(n, v, e, intensity);
         factor = eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
         if (gamma == 0) {
@@ -131,17 +128,14 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index) {
-        double intensity, res, gamma;
+        double intensity, res = 0, gamma;
         //If vector r is null then use average intensity
-        if (r == null) {
-            intensity = lp.getAverageIntensity();
-        } else {
-            intensity = lp.getIntensity(r);
-        }
+        intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
+        //Calculating factor gamma
         gamma = calculateGamma(n, v, e, intensity);
         if (gamma == 0) {
             //returning zero if gamma is zero
-            return 0;
+            return res;
         } else {
             //Multiplying polarization matrix by gamma distribution and returning the result
             res = directionPolarizationBasic(n, v, e, gamma, intensity, index) * eb.gammaDistribution(gamma)
