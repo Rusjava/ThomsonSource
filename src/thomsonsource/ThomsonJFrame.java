@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 2.61
+ * @version 1.0
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -1306,7 +1306,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        pulsefreqvalue.setText("79");
+        pulsefreqvalue.setText("100");
         pulsefreqvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulsefreqvalueFocusLost(evt);
@@ -1334,7 +1334,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsefrequnitlabel.setText("mm");
 
-        pulsedelayunitlabel.setText("MHz");
+        pulsedelayunitlabel.setText("Hz");
 
         ebetayunitlabel.setText("mm");
 
@@ -2560,12 +2560,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setFq(TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6);
+        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "100", oldStrings));
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setFq(TestValueWithMemory(0, 1000, pulsefreqvalue, "79", oldStrings) * 1e6);
+        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "100", oldStrings));
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
@@ -3753,7 +3753,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_eemityvalueActionPerformed
 
     private void GFValueSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFValueSelectionBoxActionPerformed
-        // Selecting either the full flux of geometric factor:
+        // Selecting either the full flux or geometric factor:
         if (GFValueSelectionBox.getSelectedIndex() == 0) {
             gfCalc.setTitle("Full flux box");
             ((TitledBorder) GFCalcGraph.getBorder()).setTitle("Full flux");
