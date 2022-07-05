@@ -1010,7 +1010,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("TSource");
+        setTitle("TSourceX");
         setMinimumSize(new java.awt.Dimension(750, 0));
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
