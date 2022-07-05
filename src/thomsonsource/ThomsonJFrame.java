@@ -218,17 +218,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(rayProgressFrame);
         });
 
-        //Get the current path for the java program and trying to open the "my.ini" file
-        try {
-            pFile = new File(new File(".").getCanonicalPath() + File.separator + "my.ini");
-        } catch (IOException ex) {
-           //Do nothing;
-        }
-        if (pFile.exists() && pFile.isFile()) {
-            loadParameters(pFile);
-        }
-        pFile = new File(".");
-
+        //Get the current path for the java program and trying to open the "my.ini" file  
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                pFile = new File(new File(".").getCanonicalPath() + File.separator + "my.ini");
+            } catch (IOException ex) {
+                //Do nothing;
+            }
+            if (pFile.exists() && pFile.isFile()) {
+                loadParameters(pFile);
+            }
+            pFile = new File(".");
+        });
     }
 
     /**
