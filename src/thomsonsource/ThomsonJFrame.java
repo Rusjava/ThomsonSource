@@ -1994,7 +1994,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuHelp.add(HelpItem);
 
-        jMenuItemAbout.setText("About TSource");
+        jMenuItemAbout.setText("About TSourceX");
         jMenuItemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemAboutActionPerformed(evt);
@@ -2927,7 +2927,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 + "<br>Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
                 + "<br>Author: " + pk.getImplementationVendor()
                 + "</html>",
-                "About", JOptionPane.INFORMATION_MESSAGE);
+                "About TSourceX", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
@@ -3500,7 +3500,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             option = JOptionPane.showConfirmDialog(null, message, "Laser light polarization", JOptionPane.OK_CANCEL_OPTION);
             p2 = Math.pow((double) ksi1Box.getValue(), 2) + Math.pow((double) ksi2Box.getValue(), 2)
                     + Math.pow((double) ksi3Box.getValue(), 2);
-            warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must be not exceed unity!" : "";
+            warning = p2 > 1 ? "The sum of squares of ksi1, ksi2 and ksi3 must not exceed unity!" : "";
         } while (p2 > 1 && option == JOptionPane.OK_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             tsource.getLaserPulse().setPolarization((Double) ksi1Box.getValue(),
