@@ -167,9 +167,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.brilForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
-        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
-        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
-        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
+        this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 0.01, ElectronBunch.E * 1e3, 1e-3};
+        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.5", "0.5", "0.3", "5", "0.1", "0", "0"};
+        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "5", "5", "5", "3", "50", "1", "100", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
 
@@ -181,8 +181,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
         this.gfForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6};
-        this.gfForm.minValues = new String[]{"0", "0", "0", "10", "3", "2.7", "20"};
-        this.gfForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "100"};
+        this.gfForm.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.3", "5"};
+        this.gfForm.maxValues = new String[]{"50", "100", "10", "50", "5", "3", "50"};
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
         /**
@@ -194,9 +194,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.polForm.plotLabels = new String[]{"Laser-electron angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
-        this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, ElectronBunch.E * 1e3, 1e-3};
-        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
-        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
+        this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 0.01, ElectronBunch.E * 1e3, 1e-3};
+        this.polForm.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.5", "0.5", "0.3", "5", "0.1", "0", "0"};
+        this.polForm.maxValues = new String[]{"50", "100", "10", "50", "5", "5", "5", "3", "50", "1", "100", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
 
@@ -324,6 +324,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         eemitylabel = new javax.swing.JLabel();
         eemityvalue = new javax.swing.JTextField();
         eemityunitlabel = new javax.swing.JLabel();
+        chargeunitlabel1 = new javax.swing.JLabel();
         jPanel_ph = new javax.swing.JPanel();
         phenergylabel = new javax.swing.JLabel();
         phenergyvalue = new javax.swing.JTextField();
@@ -453,7 +454,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         Brilmaxvalueunitlabel.setText("mrad");
 
-        Brilmaxvalue.setText("50");
+        Brilmaxvalue.setText("60");
+        Brilmaxvalue.setToolTipText("");
         Brilmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 BrilmaxvalueFocusLost(evt);
@@ -492,7 +494,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jEnergyLabel.setText("Energy");
 
-        energyValue.setText("30");
+        energyValue.setText("46");
+        energyValue.setToolTipText("");
         energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueFocusLost(evt);
@@ -659,7 +662,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         GFmaxvalueunitlabel.setText("mrad");
 
-        GFmaxvalue.setText("50");
+        GFmaxvalue.setText("60");
         GFmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 GFmaxvalueFocusLost(evt);
@@ -807,7 +810,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polmaxvalueunitlabel.setText("mrad");
 
-        polmaxvalue.setText("50");
+        polmaxvalue.setText("60");
         polmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polmaxvalueFocusLost(evt);
@@ -846,7 +849,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jPolEnergyLabel.setText("Energy");
 
-        polEnergyValue.setText("30");
+        polEnergyValue.setText("46");
+        polEnergyValue.setToolTipText("");
         polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueFocusLost(evt);
@@ -1052,7 +1056,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         chargelabel.setText("Charge");
 
-        chargevalue.setText("1");
+        chargevalue.setText("0.2");
         chargevalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 chargevalueFocusLost(evt);
@@ -1068,7 +1072,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         spreadlabel.setText("Gamma-spread");
 
-        spreadvalue.setText("0.01");
+        spreadvalue.setText("0.25");
         spreadvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 spreadvalueFocusLost(evt);
@@ -1082,7 +1086,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         elengthlabel.setText("Length");
 
-        elengthvalue.setText("30");
+        elengthvalue.setText("10");
         elengthvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 elengthvalueFocusLost(evt);
@@ -1098,7 +1102,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         eemitxlabel.setText("X-emittance");
 
-        eemitxvalue.setText("5");
+        eemitxvalue.setText("1");
         eemitxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 eemitxvalueFocusLost(evt);
@@ -1114,7 +1118,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         ebetaxlabel.setText("Beta x");
 
-        ebetaxvalue.setText("10");
+        ebetaxvalue.setText("20");
         ebetaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 ebetaxvalueFocusLost(evt);
@@ -1130,7 +1134,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         eemitylabel.setText("Y-emittance");
 
-        eemityvalue.setText("5");
+        eemityvalue.setText("1");
         eemityvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 eemityvalueFocusLost(evt);
@@ -1143,6 +1147,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
 
         eemityunitlabel.setText("mm*mrad");
+
+        chargeunitlabel1.setText("%");
 
         javax.swing.GroupLayout jPanel_elLayout = new javax.swing.GroupLayout(jPanel_el);
         jPanel_el.setLayout(jPanel_elLayout);
@@ -1194,7 +1200,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     .addGroup(jPanel_elLayout.createSequentialGroup()
                         .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(chargeunitlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(energyunitlabel))
+                            .addComponent(energyunitlabel)
+                            .addComponent(chargeunitlabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel_elLayout.setVerticalGroup(
@@ -1212,7 +1219,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(spreadlabel)
-                    .addComponent(spreadvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spreadvalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chargeunitlabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_elLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(elengthunitlabel)
@@ -1243,7 +1251,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         phenergylabel.setText("Photon energy");
 
-        phenergyvalue.setText("1.1");
+        phenergyvalue.setText("1.204");
         phenergyvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 phenergyvalueFocusLost(evt);
@@ -1259,7 +1267,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulseenergylabel.setText("Pulse energy");
 
-        pulseenergyvalue.setText("20");
+        pulseenergyvalue.setText("100");
         pulseenergyvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulseenergyvalueFocusLost(evt);
@@ -1275,7 +1283,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         puslelengthlabel.setText("Pulse length");
 
-        pulselengthvalue.setText("30");
+        pulselengthvalue.setText("10");
         pulselengthvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulselengthvalueFocusLost(evt);
@@ -1295,7 +1303,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("2.7");
+        pulserelvalue.setText("0.35");
+        pulserelvalue.setToolTipText("");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);
@@ -1307,7 +1316,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        pulsefreqvalue.setText("100");
+        pulsefreqvalue.setText("1000");
         pulsefreqvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulsefreqvalueFocusLost(evt);
@@ -1339,7 +1348,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         ebetayunitlabel.setText("mm");
 
-        ebetayvalue.setText("10");
+        ebetayvalue.setText("20");
         ebetayvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 ebetayvalueFocusLost(evt);
@@ -1663,7 +1672,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        pulseanglevalue.setText("0");
+        pulseanglevalue.setText("52");
+        pulseanglevalue.setToolTipText("");
         pulseanglevalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulseanglevalueFocusLost(evt);
@@ -2050,7 +2060,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public LinearChartParam chartParam;
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
-        double angle = 0, angleclone, energy = 30, energyclone;
+        double angle = 0, angleclone, energy = 46, energyclone;
         private File file = null;
 
         /**
@@ -2282,7 +2292,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
+        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.204", oldStrings) * ElectronBunch.E);
     }//GEN-LAST:event_phenergyvalueActionPerformed
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
@@ -2292,57 +2302,57 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.1", oldStrings) * ElectronBunch.E);
+        lpulse.setPhotonEnergy(TestValueWithMemory(0, 10, phenergyvalue, "1.204", oldStrings) * ElectronBunch.E);
     }//GEN-LAST:event_phenergyvalueFocusLost
 
     private void chargevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargevalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9);
+        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "0.2", oldStrings) / ElectronBunch.E * 1e-9);
     }//GEN-LAST:event_chargevalueActionPerformed
 
     private void chargevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_chargevalueFocusLost
         // TODO add your handling code here:
-        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "1", oldStrings) / ElectronBunch.E * 1e-9);
+        ebunch.setNumber(TestValueWithMemory(0, 10, chargevalue, "0.2", oldStrings) / ElectronBunch.E * 1e-9);
     }//GEN-LAST:event_chargevalueFocusLost
 
     private void spreadvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spreadvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings));
+        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.25", oldStrings) / 100);
     }//GEN-LAST:event_spreadvalueActionPerformed
 
     private void spreadvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spreadvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.01", oldStrings));
+        ebunch.setDelgamma((double) TestValueWithMemory(0.0001, 0.1, spreadvalue, "0.25", oldStrings) / 100);
     }//GEN-LAST:event_spreadvalueFocusLost
 
     private void elengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elengthvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2);
+        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "10", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_elengthvalueActionPerformed
 
     private void elengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_elengthvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "30", oldStrings) * 3e-4 / 2);
+        ebunch.setLength(TestValueWithMemory(0, 1000, elengthvalue, "10", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_elengthvalueFocusLost
 
     private void pulseenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseenergyvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(TestValueWithMemory(0, 100000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 100000, pulseenergyvalue, "100", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueActionPerformed
 
     private void pulseenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseenergyvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setPulseEnergy(TestValueWithMemory(0, 100000, pulseenergyvalue, "20", oldStrings) * 1e-3);
+        lpulse.setPulseEnergy(TestValueWithMemory(0, 100000, pulseenergyvalue, "100", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulseenergyvalueFocusLost
 
     private void pulselengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulselengthvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2);
+        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "10", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_pulselengthvalueActionPerformed
 
     private void pulselengthvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulselengthvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "30", oldStrings) * 3e-4 / 2);
+        lpulse.setLength(TestValueWithMemory(0, 1000, pulselengthvalue, "10", oldStrings) * 3e-4 / 2);
     }//GEN-LAST:event_pulselengthvalueFocusLost
 
     private void startbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startbuttonActionPerformed
@@ -2462,22 +2472,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eemitxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "5", oldStrings) * 1e-6);
+        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitxvalueFocusLost
 
     private void eemitxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "5", oldStrings) * 1e-6);
+        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitxvalueActionPerformed
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetax(TestValueWithMemory(0.1, 100, ebetaxvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
@@ -2551,22 +2561,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3);
+        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "0.35", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "2.7", oldStrings) * 1e-3);
+        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "0.35", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "100", oldStrings));
+        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "1000", oldStrings));
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "100", oldStrings));
+        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "1000", oldStrings));
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
@@ -2611,14 +2621,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulseanglevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseanglevalueFocusLost
         // TODO add your handling code here:
-        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "52", oldStrings) * 1e-3;
         lpulse.getDirection().set(2, Math.cos(value));
         lpulse.getDirection().set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueFocusLost
 
     private void pulseanglevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseanglevalueActionPerformed
         // TODO add your handling code here:
-        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "52", oldStrings) * 1e-3;
         lpulse.getDirection().set(2, Math.cos(value));
         lpulse.getDirection().set(1, Math.sin(value));
     }//GEN-LAST:event_pulseanglevalueActionPerformed
@@ -2875,22 +2885,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void BrilmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilmaxvalueActionPerformed
         // TODO add your handling code here:
-        brilForm.maxValue = TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.maxValue = TestValueWithMemory(0, 10000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueActionPerformed
 
     private void BrilminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilminvalueActionPerformed
         // TODO add your handling code here:
-        brilForm.minValue = TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.minValue = TestValueWithMemory(0, 10000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueActionPerformed
 
     private void BrilminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilminvalueFocusLost
         // TODO add your handling code here:
-        brilForm.minValue = TestValueWithMemory(0, 1000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.minValue = TestValueWithMemory(0, 10000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueFocusLost
 
     private void BrilmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilmaxvalueFocusLost
         // TODO add your handling code here:
-        brilForm.maxValue = TestValueWithMemory(0, 1000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.maxValue = TestValueWithMemory(0, 10000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueFocusLost
 
     private void jMenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExitActionPerformed
@@ -3289,22 +3299,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void GFminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFminvalueFocusLost
         // TODO add your handling code here:
-        gfForm.minValue = TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.minValue = TestValueWithMemory(0, 10000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueFocusLost
 
     private void GFminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFminvalueActionPerformed
         // TODO add your handling code here:
-        gfForm.minValue = TestValueWithMemory(0, 1000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.minValue = TestValueWithMemory(0, 10000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueActionPerformed
 
     private void GFmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFmaxvalueFocusLost
         // TODO add your handling code here:
-        gfForm.maxValue = TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.maxValue = TestValueWithMemory(0, 10000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueFocusLost
 
     private void GFmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFmaxvalueActionPerformed
         // TODO add your handling code here:
-        gfForm.maxValue = TestValueWithMemory(0, 1000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.maxValue = TestValueWithMemory(0, 10000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueActionPerformed
 
     private void jCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadActionPerformed
@@ -3338,12 +3348,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "10", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100, ebetayvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
@@ -3416,12 +3426,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(0, 100, energyValue, "30", oldStrings);
+        brilForm.energy = TestValueWithMemory(0, 10000, energyValue, "46", oldStrings);
     }//GEN-LAST:event_energyValueFocusLost
 
     private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(0, 100, energyValue, "30", oldStrings);
+        brilForm.energy = TestValueWithMemory(0, 10000, energyValue, "46", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
@@ -3695,22 +3705,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polminvalueFocusLost
         // TODO add your handling code here:
-        polForm.minValue = TestValueWithMemory(0, 1000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+        polForm.minValue = TestValueWithMemory(0, 10000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polminvalueFocusLost
 
     private void polminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polminvalueActionPerformed
         // TODO add your handling code here:
-        polForm.minValue = TestValueWithMemory(0, 1000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+        polForm.minValue = TestValueWithMemory(0, 10000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polminvalueActionPerformed
 
     private void polmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polmaxvalueFocusLost
         // TODO add your handling code here:
-        polForm.maxValue = TestValueWithMemory(0, 1000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+        polForm.maxValue = TestValueWithMemory(0, 10000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polmaxvalueFocusLost
 
     private void polmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polmaxvalueActionPerformed
         // TODO add your handling code here:
-        polForm.maxValue = TestValueWithMemory(0, 1000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+        polForm.maxValue = TestValueWithMemory(0, 10000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polmaxvalueActionPerformed
 
     private void jPolCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadActionPerformed
@@ -3730,12 +3740,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(0, 100, polEnergyValue, "30", oldStrings);
+        polForm.energy = TestValueWithMemory(0, 10000, polEnergyValue, "46", oldStrings);
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(0, 100, polEnergyValue, "30", oldStrings);
+        polForm.energy = TestValueWithMemory(0, 10000, polEnergyValue, "46", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
     private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
@@ -3745,12 +3755,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eemityvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemityvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "5", oldStrings) * 1e-6);
+        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemityvalueFocusLost
 
     private void eemityvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemityvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "5", oldStrings) * 1e-6);
+        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemityvalueActionPerformed
 
     private void GFValueSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFValueSelectionBoxActionPerformed
@@ -4236,6 +4246,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroupSkin;
     private javax.swing.JLabel chargelabel;
     private javax.swing.JLabel chargeunitlabel;
+    private javax.swing.JLabel chargeunitlabel1;
     private javax.swing.JTextField chargevalue;
     private javax.swing.JLabel ebetaxlabel;
     private javax.swing.JLabel ebetaxunitlabel;

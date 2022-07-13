@@ -29,10 +29,12 @@ import org.la4j.vector.dense.BasicVector;
 public class LaserPulse implements Cloneable {
 
     public LaserPulse() {
-        this.photonenergy = 1.1 * ElectronBunch.E;
-        this.setPulseEnergy(2.0e-2);
+        this.photonenergy = 1.204 * ElectronBunch.E;
+        this.setPulseEnergy(0.1);
         this.rk = HC / this.photonenergy;
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
+        this.getDirection().set(2, Math.cos(0.052));
+        this.getDirection().set(1, Math.sin(0.052));
     }
 
     @Override
@@ -152,7 +154,7 @@ public class LaserPulse implements Cloneable {
      *
      * @return the direction
      */
-    public Vector getDirection() {
+    public final Vector getDirection() {
         return direction;
     }
 
@@ -161,7 +163,7 @@ public class LaserPulse implements Cloneable {
      *
      * @param direction the direction to set
      */
-    public void setDirection(Vector direction) {
+    public final void setDirection(Vector direction) {
         this.direction = direction;
     }
 
@@ -253,7 +255,7 @@ public class LaserPulse implements Cloneable {
     /**
      * Laser pulse semi-length, m
      */
-    private double length = 4.5e-3;
+    private double length = 1.5e-3;
 
     /**
      * Mean direction of the laser pulse
@@ -263,12 +265,12 @@ public class LaserPulse implements Cloneable {
     /**
      * Laser pulse Rayleigh length, m
      */
-    private double rlength = 5.4e-3;
+    private double rlength = 0.35e-3;
 
     /**
      * Pulse frequency, 1/s
      */
-    private double fq = 7.9e7;
+    private double fq = 1000;
 
     /**
      * Laser pulse delay, m

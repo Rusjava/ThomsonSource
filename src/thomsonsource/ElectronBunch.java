@@ -297,42 +297,42 @@ public class ElectronBunch implements Cloneable {
     /**
      * Mean electron bunch gamma
      */
-    private double gamma = 42.96 / 0.512;
+    private double gamma = 50 / 0.512;
 
     /**
      * Number of electrons in the bunch
      */
-    private double number = 1 / E * 1e-9;
+    private double number = 0.2 / E * 1e-9;
 
     /**
      * Relative electron bunch energy spread
      */
-    private double delgamma = 1e-2;
+    private double delgamma = 2.5e-3;
 
     /**
      * Electron bunch semi-length, m
      */
-    private double length = 0.0045;
+    private double length = 0.0015;
 
     /**
      * Electron transversal bunch emittance in x direction, m*rad
      */
-    private double epsx = 5e-6;
+    private double epsx = 1e-6;
 
     /**
      * Electron transversal bunch emittance in y direction, m*rad
      */
-    private double epsy = 5e-6;
+    private double epsy = 1e-6;
 
     /**
      * Electron bunch beta function in x direction, m
      */
-    private double betax = 0.01;
+    private double betax = 0.02;
 
     /**
      * Electron bunch beta function in y direction, m
      */
-    private double betay = 0.01;
+    private double betay = 0.02;
 
     /**
      * Electron bunch shift relative to the laser pulse, m

@@ -199,7 +199,8 @@
             </Component>
             <Component class="javax.swing.JTextField" name="Brilmaxvalue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="50"/>
+                <Property name="text" type="java.lang.String" value="60"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="BrilmaxvalueFocusLost"/>
@@ -247,7 +248,8 @@
             </Component>
             <Component class="javax.swing.JTextField" name="energyValue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="30"/>
+                <Property name="text" type="java.lang.String" value="46"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="energyValueFocusLost"/>
@@ -448,7 +450,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="GFmaxvalue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="50"/>
+                <Property name="text" type="java.lang.String" value="60"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="GFmaxvalueFocusLost"/>
@@ -702,7 +704,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="polmaxvalue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="50"/>
+                <Property name="text" type="java.lang.String" value="60"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polmaxvalueFocusLost"/>
@@ -750,7 +752,8 @@
             </Component>
             <Component class="javax.swing.JTextField" name="polEnergyValue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="30"/>
+                <Property name="text" type="java.lang.String" value="46"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polEnergyValueFocusLost"/>
@@ -1327,6 +1330,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="chargeunitlabel" min="-2" pref="24" max="-2" attributes="0"/>
                                       <Component id="energyunitlabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="chargeunitlabel1" min="-2" pref="24" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
@@ -1352,6 +1356,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="spreadlabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="spreadvalue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="chargeunitlabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -1411,7 +1416,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="chargevalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="1"/>
+                    <Property name="text" type="java.lang.String" value="0.2"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="chargevalueFocusLost"/>
@@ -1430,7 +1435,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="spreadvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="0.01"/>
+                    <Property name="text" type="java.lang.String" value="0.25"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="spreadvalueFocusLost"/>
@@ -1444,7 +1449,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="elengthvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="30"/>
+                    <Property name="text" type="java.lang.String" value="10"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="elengthvalueFocusLost"/>
@@ -1463,7 +1468,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="eemitxvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="5"/>
+                    <Property name="text" type="java.lang.String" value="1"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eemitxvalueFocusLost"/>
@@ -1482,7 +1487,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="ebetaxvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="10"/>
+                    <Property name="text" type="java.lang.String" value="20"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ebetaxvalueFocusLost"/>
@@ -1501,7 +1506,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="eemityvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="5"/>
+                    <Property name="text" type="java.lang.String" value="1"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="eemityvalueFocusLost"/>
@@ -1511,6 +1516,11 @@
                 <Component class="javax.swing.JLabel" name="eemityunitlabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="mm*mrad"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="chargeunitlabel1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="%"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -1632,7 +1642,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="phenergyvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="1.1"/>
+                    <Property name="text" type="java.lang.String" value="1.204"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="phenergyvalueFocusLost"/>
@@ -1651,7 +1661,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="pulseenergyvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="20"/>
+                    <Property name="text" type="java.lang.String" value="100"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pulseenergyvalueFocusLost"/>
@@ -1670,7 +1680,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="pulselengthvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="30"/>
+                    <Property name="text" type="java.lang.String" value="10"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pulselengthvalueFocusLost"/>
@@ -1699,7 +1709,8 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="pulserelvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="2.7"/>
+                    <Property name="text" type="java.lang.String" value="0.35"/>
+                    <Property name="toolTipText" type="java.lang.String" value=""/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pulserelvalueFocusLost"/>
@@ -1708,7 +1719,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="pulsefreqvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="100"/>
+                    <Property name="text" type="java.lang.String" value="1000"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pulsefreqvalueFocusLost"/>
@@ -1746,7 +1757,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="ebetayvalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="10"/>
+                    <Property name="text" type="java.lang.String" value="20"/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="ebetayvalueFocusLost"/>
@@ -2210,7 +2221,8 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="pulseanglevalue">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="0"/>
+                    <Property name="text" type="java.lang.String" value="52"/>
+                    <Property name="toolTipText" type="java.lang.String" value=""/>
                   </Properties>
                   <Events>
                     <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pulseanglevalueFocusLost"/>
