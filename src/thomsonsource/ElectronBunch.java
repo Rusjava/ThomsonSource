@@ -307,7 +307,7 @@ public class ElectronBunch implements Cloneable {
     /**
      * Relative electron bunch energy spread
      */
-    private double delgamma = 2.5e-3;
+    private double delgamma = 1.25e-3;
 
     /**
      * Electron bunch semi-length, m
