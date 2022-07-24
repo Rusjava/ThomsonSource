@@ -23,7 +23,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  *
  * @author Ruslan
- * @version 2.0
+ * @version 2.01
  */
 public abstract class AbstractLaserPulse implements Cloneable {
 
@@ -46,7 +46,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Laser pulse semi-length, m
      */
-    private double length = 4.5e-3;
+    private double length = 1.5e-3;
     /**
      * Mean direction of the laser pulse
      */
@@ -54,11 +54,11 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Laser pulse Rayleigh length, m
      */
-    private double rlength = 5.4e-3;
+    private double rlength = 0.35e-3;
     /**
      * Pulse frequency, 1/s
      */
-    private double fq = 7.9e7;
+    private double fq = 1e3;
     /**
      * Laser pulse delay, m
      */
@@ -80,9 +80,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
 
     public AbstractLaserPulse() {
         this.photonenergy = 1.1 * GaussianElectronBunch.E;
-        this.number = 2.0e-2 / photonenergy;
+        this.number = 0.1 / photonenergy;
         this.rk = HC / photonenergy;
-        this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
+        this.direction = new BasicVector(new double[]{Math.sin(5.2e-2), 0.0, Math.cos(5.2e-2)});
         this.KA1 = new double[2];
         this.KA2 = new double[2];
         this.A1 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};

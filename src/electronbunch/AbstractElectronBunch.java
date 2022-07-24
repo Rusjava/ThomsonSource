@@ -22,7 +22,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  *
  * @author Ruslan
- * @version 1.0
+ * @version 1.01
  */
 public abstract class AbstractElectronBunch implements Cloneable {
 
@@ -41,27 +41,27 @@ public abstract class AbstractElectronBunch implements Cloneable {
     /**
      * Relative electron bunch energy spread
      */
-    protected double delgamma = 1e-2;
+    protected double delgamma = 0.00125;
     /**
      * Electron bunch semi-length, m
      */
-    protected double length = 0.0045;
+    protected double length = 0.0015;
     /**
      * Electron transversal bunch emittance in x direction, m*rad
      */
-    protected double epsx = 5e-6;
+    protected double epsx = 1e-6;
     /**
      * Electron transversal bunch emittance in y direction, m*rad
      */
-    protected double epsy = 5e-6;
+    protected double epsy = 1e-6;
     /**
      * Electron bunch beta function in x direction, m
      */
-    protected double betax = 0.01;
+    protected double betax = 0.02;
     /**
      * Electron bunch beta function in y direction, m
      */
-    protected double betay = 0.01;
+    protected double betay = 0.02;
     /**
      * Electron bunch shift relative to the laser pulse, m
      */
