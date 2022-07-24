@@ -185,8 +185,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.brilForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
-        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
+        this.brilForm.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.5", "0.5", "0.3", "5", "0.1", "0", "0"};
+        this.brilForm.maxValues = new String[]{"50", "100", "10", "50", "5", "5", "5", "3", "50", "1", "100", "5"};
         this.brilForm.savetext = "Choose file to save spectral brilliance data";
         this.brilForm.numberOfItems = 12;
 
@@ -200,8 +200,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.brilFormNonLinear.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.brilFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
-        this.brilFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
+        this.brilFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.5", "0.5", "0.3", "5", "0.1", "0", "0"};
+        this.brilFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "5", "5", "5", "3", "50", "1", "100", "5"};
         this.brilFormNonLinear.savetext = "Choose file to save spectral brilliance data";
         this.brilFormNonLinear.numberOfItems = 12;
 
@@ -213,8 +213,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.plotLabels = new String[]{"Angle, mrad", "Delay, ps", "Z-shift, mm", "beta, mm",
             "eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm"};
         this.gfForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-3, 1e-6};
-        this.gfForm.minValues = new String[]{"0", "0", "0", "10", "3", "2.7", "20"};
-        this.gfForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "100"};
+        this.gfForm.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.3", "5"};
+        this.gfForm.maxValues = new String[]{"50", "100", "10", "50", "5", "3", "50"};
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
         /**
@@ -227,7 +227,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.polForm.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.polForm.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "0", "0"};
+        this.polForm.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.5", "0.5", "0.3", "5", "0.1", "0", "0"};
         this.polForm.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "100", "5"};
         this.polForm.savetext = "Choose file to save polarization data";
         this.polForm.numberOfItems = 12;
@@ -241,8 +241,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "eps, mm mrad", "X-eps, mm mrad", "Y-eps, mm mrad", "Reyleigh length, mm", "Waist semi-width, \u03BCm", "\u0394\u03B3/\u03B3",
             "X-ray energy, keV", "Observation angle, mrad"};
         this.polFormNonLinear.conversionValues = new double[]{1e-3, 3e-4, 1e-3, 1e-3, 1e-6, 1e-6, 1e-6, 1e-3, 1e-6, 1.0, GaussianElectronBunch.E * 1e3, 1e-3};
-        this.polFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "3", "3", "3", "5.4", "20", "0.001", "30", "0"};
-        this.polFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "10", "10", "10", "10", "100", "0.01", "46", "5"};
+        this.polFormNonLinear.minValues = new String[]{"0", "0", "0", "10", "0.5", "0.5", "0.5", "0.3", "5", "0.1", "0", "0"};
+        this.polFormNonLinear.maxValues = new String[]{"50", "100", "10", "50", "5", "5", "5", "3", "50", "1", "100", "5"};
         this.polFormNonLinear.savetext = "Choose file to save polarization data";
         this.polFormNonLinear.numberOfItems = 12;
         //Setting default number of threads
@@ -3222,7 +3222,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulseanglevalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulseanglevalueActionPerformed
         // TODO add your handling code here:
-        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "52", oldStrings) * 1e-3;
+        Double value = TestValueWithMemory(0, 100, pulseanglevalue, "52", oldStrings) * 1e-3;
         Vector dir = new BasicVector(new double[3]);
         dir.set(2, Math.cos(value));
         dir.set(1, Math.sin(value));

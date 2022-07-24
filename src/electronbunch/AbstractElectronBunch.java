@@ -33,7 +33,7 @@ public abstract class AbstractElectronBunch implements Cloneable {
     /**
      * Mean electron bunch gamma
      */
-    protected double gamma = 100;
+    protected double gamma = 50 /0.512;
     /**
      * Number of electrons in the bunch
      */

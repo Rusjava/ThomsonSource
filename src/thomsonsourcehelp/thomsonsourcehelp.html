@@ -22,12 +22,12 @@ version: 1.5
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="thomsonsourcehelp.css" type="text/css" rel="stylesheet">
-        <title>TSource application user guide</title>
+        <title>TSourceN application user guide</title>
   </head>
   <body>
     <div class="intro">
-        <h1>TSource application user guide</h1>
-        <p>The TSource application is intended as a tool to make fast estimates of the main Thompson source parameters such as:
+        <h1>TSourceN application user guide</h1>
+        <p>The TSourceN application is intended as a tool to make fast estimates of the main Thompson source parameters such as:
 	the total photon flux, the X-ray photon flux in the given direction and spectral brilliance and polarization in a given direction.</p>
     
         <p>The application consists of the main window, where one can specify the parameters of the Thompson source as well as plot
@@ -44,7 +44,7 @@ version: 1.5
 	<ul>
     	<li>Electron energy &ndash; the average energy of the electrons, MeV</li>
     	<li>Charge &ndash; the electric charge of the bunch, nQ</li>
-		<li>Spread &ndash; the relative energy spread of the electrons</li>
+		<li>Spread &ndash; the relative energy spread of the electrons in %</li>
 		<li>Length &ndash; the length of the electron bunch, ps</li>
 		<li>X-emittance &ndash; the emittance of the bunch in x direction, mm&times;mrad</li>
                 <li>Y-emittance &ndash; the emittance of the bunch in y direction, mm&times;mrad</li>
@@ -58,7 +58,7 @@ version: 1.5
     	<li>Pulse energy &ndash; the energy of the laser pulse, mJ</li>
 		<li>Length &ndash; the length of the laser pulse, ps</li>
 		<li>Rayleigh length &ndash; the Rayleigh length of the laser pulse, mm</li>
-		<li>Pulse frequency &ndash; the number of laser pulses per second, MHz</li>
+		<li>Pulse frequency &ndash; the number of laser pulses per second, Hz</li>
 		<li>Delay &ndash; the temporal delay of the laser pulse relative to the electron bunch, ps</li>
 	</ul> 
 	
@@ -90,9 +90,9 @@ version: 1.5
 	 -> <em>Load parameters</em>) them from a file.</p>
 	 
 	<h2>Calculation menu</h2>
-	<p>The <em>Calculation</em> menu provides access to the three calculations boxes: for the spectral brilliance of the X-ray radiation, 
+	<p>The <em>Calculation</em> menu provides access to the three calculations boxes: for the spectral brilliance of the X-ray radiation in the linear and non-linear cases, 
 	exact and approximate geometric factor (or exact and approximate full photon flux) and radiation polarization parameters (the three 
-        Stocks parameters and degree of polarization). These quantities are calculated by pressing <em>Calculate</em> button and can be plotted 
+        Stocks parameters and degree of polarization) for the linear and non-linear cases. These quantities are calculated by pressing <em>Calculate</em> button and can be plotted 
         as a function of a number of parameters, which can be chosen from a drop-down box. The desirable parameter range can be entered using 
         two text fields. Other Thompson source parameters are taken from the main window of the program. The results of calculation can be saved
         as a text file using <em>Save</em> button.</p>

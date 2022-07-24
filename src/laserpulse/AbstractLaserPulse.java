@@ -82,7 +82,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
         this.photonenergy = 1.1 * GaussianElectronBunch.E;
         this.number = 0.1 / photonenergy;
         this.rk = HC / photonenergy;
-        this.direction = new BasicVector(new double[]{Math.sin(5.2e-2), 0.0, Math.cos(5.2e-2)});
+        this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
+        this.getDirection().set(1, Math.sin(0.052));
+        this.getDirection().set(2, Math.cos(0.052));
         this.KA1 = new double[2];
         this.KA2 = new double[2];
         this.A1 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};
@@ -209,7 +211,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      *
      * @return the direction
      */
-    public Vector getDirection() {
+    public final Vector getDirection() {
         return direction.copy();
     }
 
