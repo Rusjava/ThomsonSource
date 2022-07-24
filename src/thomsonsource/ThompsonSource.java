@@ -165,7 +165,7 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Returns Electron Bunch reference
+     * Returns electron bunch reference
      *
      * @return
      */
@@ -287,7 +287,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy without taking into account electron transversal
-     * pulse spread
+     * momentum spread
      *
      * @param n direction
      * @param v normalized electron velocity
@@ -307,7 +307,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating the Stocks parameters density in a given direction
      * for a given X-ray photon energy without taking into account electron
-     * transversal pulse spread
+     * transversal momentum spread
      *
      * @param n direction
      * @param v normalized electron velocity
@@ -353,7 +353,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating the flux density in a given direction for a given
-     * X-ray photon energy taking into account electron transversal pulse spread
+     * X-ray photon energy taking into account electron transversal momentum spread
      *
      * @param n direction
      * @param v0 normalized electron velocity
@@ -366,7 +366,8 @@ public class ThompsonSource implements Cloneable {
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v0, n);
         try {
-            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI);
+            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
+                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -375,7 +376,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A multi-threaded method calculating the full polarization tensor density
      * in a given direction for a given X-ray photon energy taking into account
-     * electron transversal pulse spread
+     * electron transversal momentum spread
      *
      * @param n direction
      * @param v0 normalized electron velocity
@@ -521,7 +522,8 @@ public class ThompsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = sn * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+            u = sn * (directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1))
+                    + getShiftfactor() * SHIFT);
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -554,7 +556,7 @@ public class ThompsonSource implements Cloneable {
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
             // Normalization to the peak value
-            u = theta * (directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
+            u = sn * (directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
                     + getShiftfactor() * SHIFT);
             return new Double(u).isNaN() ? 0 : u;
         }
@@ -592,7 +594,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy for a given volume element without taking into
-     * account electron transversal pulse spread
+     * account electron transversal momentum spread
      *
      * @param r spatial position
      * @param n direction
@@ -607,7 +609,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating the Stocks parameters density in a given direction
      * for a given X-ray photon energy for a given volume element without taking
-     * into account electron transversal pulse spread
+     * into account electron transversal momentum spread
      *
      * @param r spatial position
      * @param n direction
@@ -748,7 +750,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating spectral brilliance in a given direction without
-     * taking into account electron transversal pulse spread
+     * taking into account electron transversal momentum spread
      *
      * @param r0 spatial position for brightness
      * @param n direction
@@ -773,7 +775,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating spectral brilliance in a given direction without
-     * taking into account electron transversal pulse spread but with
+     * taking into account electron transversal momentum spread but with
      * polarization
      *
      * @param r0 spatial position for brightness
@@ -803,7 +805,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
-     * account electron transversal pulse spread
+     * account electron transversal momentum spread
      *
      * @param r0 spatial position for brightness
      * @param n direction
@@ -828,7 +830,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
-     * account electron transversal pulse spread nd with polarization
+     * account electron transversal momentum spread nd with polarization
      *
      * @param r0 spatial position for brightness
      * @param n direction
@@ -964,6 +966,7 @@ public class ThompsonSource implements Cloneable {
             }
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
+        
         // Calculating the rotated polarization vector and getting the full polarizaation state
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
@@ -1166,7 +1169,7 @@ public class ThompsonSource implements Cloneable {
         Complex phase1 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
         Complex phase2 = Complex.I.multiply(Math.random() * 2 * Math.PI).exp();
         double p = Math.sqrt(ksiVector[0] * ksiVector[0] + ksiVector[1] * ksiVector[1] + ksiVector[2] * ksiVector[2]);
-        //If p > 1 reducing it yo 1
+        //If p > 1 reducing it to 1
         p = p > 1 ? 1 : p;
         //Special case when the denomonator is zero
         if (ksiVector[0] == -p) {
