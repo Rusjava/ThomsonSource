@@ -46,7 +46,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.2
+ * @version 1.21
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -103,10 +103,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     public static final double AS = 1.704509e3;
     /**
-     * A numerical shift to improve convergence of polarization angular
-     * integrals
+     * A numerical shift to improve convergence of integrals
      */
-    public static final double SHIFT = 1e21;
+    public static final double SHIFT = 1e10;
     /**
      * Angle range for rays exported for Shadow in the X-direction
      */
@@ -385,16 +384,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public double directionFrequencyFluxSpread(Vector n, Vector v0, Vector r, double e) throws InterruptedException {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, r, n);
+        double tmp;
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
             }
-            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                    + -getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+            tmp = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
+                    - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE * eb.getSpread()));
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
+        return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
     /**
@@ -418,6 +419,16 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 //Calculating elements of polarization matrix
                 array[i] = directionFrequencyPolarizationSpread(n, v0, r, e, i);
             } catch (TooManyEvaluationsException ex) {
+                array[i] = 0;
+            }
+        }
+        //If intensity is NaN, zero or less than zero then set it as unity
+        if (new Double(array[0]).isNaN() || array[0] <= 0) {
+            array[0] = 1;
+        }
+        //If a Stocks intensity is NaN then set it as zero
+        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(array[i]).isNaN()) {
                 array[i] = 0;
             }
         }
@@ -451,7 +462,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             res = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)
                     .integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                    + -getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                    - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE * eb.getSpread()));
         } catch (TooManyEvaluationsException ex) {
             res = 0;
         }
@@ -1300,16 +1311,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            double tmp;
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
             }
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, new UnivariateFrequencyFluxSpreadInner(phi, e, v0, r, n),
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, new UnivariateFrequencyFluxSpreadInner(phi, e, v0, r, n),
                         0.0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
+            return new Double(tmp).isNaN() ? 0 : tmp;
         }
     }
 
@@ -1367,16 +1380,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            double tmp;
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
             }
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
                         new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, r, index), 0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
+            return new Double(tmp).isNaN() ? 0 : tmp;
         }
     }
 

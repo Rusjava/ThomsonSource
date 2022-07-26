@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.21
+ * @version 3.22
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -89,8 +89,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
-        this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
-        this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e10, true);
+        this.numericallPrecisionBox = getDoubleFormattedTextField(1e-2, 1e-10, 1e-1, true);
+        this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
         this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
         this.ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
         this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
@@ -217,6 +217,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfForm.maxValues = new String[]{"50", "100", "10", "50", "5", "3", "50"};
         this.gfForm.savetext = "Choose file to save geometric factor data";
         this.gfForm.numberOfItems = 7;
+        this.gfForm.selectedItemIndex = 0;
+        this.gfForm.selectedItemIndexClone = 0;
+
         /**
          * Objects for the linear polarization calculation
          */
@@ -504,6 +507,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
         BrillianceCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        BrillianceCalcBox.setSelectedIndex(10);
         BrillianceCalcBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BrillianceCalcBoxActionPerformed(evt);
@@ -538,11 +542,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         Brilminvaluelabel.setText("Min value");
 
-        Brilminvalueunitlabel.setText("mrad");
+        Brilminvalueunitlabel.setText("keV");
 
-        Brilmaxvalueunitlabel.setText("mrad");
+        Brilmaxvalueunitlabel.setText("keV");
 
-        Brilmaxvalue.setText("50");
+        Brilmaxvalue.setText("100");
         Brilmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 BrilmaxvalueFocusLost(evt);
@@ -581,7 +585,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jEnergyLabel.setText("Energy");
 
-        energyValue.setText("30");
+        energyValue.setText("46");
+        energyValue.setEnabled(false);
         energyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueFocusLost(evt);
@@ -593,7 +598,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        energyValueUnitLable.setText("kev");
+        energyValueUnitLable.setText("keV");
 
         javax.swing.GroupLayout BrillianceParamLayout = new javax.swing.GroupLayout(BrillianceParam);
         BrillianceParam.setLayout(BrillianceParamLayout);
@@ -710,6 +715,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceParamNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
         BrillianceCalcBoxNonLinear.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        BrillianceCalcBoxNonLinear.setSelectedIndex(10);
         BrillianceCalcBoxNonLinear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BrillianceCalcBoxNonLinearActionPerformed(evt);
@@ -744,11 +750,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         BrilminvaluelabelNonLinear.setText("Min value");
 
-        BrilminvalueunitlabelNonLinear.setText("mrad");
+        BrilminvalueunitlabelNonLinear.setText("keV");
 
-        BrilmaxvalueunitlabelNonLinear.setText("mrad");
+        BrilmaxvalueunitlabelNonLinear.setText("keV");
 
-        BrilmaxvalueNonLinear.setText("50");
+        BrilmaxvalueNonLinear.setText("100");
         BrilmaxvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 BrilmaxvalueNonLinearFocusLost(evt);
@@ -787,8 +793,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jEnergyLabelNonLinear.setText("Energy");
 
-        energyValueNonLinear.setText("30");
+        energyValueNonLinear.setText("46");
         energyValueNonLinear.setToolTipText("");
+        energyValueNonLinear.setEnabled(false);
         energyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 energyValueNonLinearFocusLost(evt);
@@ -800,7 +807,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        energyValueUnitLableNonLinear.setText("kev");
+        energyValueUnitLableNonLinear.setText("keV");
 
         OrderNumber.setText("1");
         OrderNumber.setToolTipText("");
@@ -1087,6 +1094,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polarizationParam.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
         polarizationCalcBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        polarizationCalcBox.setSelectedIndex(10);
         polarizationCalcBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 polarizationCalcBoxActionPerformed(evt);
@@ -1121,11 +1129,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polminvaluelabel.setText("Min value");
 
-        polminvalueunitlabel.setText("mrad");
+        polminvalueunitlabel.setText("keV");
 
-        polmaxvalueunitlabel.setText("mrad");
+        polmaxvalueunitlabel.setText("keV");
 
-        polmaxvalue.setText("50");
+        polmaxvalue.setText("100");
         polmaxvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polmaxvalueFocusLost(evt);
@@ -1164,7 +1172,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jPolEnergyLabel.setText("Energy");
 
-        polEnergyValue.setText("30");
+        polEnergyValue.setText("46");
+        polEnergyValue.setEnabled(false);
         polEnergyValue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueFocusLost(evt);
@@ -1176,7 +1185,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        polEnergyValueUnitLable.setText("kev");
+        polEnergyValueUnitLable.setText("keV");
 
         javax.swing.GroupLayout polarizationParamLayout = new javax.swing.GroupLayout(polarizationParam);
         polarizationParam.setLayout(polarizationParamLayout);
@@ -1294,6 +1303,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polarizationParamcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
         polarizationCalcBoxNonLinear.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Laser-electron angle", "Delay", "Z-shift", "Beta function", "Emittance", "X-emittance", "Y-emittance", "Rayleigh length", "Waist semi-width", "Energy spread", "X-ray energy", "Observation angle" }));
+        polarizationCalcBoxNonLinear.setSelectedIndex(10);
         polarizationCalcBoxNonLinear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 polarizationCalcBoxNonLinearActionPerformed(evt);
@@ -1328,11 +1338,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polminvaluelabelNonLinear.setText("Min value");
 
-        polminvalueunitlabelNonLinear.setText("mrad");
+        polminvalueunitlabelNonLinear.setText("keV");
 
-        polmaxvalueunitlabelNonLinear.setText("mrad");
+        polmaxvalueunitlabelNonLinear.setText("keV");
 
-        polmaxvalueNonLinear.setText("50");
+        polmaxvalueNonLinear.setText("100");
         polmaxvalueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polmaxvalueNonLinearFocusLost(evt);
@@ -1371,8 +1381,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jPolEnergyLabelNonLinear.setText("Energy");
 
-        polEnergyValueNonLinear.setText("30");
+        polEnergyValueNonLinear.setText("46");
         polEnergyValueNonLinear.setToolTipText("");
+        polEnergyValueNonLinear.setEnabled(false);
         polEnergyValueNonLinear.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 polEnergyValueNonLinearFocusLost(evt);
@@ -1384,7 +1395,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        polEnergyValueUnitLableNonLinear.setText("kev");
+        polEnergyValueUnitLableNonLinear.setText("keV");
 
         OrderNumberNonLinear.setText("1");
         OrderNumberNonLinear.setToolTipText("");
@@ -2309,7 +2320,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2617,9 +2628,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public final static double MIN_DIF = 1e-10;
         public String[] valueUnitLabels, plotLabels;
         public String[] minValues, maxValues;
-        public int selectedItemIndex, selectedItemIndexClone;
+        public int selectedItemIndex = 10, selectedItemIndexClone = 10;
         public int numberOfItems;
-        public double minValue = 0, maxValue = 50, minValueClone, maxValueClone;
+        public double minValue = 0, maxValue = 100, minValueClone, maxValueClone;
         public double[] conversionValues;
         public AbstractThomsonSource tsourceclone;
         public boolean espread = false;
@@ -2630,7 +2641,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public LinearChartParam chartParam;
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
-        public double angle = 0, angleclone, energy = 30, energyclone;
+        public double angle = 0, angleclone, energy = 46, energyclone;
         public int ordernumber = 1;
         private File file = null;
 
@@ -2878,12 +2889,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void spreadvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spreadvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setDelgamma((double) TestValueWithMemory(0.01, 1, spreadvalue, "0.25", oldStrings)/200);
+        ebunch.setDelgamma((double) TestValueWithMemory(0.01, 2, spreadvalue, "0.25", oldStrings) / 200);
     }//GEN-LAST:event_spreadvalueActionPerformed
 
     private void spreadvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_spreadvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setDelgamma((double) TestValueWithMemory(0.01, 1, spreadvalue, "0.25", oldStrings)/200);
+        ebunch.setDelgamma((double) TestValueWithMemory(0.01, 2, spreadvalue, "0.25", oldStrings) / 200);
     }//GEN-LAST:event_spreadvalueFocusLost
 
     private void elengthvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_elengthvalueActionPerformed
@@ -3013,8 +3024,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
                             + (new DecimalFormat("##.#######"))
-                            .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
-                                    ysize * ystep) * 1e-3 / 2) * 1e-15)
+                                    .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
+                                            ysize * ystep) * 1e-3 / 2) * 1e-15)
                             + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3213,7 +3224,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulseanglevalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulseanglevalueFocusLost
         // TODO add your handling code here:
-        Double value = TestValueWithMemory(0, 300, pulseanglevalue, "0", oldStrings) * 1e-3;
+        Double value = TestValueWithMemory(0, 100, pulseanglevalue, "52", oldStrings) * 1e-3;
         Vector dir = new BasicVector(new double[3]);
         dir.set(2, Math.cos(value));
         dir.set(1, Math.sin(value));
@@ -3974,9 +3985,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
         // Dispalying a window to enter numerical parameters
         Object[] message = {
-            "<html>Number of points in Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
+            "<html>Number of points in the Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
-            "<html>A multiplication factor for numerical shift<br/> in the polarization angular integral:</html>", shiftFactorBox,
+            "<html>Multiplication factor for numerical shift<br/> in integrals:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
@@ -4004,8 +4015,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "Numner of rays:", rayNumberBox,
             "X-range, mrad", rayXAngleRangeBox,
             "Y-range, mrad", rayYAngleRangeBox,
-            "Minimal energy, kev", rayMinEnergyBox,
-            "Energy range, kev", rayEnergyRangeBox
+            "Minimal energy, keV", rayMinEnergyBox,
+            "Energy range, keV", rayEnergyRangeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {

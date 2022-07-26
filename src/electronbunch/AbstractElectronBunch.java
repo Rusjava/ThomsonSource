@@ -37,7 +37,7 @@ public abstract class AbstractElectronBunch implements Cloneable {
     /**
      * Number of electrons in the bunch
      */
-    protected double number = 1 / E * 1e-9;
+    protected double number = 0.2 / E * 1e-9;
     /**
      * Relative electron bunch energy spread
      */

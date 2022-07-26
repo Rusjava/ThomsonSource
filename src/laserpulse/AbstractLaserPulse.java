@@ -28,7 +28,7 @@ import org.la4j.vector.dense.BasicVector;
 public abstract class AbstractLaserPulse implements Cloneable {
 
     /**
-     * hc constant
+     * hc constant, kg*m^2/s
      */
     public static final double HC = 3.1614e-26;
     /**
@@ -79,7 +79,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     protected double rk;
 
     public AbstractLaserPulse() {
-        this.photonenergy = 1.1 * GaussianElectronBunch.E;
+        this.photonenergy = 1.204 * GaussianElectronBunch.E;
         this.number = 0.1 / photonenergy;
         this.rk = HC / photonenergy;
         this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});

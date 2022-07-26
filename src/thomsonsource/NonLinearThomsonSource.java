@@ -295,11 +295,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
-            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
-                    n, new Vector[]{A1[1], A2[1]}, gamma, v);
+            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]}, gamma, v);
         } else if (K1[1] == 0 && K2[1] == 0) {
-            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
-                    n, new Vector[]{A1[0], A2[0]}, gamma, v);
+            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]}, gamma, v);
         } else {
             //If not fully polarized then everaging over all possible surpepositions of two independant polarizations
             for (int s = 0; s < AbstractThomsonSource.NUMBER_OF_POL_PARAM; s++) {
@@ -379,8 +377,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @param B
      * @return
      */
-    private double directionFluxBasicAuxiliary(double cf1, double cf2, double intratio,
-            Vector n, Vector[] B) {
+    private double directionFluxBasicAuxiliary(double cf1, double cf2, double intratio, Vector n, Vector[] B) {
         double K1, K2, a1, a2, a3, result = 0;
         double[] f = new double[8]; //An array for integrals
         K1 = B[0].innerProduct(B[0]);
@@ -413,8 +410,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
-     * Basic method for calculation of X-ray polarization matrix with a given
-     * polarization
+     * Basic method for calculation of X-ray polarization matrix with a given polarization
      *
      * @param cf1
      * @param cf2
@@ -425,8 +421,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @param v
      * @return
      */
-    private double[] directionPolarizationBasicAuxiliary(double cf1, double cf2, double intratio,
-            Vector n, Vector[] B, double gamma, Vector v) {
+    private double[] directionPolarizationBasicAuxiliary(double cf1, double cf2, double intratio, Vector n, Vector[] B, double gamma, Vector v) {
         double K1, K2, a1, a2, a3, gamma2, mv, pr, sq, sqratio;
         //Auxialiry parameters
         gamma2 = gamma * gamma;
