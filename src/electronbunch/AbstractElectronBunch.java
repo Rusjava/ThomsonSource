@@ -41,11 +41,11 @@ public abstract class AbstractElectronBunch implements Cloneable {
     /**
      * Relative electron bunch energy spread
      */
-    protected double delgamma = 0.00125;
+    protected double delgamma = 1.25e-3;
     /**
      * Electron bunch semi-length, m
      */
-    protected double length = 0.0015;
+    protected double length = 1.5e-3;
     /**
      * Electron transversal bunch emittance in x direction, m*rad
      */
