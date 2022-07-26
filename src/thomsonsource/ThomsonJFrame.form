@@ -152,6 +152,7 @@
                     <StringItem index="11" value="Observation angle"/>
                   </StringArray>
                 </Property>
+                <Property name="selectedIndex" type="int" value="10"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BrillianceCalcBoxActionPerformed"/>
@@ -189,17 +190,18 @@
             </Component>
             <Component class="javax.swing.JLabel" name="Brilminvalueunitlabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="mrad"/>
+                <Property name="text" type="java.lang.String" value="keV"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="Brilmaxvalueunitlabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="mrad"/>
+                <Property name="text" type="java.lang.String" value="keV"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="Brilmaxvalue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="60"/>
+                <Property name="text" type="java.lang.String" value="100"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
@@ -250,6 +252,7 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="46"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="energyValueFocusLost"/>
@@ -258,7 +261,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="energyValueUnitLable">
               <Properties>
-                <Property name="text" type="java.lang.String" value="kev"/>
+                <Property name="text" type="java.lang.String" value="keV"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -657,6 +660,7 @@
                     <StringItem index="11" value="Observation angle"/>
                   </StringArray>
                 </Property>
+                <Property name="selectedIndex" type="int" value="10"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="polarizationCalcBoxActionPerformed"/>
@@ -694,17 +698,17 @@
             </Component>
             <Component class="javax.swing.JLabel" name="polminvalueunitlabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="mrad"/>
+                <Property name="text" type="java.lang.String" value="keV"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="polmaxvalueunitlabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="mrad"/>
+                <Property name="text" type="java.lang.String" value="keV"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="polmaxvalue">
               <Properties>
-                <Property name="text" type="java.lang.String" value="60"/>
+                <Property name="text" type="java.lang.String" value="100"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polmaxvalueFocusLost"/>
@@ -754,6 +758,7 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="46"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="polEnergyValueFocusLost"/>
@@ -762,7 +767,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="polEnergyValueUnitLable">
               <Properties>
-                <Property name="text" type="java.lang.String" value="kev"/>
+                <Property name="text" type="java.lang.String" value="keV"/>
               </Properties>
             </Component>
           </SubComponents>

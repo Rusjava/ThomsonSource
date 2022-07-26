@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.61
+ * @version 2.62
  */
 public class ThompsonSource implements Cloneable {
 
@@ -72,7 +72,7 @@ public class ThompsonSource implements Cloneable {
      * A numerical shift to improve convergence of polarization angular
      * integrals
      */
-    public static final double SHIFT = 1e21;
+    public static final double SHIFT = 1e10;
 
     /**
      * Angle range for rays exported for Shadow in the X-direction
@@ -295,13 +295,14 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        double K, th;
+        double K, th, tmp;
         th = (1 - n.innerProduct(v)) * 2;
         K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
                 / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-        return getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+        tmp = getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
                 * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
                 / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+        return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
     /**
@@ -344,16 +345,24 @@ public class ThompsonSource implements Cloneable {
         array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
-        //If intensity is zero tehn set it as unity
-        if (array[0] == 0) {
+
+        //If intensity is NaN or zero then set it as unity
+        if (new Double(array[0]).isNaN() || array[0] == 0) {
             array[0] = 1;
+        }
+        //If a Stocks intensity is NaN then set it as zero
+        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(array[i]).isNaN()) {
+                array[i] = 0;
+            }
         }
         return array;
     }
 
     /**
      * A method calculating the flux density in a given direction for a given
-     * X-ray photon energy taking into account electron transversal momentum spread
+     * X-ray photon energy taking into account electron transversal momentum
+     * spread
      *
      * @param n direction
      * @param v0 normalized electron velocity
@@ -363,14 +372,16 @@ public class ThompsonSource implements Cloneable {
     public double directionFrequencyFluxSpread(Vector n, Vector v0, double e) {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        double tmp;
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v0, n);
         try {
-            return integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+            tmp = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
+                    - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE * eb.getSpread()));
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
+        return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
     /**
@@ -401,7 +412,7 @@ public class ThompsonSource implements Cloneable {
                     array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
                             integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                            - getShiftfactor() * SHIFT * Math.PI * INT_RANGE * eb.getSpread() * INT_RANGE * eb.getSpread();
+                            - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE * eb.getSpread()));
                 } catch (TooManyEvaluationsException ex) {
                     array[ia[0]] = 0;
                 }
@@ -416,6 +427,17 @@ public class ThompsonSource implements Cloneable {
             throw ex;
         }
         execs.shutdownNow();
+
+        //If intensity is NaN, zero or less than zero then set it as unity
+        if (new Double(array[0]).isNaN() || array[0] <= 0) {
+            array[0] = 1;
+        }
+        //If a Stocks intensity is NaN then set it as zero
+        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(array[i]).isNaN()) {
+                array[i] = 0;
+            }
+        }
         return array;
     }
 
@@ -456,13 +478,16 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            double tmp;
             UnivariateFunction func
                     = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
+            //If the integral is NaN then set it as zero
+            return new Double(tmp).isNaN() ? 0 : tmp;
         }
     }
 
@@ -487,6 +512,7 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            double tmp;
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
@@ -494,10 +520,12 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
-                return inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
+            //If the integral is NaN then set it as zero
+            return new Double(tmp).isNaN() ? 0 : tmp;
         }
     }
 
@@ -966,7 +994,7 @@ public class ThompsonSource implements Cloneable {
             }
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
-        
+
         // Calculating the rotated polarization vector and getting the full polarizaation state
         n = new BasicVector(new double[]{ray[3], ray[4], ray[5]});
         T = getTransform(n, n0);
