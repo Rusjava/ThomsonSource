@@ -80,11 +80,9 @@ public abstract class AbstractLaserPulse implements Cloneable {
 
     public AbstractLaserPulse() {
         this.photonenergy = 1.204 * GaussianElectronBunch.E;
-        this.number = 0.1 / photonenergy;
+        setPulseEnergy(0.1);
         this.rk = HC / photonenergy;
-        this.direction = new BasicVector(new double[]{0.0, 0.0, 1.0});
-        this.getDirection().set(1, Math.sin(0.052));
-        this.getDirection().set(2, Math.cos(0.052));
+        this.direction = new BasicVector(new double[]{0.0, Math.sin(0.052), Math.cos(0.052)});
         this.KA1 = new double[2];
         this.KA2 = new double[2];
         this.A1 = new Vector[]{new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{0, 0, 0})};
