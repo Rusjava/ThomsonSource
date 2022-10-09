@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Ruslan Feshchenko
+ * Copyright (C) 2022 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -267,7 +267,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFlux(Vector n, Vector v, double e) {
-        return iseSpread() ? directionFrequencyFluxSpread(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
+        return iseSpread() ? directionFrequencyFluxSpreadIntegral(n, v, e) : directionFrequencyFluxNoSpread(n, v, e);
     }
 
     /**
@@ -362,14 +362,14 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy taking into account electron transversal momentum
-     * spread
+     * spread and using the conventional integration
      *
      * @param n direction
      * @param v0 normalized electron velocity
      * @param e X-ray energy
      * @return
      */
-    public double directionFrequencyFluxSpread(Vector n, Vector v0, double e) {
+    public double directionFrequencyFluxSpreadIntegral(Vector n, Vector v0, double e) {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         double tmp;
@@ -381,6 +381,60 @@ public class ThompsonSource implements Cloneable {
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
+        return new Double(tmp).isNaN() ? 0 : tmp;
+    }
+
+    /**
+     * A method calculating the flux density in a given direction for a given
+     * X-ray photon energy taking into account electron transversal momentum
+     * spread and using the Monte-Carlo method
+     *
+     * @param n direction
+     * @param v0 normalized electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+    public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, double e) {
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        // We need to synchronize threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
+        // Atomic adder
+        DoubleAdder sum = new DoubleAdder();
+        double tmp;
+        double thmax = INT_RANGE * eb.getSpread();
+        final int itNumber = Math.round(getNpGeometricFactor() / threadNumber);
+        /*
+         Splitting the job into a number of threads
+         */
+        for (int m = 0; m < threadNumber; m++) {
+            execs.execute(() -> {
+                double rangle, rth, psum = 0, sn;
+                Vector v = new BasicVector(new double[]{0.0, 0.0});
+                Vector dv = new BasicVector(new double[]{0.0, 0.0});
+                for (int i = 0; i < itNumber; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    rangle = 2 * Math.random() * Math.PI;
+                    rth = Math.random() * thmax;
+                    sn = Math.sin(rth);
+                    v.set(0, sn * Math.cos(rangle));
+                    v.set(1, sn * Math.sin(rangle));
+                    v.set(1, Math.cos(rth));
+                    dv = v.subtract(v0);
+                    psum += sn * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                }
+                sum.add(psum);
+                lt.countDown();
+            });
+        }
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        execs.shutdownNow();
+        tmp = Math.PI * thmax * thmax * sum.sum() / itNumber / threadNumber;
         return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
@@ -666,7 +720,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
-        return directionFrequencyFluxSpread(n, v, e) * volumeFlux(r);
+        return directionFrequencyFluxSpreadIntegral(n, v, e) * volumeFlux(r);
     }
 
     /**
@@ -850,7 +904,7 @@ public class ThompsonSource implements Cloneable {
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxSpread(n, v, e);
+            return u * directionFrequencyFluxSpreadIntegral(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
