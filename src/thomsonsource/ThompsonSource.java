@@ -98,6 +98,11 @@ public class ThompsonSource implements Cloneable {
      * Number of points in Monte Carlo calculation of the geometric factor
      */
     private int npGeometricFactor = 50000;
+    
+    /**
+     * Number of points in Monte Carlo calculation of the emittance averaging
+     */
+    private int npEmittance = 1000;
 
     /**
      * Maximal number of evaluations in calculations of the brilliance and
@@ -402,7 +407,7 @@ public class ThompsonSource implements Cloneable {
         DoubleAdder sum = new DoubleAdder();
         double tmp;
         double thmax = INT_RANGE * eb.getSpread();
-        final int itNumber = Math.round(getNpGeometricFactor() / threadNumber);
+        final int itNumber = Math.round(getNpEmittance() / threadNumber);
         /*
          Splitting the job into a number of threads
          */
@@ -1273,5 +1278,23 @@ public class ThompsonSource implements Cloneable {
             pol[3] = e2.getArgument();
         }
         return pol;
+    }
+
+    /**
+     * Getting the number of points in the emittance Monte-Carlo integration
+     * 
+     * @return the npEmittance
+     */
+    public int getNpEmittance() {
+        return npEmittance;
+    }
+
+    /**
+     * Setting the number of points in the emittance Monte-Carlo integration
+     * 
+     * @param npEmittance the npEmittance to set
+     */
+    public void setNpEmittance(int npEmittance) {
+        this.npEmittance = npEmittance;
     }
 }
