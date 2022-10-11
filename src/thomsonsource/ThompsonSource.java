@@ -135,10 +135,10 @@ public class ThompsonSource implements Cloneable {
      * taken into account
      */
     private boolean eSpread = false;
-    
+
     /**
-     * Flag - whether or not the Monte-Carlo method is used to calculate
-     * the directional integral
+     * Flag - whether or not the Monte-Carlo method is used to calculate the
+     * directional integral
      */
     private boolean IsMonteCarlo = false;
 
@@ -413,7 +413,7 @@ public class ThompsonSource implements Cloneable {
         DoubleAdder sum = new DoubleAdder();
         double tmp;
         final int itNumber = Math.round(getNpEmittance() / threadNumber);
-        
+
         // Splitting the job into a number of threads
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
@@ -446,7 +446,7 @@ public class ThompsonSource implements Cloneable {
         }
         execs.shutdownNow();
         // Outputting the final result
-        tmp = sum.sum() / itNumber / threadNumber;
+        tmp = 2 * Math.PI * INT_RANGE * eb.getSpread() * sum.sum() / itNumber / threadNumber;
         return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
@@ -732,7 +732,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
-        return isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) * volumeFlux(r) :directionFrequencyFluxSpreadIntegral(n, v, e) * volumeFlux(r);
+        return isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) * volumeFlux(r) : directionFrequencyFluxSpreadIntegral(n, v, e) * volumeFlux(r);
     }
 
     /**
@@ -1307,7 +1307,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Getting the IsMonteCarlo flag
-     * 
+     *
      * @return the IsMonteCarlo
      */
     public boolean isIsMonteCarlo() {
@@ -1316,7 +1316,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Setting the IsMonteCarlo flag
-     * 
+     *
      * @param IsMonteCarlo the IsMonteCarlo to set
      */
     public void setIsMonteCarlo(boolean IsMonteCarlo) {

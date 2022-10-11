@@ -101,19 +101,23 @@ version: 1.5
             taken into account. The observation angle and X-ray energy may be also specified if necessary.</p>
 	
 	<h2>Shadow menu</h2>
-	<p>The <em>Shadow</em> menu allows one to generate a set of rays for the use as an X-ray source in Shadow ray-tracing software. 
-	To choose the number of generated rays, the angular and energy ranges use <em>Shadow</em> -> <em>Parameters...</em> dialog. The ray 
-        set is saved in binary Shadow format. The <em>Shadow</em> -> <em>Polarization...</em> dialog allows one to specify the polarization of 
-        the generated rays by choosing between three pre-specified options or allowing the program to calculate the polarization using laser 
-        radiation polarization parameters and other parameters of the Thomson source. A converter application from binary to text format and from 
-        text to binary format can be launched from the <em>Shadow</em> as well.</p>
+	<p>The <em>Shadow</em> menu allows one to generate a set of rays for the use as an X-ray source in the Shadow ray-tracing software. 
+	To choose the number of generated rays, the angular and energy ranges use <em>Shadow</em> -> <em>Parameters...</em> dialog. The generated ray 
+        set is saved in the binary Shadow format. The <em>Shadow</em> -> <em>Polarization...</em> dialog allows one to specify the polarization of 
+        the generated rays by choosing between three pre-specified options or allowing the program to calculate the polarization using the laser 
+        radiation polarization parameters and other parameters of the Thomson source. A converter application from the binary to text format and from 
+        the text to binary format can be launched using the <em>Shadow</em> as well.</p>
 	
 	<h2>Option menu</h2>
-	<p>Option menu provides access to additional graph parameters via <em>Options</em> -> <em>Laser polarization...</em> (Stocks 
-            parameters for the laser radiation), <em>Options</em> -> <em>Graph parameters...</em> as well as to the numerical integration 
-            precision, the shift factor used in the angular integration of polarization calculations, the number of used threads and the number of points in Monte-Carlo calculation of the geometric factor via 
-            <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> specifies whether the transversal
-            velocity spread is taken into account in the main window calculations as well while generating a set of rays for Shadow.</p>
+	<p>Option menu provides access to additional graphical and numerical parameters via sub-menues and boxes: 
+            <em>Options</em> -> <em>Laser polarization...</em> &ndash; Stocks parameters of the laser radiation; 
+            <em>Options</em> -> <em>Graph parameters...</em> &ndash; some additional graph parameters;
+            <em>Options</em> -> <em>Numerical parameters ... </em> &ndash; the numerical integration; 
+            precision, the shift factor used in the angular averaging in the brilliance and polarization calculations, the number of used threads and the number
+            of points in the Monte-Carlo calculation of the geometric factor as well as in the Monte-Carlo averaging over directions of electron movements;
+             <em>Options</em> -> <em>Velocity spread</em> &ndash; specifies whether the transversal
+            velocity spread is taken into account in the main window calculations as well as while generating a set of rays for Shadow; 
+            <em>Options</em> -> <em>Monte-Carlo</em> &ndash; specifies whether the averaging over directions of electron movements is done with the Monte-Carlo method.</p>
     </div>
   </body>
 </html>
