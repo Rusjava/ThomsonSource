@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.62
+ * @version 2.7
  */
 public class ThompsonSource implements Cloneable {
 
@@ -98,11 +98,11 @@ public class ThompsonSource implements Cloneable {
      * Number of points in Monte Carlo calculation of the geometric factor
      */
     private int npGeometricFactor = 50000;
-    
+
     /**
      * Number of points in Monte Carlo calculation of the emittance averaging
      */
-    private int npEmittance = 1000;
+    private int npEmittance = 30000;
 
     /**
      * Maximal number of evaluations in calculations of the brilliance and
@@ -135,6 +135,12 @@ public class ThompsonSource implements Cloneable {
      * taken into account
      */
     private boolean eSpread = false;
+    
+    /**
+     * Flag - whether or not the Monte-Carlo method is used to calculate
+     * the directional integral
+     */
+    private boolean IsMonteCarlo = false;
 
     /**
      * Flux in the phase space volume of ray generation
@@ -294,7 +300,7 @@ public class ThompsonSource implements Cloneable {
      * X-ray photon energy without taking into account electron transversal
      * momentum spread
      *
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -315,7 +321,7 @@ public class ThompsonSource implements Cloneable {
      * for a given X-ray photon energy without taking into account electron
      * transversal momentum spread
      *
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -369,8 +375,8 @@ public class ThompsonSource implements Cloneable {
      * X-ray photon energy taking into account electron transversal momentum
      * spread and using the conventional integration
      *
-     * @param n direction
-     * @param v0 normalized electron velocity
+     * @param n observation direction
+     * @param v0 normalized mean electron velocity
      * @param e X-ray energy
      * @return
      */
@@ -394,8 +400,8 @@ public class ThompsonSource implements Cloneable {
      * X-ray photon energy taking into account electron transversal momentum
      * spread and using the Monte-Carlo method
      *
-     * @param n direction
-     * @param v0 normalized electron velocity
+     * @param n observation direction
+     * @param v0 normalized mean electron velocity
      * @param e X-ray energy
      * @return
      */
@@ -406,28 +412,28 @@ public class ThompsonSource implements Cloneable {
         // Atomic adder
         DoubleAdder sum = new DoubleAdder();
         double tmp;
-        double thmax = INT_RANGE * eb.getSpread();
         final int itNumber = Math.round(getNpEmittance() / threadNumber);
-        /*
-         Splitting the job into a number of threads
-         */
+        
+        // Splitting the job into a number of threads
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
-                double rangle, rth, psum = 0, sn;
-                Vector v = new BasicVector(new double[]{0.0, 0.0});
-                Vector dv = new BasicVector(new double[]{0.0, 0.0});
+                double rangle, rth, tm, psum = 0, sn;
+                Vector v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                Vector dv = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                //Calculating a partial sum
                 for (int i = 0; i < itNumber; i++) {
                     if (Thread.currentThread().isInterrupted()) {
                         return;
                     }
                     rangle = 2 * Math.random() * Math.PI;
-                    rth = Math.random() * thmax;
+                    rth = Math.random() * INT_RANGE * eb.getSpread();
                     sn = Math.sin(rth);
                     v.set(0, sn * Math.cos(rangle));
                     v.set(1, sn * Math.sin(rangle));
-                    v.set(1, Math.cos(rth));
+                    v.set(2, Math.cos(rth));
                     dv = v.subtract(v0);
-                    psum += sn * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    tm = sn * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    psum += new Double(tm).isNaN() ? 0 : tm;
                 }
                 sum.add(psum);
                 lt.countDown();
@@ -439,7 +445,8 @@ public class ThompsonSource implements Cloneable {
             Thread.currentThread().interrupt();
         }
         execs.shutdownNow();
-        tmp = Math.PI * thmax * thmax * sum.sum() / itNumber / threadNumber;
+        // Outputting the final result
+        tmp = sum.sum() / itNumber / threadNumber;
         return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
@@ -448,8 +455,8 @@ public class ThompsonSource implements Cloneable {
      * in a given direction for a given X-ray photon energy taking into account
      * electron transversal momentum spread
      *
-     * @param n direction
-     * @param v0 normalized electron velocity
+     * @param n observation direction
+     * @param v0 normalized mean electron velocity
      * @param e X-ray energy
      * @return
      * @throws java.lang.InterruptedException
@@ -654,7 +661,7 @@ public class ThompsonSource implements Cloneable {
      * X-ray photon energy for a given volume element
      *
      * @param r spatial position
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -668,7 +675,7 @@ public class ThompsonSource implements Cloneable {
      * for a given X-ray photon energy for a given volume element
      *
      * @param r spatial position
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -684,7 +691,7 @@ public class ThompsonSource implements Cloneable {
      * account electron transversal momentum spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -699,7 +706,7 @@ public class ThompsonSource implements Cloneable {
      * into account electron transversal momentum spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -719,13 +726,13 @@ public class ThompsonSource implements Cloneable {
      * electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
      */
     public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) {
-        return directionFrequencyFluxSpreadIntegral(n, v, e) * volumeFlux(r);
+        return isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) * volumeFlux(r) :directionFrequencyFluxSpreadIntegral(n, v, e) * volumeFlux(r);
     }
 
     /**
@@ -734,7 +741,7 @@ public class ThompsonSource implements Cloneable {
      * account electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -782,7 +789,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method giving the flux density in a given direction
      *
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @return
      */
@@ -797,7 +804,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A method calculating X-ray energy in a given direction
      *
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @return
      */
@@ -811,7 +818,7 @@ public class ThompsonSource implements Cloneable {
      * A method calculating spectral brilliance in a given direction
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -825,7 +832,7 @@ public class ThompsonSource implements Cloneable {
      * polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -840,7 +847,7 @@ public class ThompsonSource implements Cloneable {
      * taking into account electron transversal momentum spread
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -866,7 +873,7 @@ public class ThompsonSource implements Cloneable {
      * polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -895,7 +902,7 @@ public class ThompsonSource implements Cloneable {
      * account electron transversal momentum spread
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -909,7 +916,7 @@ public class ThompsonSource implements Cloneable {
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxSpreadIntegral(n, v, e);
+            return u * (isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) : directionFrequencyFluxSpreadIntegral(n, v, e));
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -920,7 +927,7 @@ public class ThompsonSource implements Cloneable {
      * account electron transversal momentum spread nd with polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n observation direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -1282,7 +1289,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Getting the number of points in the emittance Monte-Carlo integration
-     * 
+     *
      * @return the npEmittance
      */
     public int getNpEmittance() {
@@ -1291,10 +1298,28 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * Setting the number of points in the emittance Monte-Carlo integration
-     * 
+     *
      * @param npEmittance the npEmittance to set
      */
     public void setNpEmittance(int npEmittance) {
         this.npEmittance = npEmittance;
+    }
+
+    /**
+     * Getting the IsMonteCarlo flag
+     * 
+     * @return the IsMonteCarlo
+     */
+    public boolean isIsMonteCarlo() {
+        return IsMonteCarlo;
+    }
+
+    /**
+     * Setting the IsMonteCarlo flag
+     * 
+     * @param IsMonteCarlo the IsMonteCarlo to set
+     */
+    public void setIsMonteCarlo(boolean IsMonteCarlo) {
+        this.IsMonteCarlo = IsMonteCarlo;
     }
 }

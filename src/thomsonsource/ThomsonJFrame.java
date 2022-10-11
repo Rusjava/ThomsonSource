@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.02
+ * @version 1.1
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -403,6 +403,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemNumerical = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
+        jCheckBoxMenuItemMonteCarlo = new javax.swing.JCheckBoxMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuSkin = new javax.swing.JMenu();
         jRadioButtonMenuDefault = new javax.swing.JRadioButtonMenuItem();
@@ -1770,7 +1771,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -1965,6 +1966,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuOptions.add(jCheckBoxMenuItemSpread);
+
+        jCheckBoxMenuItemMonteCarlo.setText("MonteCarlo");
+        jCheckBoxMenuItemMonteCarlo.setToolTipText("Is Monte-Carlo method used?");
+        jCheckBoxMenuItemMonteCarlo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItemMonteCarloActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jCheckBoxMenuItemMonteCarlo);
         jMenuOptions.add(jSeparator4);
 
         jMenuSkin.setText("Look&Feel...");
@@ -2092,6 +2102,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
             tsourceclone.seteSpread(espread);
+            tsourceclone.setIsMonteCarlo(jCheckBoxMenuItemMonteCarlo.isSelected());
             minValueClone = minValue;
             maxValueClone = maxValue;
             angleclone = angle;
@@ -3782,6 +3793,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         GFCalcGraph.repaint();
     }//GEN-LAST:event_GFValueSelectionBoxActionPerformed
 
+    private void jCheckBoxMenuItemMonteCarloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemMonteCarloActionPerformed
+        // TODO add your handling code here:
+        tsource.setIsMonteCarlo(jCheckBoxMenuItemMonteCarlo.isSelected());
+    }//GEN-LAST:event_jCheckBoxMenuItemMonteCarloActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation
      */
@@ -4286,6 +4302,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField eshiftzvalue;
     private javax.swing.JFrame gfCalc;
     private javax.swing.JLabel jAngleLabel;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemMonteCarlo;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
     private javax.swing.JLabel jEnergyLabel;

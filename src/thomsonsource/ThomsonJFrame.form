@@ -1059,6 +1059,15 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxMenuItemSpreadActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="jCheckBoxMenuItemMonteCarlo">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="MonteCarlo"/>
+                <Property name="toolTipText" type="java.lang.String" value="Is Monte-Carlo method used?"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxMenuItemMonteCarloActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="jMenuSkin">
