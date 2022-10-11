@@ -96,6 +96,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
+        this.gfMonteCarloEmittanceNumberBox = getIntegerFormattedTextField(30000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
         this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
         this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
@@ -2298,7 +2299,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
-            gfMonteCarloNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
+            gfMonteCarloNumberBox, gfMonteCarloEmittanceNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
             yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box;
 
     private File bFile = null, pFile = null;
@@ -3378,6 +3379,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in the Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
+            "<html>Number of points in the Monte Carlo<br/> calculation of the angular distribution:</html>", gfMonteCarloEmittanceNumberBox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
             "<html>Multiplication factor for the numerical shift<br/> in the polarization angular integral:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
@@ -3385,6 +3387,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
+            tsource.setNpEmittance((int) gfMonteCarloEmittanceNumberBox.getValue());
             tsource.setPrecision((double) numericallPrecisionBox.getValue());
             tsource.setShiftfactor((double) shiftFactorBox.getValue());
             tsource.setThreadNumber((int) threadsNumberBox.getValue());
