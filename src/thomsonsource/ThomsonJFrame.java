@@ -2103,7 +2103,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 Logger.getLogger(ThomsonJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
             tsourceclone.seteSpread(espread);
-            tsourceclone.setIsMonteCarlo(jCheckBoxMenuItemMonteCarlo.isSelected());
             minValueClone = minValue;
             maxValueClone = maxValue;
             angleclone = angle;
@@ -3381,7 +3380,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             "<html>Number of points in the Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
             "<html>Number of points in the Monte Carlo<br/> calculation of the angular distribution:</html>", gfMonteCarloEmittanceNumberBox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
-            "<html>Multiplication factor for the numerical shift<br/> in the polarization angular integral:</html>", shiftFactorBox,
+            "<html>Multiplication factor for the numerical shift<br/> in the angular integral:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Shadow parameters", JOptionPane.OK_CANCEL_OPTION);
