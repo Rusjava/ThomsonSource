@@ -292,7 +292,7 @@ public class ThompsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] directionFrequencyPolarization(Vector n, Vector v, double e) throws InterruptedException {
-        return iseSpread() ? directionFrequencyPolarizationSpread(n, v, e) : directionFrequencyPolarizationNoSpread(n, v, e);
+        return iseSpread() ? directionFrequencyPolarizationSpreadIntegral(n, v, e) : directionFrequencyPolarizationNoSpread(n, v, e);
     }
 
     /**
@@ -453,7 +453,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * A multi-threaded method calculating the full polarization tensor density
      * in a given direction for a given X-ray photon energy taking into account
-     * electron transversal momentum spread
+     * electron transversal momentum spread using the conventional integration
      *
      * @param n observation direction
      * @param v0 normalized mean electron velocity
@@ -461,7 +461,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v0, final double e) throws InterruptedException {
+    public double[] directionFrequencyPolarizationSpreadIntegral(final Vector n, final Vector v0, final double e) throws InterruptedException {
         //An array for results
         double[] array = new double[NUMBER_OF_POL_PARAM];
         //Creating a latch for threads
@@ -492,6 +492,81 @@ public class ThompsonSource implements Cloneable {
             execs.shutdownNow();
             throw ex;
         }
+        execs.shutdownNow();
+
+        //If intensity is NaN, zero or less than zero then set it as unity
+        if (new Double(array[0]).isNaN() || array[0] <= 0) {
+            array[0] = 1;
+        }
+        //If a Stocks intensity is NaN then set it as zero
+        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(array[i]).isNaN()) {
+                array[i] = 0;
+            }
+        }
+        return array;
+    }
+
+    /**
+     * A multi-threaded method calculating the full polarization tensor density
+     * in a given direction for a given X-ray photon energy taking into account
+     * electron transversal momentum spread using the Monte-Carlo method
+     *
+     * @param n observation direction
+     * @param v0 normalized mean electron velocity
+     * @param e X-ray energy
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double[] directionFrequencyPolarizationSpreadMonteCarlo(final Vector n, final Vector v0, final double e) throws InterruptedException {
+        //An array for results
+        double[] array = new double[NUMBER_OF_POL_PARAM];
+        //Creating a pool of threads for calculations
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        //The number of threads used to calculate Stocks parameters
+        final int itNumber = Math.round(getNpEmittance() / threadNumber);
+        //Calculating the polarization tensor elements
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
+            int[] ia = new int[]{i};
+            // An atomic adder
+            DoubleAdder sum = new DoubleAdder();
+            //Creating a latch for the threads
+            CountDownLatch lt = new CountDownLatch(threadNumber);
+            execs.execute(() -> {
+                double rangle, rth, tm, psum = 0, sn;
+                Vector v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                Vector dv = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                //Calculating a partial sum
+                for (int m = 0; m < itNumber; m++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    rangle = 2 * Math.random() * Math.PI;
+                    rth = Math.random() * INT_RANGE * eb.getSpread();
+                    sn = Math.sin(rth);
+                    v.set(0, sn * Math.cos(rangle));
+                    v.set(1, sn * Math.sin(rangle));
+                    v.set(2, Math.cos(rth));
+                    dv = v.subtract(v0);
+                    tm = sn * directionFrequencyPolarizationNoSpread(n, v, e)[ia[0]] * eb.angleDistribution(dv.get(0), dv.get(1));
+                    psum += new Double(tm).isNaN() ? 0 : tm;
+                }
+                //Adding to the full sum
+                sum.add(psum);
+                //Counting down the latch
+                lt.countDown();
+            });
+            //Waiting for an interruption and shuting down threads if interrupted
+            try {
+                lt.await();
+            } catch (InterruptedException ex) {
+                execs.shutdownNow();
+                throw ex;
+            }
+            //Outputting the result for the i-th Stocks intensity
+            array[i] = 2 * Math.PI * INT_RANGE * eb.getSpread() * sum.sum() / itNumber / threadNumber;;
+        }
+        //Shutting down the execution services
         execs.shutdownNow();
 
         //If intensity is NaN, zero or less than zero then set it as unity
@@ -748,7 +823,7 @@ public class ThompsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
-        double[] stocks = directionFrequencyPolarizationSpread(n, v, e);
+        double[] stocks = isIsMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, e) : directionFrequencyPolarizationSpreadIntegral(n, v, e);
         double vFlux = volumeFlux(r);
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             stocks[i] *= vFlux;
@@ -924,7 +999,7 @@ public class ThompsonSource implements Cloneable {
 
     /**
      * A method calculating spectral brilliance in a given direction taking into
-     * account electron transversal momentum spread nd with polarization
+     * account the electron transversal momentum spread and with polarization
      *
      * @param r0 spatial position for brightness
      * @param n observation direction
@@ -947,7 +1022,7 @@ public class ThompsonSource implements Cloneable {
             mlt = 0;
         }
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            array[i] = mlt * directionFrequencyPolarizationSpread(n, v, e)[i];
+            array[i] = mlt * (isIsMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, e)[i] : directionFrequencyPolarizationSpreadIntegral(n, v, e)[i]);
         }
         return array;
     }
