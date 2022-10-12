@@ -292,7 +292,7 @@ public class ThompsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] directionFrequencyPolarization(Vector n, Vector v, double e) throws InterruptedException {
-        return iseSpread() ? directionFrequencyPolarizationSpreadIntegral(n, v, e) : directionFrequencyPolarizationNoSpread(n, v, e);
+        return iseSpread() ? (isIsMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, e) : directionFrequencyPolarizationSpreadIntegral(n, v, e)) : directionFrequencyPolarizationNoSpread(n, v, e);
     }
 
     /**
@@ -532,30 +532,33 @@ public class ThompsonSource implements Cloneable {
             DoubleAdder sum = new DoubleAdder();
             //Creating a latch for the threads
             CountDownLatch lt = new CountDownLatch(threadNumber);
-            execs.execute(() -> {
-                double rangle, rth, tm, psum = 0, sn;
-                Vector v = new BasicVector(new double[]{0.0, 0.0, 0.0});
-                Vector dv = new BasicVector(new double[]{0.0, 0.0, 0.0});
-                //Calculating a partial sum
-                for (int m = 0; m < itNumber; m++) {
-                    if (Thread.currentThread().isInterrupted()) {
-                        return;
+            for (int m = 0; m < threadNumber; m++) {
+                execs.execute(() -> {
+                    double rangle, rth, tm, psum = 0, sn;
+                    Vector v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                    Vector dv = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                    //Calculating a partial sum
+                    for (int p = 0; p < itNumber; p++) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            return;
+                        }
+                        rangle = 2 * Math.random() * Math.PI;
+                        rth = Math.random() * INT_RANGE * eb.getSpread();
+                        sn = Math.sin(rth);
+                        v.set(0, sn * Math.cos(rangle));
+                        v.set(1, sn * Math.sin(rangle));
+                        v.set(2, Math.cos(rth));
+                        dv = v.subtract(v0);
+                        tm = sn * directionFrequencyPolarizationNoSpread(n, v, e)[ia[0]] * eb.angleDistribution(dv.get(0), dv.get(1));
+                        psum += new Double(tm).isNaN() ? 0 : tm;
                     }
-                    rangle = 2 * Math.random() * Math.PI;
-                    rth = Math.random() * INT_RANGE * eb.getSpread();
-                    sn = Math.sin(rth);
-                    v.set(0, sn * Math.cos(rangle));
-                    v.set(1, sn * Math.sin(rangle));
-                    v.set(2, Math.cos(rth));
-                    dv = v.subtract(v0);
-                    tm = sn * directionFrequencyPolarizationNoSpread(n, v, e)[ia[0]] * eb.angleDistribution(dv.get(0), dv.get(1));
-                    psum += new Double(tm).isNaN() ? 0 : tm;
-                }
-                //Adding to the full sum
-                sum.add(psum);
-                //Counting down the latch
-                lt.countDown();
-            });
+                    //Adding to the full sum
+                    sum.add(psum);
+                    //Counting down the latch
+                    lt.countDown();
+                    System.out.println(isIsMonteCarlo());
+                });
+            }
             //Waiting for an interruption and shuting down threads if interrupted
             try {
                 lt.await();
