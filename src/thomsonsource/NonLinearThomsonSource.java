@@ -498,17 +498,17 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGamma(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqration, coef;
+        double rho, pr, fqratio, coef;
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
-        fqration = e / ordernumber / lp.getPhotonEnergy();
-        coef = 2 - fqration * (1 - pr);
+        fqratio = e / ordernumber / lp.getPhotonEnergy();
+        coef = 2 - fqratio * (1 - pr);
         if (coef <= 0) {
             //Returning zero if the expression under the root is not positive
             return 0;
         } else {
-            return (fqration * (pr + rho) + 1)
-                    / Math.sqrt(fqration * (1 + 2 * rho + pr) * coef);
+            return (fqratio * (pr + rho) + 1)
+                    / Math.sqrt(fqratio * (1 + 2 * rho + pr) * coef);
         }
     }
 
@@ -539,7 +539,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
+        /* RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -568,7 +569,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             return u;
         } catch (TooManyEvaluationsException ex) {
             return 0;
-        }
+        } */
     }
 
     @Override
