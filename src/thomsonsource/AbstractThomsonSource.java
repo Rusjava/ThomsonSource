@@ -134,7 +134,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Precision in calculations of the brilliance
      */
-    protected double precision = 0.0001;
+    protected double precision = 0.01;
     /**
      * Normalized total flux from the source
      */

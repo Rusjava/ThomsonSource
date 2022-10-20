@@ -84,10 +84,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {    
+    public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
         //If vector r is null then use average intensity
         double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
-        
+
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
         if (gamma == 0) {
@@ -103,7 +103,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double[] res = new double[]{1, 0, 0, 0};
         //If vector r is null then use average intensity
         double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
-        
+
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
         double factor = eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
@@ -114,8 +114,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Multiplying polarization matrix by gamma distribution
             res = multiplyPolarizationParameters(directionPolarizationBasic(n, v, e, gamma, intensity), factor);
             //If intensity is zero returning unity
-            res[0]=(res[0]==0)? 1: res[0];
-            
+            res[0] = (res[0] == 0) ? 1 : res[0];
+
             return res;
         }
     }
@@ -123,10 +123,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index) {
         double intensity, res = 0, gamma;
-        
+
         //If vector r is null then use average intensity
         intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
-        
+
         //Calculating factor gamma
         gamma = calculateGamma(n, v, e, intensity);
         if (new Double(gamma).isNaN() || gamma == 0) {
@@ -386,7 +386,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             for (int t = 2; t < 8; t++) {
                 //Creating a Romberg integrator and a UnivariateFunction object and then integrating
                 try {
-                    f[t] = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
+                    f[t] = (new RombergIntegrator(getPrecision() / 100, RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
                             RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
                             new UnivariateFourierHarmonics(a1, a2, a3, t), -Math.PI, Math.PI) / 2 / Math.PI - 1;
                 } catch (TooManyEvaluationsException ex) {
@@ -405,7 +405,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     }
 
     /**
-     * Basic method for calculation of X-ray polarization matrix with a given polarization
+     * Basic method for calculation of X-ray polarization matrix with a given
+     * polarization
      *
      * @param cf1
      * @param cf2
@@ -539,8 +540,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
-        return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
-        /* RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+        //return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -569,7 +570,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             return u;
         } catch (TooManyEvaluationsException ex) {
             return 0;
-        } */
+        }
     }
 
     @Override
@@ -693,6 +694,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
+        double tmp;
         //Transforming coordinates between laser and electron beam frames
         Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
@@ -719,8 +721,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
-                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            tmp = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            //Testing if NaN, then return zero
+            return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
