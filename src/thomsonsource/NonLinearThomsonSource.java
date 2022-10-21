@@ -708,7 +708,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
                 return directionFrequencyFluxNoSpread(n, v, rphh, e)
-                        * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                        * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh) + SHIFT;
             }
         };
         //Defining the upper nad lower integration limits
@@ -721,7 +721,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
             }
-            tmp = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            tmp = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re)
+                    - SHIFT * (zmax - zmin);
             //Testing if NaN, then return zero
             return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
