@@ -694,7 +694,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
-        double tmp;
+        double tmp, semilength;
         //Transforming coordinates between laser and electron beam frames
         Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
@@ -707,15 +707,15 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
-                return directionFrequencyFluxNoSpread(n, v, rphh, e)
-                        * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh) + SHIFT;
+                return directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh) + SHIFT;
             }
         };
         //Defining the upper nad lower integration limits
-        double zmin = -INT_RANGE * eb.getLength()
-                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
-        double zmax = INT_RANGE * eb.getLength()
-                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        semilength = INT_RANGE * eb.getLength() * lp.getLength()
+                / Math.sqrt(Math.pow(eb.getLength(), 2) * (Math.pow(lp.getDirection().get(2), 2) + Math.pow(lp.getLength() * lp.getDirection().get(1) / lp.getWidth(0), 2)) 
+                        + Math.pow(lp.getLength(), 2));
+        double zmin = -semilength + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double zmax = semilength + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {

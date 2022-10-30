@@ -295,7 +295,7 @@
       <Properties>
         <Property name="title" type="java.lang.String" value="Non-linear brilliance box"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[800, 500]"/>
+          <Dimension value="[850, 500]"/>
         </Property>
       </Properties>
 
@@ -303,7 +303,7 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Component id="BrillianceParamNonLinear" alignment="0" max="32767" attributes="0"/>
-              <Component id="BrillianceCalcGraphNonLinear" alignment="0" pref="838" max="32767" attributes="0"/>
+              <Component id="BrillianceCalcGraphNonLinear" alignment="0" pref="810" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -384,7 +384,7 @@
                               <Component id="angleValueUnitLableNonLinear" min="-2" pref="36" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="52" max="32767" attributes="0"/>
+                      <EmptySpace pref="24" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1116,7 +1116,7 @@
         <Property name="title" type="java.lang.String" value="Non-linear polarization box"/>
         <Property name="focusTraversalPolicyProvider" type="boolean" value="true"/>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[800, 500]"/>
+          <Dimension value="[850, 500]"/>
         </Property>
       </Properties>
 

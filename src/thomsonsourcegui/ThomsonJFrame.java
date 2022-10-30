@@ -710,7 +710,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         brillianceCalcNonLinear.setTitle("Non-linear brilliance box");
-        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(800, 500));
+        brillianceCalcNonLinear.setMinimumSize(new java.awt.Dimension(850, 500));
 
         BrillianceParamNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
@@ -872,7 +872,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addComponent(angleValueNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(angleValueUnitLableNonLinear, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         BrillianceParamNonLinearLayout.setVerticalGroup(
             BrillianceParamNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -929,7 +929,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         brillianceCalcNonLinearLayout.setHorizontalGroup(
             brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(BrillianceParamNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
+            .addComponent(BrillianceCalcGraphNonLinear, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
         );
         brillianceCalcNonLinearLayout.setVerticalGroup(
             brillianceCalcNonLinearLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1298,7 +1298,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         polarizationCalcNonLinear.setTitle("Non-linear polarization box");
         polarizationCalcNonLinear.setFocusTraversalPolicyProvider(true);
-        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(800, 500));
+        polarizationCalcNonLinear.setMinimumSize(new java.awt.Dimension(850, 500));
 
         polarizationParamcNonLinear.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Plot parameter selection", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
