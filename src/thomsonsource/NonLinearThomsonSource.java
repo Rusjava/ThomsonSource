@@ -694,10 +694,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
-        double tmp, semilength;
+        double tmp;
         //Transforming coordinates between laser and electron beam frames
         Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
+        
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -711,11 +712,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         //Defining the upper nad lower integration limits
-        semilength = INT_RANGE * eb.getLength() * lp.getLength()
-                / Math.sqrt(Math.pow(eb.getLength(), 2) * (Math.pow(lp.getDirection().get(2), 2) + Math.pow(lp.getLength() * lp.getDirection().get(1) / lp.getWidth(0), 2)) 
-                        + Math.pow(lp.getLength(), 2));
-        double zmin = -semilength + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
-        double zmax = semilength + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        System.out.println(shft);
+        double zmin = -semilength + shft;
+        double zmax = semilength + shft;
+        //Integrating
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -728,7 +731,6 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
-        //return directionFrequencyFluxNoSpread(n, v, r, e) * volumeFlux(r);
     }
 
     @Override
@@ -746,7 +748,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection());
+        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -762,10 +764,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         //Defining the upper nad lower integration limits
-        double zmin = -INT_RANGE * eb.getLength()
-                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
-        double zmax = INT_RANGE * eb.getLength()
-                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        System.out.println(shft);
+        double zmin = -semilength + shft;
+        double zmax = semilength + shft;
+        //Integrating
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -784,7 +789,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection());
+        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -805,10 +810,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         //Defining the upper nad lower integration limits
-        double zmin = -INT_RANGE * eb.getLength()
-                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
-        double zmax = INT_RANGE * eb.getLength()
-                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        System.out.println(shft);
+        double zmin = -semilength + shft;
+        double zmax = semilength + shft;
+        //Integrating
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -836,7 +844,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection());
+        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
         Vector rph = T.multiply(r);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
@@ -857,10 +865,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
         //Defining the upper nad lower integration limits
-        double zmin = -INT_RANGE * eb.getLength()
-                + Math.min(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
-        double zmax = INT_RANGE * eb.getLength()
-                + Math.max(rph.get(2) + lp.getDelay(), re.get(2) + eb.getShift().get(2));
+        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        System.out.println(shft);
+        double zmin = -semilength + shft;
+        double zmax = semilength + shft;
+        //Integrating
         try {
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
                     zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
