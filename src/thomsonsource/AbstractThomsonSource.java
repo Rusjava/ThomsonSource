@@ -958,9 +958,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
         Matrix A;
         Matrix I = Matrix.identity(3);
         double innerProduct = n.innerProduct(n0);
-        D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).add(n0.outerProduct(n0))).divide(innerProduct * innerProduct - 1.0);
+        D = n.outerProduct(n0).add(n0.outerProduct(n)).multiply(innerProduct).subtract(n.outerProduct(n).add(n0.outerProduct(n0))).divide(innerProduct + 1.0);
         A = n.outerProduct(n0).subtract(n0.outerProduct(n)).add(I.multiply(innerProduct));
-        return I.subtract(D).multiply(1 - innerProduct).add(A);
+        return I.multiply(1 - innerProduct).add(D).add(A);
     }
 
     /**
