@@ -86,7 +86,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
         //If vector r is null then use average intensity
-        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
+        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(lp.getTransformedCoordinates(r));
 
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
@@ -102,7 +102,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
         double[] res = new double[]{1, 0, 0, 0};
         //If vector r is null then use average intensity
-        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
+        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(lp.getTransformedCoordinates(r));
 
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
@@ -125,7 +125,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double intensity, res = 0, gamma;
 
         //If vector r is null then use average intensity
-        intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
+        intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(lp.getTransformedCoordinates(r));
 
         //Calculating factor gamma
         gamma = calculateGamma(n, v, e, intensity);
@@ -724,7 +724,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
             }
             tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) 
+                    * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
             //Testing if NaN, then return zero
             return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
