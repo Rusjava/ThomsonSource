@@ -326,8 +326,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double directionFrequencyPolarization(Vector n, Vector v, Vector r, double e, int index) throws InterruptedException {
-        return iseSpread() ? directionFrequencyPolarizationSpread(n, v, r, e, index)
-                : directionFrequencyPolarizationNoSpread(n, v, r, e, index);
+        return iseSpread() ? directionFrequencyPolarizationSpread(n, v, r, e, index) : directionFrequencyPolarizationNoSpread(n, v, r, e, index);
     }
 
     /**
@@ -607,34 +606,17 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      */
     public double volumeFlux(Vector r) {
-        //if r is null then use zero coordinates
+        //If r is null then use zero coordinates
         if (r == null) {
             r = new BasicVector(new double[]{0, 0, 0});
         }
         double u;
-        double z;
-        double z1;
-        double x;
-        double x1;
-        double y;
-        double y1;
-        double sn;
-        double cs;
-        double K;
-        double len;
-        len = Math.sqrt(lp.getLength() * lp.getLength() + eb.getLength() * eb.getLength());
-        sn = lp.getDirection().get(1);
-        cs = lp.getDirection().get(2);
-        x = r.get(0);
-        y = r.get(1);
-        z = r.get(2);
-        x1 = x;
-        y1 = -sn * z + cs * y;
-        z1 = cs * z + sn * y;
-        K = Math.pow((z + z1 - eb.getShift().get(2) - lp.getDelay()) / len, 2);
+        double len = Math.sqrt(lp.getLength() * lp.getLength() + eb.getLength() * eb.getLength());
+        Vector r1=lp.getTransformedCoordinates(r);
+        double K = Math.pow((r.get(2) - r1.get(2) - eb.getShift().get(2) + lp.getDelay()) / len, 2);
         u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
                 * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) / len * Math.exp(-K) * eb.tSpatialDistribution(r)
-                * lp.tSpatialDistribution(new BasicVector(new double[]{x1, y1, z1}));
+                * lp.tSpatialDistribution(r1);
         return new Double(u).isNaN() ? 0 : u;
     }
 

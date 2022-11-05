@@ -427,7 +427,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
             //If already orthogonal, return initial vectors
             return new Vector[]{AA1, AA2};
         } else {
-            //if not orthogonal, then making them orthogonal
+            //If not orthogonal, then making them orthogonal
             a1 = AA1.innerProduct(AA1);
             a2 = AA2.innerProduct(AA2);
             M = Math.abs(a1 - a2) / Math.sqrt(a1 * a1 + a2 * a2 - 2 * a1 * a2
@@ -480,5 +480,22 @@ public abstract class AbstractLaserPulse implements Cloneable {
             B2 = B2.add(A2[s].multiply(ff[s]));
         }
         return getOrthogonalPolarizationVectors(B1, B2);
+    }
+    
+    /**
+     * Transforming coordinates form the electron bunch coordinate system to the laser pulse coordinate system
+     * 
+     * @param r a vector in the electron coordinate system
+     * @return 
+     */
+    
+    public Vector getTransformedCoordinates(Vector r) {
+        double sn = getDirection().get(1);
+        double cs = getDirection().get(2);
+        //Defining new coordinates
+        double x1 = r.get(0);
+        double y1 = -sn * r.get(2) + cs * r.get(1);
+        double z1 = cs * r.get(2) + sn * r.get(1);
+        return new BasicVector(new double[]{x1, y1, -z1});
     }
 }

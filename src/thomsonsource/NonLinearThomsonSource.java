@@ -696,11 +696,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         Vector re = r.copy();
         double tmp;
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection());
-        Vector rph = T.multiply(r);
-        rph.set(2, -rph.get(2));
-        System.out.println(rph.get(2));
-        
+        Vector rph = lp.getTransformedCoordinates(r);
+
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -717,7 +714,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        //System.out.println(shft);
+
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
         //Integrating
@@ -726,7 +723,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
             }
-            tmp = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
+                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
             //Testing if NaN, then return zero
             return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
@@ -748,9 +746,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
+        double tmp;
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
-        Vector rph = T.multiply(r);
+        Vector rph = lp.getTransformedCoordinates(r);
+        
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -777,8 +776,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyVolumePolarizationNoSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
+            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
+                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
                     zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            //Testing if NaN, then return zero
+            return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -789,9 +791,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         Vector re = r.copy();
+        double tmp;
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
-        Vector rph = T.multiply(r);
+        Vector rph = lp.getTransformedCoordinates(r);
+        
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -814,7 +817,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        System.out.println(shft);
+    
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
         //Integrating
@@ -823,8 +826,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
             }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
+            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
+                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
                     zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+            //Testing if NaN, then return zero
+            return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
