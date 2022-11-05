@@ -488,14 +488,13 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @param r a vector in the electron coordinate system
      * @return 
      */
-    
     public Vector getTransformedCoordinates(Vector r) {
         double sn = getDirection().get(1);
         double cs = getDirection().get(2);
         //Defining new coordinates
-        double x1 = r.get(0);
-        double y1 = -sn * r.get(2) + cs * r.get(1);
-        double z1 = cs * r.get(2) + sn * r.get(1);
-        return new BasicVector(new double[]{x1, y1, -z1});
+        double x = r.get(0);
+        double y = -sn * r.get(2) + cs * r.get(1);
+        double z = cs * r.get(2) + sn * r.get(1);
+        return new BasicVector(new double[]{x, y, -z});
     }
 }

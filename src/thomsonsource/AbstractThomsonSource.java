@@ -421,7 +421,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 array[i] = 0;
             }
         }
-        //If intensity is NaN, zero or less than zero then set it as unity
+        //If the intensity is NaN, zero or less than zero then set it as unity
         if (new Double(array[0]).isNaN() || array[0] <= 0) {
             array[0] = 1;
         }

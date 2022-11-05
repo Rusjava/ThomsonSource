@@ -767,7 +767,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        System.out.println(shft);
+        
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
         //Integrating
