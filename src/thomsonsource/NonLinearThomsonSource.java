@@ -86,7 +86,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
         //If vector r is null then use average intensity
-        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(lp.getTransformedCoordinates(r));
+        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
 
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
@@ -102,7 +102,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
         double[] res = new double[]{1, 0, 0, 0};
         //If vector r is null then use average intensity
-        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(lp.getTransformedCoordinates(r));
+        double intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
 
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
@@ -125,7 +125,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double intensity, res = 0, gamma;
 
         //If vector r is null then use average intensity
-        intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(lp.getTransformedCoordinates(r));
+        intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
 
         //Calculating factor gamma
         gamma = calculateGamma(n, v, e, intensity);
