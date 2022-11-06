@@ -628,6 +628,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func;
+        double semiwidth;
         //Creating an anonymous class for the integrand
         func = new UnivariateFunction() {
             @Override
@@ -643,14 +644,15 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
+        semiwidth = INT_RANGE * eb.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(eb.getLength() * lp.getDirection().get(1), 2) + 4 * lp.getWidth2(0) * Math.pow(lp.getDirection().get(2), 2));
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
             }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -661,6 +663,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func;
+        double semiwidth;
         //Creating an anonymous class for the integrand
         func = new UnivariateFunction() {
             @Override
@@ -676,14 +679,15 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
+        semiwidth = INT_RANGE * eb.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(eb.getLength() * lp.getDirection().get(1), 2) + 4 * lp.getWidth2(0) * Math.pow(lp.getDirection().get(2), 2));
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
             }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -707,7 +711,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
-                return directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                double tmp = directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                return new Double(tmp).isNaN() ? 0 : tmp;
             }
         };
         //Defining the upper nad lower integration limits
@@ -724,8 +729,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
             }
             tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax) 
+                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax)
                     * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
+           
             //Testing if NaN, then return zero
             return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
@@ -750,7 +756,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double tmp;
         //Transforming coordinates between laser and electron beam frames
         Vector rph = lp.getTransformedCoordinates(r);
-        
+
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -760,15 +766,15 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
-                return directionFrequencyPolarizationNoSpread(n, v, rphh, e, index)
-                        * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                double tmp = directionFrequencyPolarizationNoSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                return new Double(tmp).isNaN() ? 0 : tmp;
             }
         };
         //Defining the upper nad lower integration limits
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        
+
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
         //Integrating
@@ -795,7 +801,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double tmp;
         //Transforming coordinates between laser and electron beam frames
         Vector rph = lp.getTransformedCoordinates(r);
-        
+
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -806,8 +812,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
                 try {
-                    return directionFrequencyFluxSpread(n, v, rphh, e)
-                            * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                    double tmp = directionFrequencyFluxSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                    return new Double(tmp).isNaN() ? 0 : tmp;
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                     return 0;
@@ -818,7 +824,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-    
+
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
         //Integrating
@@ -864,8 +870,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
                 try {
-                    return directionFrequencyPolarizationSpread(n, v, rphh, e, index)
-                            * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                    double tmp = directionFrequencyPolarizationSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                    return new Double(tmp).isNaN() ? 0 : tmp;
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                     return 0;
@@ -876,7 +882,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        System.out.println(shft);
+       
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
         //Integrating

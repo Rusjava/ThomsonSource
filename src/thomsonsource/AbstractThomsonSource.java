@@ -336,7 +336,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n direction
      * @param v normalized electron velocity
-     * @param r spatial position
+     * @param r spatial position in the laser coordinates
      * @param e X-ray energy
      * @return
      */
@@ -349,7 +349,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n direction
      * @param v normalized electron velocity
-     * @param r spatial position
+     * @param r spatial position in the laser coordinates
      * @param e X-ray energy
      * @return
      */
@@ -362,7 +362,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n direction
      * @param v normalized electron velocity
-     * @param r spatial position
+     * @param r spatial position  in the laser coordinates
      * @param e X-ray energy
      * @param index polarization matrix element
      * @return
