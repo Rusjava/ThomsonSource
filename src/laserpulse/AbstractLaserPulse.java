@@ -23,7 +23,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  *
  * @author Ruslan
- * @version 2.01
+ * @version 2.1
  */
 public abstract class AbstractLaserPulse implements Cloneable {
 

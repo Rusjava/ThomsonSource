@@ -33,7 +33,7 @@ import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.2
+ * @version 1.3
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {

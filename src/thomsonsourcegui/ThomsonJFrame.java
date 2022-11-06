@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.22
+ * @version 3.3
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -89,7 +89,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
-        this.numericallPrecisionBox = getDoubleFormattedTextField(1e-2, 1e-10, 1e-1, true);
+        this.numericallPrecisionBox = getDoubleFormattedTextField(1e-3, 1e-10, 1e-1, true);
         this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
         this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
         this.ySizeBox = getIntegerFormattedTextField(200, 1, 10000);

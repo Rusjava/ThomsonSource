@@ -46,7 +46,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.21
+ * @version 1.22
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -134,7 +134,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Precision in calculations of the brilliance
      */
-    protected double precision = 0.01;
+    protected double precision = 0.001;
     /**
      * Normalized total flux from the source
      */

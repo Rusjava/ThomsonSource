@@ -15,7 +15,7 @@
     <target name="-pre-init">
         <manifest file="MANIFEST.MF">
                 <attribute name="Implementation-Vendor" value="Ruslan Feshchenko"/>
-                <attribute name="Implementation-Version" value="3.12"/>
+                <attribute name="Implementation-Version" value="3.3"/>
                 <attribute name="Implementation-Title" value="Non-linear Thomson source simulation"/>
                 <attribute name="Built-Date" value="${TODAY}"/>
         </manifest>
