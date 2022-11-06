@@ -769,6 +769,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilmaxvaluelabelNonLinear.setText("Max value");
 
         jCheckBoxSpreadNonLinear.setText("Spread");
+        jCheckBoxSpreadNonLinear.setEnabled(false);
         jCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxSpreadNonLinearActionPerformed(evt);
@@ -1357,6 +1358,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polmaxvaluelabelNonLinear.setText("Max value");
 
         jPolCheckBoxSpreadNonLinear.setText("Spread");
+        jPolCheckBoxSpreadNonLinear.setEnabled(false);
         jPolCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jPolCheckBoxSpreadNonLinearActionPerformed(evt);
