@@ -39,14 +39,14 @@ import org.jfree.data.xy.XYDataset;
  * Class for linear chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 2.1
+ * @version 3.01
  */
 public class LinearChartParam {
 
     /**
      * Default constructor
      *
-     * @param trfunc
+     * @param trfunc - the function producing the plotted values
      */
     public LinearChartParam(List<Function<double[], Double>> trfunc) {
         this.trfunc = trfunc;
@@ -147,7 +147,7 @@ public class LinearChartParam {
     }
 
     /**
-     * Setting up the data based on 2D array
+     * Setting up the data based on a given 2D array
      *
      * @param data 2D data array
      * @param index index of row/column
@@ -174,7 +174,7 @@ public class LinearChartParam {
     }
 
     /**
-     * Setting up data based on a given function
+     * Setting up the data based on a given list of functions
      *
      * @param f functional array to get data from
      * @param size
@@ -205,7 +205,7 @@ public class LinearChartParam {
     }
 
     /**
-     * Calculating min and max values of data
+     * Calculating the min and max values of the data
      */
     private void setExtr() {
         int sz = (func != null) ? func.size() : 1;
@@ -224,7 +224,7 @@ public class LinearChartParam {
     }
 
     /**
-     * Getting transformed data
+     * Getting the data if no function is specified and if specified then using it calculate them
      */
     private double getTransformedData(int k, int i) {
         //If trasformation functions are not defined then just return data
@@ -241,7 +241,7 @@ public class LinearChartParam {
     }
 
     /**
-     * Saves results into a text file
+     * Saves the calculated data into a given text file
      *
      * @param file file to save data to
      * @throws java.io.IOException
@@ -252,7 +252,7 @@ public class LinearChartParam {
             for (int i = 0; i < getSize(); i++) {
                 fm = new Formatter();
                 fm.format("%f", i * getStep() + getOffset());
-                for (int s = 0; s < getSize(); s++) {
+                for (int s = 0; s < getData().length; s++) {
                     fm.format(" %f", getTransformedData(s, i));
                 }
                 pw.println(fm);
