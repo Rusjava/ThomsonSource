@@ -39,7 +39,7 @@ import org.jfree.data.xy.XYDataset;
  * Class for linear chart parameters
  *
  * @author Ruslan Feshchenko
- * @version 3.01
+ * @version 3.02
  */
 public class LinearChartParam {
 
@@ -183,7 +183,7 @@ public class LinearChartParam {
      * @throws java.lang.InterruptedException
      */
     public void setup(List<Function<Double, Double>> f, int size,
-            double step, double offset) throws InterruptedException {
+            double step, double offset)throws InterruptedException {
         this.size = size;
         this.step = step;
         this.offset = offset;
@@ -253,7 +253,7 @@ public class LinearChartParam {
                 fm = new Formatter();
                 fm.format("%f", i * getStep() + getOffset());
                 for (int s = 0; s < getData().length; s++) {
-                    fm.format(" %f", getTransformedData(s, i));
+                    fm.format(" %10.8f", getTransformedData(s, i));
                 }
                 pw.println(fm);
             }

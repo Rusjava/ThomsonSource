@@ -1771,7 +1771,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemAbout">
               <Properties>
-                <Property name="text" type="java.lang.String" value="About TSourceN"/>
+                <Property name="text" type="java.lang.String" value="About TSourceNX"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemAboutActionPerformed"/>
@@ -1784,7 +1784,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="title" type="java.lang.String" value="TSourceN"/>
+    <Property name="title" type="java.lang.String" value="TSourceNX"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[750, 0]"/>
     </Property>
