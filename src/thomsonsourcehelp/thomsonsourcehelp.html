@@ -90,11 +90,12 @@ version: 1.5
 	 -> <em>Load parameters</em>) them from a file.</p>
 	 
 	<h2>Calculation menu</h2>
-	<p>The <em>Calculation</em> menu provides access to the three calculations boxes: for the spectral brilliance of the X-ray radiation in the linear and non-linear cases, 
+	<p>The <em>Calculation</em> menu provides access to the five calculations boxes: for the spectral brilliance of the unpolarized 
+        X-ray radiation in the linear and non-linear cases, 
 	exact and approximate geometric factor (or exact and approximate full photon flux) and radiation polarization parameters (the three 
         Stocks parameters and degree of polarization) for the linear and non-linear cases. These quantities are calculated by pressing <em>Calculate</em> button and can be plotted 
         as a function of a number of parameters, which can be chosen from a drop-down box. The desirable parameter range can be entered using 
-        two text fields. Other Thompson source parameters are taken from the main window of the program. The results of calculation can be saved
+        two text fields. Other Thompson source parameters are taken from the main window of the program. The results of calculations can be saved
         as a text file using <em>Save</em> button.</p>
 	
 	<p>The brilliance calculation and polarization boxes also allow one to choose whether the transversal velocity spread of the electrons is
@@ -110,10 +111,11 @@ version: 1.5
 	
 	<h2>Option menu</h2>
 	<p>Option menu provides access to additional graph parameters via <em>Options</em> -> <em>Laser polarization...</em> (Stocks 
-            parameters for the laser radiation), <em>Options</em> -> <em>Graph parameters...</em> as well as to the numerical integration 
-            precision, the shift factor used in the angular integration of polarization calculations, the number of used threads and the number of points in Monte-Carlo calculation of the geometric factor via 
-            <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> specifies whether the transversal
-            velocity spread is taken into account in the main window calculations as well while generating a set of rays for Shadow.</p>
+            parameters of the incoming laser radiation), <em>Options</em> -> <em>Graph parameters...</em> and to the numerical integration 
+            precision, the shift factor used in the angular integration of brilliance and polarization calculations, the number of used threads and 
+            the number of points in Monte-Carlo calculation of the geometric factor via 
+            <em>Options</em> -> <em>Numerical parameters</em>. <em>Options</em> -> <em>Velocity spread</em> checkbox specifies whether the transversal
+            velocity spread is taken into account in the main window calculations as well as while generating a set of rays for Shadow.</p>
     </div>
   </body>
 </html>
