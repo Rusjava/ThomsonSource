@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.1
+ * @version 1.11
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -93,8 +93,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
         this.rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
-        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
+        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
         this.gfMonteCarloEmittanceNumberBox = getIntegerFormattedTextField(30000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
@@ -104,12 +104,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         this.yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         this.xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        this.rayMinEnergyBox = getDoubleFormattedTextField(25.0, 0.0, 100.0, false);
-        this.rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
+        this.rayMinEnergyBox = getDoubleFormattedTextField(42.0, 0.0, 10000.0, false);
+        this.rayEnergyRangeBox = getDoubleFormattedTextField(6.0, 0.0, 1000.0, false);
         this.threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
         this.ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.orderofmagnitude=10;
+        this.normfactor=Math.pow(10,-15-orderofmagnitude);
+        
         /**
          * An auxiliary method giving the flux density in a given direction
          *
@@ -2131,9 +2134,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     int nc = chartParam.getData().length;
                     for (int i = 0; i < chartParam.getSize(); i++) {
                         fm = new Formatter();
-                        fm.format("%f", i * chartParam.getStep() + chartParam.getOffset());
+                        fm.format("%10.3f", i * chartParam.getStep() + chartParam.getOffset());
                         for (double[] data : chartParam.getData()) {
-                            fm.format(" %f", data[i]);
+                            fm.format(" %10.3f", data[i]);
                         }
                         pw.println(fm);
                     }
@@ -2276,14 +2279,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /**
      * Main program parameters
      */
-    private int xsize, ysize, sliderposition = 50;
     /* The size of the graph in x or y direction */
+    private int xsize, ysize, sliderposition = 50;
 
+     /* Step in x or y direction */
     private double xstep, ystep, estep, hoffset = 0;
-    /* Step in x or y direction */
 
-    private int numberOfRays = 1000;
     /* Number of rays exported for Shadow */
+    private int numberOfRays = 1000;
+    
+    /* The order of magnitude in brillinace graphs */
+    private int orderofmagnitude;
+    private double normfactor;
 
     private final ChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
@@ -2459,13 +2466,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("##.#######")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-15)
-                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                            + (new DecimalFormat("##.#######")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-12)
+                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
                             + (new DecimalFormat("##.#######"))
                                     .format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-15)
-                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                                            ysize * ystep) * 1e-3 / 2) * 1e-12)
+                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
@@ -2717,7 +2724,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 3:
@@ -2731,7 +2738,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 4:
@@ -2745,7 +2752,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 5:
@@ -2758,7 +2765,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 6:
@@ -2771,7 +2778,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 7:
@@ -2784,7 +2791,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 8:
@@ -2799,7 +2806,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 9:
@@ -2812,7 +2819,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 10:
@@ -2823,7 +2830,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                     case 11:
@@ -2834,7 +2841,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * normfactor;
                         });
                         break;
                 }
@@ -2852,7 +2859,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
                 }
                 brilForm.updateGraph(BrillianceCalcGraph,
-                        "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u00B3");
+                        "mm\u207B\u00B2\u00B7mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070");
                 BrillianceCalcStart.setText("Calculate");
                 BrillianceCalcSave.setEnabled(true);
             }
@@ -3266,7 +3273,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                     gfForm.tsourceclone.calculateTotalFlux();
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getApproxGeometricFactor()
-                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-15;
+                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getTotalFlux() * 1e-12;
                 });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;
@@ -3287,7 +3294,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     gfForm.getKeys()[0] = "Geometric factor";
                     gfForm.getKeys()[1] = "Approximate geometric factor";
                 } else {
-                    gfForm.updateGraph(GFCalcGraph, "ph/s\u00B710\u00B9\u2075");
+                    gfForm.updateGraph(GFCalcGraph, "ph/s\u00B710\u00B9\u00B2");
                     gfForm.getKeys()[0] = "Full flux";
                     gfForm.getKeys()[1] = "Approximate full flux";
                 }
