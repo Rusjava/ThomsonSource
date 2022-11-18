@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.31
+ * @version 3.32
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -86,8 +86,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.oldStrings = new HashMap<>();
         this.rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
         this.orderNumberBox = getIntegerFormattedTextField(1, 1, 10);
-        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
-        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.3, 0.0, 100.0, false);
+        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
+        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-3, 1e-10, 1e-1, true);
         this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
@@ -96,15 +96,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         this.yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         this.xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        this.rayMinEnergyBox = getDoubleFormattedTextField(36.0, 0.0, 100.0, false);
-        this.rayEnergyRangeBox = getDoubleFormattedTextField(10.0, 0.0, 100.0, false);
+        this.rayMinEnergyBox = getDoubleFormattedTextField(42.0, 0.0, 10000.0, false);
+        this.rayEnergyRangeBox = getDoubleFormattedTextField(6.0, 0.0, 1000.0, false);
         this.threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
         this.ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
         this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.parametersIniFileName = "my.ini";
         this.orderofmagnitude = 10;
-        this.normcoef = Math.pow(10, -15 - orderofmagnitude);
+        this.normfactor = Math.pow(10, -15 - orderofmagnitude);
         
         /**
          * Defining polarization transformation functions
@@ -2846,7 +2846,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     /* The order of magnitude desplayed in linear graphs */
     private int orderofmagnitude;
-    private double normcoef;
+    private double normfactor;
 
     private String parametersIniFileName;
 
@@ -3029,13 +3029,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     jPanel_xenergy.repaint();
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("##.#######")).format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-15)
-                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                            + (new DecimalFormat("##.#######")).format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-12)
+                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
                             + (new DecimalFormat("##.#######"))
                                     .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-15)
-                            + "\u00B710\u00B9\u2075\u00B7ph\u00B7s\u207B\u00B9");
+                                            ysize * ystep) * 1e-3 / 2) * 1e-12)
+                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
@@ -3293,7 +3293,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3310,7 +3310,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3330,7 +3330,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3349,7 +3349,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3368,7 +3368,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3386,7 +3386,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3404,7 +3404,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3422,7 +3422,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3442,7 +3442,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3460,7 +3460,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3476,7 +3476,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3492,7 +3492,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -3709,8 +3709,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 jRayStopButton.setEnabled(false);
-                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux() * 1e-12
-                        + " 10\u00B9\u00B2 s\u207B\u00B9");
+                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux() * 1e-8
+                        + " 10\u2078 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException | CancellationException e) {
@@ -4463,7 +4463,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4480,7 +4480,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4500,7 +4500,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4519,7 +4519,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4538,7 +4538,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4556,7 +4556,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4574,7 +4574,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4592,7 +4592,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4612,7 +4612,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4630,7 +4630,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4646,7 +4646,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4662,7 +4662,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             try {
                                 return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                        e) * normcoef;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
