@@ -557,6 +557,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
+
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
         //Integrating over a line to calculate spectral brilliance
         try {
             //If interrupted, throw InterruptedException
@@ -564,9 +568,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
             }
             double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength())
-                    - 2 * INT_RANGE * eb.getLength() * SHIFT * getShiftfactor();
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth)
+                    - 2 * semiwidth * SHIFT * getShiftfactor();
             return u;
         } catch (TooManyEvaluationsException ex) {
             return 0;
@@ -592,14 +595,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
+
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException("directionFrequencyBrillianceSpread!");
             }
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - INT_RANGE * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + INT_RANGE * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -628,7 +635,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func;
-        double semiwidth;
+
         //Creating an anonymous class for the integrand
         func = new UnivariateFunction() {
             @Override
@@ -644,8 +651,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
-        semiwidth = INT_RANGE * eb.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(eb.getLength() * lp.getDirection().get(1), 2) + 4 * lp.getWidth2(0) * Math.pow(lp.getDirection().get(2), 2));
+
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -663,7 +672,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func;
-        double semiwidth;
+
         //Creating an anonymous class for the integrand
         func = new UnivariateFunction() {
             @Override
@@ -679,8 +688,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
-        semiwidth = INT_RANGE * eb.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(eb.getLength() * lp.getDirection().get(1), 2) + 4 * lp.getWidth2(0) * Math.pow(lp.getDirection().get(2), 2));
+
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -722,7 +733,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
-        //Integrating
+        //Integrating by time
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -731,7 +742,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
                     * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax)
                     * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
-           
+
             //Testing if NaN, then return zero
             return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
@@ -777,7 +788,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
-        //Integrating
+        //Integrating by time
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -827,7 +838,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
-        //Integrating
+        //Integrating by time
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
@@ -882,10 +893,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-       
+
         double zmin = -semilength + shft;
         double zmax = semilength + shft;
-        //Integrating
+        //Integrating by time
         try {
             return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
                     zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);

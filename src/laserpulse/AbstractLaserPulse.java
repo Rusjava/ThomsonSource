@@ -494,7 +494,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         //Defining new coordinates
         double x = r.get(0);
         double y = -sn * r.get(2) + cs * r.get(1);
-        double z = cs * r.get(2) + sn * r.get(1);
-        return new BasicVector(new double[]{x, y, -z});
+        double z = -cs * r.get(2) - sn * r.get(1);
+        return new BasicVector(new double[]{x, y, z});
     }
 }
