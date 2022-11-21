@@ -77,12 +77,12 @@ public class ThompsonSource implements Cloneable {
     /**
      * Angle range for rays exported for Shadow in the X-direction
      */
-    private double rayXAnglerange = 0.0003;
+    private double rayXAnglerange = 0.0005;
 
     /**
      * Angle range for rays exported for Shadow in the Y-direction
      */
-    private double rayYAnglerange = 0.0003;
+    private double rayYAnglerange = 0.0005;
 
     /**
      * Min ray energy

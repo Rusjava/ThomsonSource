@@ -93,8 +93,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.estep = 2000 / xsize;
         this.oldStrings = new HashMap<>();
         this.rayNumberBox = getIntegerFormattedTextField(1000, 1, 1000000);
-        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
-        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
+        this.rayXAngleRangeBox = getDoubleFormattedTextField(0.5, 0.0, 100.0, false);
+        this.rayYAngleRangeBox = getDoubleFormattedTextField(0.5, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
         this.gfMonteCarloEmittanceNumberBox = getIntegerFormattedTextField(30000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
@@ -3108,7 +3108,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 jRayStopButton.setEnabled(false);
                 int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
                 jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
-                        / cn * 1e-12 + " 10\u00B9\u00B2 s\u207B\u00B9");
+                        / cn * 1e-10 + " 10\u00B9\u2070 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException | CancellationException e) {
