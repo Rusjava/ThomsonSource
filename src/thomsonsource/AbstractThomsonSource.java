@@ -755,7 +755,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating spectral brilliance in a given direction taking into
      * account electron transversal pulse spread nd with polarization
      *
-     * @param r0 spatial position for brightness
+     * @param r0 spatial position for brilliance calculations
      * @param n direction
      * @param v normalized electron velocity
      * @param e X-ray energy
@@ -764,6 +764,38 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     abstract public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException;
+    
+    /**
+     * An auxiliary function calculating the brilliance integral along the given direction
+     * 
+     * @param r0 spatial position for brightness
+     * @param n direction
+     * @param func the function to integrate over
+     * @return
+     * @throws InterruptedException 
+     */
+    protected double directionBrillianceBasic(Vector r0, Vector n, UnivariateFunction func) throws InterruptedException {
+        //return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
+        //Integrating over a line to calculate spectral brilliance
+        try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
+            }
+            double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth)
+                    - 2 * semiwidth * SHIFT * getShiftfactor();
+            return u;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+    }
 
     /**
      * Returning a random ray

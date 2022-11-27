@@ -540,9 +540,6 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
-        //return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -558,28 +555,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
 
-        //Semiwidth of the integration interval
-        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        //Integrating over a line to calculate spectral brilliance
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
-            }
-            double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth)
-                    - 2 * semiwidth * SHIFT * getShiftfactor();
-            return u;
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return directionBrillianceBasic(r0,n,func);
     }
 
     @Override
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
@@ -596,20 +576,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
 
-        //Semiwidth of the integration interval
-        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrillianceSpread!");
-            }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return directionBrillianceBasic(r0,n,func);
     }
 
     @Override
@@ -632,12 +599,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateFunction func;
-
         //Creating an anonymous class for the integrand
-        func = new UnivariateFunction() {
+        UnivariateFunction func = new UnivariateFunction() {
             @Override
             public double value(double x) {
                 if (n.get(0) + n.get(1) + n.get(2) == 0) {
@@ -652,29 +615,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
 
-        //Semiwidth of the integration interval
-        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
-            }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return directionBrillianceBasic(r0,n,func);
     }
 
     @Override
     public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        UnivariateFunction func;
-
         //Creating an anonymous class for the integrand
-        func = new UnivariateFunction() {
+        UnivariateFunction func = new UnivariateFunction() {
             @Override
             public double value(double x) {
                 if (n.get(0) + n.get(1) + n.get(2) == 0) {
@@ -689,19 +636,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         };
 
-        //Semiwidth of the integration interval
-        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
-            }
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return directionBrillianceBasic(r0,n,func);
     }
 
     @Override
