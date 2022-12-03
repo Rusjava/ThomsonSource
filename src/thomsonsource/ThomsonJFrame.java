@@ -107,7 +107,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.rayMinEnergyBox = getDoubleFormattedTextField(42.0, 0.0, 10000.0, false);
         this.rayEnergyRangeBox = getDoubleFormattedTextField(6.0, 0.0, 1000.0, false);
         this.threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
-        this.ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
+        this.ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
         this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.orderofmagnitude = 10;

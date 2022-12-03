@@ -359,7 +359,7 @@ public class ThompsonSource implements Cloneable {
 
         // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
-        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
@@ -493,7 +493,7 @@ public class ThompsonSource implements Cloneable {
 
         // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
-        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
@@ -567,7 +567,7 @@ public class ThompsonSource implements Cloneable {
 
         // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
-        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }

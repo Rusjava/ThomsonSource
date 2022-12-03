@@ -280,7 +280,7 @@ public class LaserPulse implements Cloneable {
     /**
      * Stocks parameters
      */
-    private double ksi1 = 0;
+    private double ksi1 = 1;
     private double ksi2 = 0;
     private double ksi3 = 0;
 
