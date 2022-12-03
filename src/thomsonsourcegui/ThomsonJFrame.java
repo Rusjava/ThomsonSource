@@ -105,23 +105,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.parametersIniFileName = "my.ini";
         this.orderofmagnitude = 10;
         this.normfactor = Math.pow(10, -15 - orderofmagnitude);
-        
+
         /**
          * Defining polarization transformation functions
          */
         fn = new ArrayList<>();
         fn.add(x -> {
-            return x[1] / x[0];
+            return (x[0] == 0) ? 0 : x[1] / x[0];
         });
         fn.add(x -> {
-            return x[2] / x[0];
+            return (x[0] == 0) ? 0 : x[2] / x[0];
         });
         fn.add(x -> {
-            return x[3] / x[0];
+            return (x[0] == 0) ? 0 : x[3] / x[0];
         });
         fn.add(x -> {
-            return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
-                    + (x[3] / x[0]) * (x[3] / x[0]));
+            return (x[0] == 0) ? 0 : Math.sqrt(x[1] * x[1] + x[2] * x[2] + x[3] * x[3]) / x[0];
         });
         /**
          * An auxiliary method giving the flux density in a given direction
@@ -4280,7 +4279,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         polForm.tsourceclone.calculateLinearTotalFlux();
-                        //Calculating and returning the intensity multiplied Stocks parameter
+                        //Calculating and returning an intensity multiplied Stocks parameter
                         try {
                             return polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}),
                                     new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
