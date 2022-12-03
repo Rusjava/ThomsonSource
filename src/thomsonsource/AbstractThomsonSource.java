@@ -287,7 +287,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param r spatial position
      * @param e X-ray energy
@@ -302,7 +302,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating the Stocks parameters density in a given direction
      * for a given X-ray photon energy
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param r spatial position
      * @param e X-ray energy
@@ -317,7 +317,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating a Stocks parameter density in a given direction for
      * a given X-ray photon energy
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param r spatial position
      * @param e X-ray energy
@@ -334,7 +334,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * X-ray photon energy without taking into account electron transversal
      * pulse spread
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param r spatial position in the laser coordinates
      * @param e X-ray energy
@@ -347,7 +347,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * for a given X-ray photon energy without taking into account electron
      * transversal pulse spread
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param r spatial position in the laser coordinates
      * @param e X-ray energy
@@ -360,9 +360,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * a given X-ray photon energy without taking into account electron
      * transversal pulse spread
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
-     * @param r spatial position  in the laser coordinates
+     * @param r spatial position in the laser coordinates
      * @param e X-ray energy
      * @param index polarization matrix element
      * @return
@@ -371,9 +371,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
     /**
      * A method calculating the flux density in a given direction for a given
-     * X-ray photon energy taking into account the electron transversal pulse spread
+     * X-ray photon energy taking into account the electron transversal pulse
+     * spread
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v0 normalized electron velocity
      * @param r spatial position
      * @param e X-ray energy
@@ -399,10 +400,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
     /**
      * A method calculating the full polarization tensor density in a given
-     * direction for a given X-ray photon energy taking into account the electron
-     * transversal pulse spread
+     * direction for a given X-ray photon energy taking into account the
+     * electron transversal pulse spread
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v0 normalized electron velocity
      * @param r spatial position
      * @param e X-ray energy
@@ -421,13 +422,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 array[i] = 0;
             }
         }
-        //If the intensity is NaN, zero or less than zero then set it as unity
-        if (new Double(array[0]).isNaN() || array[0] <= 0) {
-            array[0] = 1;
-        }
-        //If a Stocks intensity is NaN then set it as zero
+
+        //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN()) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
         }
@@ -436,10 +435,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
     /**
      * A multi-threaded method calculating a Stocks parameter density in a given
-     * direction for a given X-ray photon energy taking into account the electron
-     * transversal pulse spread
+     * direction for a given X-ray photon energy taking into account the
+     * electron transversal pulse spread
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v0 normalized electron velocity
      * @param r spatial position
      * @param e X-ray energy
@@ -465,7 +464,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         } catch (TooManyEvaluationsException ex) {
             res = 0;
         }
-        return res;
+        return new Double(res).isNaN() ? 0 : res;
     }
 
     /**
@@ -473,7 +472,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * X-ray photon energy for a given volume element
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -488,7 +487,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * for a given X-ray photon energy for a given volume element
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -503,7 +502,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * a given X-ray photon energy for a given volume element
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @param index polarization matrix element
@@ -516,10 +515,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
     /**
      * A method calculating the flux density in a given direction for a given
-     * X-ray photon energy for a given volume element 
+     * X-ray photon energy for a given volume element
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -533,7 +532,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * into account the electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -547,7 +546,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * into account the electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @param index polarization matrix element
@@ -558,11 +557,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
     /**
      * A method calculating the flux density in a given direction for a given
-     * X-ray photon energy for a given volume element taking into account
-     * the electron transversal pulse spread
+     * X-ray photon energy for a given volume element taking into account the
+     * electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -576,7 +575,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * account the electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -590,7 +589,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * account the electron transversal pulse spread
      *
      * @param r spatial position
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @param index polarization matrix element
@@ -612,7 +611,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         double u;
         double len = Math.sqrt(lp.getLength() * lp.getLength() + eb.getLength() * eb.getLength());
-        Vector r1=lp.getTransformedCoordinates(r);
+        Vector r1 = lp.getTransformedCoordinates(r);
         double K = Math.pow((r.get(2) - r1.get(2) - eb.getShift().get(2) + lp.getDelay()) / len, 2);
         u = 2.0 * Math.sqrt(Math.PI) * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
                 * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) / len * Math.exp(-K) * eb.tSpatialDistribution(r)
@@ -623,7 +622,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * A method giving the flux density in a given direction
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @return
      */
@@ -632,7 +631,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * A method calculating X-ray energy in a given direction
      *
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized (to unity) electron velocity
      * @return
      */
@@ -642,7 +641,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * A method calculating spectral brilliance in a given direction
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized (to unity) electron velocity
      * @param e X-ray energy
      * @return
@@ -657,7 +656,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -672,7 +671,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @param index polarization matrix element
@@ -688,7 +687,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * taking into account electron transversal pulse spread
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -702,7 +701,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -716,7 +715,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @param index polarization matrix element
@@ -730,7 +729,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * account electron transversal pulse spread
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -743,7 +742,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * account electron transversal pulse spread nd with polarization
      *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @return
@@ -756,7 +755,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * account electron transversal pulse spread nd with polarization
      *
      * @param r0 spatial position for brilliance calculations
-     * @param n direction
+     * @param n viewing direction
      * @param v normalized electron velocity
      * @param e X-ray energy
      * @param index polarization matrix element
@@ -764,34 +763,76 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     abstract public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException;
-    
+
     /**
-     * An auxiliary function calculating the brilliance integral along the given direction
-     * 
+     * An auxiliary function calculating the brilliance integral along the given
+     * direction
+     *
      * @param r0 spatial position for brightness
-     * @param n direction
+     * @param n viewing direction
      * @param func the function to integrate over
+     * @param index the order number
      * @return
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
-    protected double directionBrillianceBasic(Vector r0, Vector n, UnivariateFunction func) throws InterruptedException {
+    protected double directionIntegralBasic(Vector r0, Vector n, UnivariateFunction func, int index) throws InterruptedException {
         //return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
 
         //Semiwidth of the integration interval
         double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2 / Math.sqrt(index);
         //Integrating over a line to calculate spectral brilliance
         try {
             //If interrupted, throw InterruptedException
             if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
+                throw new InterruptedException("directionIntegralBasic!");
             }
             double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth)
                     - 2 * semiwidth * SHIFT * getShiftfactor();
             return u;
+        } catch (TooManyEvaluationsException ex) {
+            return 0;
+        }
+    }
+
+    /**
+     * Calculates the integral over time for the laser-electron interaction
+     *
+     * @param r spatial position
+     * @param n viewing direction
+     * @param func the function to integrate
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    protected double timeIntegralBasic(Vector r, Vector n, UnivariateFunction func) throws InterruptedException {
+        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        double tmp;
+        //Transforming coordinates between laser and electron beam frames
+        Vector rph = lp.getTransformedCoordinates(r);
+
+        //Defining the upper nad lower integration limits
+        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (r.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+
+        double zmin = -semilength + shft;
+        double zmax = semilength + shft;
+        //Integrating by time
+        try {
+            //If interrupted, throw InterruptedException
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("timeIntegralBasic!");
+            }
+            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
+                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax)
+                    * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(r);
+
+            //Testing if NaN, then return zero
+            return new Double(tmp).isNaN() ? 0 : tmp;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -963,8 +1004,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Returning the matrix of 3D rotation based on two unity vectors
      *
-     * @param n
-     * @param n0
+     * @param n vector 1
+     * @param n0 vector 2
      * @return transformation matrix
      */
     protected Matrix get3DTransform(Vector n, Vector n0) {
@@ -980,8 +1021,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Returning the matrix of 2D rotation based on two unity vectors
      *
-     * @param n
-     * @param n0
+     * @param n vector 1
+     * @param n0 vector 2
      * @return transformation matrix
      */
     protected Matrix get2DTransform(Vector n, Vector n0) {

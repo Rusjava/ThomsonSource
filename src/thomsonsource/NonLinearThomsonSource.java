@@ -29,6 +29,7 @@ import org.la4j.Matrix;
 import org.la4j.Vectors;
 import org.la4j.vector.dense.BasicVector;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
+import static thomsonsource.AbstractThomsonSource.SHIFT;
 
 /**
  * The main class containing all physics of LEXG in non-linear case
@@ -113,8 +114,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         } else {
             //Multiplying polarization matrix by gamma distribution
             res = multiplyPolarizationParameters(directionPolarizationBasic(n, v, e, gamma, intensity), factor);
-            //If intensity is zero returning unity
-            res[0] = (res[0] == 0) ? 1 : res[0];
+            //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+            // If a Stocks intensity is NaN then set it to zero
+            for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+                if (new Double(res[i]).isNaN() || new Double(res[0]).isNaN() || res[0] <= 0) {
+                    res[i] = 0;
+                }
+            }
 
             return res;
         }
@@ -135,9 +141,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         } else {
             //Multiplying polarization matrix by gamma distribution and returning the result
             res = directionPolarizationBasic(n, v, e, gamma, intensity, index) * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
-            //If intensity is zero returning unity
-            if (res == 0 && index == 0) {
-                res = 1;
+            //If intensity is not positive returning unity
+            if (res <= 0 && index == 0) {
+                res = 0;
             }
             return res;
         }
@@ -244,12 +250,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             result = directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
         } else {
             //If not fully polarized then averaging over all possible surpepositions of two independant polarizations
-            result = (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+            result = coef3 * (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                     RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT,
                     RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT)).integrate(MAXIMAL_NUMBER_OF_EVALUATIONS,
                     new UnivariatePolarizationIntegration(coef1, coef2, intratio, n), -Math.PI, Math.PI) / 2 / Math.PI;
         }
-        return coef3 * result;
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     /**
@@ -304,6 +310,14 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             }
         }
         result = multiplyPolarizationParameters(result, coef3);
+
+        //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
+        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] <= 0) {
+                result[i] = 0;
+            }
+        }
         return result;
     }
 
@@ -358,7 +372,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     new UnivariatePolarizationIntegrationPolarization(coef1, coef2,
                             intratio, gamma, n, v, index), -Math.PI, Math.PI) / 2 / Math.PI;
         }
-        return result;
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     /**
@@ -541,42 +555,38 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                if (n.get(0) + n.get(1) + n.get(2) == 0) {
-                    throw new LocalException(x);
-                }
-                try {
-                    return directionFrequencyVolumeFluxNoSpread(r0.add(n.multiply(x)), n, v, e) + SHIFT * getShiftfactor();
-                } catch (InterruptedException ex) {
-                    return 0;
-                }
+        UnivariateFunction func = (double x) -> {
+            if (n.get(0) + n.get(1) + n.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            try {
+                return directionFrequencyVolumeFluxNoSpread(r0.add(n.multiply(x)), n, v, e) + SHIFT * getShiftfactor();
+            } catch (InterruptedException ex) {
+                return 0;
             }
         };
 
-        return directionBrillianceBasic(r0,n,func);
+        return directionIntegralBasic(r0, n, func, ordernumber);
     }
 
     @Override
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                if (n.get(0) + n.get(1) + n.get(2) == 0) {
-                    throw new LocalException(x);
-                }
-                try {
-                    return directionFrequencyVolumeFluxSpread(r0.add(n.multiply(x)), n, v, e);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return 0;
-                }
+        UnivariateFunction func = (double x) -> {
+            if (n.get(0) + n.get(1) + n.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            try {
+                return directionFrequencyVolumeFluxSpread(r0.add(n.multiply(x)), n, v, e) + SHIFT * getShiftfactor();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return 0;
             }
         };
 
-        return directionBrillianceBasic(r0,n,func);
+        //Checking if NaN and setting to zero
+        double result = directionIntegralBasic(r0, n, func, ordernumber);
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     @Override
@@ -600,51 +610,45 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                if (n.get(0) + n.get(1) + n.get(2) == 0) {
-                    throw new LocalException(x);
-                }
-                try {
-                    return directionFrequencyVolumePolarizationNoSpread(r0.add(n.multiply(x)), n, v, e, index);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return 0;
-                }
+        UnivariateFunction func = (double x) -> {
+            if (n.get(0) + n.get(1) + n.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            try {
+                return directionFrequencyVolumePolarizationNoSpread(r0.add(n.multiply(x)), n, v, e, index) + SHIFT * getShiftfactor();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return 0;
             }
         };
 
-        return directionBrillianceBasic(r0,n,func);
+        //Checking if NaN and setting to zero
+        double result = directionIntegralBasic(r0, n, func, ordernumber);
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     @Override
     public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                if (n.get(0) + n.get(1) + n.get(2) == 0) {
-                    throw new LocalException(x);
-                }
-                try {
-                    return directionFrequencyVolumePolarizationSpread(r0.add(n.multiply(x)), n, v, e, index);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return 0;
-                }
+        UnivariateFunction func = (double x) -> {
+            if (n.get(0) + n.get(1) + n.get(2) == 0) {
+                throw new LocalException(x);
+            }
+            try {
+                return directionFrequencyVolumePolarizationSpread(r0.add(n.multiply(x)), n, v, e, index) + SHIFT * getShiftfactor();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return 0;
             }
         };
 
-        return directionBrillianceBasic(r0,n,func);
+        //Checking if NaN and setting to zero
+        double result = directionIntegralBasic(r0, n, func, ordernumber);
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     @Override
     public double directionFrequencyVolumeFluxNoSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        Vector re = r.copy();
-        double tmp;
         //Transforming coordinates between laser and electron beam frames
         Vector rph = lp.getTransformedCoordinates(r);
 
@@ -653,7 +657,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                Vector ree = re.copy();
+                Vector ree = r.copy();
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
@@ -661,28 +665,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 return new Double(tmp).isNaN() ? 0 : tmp;
             }
         };
-        //Defining the upper nad lower integration limits
-        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
-                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-
-        double zmin = -semilength + shft;
-        double zmax = semilength + shft;
         //Integrating by time
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyVolumeFluxNoSpread!");
-            }
-            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin, zmax)
-                    * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
-
-            //Testing if NaN, then return zero
-            return new Double(tmp).isNaN() ? 0 : tmp;
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -696,10 +680,6 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyVolumePolarizationNoSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        Vector re = r.copy();
-        double tmp;
         //Transforming coordinates between laser and electron beam frames
         Vector rph = lp.getTransformedCoordinates(r);
 
@@ -708,7 +688,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                Vector ree = re.copy();
+                Vector ree = r.copy();
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
@@ -716,35 +696,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 return new Double(tmp).isNaN() ? 0 : tmp;
             }
         };
-        //Defining the upper nad lower integration limits
-        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
-                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-
-        double zmin = -semilength + shft;
-        double zmax = semilength + shft;
         //Integrating by time
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyVolumePolarizationNoSpread!");
-            }
-            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
-                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
-            //Testing if NaN, then return zero
-            return new Double(tmp).isNaN() ? 0 : tmp;
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
     public double directionFrequencyVolumeFluxSpread(Vector r, Vector n, Vector v, double e) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        Vector re = r.copy();
-        double tmp;
         //Transforming coordinates between laser and electron beam frames
         Vector rph = lp.getTransformedCoordinates(r);
 
@@ -753,7 +710,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                Vector ree = re.copy();
+                Vector ree = r.copy();
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
@@ -766,27 +723,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
-        //Defining the upper nad lower integration limits
-        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
-                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-
-        double zmin = -semilength + shft;
-        double zmax = semilength + shft;
         //Integrating by time
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("Interruption in directionFrequencyFluxSpread!");
-            }
-            tmp = 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0))
-                    * (lp.getWidth2(0.0) + eb.getyWidth2(0.0))) * integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
-                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
-            //Testing if NaN, then return zero
-            return new Double(tmp).isNaN() ? 0 : tmp;
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -800,18 +738,15 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyVolumePolarizationSpread(Vector r, Vector n, Vector v, double e, int index) throws InterruptedException {
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        Vector re = r.copy();
         //Transforming coordinates between laser and electron beam frames
-        Matrix T = get3DTransform(v, lp.getDirection().multiply(-1));
-        Vector rph = T.multiply(r);
+        Vector rph = lp.getTransformedCoordinates(r);
+
         //Creating an anonymous class for the integrand
         UnivariateFunction func = new UnivariateFunction() {
             @Override
             public double value(double x) {
                 //Coordinate transformation between laser and electron beams frames
-                Vector ree = re.copy();
+                Vector ree = r.copy();
                 ree.set(2, ree.get(2) - x);
                 Vector rphh = rph.copy();
                 rphh.set(2, rphh.get(2) - x);
@@ -824,20 +759,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
-        //Defining the upper nad lower integration limits
-        double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-        double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (re.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
-                / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
-
-        double zmin = -semilength + shft;
-        double zmax = semilength + shft;
         //Integrating by time
-        try {
-            return integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func, zmin,
-                    zmax) * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(re);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return timeIntegralBasic(r, n, func);
     }
 
     /**
