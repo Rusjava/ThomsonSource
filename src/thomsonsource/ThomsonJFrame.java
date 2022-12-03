@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.11
+ * @version 1.12
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -110,9 +110,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ksi1Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
         this.ksi3Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
-        this.orderofmagnitude=10;
-        this.normfactor=Math.pow(10,-15-orderofmagnitude);
-        
+        this.orderofmagnitude = 10;
+        this.normfactor = Math.pow(10, -15 - orderofmagnitude);
+
         /**
          * An auxiliary method giving the flux density in a given direction
          *
@@ -2282,12 +2282,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     /* The size of the graph in x or y direction */
     private int xsize, ysize, sliderposition = 50;
 
-     /* Step in x or y direction */
+    /* Step in x or y direction */
     private double xstep, ystep, estep, hoffset = 0;
 
     /* Number of rays exported for Shadow */
     private int numberOfRays = 1000;
-    
+
     /* The order of magnitude in brillinace graphs */
     private int orderofmagnitude;
     private double normfactor;
@@ -2699,7 +2699,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * 1e-15 * normfactor;
                         });
                         break;
                     case 1:
@@ -2711,7 +2711,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             return brilForm.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0, 0, 0}),
                                     new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}),
-                                    e) * 1e-15 * 1e-13;
+                                    e) * 1e-15 * normfactor;
                         });
                         break;
                     case 2:
@@ -3600,21 +3600,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 double offset = polForm.minValueClone;
                 //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
-                //A list of auxiliary functions
+                
+                //A list of auxiliary functions calculating Stocks parameters
                 List<Function<double[], Double>> fn = new ArrayList<>();
                 fn.add(x -> {
-                    return x[1] / x[0];
+                    return (x[0] == 0) ? 0 : x[1] / x[0];
                 });
                 fn.add(x -> {
-                    return x[2] / x[0];
+                    return (x[0] == 0) ? 0 : x[2] / x[0];
                 });
                 fn.add(x -> {
-                    return x[3] / x[0];
+                    return (x[0] == 0) ? 0 : x[3] / x[0];
                 });
                 fn.add(x -> {
-                    return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
-                            + (x[3] / x[0]) * (x[3] / x[0]));
+                    return (x[0] == 0) ? 0 : Math.sqrt(x[1] * x[1] + x[2] * x[2] + x[3] * x[3]) / x[0];
                 });
+                
                 double[] rescash = new double[]{1, 0, 0, 0};
                 double[] xpcash = new double[]{-1};
                 for (int i = 0; i < ThompsonSource.NUMBER_OF_POL_PARAM; i++) {

@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.7
+ * @version 2.71
  */
 public class ThompsonSource implements Cloneable {
 
@@ -357,13 +357,10 @@ public class ThompsonSource implements Cloneable {
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
 
-        //If intensity is NaN or zero then set it as unity
-        if (new Double(array[0]).isNaN() || array[0] == 0) {
-            array[0] = 1;
-        }
-        //If a Stocks intensity is NaN then set it as zero
+        // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN()) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
         }
@@ -494,13 +491,10 @@ public class ThompsonSource implements Cloneable {
         }
         execs.shutdownNow();
 
-        //If intensity is NaN, zero or less than zero then set it as unity
-        if (new Double(array[0]).isNaN() || array[0] <= 0) {
-            array[0] = 1;
-        }
-        //If a Stocks intensity is NaN then set it as zero
+        // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN()) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
         }
@@ -556,7 +550,6 @@ public class ThompsonSource implements Cloneable {
                     sum.add(psum);
                     //Counting down the latch
                     lt.countDown();
-                    System.out.println(isIsMonteCarlo());
                 });
             }
             //Waiting for an interruption and shuting down threads if interrupted
@@ -572,13 +565,10 @@ public class ThompsonSource implements Cloneable {
         //Shutting down the execution services
         execs.shutdownNow();
 
-        //If intensity is NaN, zero or less than zero then set it as unity
-        if (new Double(array[0]).isNaN() || array[0] <= 0) {
-            array[0] = 1;
-        }
-        //If a Stocks intensity is NaN then set it as zero
+        // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN()) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
         }
@@ -935,11 +925,16 @@ public class ThompsonSource implements Cloneable {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
+        
         try {
             u = integrator.integrate(30000, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxNoSpread(n, v, e);
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
+            
+            return new Double(u).isNaN() ? 0 : u * directionFrequencyFluxNoSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -962,10 +957,15 @@ public class ThompsonSource implements Cloneable {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
+        
         try {
             mlt = integrator.integrate(30000, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
+            mlt = new Double(mlt).isNaN() ? 0 : mlt;
         } catch (TooManyEvaluationsException ex) {
             mlt = 0;
         }
@@ -990,11 +990,16 @@ public class ThompsonSource implements Cloneable {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
+        
         try {
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * (isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) : directionFrequencyFluxSpreadIntegral(n, v, e));
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
+            
+            return new Double(u).isNaN() ? 0 : u * (isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) : directionFrequencyFluxSpreadIntegral(n, v, e));
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -1017,10 +1022,15 @@ public class ThompsonSource implements Cloneable {
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateVolumeFlux func = new UnivariateVolumeFlux(r0, n);
+        //Semiwidth of the integration interval
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
+        
         try {
             mlt = integrator.integrate(30000, func,
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
+                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
+            mlt = new Double(mlt).isNaN() ? 0 : mlt;
         } catch (TooManyEvaluationsException ex) {
             mlt = 0;
         }
