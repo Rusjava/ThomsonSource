@@ -665,8 +665,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 return new Double(tmp).isNaN() ? 0 : tmp;
             }
         };
+        
         //Integrating by time
-        return timeIntegralBasic(r, n, func);
+        double result = timeIntegralBasic(r, n, func);
+        //Checking if NaN and setting to zero
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     @Override
@@ -696,8 +699,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 return new Double(tmp).isNaN() ? 0 : tmp;
             }
         };
+        
         //Integrating by time
-        return timeIntegralBasic(r, n, func);
+        double result = timeIntegralBasic(r, n, func);
+        //Checking if NaN and setting to zero
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     @Override
@@ -723,8 +729,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
+        
         //Integrating by time
-        return timeIntegralBasic(r, n, func);
+        double result = timeIntegralBasic(r, n, func);
+        //Checking if NaN and setting to zero
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     @Override
@@ -759,8 +768,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 }
             }
         };
+        
         //Integrating by time
-        return timeIntegralBasic(r, n, func);
+        double result = timeIntegralBasic(r, n, func);
+        //Checking if NaN and setting to zero
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     /**

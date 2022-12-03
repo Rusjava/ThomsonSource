@@ -87,16 +87,15 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
-        //If intensity is NaN or zero then set it as unity
-        if (new Double(array[0]).isNaN() || array[0] == 0) {
-            array[0] = 1;
-        }
-        //If a Stocks intensity is NaN then set it as zero
+        
+        //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN()) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
         }
+        
         return array;
     }
 
@@ -138,6 +137,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
         mlt=directionIntegralBasic(r0, n, func, 1);
+        mlt= new Double(mlt).isNaN() ? 0 : mlt;
         
         //Multiplying the the integral in the direction over the volume distribution by the direction polarization
         for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
@@ -154,6 +154,7 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
         mlt=directionIntegralBasic(r0, n, func, 1);
+        mlt= new Double(mlt).isNaN() ? 0 : mlt;
         
         //Multiplying the the integral in the direction over the volume distribution by the direction polarization
         for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
