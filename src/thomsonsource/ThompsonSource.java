@@ -216,10 +216,11 @@ public class ThompsonSource implements Cloneable {
     public final double calculateAngleTotalFlux(double maxAngle) {
         double gamma2 = eb.getGamma() * eb.getGamma();
         double v = Math.sqrt(1 - 1 / gamma2);
+        double v2 = v * v;
         double cs = Math.cos(maxAngle);
         return 3.0 / 4 / gamma2 * ((1 - cs) / (1 - v * cs) / (1 - v)
-                * (5.0 / 6 + 1.0 / 6 / v / v - 1.0 / 6 / gamma2 / v / v * (1 - v * v * cs) / (1 - v) / (1 - v * cs))
-                + 1.0 / 6 / gamma2 / v * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
+                * (5.0 / 6 + 1.0 / 6 / v2 - 1.0 / 6 / gamma2 / v2 * (1 - v2 * cs) / (1 - v) / (1 - v * cs))
+                + 1.0 / 6 / gamma2 / v2 * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
                 * getTotalFlux() * getGeometricFactor();
     }
 
@@ -357,7 +358,7 @@ public class ThompsonSource implements Cloneable {
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
 
-        // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If the intensity is NaN, zero or less than zero then set all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
@@ -928,12 +929,12 @@ public class ThompsonSource implements Cloneable {
         //Semiwidth of the integration interval
         double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
                 / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        
+
         try {
             u = integrator.integrate(30000, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
-            
+
             return new Double(u).isNaN() ? 0 : u * directionFrequencyFluxNoSpread(n, v, e);
         } catch (TooManyEvaluationsException ex) {
             return 0;
@@ -960,7 +961,7 @@ public class ThompsonSource implements Cloneable {
         //Semiwidth of the integration interval
         double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
                 / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        
+
         try {
             mlt = integrator.integrate(30000, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
@@ -993,12 +994,12 @@ public class ThompsonSource implements Cloneable {
         //Semiwidth of the integration interval
         double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
                 / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        
+
         try {
             u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth);
-            
+
             return new Double(u).isNaN() ? 0 : u * (isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, e) : directionFrequencyFluxSpreadIntegral(n, v, e));
         } catch (TooManyEvaluationsException ex) {
             return 0;
@@ -1025,7 +1026,7 @@ public class ThompsonSource implements Cloneable {
         //Semiwidth of the integration interval
         double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
                 / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2;
-        
+
         try {
             mlt = integrator.integrate(30000, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth,
@@ -1097,7 +1098,7 @@ public class ThompsonSource implements Cloneable {
         double prob0, prob, EMax, mult = 2, factor, sum = 0;
         double[] pol, polParam;
         EMax = directionEnergy(n, n);
-        factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
+        factor = 8 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
                 * Math.max(eb.getLength(), lp.getLength()) * 4 * rayXAnglerange * rayYAnglerange
                 * (maxEnergy - minEnergy);
         prob0 = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax)[0];

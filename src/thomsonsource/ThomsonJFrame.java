@@ -2464,15 +2464,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     fluxChart.getchartpanel().repaint();
                     plotwidth = fluxChart.getchartpanel().getChartRenderingInfo().
                             getPlotInfo().getDataArea().getWidth();
-                    xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
+                    xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("######.##")).format(xenergydata.getumax()) + " keV");
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("##.#######")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-12)
-                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
+                            + (new DecimalFormat("##.#####")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-10)
+                            + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
-                            + (new DecimalFormat("##.#######"))
+                            + (new DecimalFormat("##.#####"))
                                     .format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-12)
-                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
+                                            ysize * ystep) * 1e-3 / 2) * 1e-10)
+                            + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
@@ -3106,6 +3106,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 jRayStopButton.setEnabled(false);
+                //Getting the total number of randomised rays
                 int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
                 jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
                         / cn * 1e-10 + " 10\u00B9\u2070 s\u207B\u00B9");

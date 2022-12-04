@@ -24,7 +24,7 @@ import org.la4j.vector.dense.BasicVector;
  * units
  *
  * @author Ruslan feshchenko
- * @version 2.0
+ * @version 2.01
  */
 public class LaserPulse implements Cloneable {
 
@@ -54,7 +54,7 @@ public class LaserPulse implements Cloneable {
      * @return
      */
     public double getWidth(double z) {
-        return Math.sqrt((getRlength() + z * z / getRlength()) * rk / 2);
+        return Math.sqrt((getRlength() + z * z / getRlength()) * rk);
     }
 
     /**
@@ -63,7 +63,7 @@ public class LaserPulse implements Cloneable {
      * @param w width
      */
     public void setWidth(double w) {
-        setRlength(2 * w * w / rk);
+        setRlength(w * w / rk);
     }
 
     /**
@@ -73,7 +73,7 @@ public class LaserPulse implements Cloneable {
      * @return
      */
     public double getWidth2(double z) {
-        return (getRlength() + z * z / getRlength()) * rk / 2;
+        return (getRlength() + z * z / getRlength()) * rk;
     }
 
     /**
@@ -237,10 +237,10 @@ public class LaserPulse implements Cloneable {
     /**
      * Getting laser polarization state vector
      *
-     * @return 
+     * @return
      */
     public double[] getPolarization() {
-        return new double [] {ksi1, ksi2, ksi3};
+        return new double[]{ksi1, ksi2, ksi3};
     }
     /**
      * Photon energy, J
