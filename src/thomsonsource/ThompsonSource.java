@@ -35,7 +35,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.71
+ * @version 2.72
  */
 public class ThompsonSource implements Cloneable {
 
@@ -1095,16 +1095,16 @@ public class ThompsonSource implements Cloneable {
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
-        double prob0, prob, EMax, mult = 2, factor, sum = 0;
+        double prob0, prob, EMax, MULT = 2, factor, sum = 0;
         double[] pol, polParam;
         EMax = directionEnergy(n, n);
-        factor = 8 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
-                * Math.max(eb.getLength(), lp.getLength()) * 4 * rayXAnglerange * rayYAnglerange
+        factor = 32 * MULT * MULT * MULT * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
+                * Math.max(eb.getLength(), lp.getLength()) * rayXAnglerange * rayYAnglerange
                 * (maxEnergy - minEnergy);
-        prob0 = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax)[0];
+        prob0 = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax)[0] / EMax;
         if (iseSpread()) {
             prob0 *= eb.angleDistribution(0, 0);
-            factor *= 4 * mult * mult * eb.getXSpread() * eb.getYSpread();
+            factor *= 4 * MULT * MULT * eb.getXSpread() * eb.getYSpread();
         }
         do {
             if (Thread.currentThread().isInterrupted()) {
@@ -1127,25 +1127,25 @@ public class ThompsonSource implements Cloneable {
             ray[4] = n.get(2);
             ray[10] = Math.random() * (maxEnergy - minEnergy) + minEnergy;
             if (iseSpread()) {
-                double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
-                double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
+                double thetax = MULT * eb.getXSpread() * (2 * Math.random() - 1);
+                double thetay = MULT * eb.getYSpread() * (2 * Math.random() - 1);
                 Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
                 if (ksi == null) {
                     polParam = directionFrequencyVolumePolarizationNoSpread(r, n, v, ray[10]);
                 } else {
                     polParam = new double[]{directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]), ksi[0], ksi[1], ksi[2]};
                 }
-                prob = polParam[0] * eb.angleDistribution(thetax, thetay);
+                prob = polParam[0] * eb.angleDistribution(thetax, thetay) / ray[10];
             } else {
                 if (ksi == null) {
                     polParam = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
                 } else {
                     polParam = new double[]{directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]), ksi[0], ksi[1], ksi[2]};
                 }
-                prob = polParam[0];
+                prob = polParam[0] / ray[10];
             }
             if (!new Double(prob).isNaN()) {
-                sum += prob / ray[10];
+                sum += prob;
             }
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
