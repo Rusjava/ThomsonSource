@@ -969,26 +969,26 @@
                     <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemUnPolarizedItemStateChanged"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemSPolarized">
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemLinearPolarized">
                   <Properties>
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="buttonGroupPolarization"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="S-polarized"/>
+                    <Property name="text" type="java.lang.String" value="Linear"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemSPolarizedItemStateChanged"/>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemLinearPolarizedItemStateChanged"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemPPolarized">
+                <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemCircularPolarized">
                   <Properties>
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="buttonGroupPolarization"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="P-polarized"/>
+                    <Property name="text" type="java.lang.String" value="Circular"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemPPolarizedItemStateChanged"/>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jRadioButtonMenuItemCircularPolarizedItemStateChanged"/>
                   </Events>
                 </MenuItem>
                 <MenuItem class="javax.swing.JRadioButtonMenuItem" name="jRadioButtonMenuItemAutoPolarized">

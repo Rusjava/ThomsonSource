@@ -1110,9 +1110,9 @@ public class ThompsonSource implements Cloneable {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
-            ray[0] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
-            ray[2] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
-            ray[1] = 2 * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
+            ray[0] = MULT * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
+            ray[2] = MULT * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
+            ray[1] = MULT * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
             r.set(0, ray[0]);
             r.set(1, ray[2]);
             r.set(2, ray[1]);

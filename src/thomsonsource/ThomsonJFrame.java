@@ -395,8 +395,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemSourceParam = new javax.swing.JMenuItem();
         jMenuPolarization = new javax.swing.JMenu();
         jRadioButtonMenuItemUnPolarized = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonMenuItemSPolarized = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonMenuItemPPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemLinearPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemCircularPolarized = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItemAutoPolarized = new javax.swing.JRadioButtonMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItemConv = new javax.swing.JMenuItem();
@@ -1893,23 +1893,23 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
-        buttonGroupPolarization.add(jRadioButtonMenuItemSPolarized);
-        jRadioButtonMenuItemSPolarized.setText("S-polarized");
-        jRadioButtonMenuItemSPolarized.addItemListener(new java.awt.event.ItemListener() {
+        buttonGroupPolarization.add(jRadioButtonMenuItemLinearPolarized);
+        jRadioButtonMenuItemLinearPolarized.setText("Linear");
+        jRadioButtonMenuItemLinearPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jRadioButtonMenuItemSPolarizedItemStateChanged(evt);
+                jRadioButtonMenuItemLinearPolarizedItemStateChanged(evt);
             }
         });
-        jMenuPolarization.add(jRadioButtonMenuItemSPolarized);
+        jMenuPolarization.add(jRadioButtonMenuItemLinearPolarized);
 
-        buttonGroupPolarization.add(jRadioButtonMenuItemPPolarized);
-        jRadioButtonMenuItemPPolarized.setText("P-polarized");
-        jRadioButtonMenuItemPPolarized.addItemListener(new java.awt.event.ItemListener() {
+        buttonGroupPolarization.add(jRadioButtonMenuItemCircularPolarized);
+        jRadioButtonMenuItemCircularPolarized.setText("Circular");
+        jRadioButtonMenuItemCircularPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jRadioButtonMenuItemPPolarizedItemStateChanged(evt);
+                jRadioButtonMenuItemCircularPolarizedItemStateChanged(evt);
             }
         });
-        jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
+        jMenuPolarization.add(jRadioButtonMenuItemCircularPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
         jRadioButtonMenuItemAutoPolarized.setText("Automatic");
@@ -3476,15 +3476,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
 
-    private void jRadioButtonMenuItemSPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
+    private void jRadioButtonMenuItemLinearPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemLinearPolarizedItemStateChanged
         // Selecting s-polarization
         pRadioButtons();
-    }//GEN-LAST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
+    }//GEN-LAST:event_jRadioButtonMenuItemLinearPolarizedItemStateChanged
 
-    private void jRadioButtonMenuItemPPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+    private void jRadioButtonMenuItemCircularPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemCircularPolarizedItemStateChanged
         // Selecting p-polarization
         pRadioButtons();
-    }//GEN-LAST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+    }//GEN-LAST:event_jRadioButtonMenuItemCircularPolarizedItemStateChanged
 
     private void jRadioButtonMenuDefaultItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuDefaultItemStateChanged
         // Selecting default look&feel
@@ -3815,10 +3815,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private void pRadioButtons() {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(new double[]{0, 0, 0});
-        } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
-            tsource.setPolarization(new double[]{-1, 0, 0});
-        } else if (jRadioButtonMenuItemPPolarized.isSelected()) {
+        } else if (jRadioButtonMenuItemLinearPolarized.isSelected()) {
             tsource.setPolarization(new double[]{1, 0, 0});
+        } else if (jRadioButtonMenuItemCircularPolarized.isSelected()) {
+            tsource.setPolarization(new double[]{0, -1, 0});
         } else {
             tsource.setPolarization(null);
         }
@@ -4356,8 +4356,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jPolEnergyLabel;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemAutoPolarized;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemSPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemCircularPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemLinearPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemUnPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuNimbus;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuSystem;
