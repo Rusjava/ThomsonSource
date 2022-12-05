@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.4
+ * @version 3.41
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -1865,7 +1865,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("0.35");
+        pulserelvalue.setText("0.175");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);

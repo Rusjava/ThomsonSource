@@ -46,7 +46,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.3
+ * @version 1.31
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -854,25 +854,26 @@ public abstract class AbstractThomsonSource implements Cloneable {
         double prob0;
         double prob;
         double EMax;
-        double mult = 2;
+        double MULT = 2;
         double factor;
         double sum = 0;
         double[] pol;
         double[] polParam;
         EMax = directionEnergy(n, n);
-        factor = 64 * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getLength(), lp.getLength()) * 4 * rayXAnglerange * rayYAnglerange * (maxEnergy - minEnergy);
-        prob0 = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax)[0];
+        factor = 32 * MULT * MULT * MULT * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getLength(), lp.getLength())
+                * rayXAnglerange * rayYAnglerange * (maxEnergy - minEnergy);
+        prob0 = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), EMax)[0] / EMax;
         if (iseSpread()) {
             prob0 *= eb.angleDistribution(0, 0);
-            factor *= 4 * mult * mult * eb.getXSpread() * eb.getYSpread();
+            factor *= 4 * MULT * MULT * eb.getXSpread() * eb.getYSpread();
         }
         do {
             if (Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
-            ray[0] = mult * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
-            ray[2] = mult * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
-            ray[1] = mult * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
+            ray[0] = MULT * (2 * Math.random() - 1.0) * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0));
+            ray[2] = MULT * (2 * Math.random() - 1.0) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0));
+            ray[1] = MULT * (2 * Math.random() - 1.0) * Math.max(eb.getLength(), lp.getLength());
             r.set(0, ray[0]);
             r.set(1, ray[2]);
             r.set(2, ray[1]);
@@ -887,25 +888,25 @@ public abstract class AbstractThomsonSource implements Cloneable {
             ray[4] = n.get(2);
             ray[10] = Math.random() * (maxEnergy - minEnergy) + minEnergy;
             if (iseSpread()) {
-                double thetax = mult * eb.getXSpread() * (2 * Math.random() - 1);
-                double thetay = mult * eb.getYSpread() * (2 * Math.random() - 1);
+                double thetax = MULT * eb.getXSpread() * (2 * Math.random() - 1);
+                double thetay = MULT * eb.getYSpread() * (2 * Math.random() - 1);
                 Vector v = new BasicVector(new double[]{thetax, thetay, Math.sqrt(1 - thetax * thetax - thetay * thetay)});
                 if (ksi == null) {
                     polParam = directionFrequencyVolumePolarizationNoSpread(r, n, v, ray[10]);
                 } else {
                     polParam = new double[]{directionFrequencyVolumeFluxNoSpread(r, n, v, ray[10]), ksi[0], ksi[1], ksi[2]};
                 }
-                prob = polParam[0] * eb.angleDistribution(thetax, thetay);
+                prob = polParam[0] * eb.angleDistribution(thetax, thetay) / ray[10];
             } else {
                 if (ksi == null) {
                     polParam = directionFrequencyVolumePolarizationNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]);
                 } else {
                     polParam = new double[]{directionFrequencyVolumeFluxNoSpread(r, n, new BasicVector(new double[]{0.0, 0.0, 1.0}), ray[10]), ksi[0], ksi[1], ksi[2]};
                 }
-                prob = polParam[0];
+                prob = polParam[0] / ray[10];
             }
             if (!new Double(prob).isNaN()) {
-                sum += prob / ray[10];
+                sum += prob;
             }
             counter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
@@ -952,7 +953,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         for (int th = 0; th < getThreadNumber(); th++) {
             if (Thread.currentThread().isInterrupted()) {
                 excs.shutdownNow();
-                throw new InterruptedException("wrireRays method interrupted!");
+                throw new InterruptedException("writeRays method interrupted!");
             }
             //Creating multiple threads to accelerate calculations
             excs.execute(() -> {

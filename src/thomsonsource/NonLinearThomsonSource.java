@@ -653,17 +653,14 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         Vector rph = lp.getTransformedCoordinates(r);
 
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                //Coordinate transformation between laser and electron beams frames
-                Vector ree = r.copy();
-                ree.set(2, ree.get(2) - x);
-                Vector rphh = rph.copy();
-                rphh.set(2, rphh.get(2) - x);
-                double tmp = directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
-                return new Double(tmp).isNaN() ? 0 : tmp;
-            }
+        UnivariateFunction func = (double x) -> {
+            //Coordinate transformation between laser and electron beams frames
+            Vector ree = r.copy();
+            ree.set(2, ree.get(2) - x);
+            Vector rphh = rph.copy();
+            rphh.set(2, rphh.get(2) - x);
+            double tmp = directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+            return new Double(tmp).isNaN() ? 0 : tmp;
         };
         
         //Integrating by time
@@ -687,17 +684,14 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         Vector rph = lp.getTransformedCoordinates(r);
 
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                //Coordinate transformation between laser and electron beams frames
-                Vector ree = r.copy();
-                ree.set(2, ree.get(2) - x);
-                Vector rphh = rph.copy();
-                rphh.set(2, rphh.get(2) - x);
-                double tmp = directionFrequencyPolarizationNoSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
-                return new Double(tmp).isNaN() ? 0 : tmp;
-            }
+        UnivariateFunction func = (double x) -> {
+            //Coordinate transformation between laser and electron beams frames
+            Vector ree = r.copy();
+            ree.set(2, ree.get(2) - x);
+            Vector rphh = rph.copy();
+            rphh.set(2, rphh.get(2) - x);
+            double tmp = directionFrequencyPolarizationNoSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+            return new Double(tmp).isNaN() ? 0 : tmp;
         };
         
         //Integrating by time
@@ -712,21 +706,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         Vector rph = lp.getTransformedCoordinates(r);
 
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                //Coordinate transformation between laser and electron beams frames
-                Vector ree = r.copy();
-                ree.set(2, ree.get(2) - x);
-                Vector rphh = rph.copy();
-                rphh.set(2, rphh.get(2) - x);
-                try {
-                    double tmp = directionFrequencyFluxSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
-                    return new Double(tmp).isNaN() ? 0 : tmp;
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return 0;
-                }
+        UnivariateFunction func = (double x) -> {
+            //Coordinate transformation between laser and electron beams frames
+            Vector ree = r.copy();
+            ree.set(2, ree.get(2) - x);
+            Vector rphh = rph.copy();
+            rphh.set(2, rphh.get(2) - x);
+            try {
+                double tmp = directionFrequencyFluxSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                return new Double(tmp).isNaN() ? 0 : tmp;
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return 0;
             }
         };
         
@@ -751,21 +742,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         Vector rph = lp.getTransformedCoordinates(r);
 
         //Creating an anonymous class for the integrand
-        UnivariateFunction func = new UnivariateFunction() {
-            @Override
-            public double value(double x) {
-                //Coordinate transformation between laser and electron beams frames
-                Vector ree = r.copy();
-                ree.set(2, ree.get(2) - x);
-                Vector rphh = rph.copy();
-                rphh.set(2, rphh.get(2) - x);
-                try {
-                    double tmp = directionFrequencyPolarizationSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
-                    return new Double(tmp).isNaN() ? 0 : tmp;
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return 0;
-                }
+        UnivariateFunction func = (double x) -> {
+            //Coordinate transformation between laser and electron beams frames
+            Vector ree = r.copy();
+            ree.set(2, ree.get(2) - x);
+            Vector rphh = rph.copy();
+            rphh.set(2, rphh.get(2) - x);
+            try {
+                double tmp = directionFrequencyPolarizationSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
+                return new Double(tmp).isNaN() ? 0 : tmp;
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return 0;
             }
         };
         
