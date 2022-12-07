@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.32
+ * @version 3.42
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -105,23 +105,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.parametersIniFileName = "my.ini";
         this.orderofmagnitude = 10;
         this.normfactor = Math.pow(10, -15 - orderofmagnitude);
-        
+
         /**
          * Defining polarization transformation functions
          */
         fn = new ArrayList<>();
         fn.add(x -> {
-            return x[1] / x[0];
+            return (x[0] == 0) ? 0 : x[1] / x[0];
         });
         fn.add(x -> {
-            return x[2] / x[0];
+            return (x[0] == 0) ? 0 : x[2] / x[0];
         });
         fn.add(x -> {
-            return x[3] / x[0];
+            return (x[0] == 0) ? 0 : x[3] / x[0];
         });
         fn.add(x -> {
-            return Math.sqrt((x[1] / x[0]) * (x[1] / x[0]) + (x[2] / x[0]) * (x[2] / x[0])
-                    + (x[3] / x[0]) * (x[3] / x[0]));
+            return (x[0] == 0) ? 0 : Math.sqrt(x[1] * x[1] + x[2] * x[2] + x[3] * x[3]) / x[0];
         });
         /**
          * An auxiliary method giving the flux density in a given direction
@@ -482,8 +481,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuItemSourceParam = new javax.swing.JMenuItem();
         jMenuPolarization = new javax.swing.JMenu();
         jRadioButtonMenuItemUnPolarized = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonMenuItemSPolarized = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonMenuItemPPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemLinearPolarized = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItemCircularPolarized = new javax.swing.JRadioButtonMenuItem();
         jRadioButtonMenuItemAutoPolarized = new javax.swing.JRadioButtonMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         jMenuItemConv = new javax.swing.JMenuItem();
@@ -1866,7 +1865,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("0.35");
+        pulserelvalue.setText("0.175");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);
@@ -2458,24 +2457,24 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
-        buttonGroupPolarization.add(jRadioButtonMenuItemSPolarized);
-        jRadioButtonMenuItemSPolarized.setSelected(true);
-        jRadioButtonMenuItemSPolarized.setText("S-polarized");
-        jRadioButtonMenuItemSPolarized.addItemListener(new java.awt.event.ItemListener() {
+        buttonGroupPolarization.add(jRadioButtonMenuItemLinearPolarized);
+        jRadioButtonMenuItemLinearPolarized.setSelected(true);
+        jRadioButtonMenuItemLinearPolarized.setText("Linear");
+        jRadioButtonMenuItemLinearPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jRadioButtonMenuItemSPolarizedItemStateChanged(evt);
+                jRadioButtonMenuItemLinearPolarizedItemStateChanged(evt);
             }
         });
-        jMenuPolarization.add(jRadioButtonMenuItemSPolarized);
+        jMenuPolarization.add(jRadioButtonMenuItemLinearPolarized);
 
-        buttonGroupPolarization.add(jRadioButtonMenuItemPPolarized);
-        jRadioButtonMenuItemPPolarized.setText("P-polarized");
-        jRadioButtonMenuItemPPolarized.addItemListener(new java.awt.event.ItemListener() {
+        buttonGroupPolarization.add(jRadioButtonMenuItemCircularPolarized);
+        jRadioButtonMenuItemCircularPolarized.setText("Circular");
+        jRadioButtonMenuItemCircularPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jRadioButtonMenuItemPPolarizedItemStateChanged(evt);
+                jRadioButtonMenuItemCircularPolarizedItemStateChanged(evt);
             }
         });
-        jMenuPolarization.add(jRadioButtonMenuItemPPolarized);
+        jMenuPolarization.add(jRadioButtonMenuItemCircularPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
         jRadioButtonMenuItemAutoPolarized.setText("Automatic");
@@ -4098,15 +4097,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         pRadioButtons();
     }//GEN-LAST:event_jRadioButtonMenuItemUnPolarizedItemStateChanged
 
-    private void jRadioButtonMenuItemSPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
+    private void jRadioButtonMenuItemLinearPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemLinearPolarizedItemStateChanged
         // Selecting s-polarization
         pRadioButtons();
-    }//GEN-LAST:event_jRadioButtonMenuItemSPolarizedItemStateChanged
+    }//GEN-LAST:event_jRadioButtonMenuItemLinearPolarizedItemStateChanged
 
-    private void jRadioButtonMenuItemPPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+    private void jRadioButtonMenuItemCircularPolarizedItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItemCircularPolarizedItemStateChanged
         // Selecting p-polarization
         pRadioButtons();
-    }//GEN-LAST:event_jRadioButtonMenuItemPPolarizedItemStateChanged
+    }//GEN-LAST:event_jRadioButtonMenuItemCircularPolarizedItemStateChanged
 
     private void jRadioButtonMenuDefaultItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonMenuDefaultItemStateChanged
         // Selecting default look&feel
@@ -4280,7 +4279,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         polForm.tsourceclone.calculateLinearTotalFlux();
-                        //Calculating and returning the intensity multiplied Stocks parameter
+                        //Calculating and returning an intensity multiplied Stocks parameter
                         try {
                             return polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}),
                                     new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
@@ -5005,12 +5004,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         if (jRadioButtonMenuItemUnPolarized.isSelected()) {
             tsource.setPolarization(new double[]{0, 0, 0});
             tsourcelinear.setPolarization(new double[]{0, 0, 0});
-        } else if (jRadioButtonMenuItemSPolarized.isSelected()) {
-            tsource.setPolarization(new double[]{-1, 0, 0});
-            tsourcelinear.setPolarization(new double[]{-1, 0, 0});
-        } else if (jRadioButtonMenuItemPPolarized.isSelected()) {
+        } else if (jRadioButtonMenuItemLinearPolarized.isSelected()) {
             tsource.setPolarization(new double[]{1, 0, 0});
             tsourcelinear.setPolarization(new double[]{1, 0, 0});
+        } else if (jRadioButtonMenuItemCircularPolarized.isSelected()) {
+            tsource.setPolarization(new double[]{0, -1, 0});
+            tsourcelinear.setPolarization(new double[]{0, -1, 0});
         } else {
             tsource.setPolarization(null);
             tsourcelinear.setPolarization(null);
@@ -5227,8 +5226,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jPolEnergyLabelNonLinear;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuDefault;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemAutoPolarized;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemPPolarized;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemSPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemCircularPolarized;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemLinearPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItemUnPolarized;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuNimbus;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuSystem;

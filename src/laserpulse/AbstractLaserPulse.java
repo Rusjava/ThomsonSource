@@ -54,7 +54,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Laser pulse Rayleigh length, m
      */
-    private double rlength = 0.35e-3;
+    private double rlength = 0.175e-3;
     /**
      * Pulse frequency, 1/s
      */
@@ -117,7 +117,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      * @param w width, m
      */
     public void setWidth(double w) {
-        setRlength(2 * w * w / rk);
+        setRlength(w * w / rk);
     }
 
     /**
@@ -494,7 +494,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
         //Defining new coordinates
         double x = r.get(0);
         double y = -sn * r.get(2) + cs * r.get(1);
-        double z = cs * r.get(2) + sn * r.get(1);
-        return new BasicVector(new double[]{x, y, -z});
+        double z = -cs * r.get(2) - sn * r.get(1);
+        return new BasicVector(new double[]{x, y, z});
     }
 }

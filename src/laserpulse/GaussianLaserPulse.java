@@ -36,12 +36,12 @@ public class GaussianLaserPulse extends AbstractLaserPulse {
 
     @Override
     public double getWidth(double z) {
-        return Math.sqrt((getRlength() + z * z / getRlength()) * rk / 2);
+        return Math.sqrt((getRlength() + z * z / getRlength()) * rk);
     }
 
     @Override
     public double getWidth2(double z) {
-        return (getRlength() + z * z / getRlength()) * rk / 2;
+        return (getRlength() + z * z / getRlength()) * rk;
     }
 
     @Override

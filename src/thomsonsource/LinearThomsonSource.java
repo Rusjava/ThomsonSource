@@ -28,7 +28,7 @@ import org.la4j.Vectors;
  * The main class containing all physics of LEXG in linear approximation
  *
  * @author Ruslan Feshchenko
- * @version 3.01
+ * @version 3.1
  */
 public class LinearThomsonSource extends AbstractThomsonSource {
 
@@ -87,16 +87,15 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
         array[2] = lp.getPolarization()[1] * m12;
-        //If intensity is NaN or zero then set it as unity
-        if (new Double(array[0]).isNaN() || array[0] == 0) {
-            array[0] = 1;
-        }
-        //If a Stocks intensity is NaN then set it as zero
+        
+        //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN()) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
                 array[i] = 0;
             }
         }
+        
         return array;
     }
 
@@ -118,57 +117,29 @@ public class LinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyBrillianceNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
-        double u;
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrillianceNoSpread!");
-            }
-            u = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxNoSpread(n, v, null, e);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return directionIntegralBasic(r0, n, func, 1) * directionFrequencyFluxNoSpread(n, v, null, e);
     }
 
     @Override
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
-        double u;
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrillianceSpread!");
-            }
-            u = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-            return u * directionFrequencyFluxSpread(n, v, null, e);
-        } catch (TooManyEvaluationsException ex) {
-            return 0;
-        }
+        return directionIntegralBasic(r0, n, func, 1) * directionFrequencyFluxSpread(n, v, null, e);
     }
 
     @Override
     public double[] directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double mlt;
         double[] array = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
-                RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        
+        //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrilliancePolarizationNoSpread!");
-            }
-            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(),
-                    r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-        } catch (TooManyEvaluationsException ex) {
-            mlt = 0;
-        }
+        mlt=directionIntegralBasic(r0, n, func, 1);
+        mlt= new Double(mlt).isNaN() ? 0 : mlt;
+        
+        //Multiplying the the integral in the direction over the volume distribution by the direction polarization
         for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
             array[i] = mlt * directionFrequencyPolarizationNoSpread(n, v, null, e)[i];
         }
@@ -179,17 +150,13 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     public double[] directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         double mlt;
         double[] array = new double[AbstractThomsonSource.NUMBER_OF_POL_PARAM];
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        
+        //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
-        try {
-            //If interrupted, throw InterruptedException
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("directionFrequencyBrilliancePolarizationSpread!");
-            }
-            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-        } catch (TooManyEvaluationsException ex) {
-            mlt = 0;
-        }
+        mlt=directionIntegralBasic(r0, n, func, 1);
+        mlt= new Double(mlt).isNaN() ? 0 : mlt;
+        
+        //Multiplying the the integral in the direction over the volume distribution by the direction polarization
         for (int i = 0; i < AbstractThomsonSource.NUMBER_OF_POL_PARAM; i++) {
             array[i] = mlt * directionFrequencyPolarizationSpread(n, v, null, e)[i];
         }
@@ -202,29 +169,17 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     }
 
     @Override
-    public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) {
-        double mlt;
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+    public double directionFrequencyBrilliancePolarizationNoSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
+        //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
-        try {
-            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-        } catch (TooManyEvaluationsException ex) {
-            mlt = 0;
-        }
-        return mlt * directionFrequencyPolarizationNoSpread(n, v, null, e)[index];
+        return directionIntegralBasic(r0, n, func, 1) * directionFrequencyPolarizationNoSpread(n, v, null, e)[index];
     }
 
     @Override
     public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
-        double mlt;
-        RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
+        //Defining the integrand of the volume distribution and integrating in a given direction
         UnivariateFunction func = new UnivariateVolumeFlux(r0, n);
-        try {
-            mlt = integrator.integrate(30000, func, r0.fold(Vectors.mkEuclideanNormAccumulator()) - 3 * eb.getLength(), r0.fold(Vectors.mkEuclideanNormAccumulator()) + 3 * eb.getLength());
-        } catch (TooManyEvaluationsException ex) {
-            mlt = 0;
-        }
-        return mlt * directionFrequencyPolarizationSpread(n, v, null, e)[index];
+        return directionIntegralBasic(r0, n, func, 1) * directionFrequencyPolarizationSpread(n, v, null, e)[index];
     }
 
     /**
