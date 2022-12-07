@@ -49,7 +49,7 @@ public class ThompsonSource implements Cloneable {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
-        this.counter = new AtomicInteger();
+        this.montecarlocounter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
         calculateTotalFlux();
         calculateGeometricFactor();
@@ -155,7 +155,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Counter of ray iterations
      */
-    private AtomicInteger counter;
+    private AtomicInteger montecarlocounter;
 
     private LaserPulse lp;
     private ElectronBunch eb;
@@ -167,7 +167,7 @@ public class ThompsonSource implements Cloneable {
         Object tm = super.clone();
         ((ThompsonSource) tm).eb = (ElectronBunch) this.eb.clone();
         ((ThompsonSource) tm).lp = (LaserPulse) this.lp.clone();
-        ((ThompsonSource) tm).counter = new AtomicInteger();
+        ((ThompsonSource) tm).montecarlocounter = new AtomicInteger();
         ((ThompsonSource) tm).partialFlux = new DoubleAdder();
         if (ksi != null) {
             ((ThompsonSource) tm).ksi = (double[]) ksi.clone();
@@ -1147,7 +1147,7 @@ public class ThompsonSource implements Cloneable {
             if (!new Double(prob).isNaN()) {
                 sum += prob;
             }
-            counter.incrementAndGet();
+            montecarlocounter.incrementAndGet();
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
 
         // Calculating the rotated polarization vector and getting the full polarizaation state
@@ -1317,10 +1317,10 @@ public class ThompsonSource implements Cloneable {
     /**
      * Counter of ray iterations
      *
-     * @return the counter
+     * @return the montecarlocounter
      */
     public int getCounter() {
-        return counter.get();
+        return montecarlocounter.get();
     }
 
     /**

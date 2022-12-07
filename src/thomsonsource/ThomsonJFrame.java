@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.13
+ * @version 1.14
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -1884,7 +1884,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.setText("Polarization...");
 
         buttonGroupPolarization.add(jRadioButtonMenuItemUnPolarized);
-        jRadioButtonMenuItemUnPolarized.setSelected(true);
         jRadioButtonMenuItemUnPolarized.setText("Unpolarized");
         jRadioButtonMenuItemUnPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1894,6 +1893,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemLinearPolarized);
+        jRadioButtonMenuItemLinearPolarized.setSelected(true);
         jRadioButtonMenuItemLinearPolarized.setText("Linear");
         jRadioButtonMenuItemLinearPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -3065,7 +3065,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 // Creating a pool of threads, a lock, an atomic interger and a latch
                 ExecutorService excs = Executors.newFixedThreadPool(tsource.getThreadNumber());
                 CountDownLatch lt = new CountDownLatch(tsource.getThreadNumber());
-                AtomicInteger counter = new AtomicInteger();
+                AtomicInteger raycounter = new AtomicInteger();
                 // Open a file for rays
                 try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
@@ -3085,8 +3085,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                     ray[2] *= 1e2;
                                     ray[10] *= 1e-2 / LaserPulse.HC;
                                     ray[11] = i;
+                                    //Writing a ray into the file
                                     shadowFile.write(ray);
-                                    setStatusBar((int) 100 * (counter.incrementAndGet() + 1) / rayNumber);
+                                    setStatusBar((int) 100 * (raycounter.incrementAndGet() + 1) / rayNumber);
                                 } catch (IOException | InterruptedException ex) {
                                     break;
                                 }
@@ -3105,11 +3106,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
             @Override
             protected void done() {
-                jRayStopButton.setEnabled(false);
-                //Getting the total number of randomised rays
-                int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
-                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
-                        / cn * 1e-10 + " 10\u00B9\u2070 s\u207B\u00B9");
                 try {
                     get();
                 } catch (InterruptedException | CancellationException e) {
@@ -3130,6 +3126,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                 }
                 rayWorking = false;
+                jRayStopButton.setEnabled(false);
+                //Getting the total number of randomised rays
+                int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
+                //Displaying the the total flux within the limits
+                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
+                        / cn * 1e-10 + " 10\u00B9\u2070 s\u207B\u00B9");
             }
 
             /**
@@ -3601,7 +3603,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 double offset = polForm.minValueClone;
                 //A list of functions calculating intensity and polarization
                 List<Function<Double, Double>> func = new ArrayList<>();
-                
+
                 //A list of auxiliary functions calculating Stocks parameters
                 List<Function<double[], Double>> fn = new ArrayList<>();
                 fn.add(x -> {
@@ -3616,7 +3618,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 fn.add(x -> {
                     return (x[0] == 0) ? 0 : Math.sqrt(x[1] * x[1] + x[2] * x[2] + x[3] * x[3]) / x[0];
                 });
-                
+
                 double[] rescash = new double[]{1, 0, 0, 0};
                 double[] xpcash = new double[]{-1};
                 for (int i = 0; i < ThompsonSource.NUMBER_OF_POL_PARAM; i++) {
