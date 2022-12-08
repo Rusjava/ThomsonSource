@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.14
+ * @version 1.15
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -3070,12 +3070,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 try (ShadowFiles shadowFile = new ShadowFiles(true, true, ThompsonSource.NUMBER_OF_COLUMNS, rayNumber, bFile)) {
                     bFile = shadowFile.getFile();
                     for (int th = 0; th < tsourceRayClone.getThreadNumber(); th++) {
-                        if (isCancelled()) {
-                            break;
-                        }
                         //Creating multiple threads to accelerate calculations
                         excs.execute(() -> {
                             for (int i = 0; i < rayNumber / tsourceRayClone.getThreadNumber(); i++) {
+                                if (isCancelled()) {
+                                    break;
+                                }
                                 try {
                                     //Getting a ray
                                     double[] ray = tsourceRayClone.getRay();
@@ -3127,11 +3127,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 }
                 rayWorking = false;
                 jRayStopButton.setEnabled(false);
-                //Getting the total number of randomised rays
-                int cn = tsourceRayClone.getCounter() == 0 ? 1 : tsourceRayClone.getCounter();
                 //Displaying the the total flux within the limits
-                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux()
-                        / cn * 1e-10 + " 10\u00B9\u2070 s\u207B\u00B9");
+                jLabelPartialFlux.setText("Flux: " + (new DecimalFormat("##.#####"))
+                        .format(tsourceRayClone.getPartialFlux() / tsourceRayClone.getMonteCarloCounter() == 0 ? 1 : tsourceRayClone.getMonteCarloCounter() * 1e-10)
+                        + " 10\u00B9\u2070 s\u207B\u00B9");
             }
 
             /**
@@ -3140,10 +3139,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
              * @param status
              */
             public void setStatusBar(final int status) {
+                //Live updating the status bar
                 SwingUtilities.invokeLater(() -> {
                     if (status != jRayProgressBar.getValue()) {
                         jRayProgressBar.setValue(status);
                     }
+                    //Live updating the flux
+                    jLabelPartialFlux.setText("Flux: " + (new DecimalFormat("##.#####"))
+                            .format(tsourceRayClone.getPartialFlux() / (tsourceRayClone.getMonteCarloCounter() == 0 ? 1 : tsourceRayClone.getMonteCarloCounter()) * 1e-10)
+                            + " 10\u00B9\u2070 s\u207B\u00B9");
                 });
             }
         };
