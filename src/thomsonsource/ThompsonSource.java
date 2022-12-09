@@ -1320,7 +1320,7 @@ public class ThompsonSource implements Cloneable {
      * @return the montecarlocounter
      */
     public int getMonteCarloCounter() {
-        return montecarlocounter.get();
+        return montecarlocounter.get() == 0 ? 1 : montecarlocounter.get();
     }
 
     /**

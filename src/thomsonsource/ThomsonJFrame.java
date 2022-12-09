@@ -2391,7 +2391,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jSlider_pickup.setEnabled(false);
         startbutton.setText("Stop ");
         working = true;
-
+        //The common decimal format
+        Format fmt = new DecimalFormat("##.#####");
+        //The Swing worker
         mainWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -2466,11 +2468,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Max: " + (new DecimalFormat("######.##")).format(xenergydata.getumax()) + " keV");
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("##.#####")).format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-10)
+                            + fmt.format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
-                            + (new DecimalFormat("##.#####"))
-                                    .format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
+                            + fmt.format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
                                             ysize * ystep) * 1e-3 / 2) * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                 }
@@ -3059,6 +3060,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());
         tsourceRayClone.calculateTotalFlux();
         rayWorking = true;
+        //Decimal format for the flux
+        Format fmt = new DecimalFormat("##.#####");
+        //The Swing worker
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -3073,7 +3077,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         //Creating multiple threads to accelerate calculations
                         excs.execute(() -> {
                             for (int i = 0; i < rayNumber / tsourceRayClone.getThreadNumber(); i++) {
-                                if (isCancelled()) {
+                                if (Thread.currentThread().isInterrupted()) {
                                     break;
                                 }
                                 try {
@@ -3128,8 +3132,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 rayWorking = false;
                 jRayStopButton.setEnabled(false);
                 //Displaying the the total flux within the limits
-                jLabelPartialFlux.setText("Flux: " + (new DecimalFormat("##.#####"))
-                        .format(tsourceRayClone.getPartialFlux() / tsourceRayClone.getMonteCarloCounter() == 0 ? 1 : tsourceRayClone.getMonteCarloCounter() * 1e-10)
+                jLabelPartialFlux.setText("Flux: " + fmt
+                        .format(tsourceRayClone.getPartialFlux() / tsourceRayClone.getMonteCarloCounter() * 1e-10)
                         + " 10\u00B9\u2070 s\u207B\u00B9");
             }
 
@@ -3145,8 +3149,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jRayProgressBar.setValue(status);
                     }
                     //Live updating the flux
-                    jLabelPartialFlux.setText("Flux: " + (new DecimalFormat("##.#####"))
-                            .format(tsourceRayClone.getPartialFlux() / (tsourceRayClone.getMonteCarloCounter() == 0 ? 1 : tsourceRayClone.getMonteCarloCounter()) * 1e-10)
+                    jLabelPartialFlux.setText("Flux: " + fmt
+                            .format(tsourceRayClone.getPartialFlux() / tsourceRayClone.getMonteCarloCounter() * 1e-10)
                             + " 10\u00B9\u2070 s\u207B\u00B9");
                 });
             }
