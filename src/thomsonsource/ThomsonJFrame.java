@@ -3061,7 +3061,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         tsourceRayClone.calculateTotalFlux();
         rayWorking = true;
         //Decimal format for the flux
-        Format fmt = new DecimalFormat("##.#####");
+        Format fmt = new DecimalFormat("##.######");
         //The Swing worker
         rayWorker = new SwingWorker<Void, Void>() {
             @Override

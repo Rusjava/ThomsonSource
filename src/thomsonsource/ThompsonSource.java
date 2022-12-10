@@ -19,8 +19,7 @@ package thomsonsource;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.DoubleAdder;
+import java.util.concurrent.atomic.*;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Vector;
@@ -35,7 +34,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.72
+ * @version 2.73
  */
 public class ThompsonSource implements Cloneable {
 
@@ -49,7 +48,7 @@ public class ThompsonSource implements Cloneable {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
-        this.montecarlocounter = new AtomicInteger();
+        this.montecarlocounter = new AtomicLong();
         this.partialFlux = new DoubleAdder();
         calculateTotalFlux();
         calculateGeometricFactor();
@@ -155,7 +154,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Counter of ray iterations
      */
-    private AtomicInteger montecarlocounter;
+    private AtomicLong montecarlocounter;
 
     private LaserPulse lp;
     private ElectronBunch eb;
@@ -167,7 +166,7 @@ public class ThompsonSource implements Cloneable {
         Object tm = super.clone();
         ((ThompsonSource) tm).eb = (ElectronBunch) this.eb.clone();
         ((ThompsonSource) tm).lp = (LaserPulse) this.lp.clone();
-        ((ThompsonSource) tm).montecarlocounter = new AtomicInteger();
+        ((ThompsonSource) tm).montecarlocounter = new AtomicLong();
         ((ThompsonSource) tm).partialFlux = new DoubleAdder();
         if (ksi != null) {
             ((ThompsonSource) tm).ksi = (double[]) ksi.clone();
@@ -1096,6 +1095,7 @@ public class ThompsonSource implements Cloneable {
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
         double prob0, prob, EMax, MULT = 2, factor, sum = 0;
+        int lcn=0;
         double[] pol, polParam;
         EMax = directionEnergy(n, n);
         factor = 32 * MULT * MULT * MULT * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
@@ -1147,7 +1147,7 @@ public class ThompsonSource implements Cloneable {
             if (!new Double(prob).isNaN()) {
                 sum += prob;
             }
-            montecarlocounter.incrementAndGet();
+            lcn++;
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
 
         // Calculating the rotated polarization vector and getting the full polarizaation state
@@ -1169,7 +1169,9 @@ public class ThompsonSource implements Cloneable {
         ray[9] = 1.0;
         ray[13] = pol[2];
         ray[14] = pol[3];
+        //Incrementing sum and inegration point counter
         partialFlux.add(sum * factor);
+        montecarlocounter.addAndGet(lcn);
         return ray;
     }
 
@@ -1315,11 +1317,11 @@ public class ThompsonSource implements Cloneable {
     }
 
     /**
-     * Counter of ray iterations
+     * Counter of integral ray iterations
      *
      * @return the montecarlocounter
      */
-    public int getMonteCarloCounter() {
+    public long getMonteCarloCounter() {
         return montecarlocounter.get() == 0 ? 1 : montecarlocounter.get();
     }
 
