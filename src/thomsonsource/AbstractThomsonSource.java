@@ -26,8 +26,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.DoubleAdder;
+import java.util.concurrent.atomic.*;
 import java.util.function.Consumer;
 import laserpulse.AbstractLaserPulse;
 import laserpulse.GaussianLaserPulse;
@@ -46,7 +45,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.32
+ * @version 1.33
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -61,7 +60,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
         this.lp = l;
         this.eb = b;
-        this.montecarlocounter = new AtomicInteger();
+        this.montecarlocounter = new AtomicLong();
         this.rayCounter = new AtomicInteger();
         this.partialFlux = new DoubleAdder();
         this.ksi = new double[]{0, 0, -1};
@@ -159,7 +158,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * Counter of Monte-Carlo iterations
      */
-    protected AtomicInteger montecarlocounter;
+    protected AtomicLong montecarlocounter;
     /**
      * Counter of rays
      */
@@ -185,7 +184,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         Object tm = super.clone();
         ((AbstractThomsonSource) tm).eb = (AbstractElectronBunch) this.eb.clone();
         ((AbstractThomsonSource) tm).lp = (AbstractLaserPulse) this.lp.clone();
-        ((AbstractThomsonSource) tm).montecarlocounter = new AtomicInteger();
+        ((AbstractThomsonSource) tm).montecarlocounter = new AtomicLong();
         ((AbstractThomsonSource) tm).rayCounter = new AtomicInteger();
         ((AbstractThomsonSource) tm).partialFlux = new DoubleAdder();
         if (ksi != null) {
@@ -845,20 +844,19 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] getRay() throws InterruptedException {
-        double[] ray = new double[NUMBER_OF_COLUMNS];
         Matrix T;
         Vector n = new BasicVector(new double[]{0.0, 0.0, 1.0});
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0});
         Vector As;
+        int lcn=0;
         double prob0;
         double prob;
         double EMax;
         double MULT = 2;
         double factor;
         double sum = 0;
-        double[] pol;
-        double[] polParam;
+        double[] pol, polParam, ray = new double[NUMBER_OF_COLUMNS];
         EMax = directionEnergy(n, n);
         factor = 32 * MULT * MULT * MULT * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getLength(), lp.getLength())
                 * rayXAnglerange * rayYAnglerange * (maxEnergy - minEnergy);
@@ -908,8 +906,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
             if (!new Double(prob).isNaN()) {
                 sum += prob;
             }
-            //Incrementing the ray montecarlocounter
-            montecarlocounter.incrementAndGet();
+            //Incrementing the local itteration counter
+            lcn++;
         } while (prob / prob0 < Math.random() || (new Double(prob)).isNaN());
         // Calculating the rotated polarization vector and getting the full polarizaation state
         //n is defined here with y in longitudinal direction
@@ -932,7 +930,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         ray[14] = pol[3];
         //Adding to the Monte-Carlo sum and counter
         partialFlux.add(sum * factor);
-        rayCounter.incrementAndGet();
+        montecarlocounter.addAndGet(lcn);
         return ray;
     }
 
@@ -959,6 +957,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
             //Creating multiple threads to accelerate calculations
             excs.execute(() -> {
                 for (int i = 0; i < rayNumber / getThreadNumber(); i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
                     try {
                         //Getting a ray
                         double[] ray = getRay();
@@ -970,7 +971,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
                         ray[11] = i;
                         shadowFile.write(ray);
                         //Updating the progress bar
-                        con.accept((int) 100 * (rayCounter.get() + 1) / rayNumber);
+                        con.accept((int) 100 * (rayCounter.incrementAndGet() + 1) / rayNumber);
                     } catch (IOException | InterruptedException ex) {
                         break;
                     }
@@ -1149,7 +1150,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @return the montecarlocounter
      */
-    public int getCounter() {
+    public long getCounter() {
         return montecarlocounter.get();
     }
 

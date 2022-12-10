@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.42
+ * @version 3.43
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2946,6 +2946,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jSlider_pickup.setEnabled(false);
         startbutton.setText("Stop ");
         working = true;
+        Format fmt = new DecimalFormat("##.######");
 
         mainWorker = new SwingWorker<Void, Void>() {
             @Override
@@ -3028,13 +3029,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
                     jPanel_xenergy.repaint();
                     totalFluxLabel.setText("Total flux: "
-                            + (new DecimalFormat("##.#######")).format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-12)
-                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
+                            + fmt.format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-10)
+                            + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within angle: "
-                            + (new DecimalFormat("##.#######"))
-                                    .format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-12)
-                            + "\u00B710\u00B9\u00B2\u00B7ph\u00B7s\u207B\u00B9");
+                            + fmt.format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
+                                            ysize * ystep) * 1e-3 / 2) * 1e-10)
+                            + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
                 jSlider_pickup.setEnabled(true);
@@ -3694,6 +3694,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         final int rayNumber = tsourceRayClone.getThreadNumber() * (numberOfRays / tsourceRayClone.getThreadNumber());
         tsourceRayClone.calculateLinearTotalFlux();
         rayWorking = true;
+        Format fmt = new DecimalFormat("###.######");
+        
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -3708,7 +3710,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 jRayStopButton.setEnabled(false);
-                jLabelPartialFlux.setText("Flux: " + tsourceRayClone.getPartialFlux() * 1e-8
+                jLabelPartialFlux.setText("Flux: " + fmt.format(tsourceRayClone.getPartialFlux() * 1e-8)
                         + " 10\u2078 s\u207B\u00B9");
                 try {
                     get();
@@ -3742,6 +3744,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     if (status != jRayProgressBar.getValue()) {
                         jRayProgressBar.setValue(status);
                     }
+                    jLabelPartialFlux.setText("Flux: " + fmt.format(tsourceRayClone.getPartialFlux() * 1e-8)
+                        + " 10\u2078 s\u207B\u00B9");
                 });
             }
         };
