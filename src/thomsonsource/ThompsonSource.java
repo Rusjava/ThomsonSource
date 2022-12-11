@@ -415,8 +415,7 @@ public class ThompsonSource implements Cloneable {
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
                 double rangle, rth, tm, psum = 0, sn;
-                Vector v = new BasicVector(new double[]{0.0, 0.0, 0.0});
-                Vector dv = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
                 //Calculating a partial sum
                 for (int i = 0; i < itNumber; i++) {
                     if (Thread.currentThread().isInterrupted()) {
@@ -529,8 +528,7 @@ public class ThompsonSource implements Cloneable {
             for (int m = 0; m < threadNumber; m++) {
                 execs.execute(() -> {
                     double rangle, rth, tm, psum = 0, sn;
-                    Vector v = new BasicVector(new double[]{0.0, 0.0, 0.0});
-                    Vector dv = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                    Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
                     //Calculating a partial sum
                     for (int p = 0; p < itNumber; p++) {
                         if (Thread.currentThread().isInterrupted()) {
@@ -560,7 +558,7 @@ public class ThompsonSource implements Cloneable {
                 throw ex;
             }
             //Outputting the result for the i-th Stocks intensity
-            array[i] = 2 * Math.PI * INT_RANGE * eb.getSpread() * sum.sum() / itNumber / threadNumber;;
+            array[i] = 2 * Math.PI * INT_RANGE * eb.getSpread() * sum.sum() / itNumber / threadNumber;
         }
         //Shutting down the execution services
         execs.shutdownNow();
