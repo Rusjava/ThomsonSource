@@ -34,7 +34,7 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.4
+ * @version 1.41
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -112,17 +112,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Returning zero if gamma is zero
             return res;
         } else {
-            //Multiplying polarization matrix by gamma distribution
-            res = multiplyPolarizationParameters(directionPolarizationBasic(n, v, e, gamma, intensity), factor);
-            //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
-            // If a Stocks intensity is NaN then set it to zero
-            for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-                if (new Double(res[i]).isNaN() || new Double(res[0]).isNaN() || res[0] <= 0) {
-                    res[i] = 0;
-                }
-            }
-
-            return res;
+            //Multiplying polarization matrix by gamma distribution and returning the result
+            return multiplyPolarizationParameters(directionPolarizationBasic(n, v, e, gamma, intensity), factor);
         }
     }
 
@@ -137,15 +128,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         gamma = calculateGamma(n, v, e, intensity);
         if (new Double(gamma).isNaN() || gamma == 0) {
             //Returning zero if gamma is zero or NaN
-            return res;
+            return 0;
         } else {
             //Multiplying polarization matrix by gamma distribution and returning the result
-            res = directionPolarizationBasic(n, v, e, gamma, intensity, index) * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
-            //If intensity is not positive returning unity
-            if (res <= 0 && index == 0) {
-                res = 0;
-            }
-            return res;
+            return directionPolarizationBasic(n, v, e, gamma, intensity, index) * eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
         }
     }
 
@@ -245,9 +231,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         //Checking if the radiation is fully polarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
-            result = directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]});
+            result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[1], A2[1]});
         } else if (K1[1] == 0 && K2[1] == 0) {
-            result = directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
+            result = coef3 * directionFluxBasicAuxiliary(coef1, coef2, intratio, n, new Vector[]{A1[0], A2[0]});
         } else {
             //If not fully polarized then averaging over all possible surpepositions of two independant polarizations
             result = coef3 * (new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
@@ -313,7 +299,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
         //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
-        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] <= 0) {
                 result[i] = 0;
             }
@@ -359,10 +345,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
-            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
+            result = coef3 * directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
                     n, new Vector[]{A1[1], A2[1]}, gamma, v)[index];
         } else if (K1[1] == 0 && K2[1] == 0) {
-            result = directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
+            result = coef3 * directionPolarizationBasicAuxiliary(coef1, coef2, intratio,
                     n, new Vector[]{A1[0], A2[0]}, gamma, v)[index];
         } else {
             //If not fully polarized then averaging over all possible surpepositions of two independant polarizations
@@ -372,7 +358,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     new UnivariatePolarizationIntegrationPolarization(coef1, coef2,
                             intratio, gamma, n, v, index), -Math.PI, Math.PI) / 2 / Math.PI;
         }
-        return new Double(result).isNaN() ? 0 : result;
+        //Returning the result and doing some checks
+        return (new Double(result).isNaN() || (result <= 0 && index == 0)) ? 0 : result;
     }
 
     /**
@@ -415,7 +402,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     - (f[2] * f[2] + f[3] * f[3]) * K1 - (f[4] * f[4] + f[5] * f[5]) * K2
                     + (f[6] * f[0] + f[7] * f[1]) * (K1 - K2) / 2);
         }
-        return result;
+        return new Double(result).isNaN() ? 0 : result;
     }
 
     /**
@@ -498,6 +485,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             result[1] = pol1.get(0) * pol1.get(1) + pol2.get(0) * pol2.get(1);
             result[2] = pol2.get(0) * pol1.get(1) - pol1.get(0) * pol2.get(1);
             result[3] = (pol1.get(1) * pol1.get(1) + pol2.get(1) * pol2.get(1) - pol1.get(0) * pol1.get(0) - pol2.get(0) * pol2.get(0)) / 2;
+        }
+        //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] <= 0) {
+                result[i] = 0;
+            }
         }
         return result;
     }
@@ -662,11 +656,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             double tmp = directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
             return new Double(tmp).isNaN() ? 0 : tmp;
         };
-        
-        //Integrating by time
-        double result = timeIntegralBasic(r, n, func);
-        //Checking if NaN and setting to zero
-        return new Double(result).isNaN() ? 0 : result;
+
+        //Returning the result
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -693,11 +685,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             double tmp = directionFrequencyPolarizationNoSpread(n, v, rphh, e, index) * eb.lSpatialDistribution(ree) * lp.lSpatialDistribution(rphh);
             return new Double(tmp).isNaN() ? 0 : tmp;
         };
-        
-        //Integrating by time
-        double result = timeIntegralBasic(r, n, func);
-        //Checking if NaN and setting to zero
-        return new Double(result).isNaN() ? 0 : result;
+
+        //Returning the result
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -720,11 +710,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 return 0;
             }
         };
-        
-        //Integrating by time
-        double result = timeIntegralBasic(r, n, func);
-        //Checking if NaN and setting to zero
-        return new Double(result).isNaN() ? 0 : result;
+
+        //Returning the result
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -756,11 +744,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 return 0;
             }
         };
-        
-        //Integrating by time
-        double result = timeIntegralBasic(r, n, func);
-        //Checking if NaN and setting to zero
-        return new Double(result).isNaN() ? 0 : result;
+
+        //Returning the result
+        return timeIntegralBasic(r, n, func);
     }
 
     /**

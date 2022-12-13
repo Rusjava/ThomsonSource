@@ -45,7 +45,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.33
+ * @version 1.34
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -770,18 +770,18 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param r0 spatial position for brightness
      * @param n viewing direction
      * @param func the function to integrate over
-     * @param index the order number
+     * @param ordernumber the order number
      * @return
      * @throws InterruptedException
      */
-    protected double directionIntegralBasic(Vector r0, Vector n, UnivariateFunction func, int index) throws InterruptedException {
+    protected double directionIntegralBasic(Vector r0, Vector n, UnivariateFunction func, int ordernumber) throws InterruptedException {
         //return directionFrequencyVolumeFluxNoSpread(r0, n, v, e);
         RombergIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
 
         //Semiwidth of the integration interval
         double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
-                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2 / Math.sqrt(index);
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2 / Math.sqrt(ordernumber);
         //Integrating over a line to calculate spectral brilliance
         try {
             //If interrupted, throw InterruptedException
@@ -791,7 +791,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u = integrator.integrate(AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS, func,
                     r0.fold(Vectors.mkEuclideanNormAccumulator()) - semiwidth, r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth)
                     - 2 * semiwidth * SHIFT * getShiftfactor();
-            return u;
+            return new Double(u).isNaN() ? 0 : u;
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
