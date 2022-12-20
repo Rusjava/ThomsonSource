@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.15
+ * @version 1.16
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -124,7 +124,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-6 * tsource.directionFlux(n, v) / 1e10;
+                return 1e-6 * 1e-7 * tsource.directionFlux(n, v);
             }
         };
         /**
@@ -139,7 +139,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, e * ElectronBunch.E) / 1e10;
+                return 1e-9 * 1e-7 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, e * ElectronBunch.E);
             }
         };
 
@@ -2432,14 +2432,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
                     } else {
-                        fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
+                        fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u2077",
                                 jPanel_xflux_left, 0.75, true);
                     }
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
-                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.75, false);
+                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u2077", jPanel_xflux_right, 0.75, false);
                     }
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
@@ -2470,7 +2470,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     totalFluxLabel.setText("Total flux: "
                             + fmt.format(tsource.getTotalFlux() * tsource.getGeometricFactor() * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
-                    totalFluxAngleLabel.setText("Within angle: "
+                    totalFluxAngleLabel.setText("Within limits: "
                             + fmt.format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
                                             ysize * ystep) * 1e-3 / 2) * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
