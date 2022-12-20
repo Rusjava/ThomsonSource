@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.43
+ * @version 3.44
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -133,7 +133,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-6 * tsource.directionFlux(n, v) / 1e10;
+                return 1e-6 * 1e-7  * tsource.directionFlux(n, v);
             }
         };
         fluxdata.setSliderposition(50);
@@ -150,7 +150,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 n = new BasicVector(new double[]{hoffset * 1e-3, theta * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
                 try {
-                    return 1e-9 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, null, e * GaussianElectronBunch.E) / 1e10;
+                    return 1e-9 * 1e-7 * tsource.getGeometricFactor() * tsource.directionFrequencyFlux(n, v, null, e * GaussianElectronBunch.E);
                 } catch (InterruptedException ex) {
                     return 0;
                 }
@@ -1865,7 +1865,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         pulsedelaylabel.setText("Delay");
 
-        pulserelvalue.setText("0.175");
+        pulserelvalue.setText("0.35");
         pulserelvalue.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 pulserelvalueFocusLost(evt);
@@ -2157,7 +2157,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        totalFluxLabel.setText("Total flux:");
+        totalFluxLabel.setText("Total linear flux:");
 
         totalFluxAngleLabel.setText("Within limits: ");
 
@@ -2169,10 +2169,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addGap(69, 69, 69)
                 .addComponent(jSlider_pickup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(totalFluxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(totalFluxAngleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(totalFluxLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(totalFluxAngleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel_sliderLayout.setVerticalGroup(
             jPanel_sliderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2770,8 +2769,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * @param xlabel
          * @param ylabel
          * @param colorBarlabel
-         * @param jPanel
-         * @param fraction
+         * @param jPanel parent panel
+         * @param fraction fraction of the color bar
          */
         ColorChart(ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
             this.chart = data.createChart(data.createDataset(slider), xlabel, ylabel);
@@ -2946,7 +2945,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jSlider_pickup.setEnabled(false);
         startbutton.setText("Stop ");
         working = true;
-        Format fmt = new DecimalFormat("##.######");
 
         mainWorker = new SwingWorker<Void, Void>() {
             @Override
@@ -2976,6 +2974,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 double plotwidth = 0;
+                Format fmt = new DecimalFormat("##.####");
                 //Checking if there are any errors in the worker thread
                 try {
                     get();
@@ -2989,14 +2988,14 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     if (fluxChart != null) {
                         fluxChart.fullupdate(fluxdata);
                     } else {
-                        fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u00B9\u2070",
+                        fluxChart = new ColorChart(fluxdata, "theta_x, mrad", "theta_y, mrad", "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B710\u2077",
                                 jPanel_xflux_left, 0.75, true);
                     }
                     if (fluxCrossChart != null) {
                         fluxCrossChart.fullupdate(fluxcrossdata);
                     } else {
                         fluxCrossChart = new ColorChart(fluxcrossdata, "X-ray energy, eV", "theta_y, mrad",
-                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u00B9\u2070", jPanel_xflux_right, 0.73, false);
+                                "mrad\u207B\u00B2\u00B7s\u207B\u00B9\u00B70.1%\u00B710\u2077", jPanel_xflux_right, 0.73, false);
                     }
                     if (xEnergyChart != null) {
                         xEnergyChart.fullupdate(xenergydata);
@@ -3026,12 +3025,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             getPlotInfo().getDataArea().getWidth();
                     xrayenergyborder.setTitle("X-ray photon energy" + ". Order: "
                             + (new DecimalFormat("##")).format(((NonLinearThomsonSource) tsource).getOrdernumber()) + ", Max: "
-                            + (new DecimalFormat("########.##")).format(xenergydata.getumax()) + " keV");
+                            + (new DecimalFormat("######.##")).format(xenergydata.getumax()) + " keV");
                     jPanel_xenergy.repaint();
-                    totalFluxLabel.setText("Total flux: "
+                    totalFluxLabel.setText("Total linear flux: "
                             + fmt.format(tsource.getLinearTotalFlux() * tsource.getGeometricFactor() * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
-                    totalFluxAngleLabel.setText("Within angle: "
+                    totalFluxAngleLabel.setText("Within limits: "
                             + fmt.format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
                                             ysize * ystep) * 1e-3 / 2) * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
@@ -3847,7 +3846,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     gfForm.tsourceclone.calculateLinearTotalFlux();
                     setStatusBar((xp - offset) / step / (xsize - 1));
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getGeometricFactor()
-                            : gfForm.tsourceclone.getGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-12;
+                            : gfForm.tsourceclone.getGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-10;
                 });
                 //Approximate geopmetric factor
                 func.add(xp -> {
@@ -3886,7 +3885,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                     gfForm.tsourceclone.calculateLinearTotalFlux();
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getApproxGeometricFactor()
-                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-15;
+                            : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-10;
                 });
                 gfForm.chartParam.setup(func, xsize, step, offset);
                 return null;

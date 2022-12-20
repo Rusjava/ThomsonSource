@@ -253,7 +253,7 @@ public class LinearChartParam {
                 fm = new Formatter();
                 fm.format("%f", i * getStep() + getOffset());
                 for (int s = 0; s < getData().length; s++) {
-                    fm.format(" %10.8f", getTransformedData(s, i));
+                    fm.format(" %12.10f", getTransformedData(s, i));
                 }
                 pw.println(fm);
             }
