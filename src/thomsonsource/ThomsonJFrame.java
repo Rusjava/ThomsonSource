@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.16
+ * @version 1.17
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -117,7 +117,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * An auxiliary method giving the flux density in a given direction
          *
          */
-        this.fluxdata = new ChartParam() {
+        this.fluxdata = new ColorChartParam() {
             @Override
             public double func(double thetax, double thetay) {
                 Vector v, n;
@@ -132,7 +132,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * for a given X-ray photon energy
          *
          */
-        this.fluxcrossdata = new ChartParam() {
+        this.fluxcrossdata = new ColorChartParam() {
             @Override
             public double func(double e, double theta) {
                 Vector n, v;
@@ -147,7 +147,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * An auxiliary method calculating X-ray energy in a given direction
          *
          */
-        this.xenergydata = new ChartParam() {
+        this.xenergydata = new ColorChartParam() {
             @Override
             public double func(double thetax, double thetay) {
                 Vector n, v;
@@ -2218,7 +2218,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * @param jPanel
          * @param fraction
          */
-        ColorChart(ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
+        ColorChart(ColorChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
             this.chart = createChart(createDataset(data, slider), data, xlabel, ylabel);
             this.chartpanel = new ChartPanel(chart,
                     (int) (fraction * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
@@ -2241,7 +2241,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          *
          * @param data
          */
-        void fullupdate(ChartParam data) {
+        void fullupdate(ColorChartParam data) {
             chart.getXYPlot().getDomainAxis().setRangeAboutValue(data.getxoffset(), data.getxsize() * data.getxstep());
             chart.getXYPlot().getRangeAxis().setRangeAboutValue(data.getyoffset(), data.getysize() * data.getystep());
             PaintScale scale = new JetPaintScale(0, data.getumax());
@@ -2292,7 +2292,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private int orderofmagnitude;
     private double normfactor;
 
-    private final ChartParam fluxdata, fluxcrossdata, xenergydata;
+    private final ColorChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
     private JFreeChart xenergycrosschart = null;
 
@@ -3868,7 +3868,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
     }
 
-    private JFreeChart createChart(XYZDataset dataset, ChartParam data, String xlabel, String ylabel) {
+    private JFreeChart createChart(XYZDataset dataset, ColorChartParam data, String xlabel, String ylabel) {
         /* X axis */
         NumberAxis xAxis = new NumberAxis(xlabel);
         xAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
@@ -3899,7 +3899,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         return chart;
     }
 
-    private JFreeChart createColorBar(final ChartParam data, String label) {
+    private JFreeChart createColorBar(final ColorChartParam data, String label) {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLowerMargin(0.0);
         xAxis.setUpperMargin(0.0);
@@ -3998,7 +3998,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         return chart;
     }
 
-    private XYZDataset createDataset(final ChartParam data, final boolean linemark) {
+    private XYZDataset createDataset(final ColorChartParam data, final boolean linemark) {
         return new XYZDataset() {
             @Override
             public int getSeriesCount() {

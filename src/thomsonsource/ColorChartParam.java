@@ -22,16 +22,16 @@ package thomsonsource;
  * @author Ruslan Feshchenko
  * @version 1.0
  */
-public abstract class ChartParam {
+public abstract class ColorChartParam {
 
     /**
      * Constructor
      */
-    public ChartParam() {
+    public ColorChartParam() {
 
     }
 
-    public ChartParam(double[][] u, double um) {
+    public ColorChartParam(double[][] u, double um) {
         this.udata = u;
         this.umax = um;
     }

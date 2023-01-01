@@ -611,6 +611,10 @@ public class ThompsonSource implements Cloneable {
         @Override
         public double value(double phi) {
             double tmp;
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             UnivariateFunction func
                     = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
             try {
@@ -679,6 +683,10 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double theta) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
@@ -1053,6 +1061,10 @@ public class ThompsonSource implements Cloneable {
 
         @Override
         public double value(double x) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             Vector r;
             r = r0.add(n0.multiply(x));
             double y = volumeFlux(r);
