@@ -1438,6 +1438,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         @Override
         public double value(double phi) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             double tmp;
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
@@ -1502,6 +1506,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
         @Override
         public double value(double x) {
+            if (Thread.currentThread().isInterrupted()) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
             if (n0.get(0) + n0.get(1) + n0.get(2) == 0) {
                 throw new LocalException(x);
             }

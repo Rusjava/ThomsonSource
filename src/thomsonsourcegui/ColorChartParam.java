@@ -39,12 +39,12 @@ import org.la4j.vector.dense.BasicVector;
  * @author Ruslan Feshchenko
  * @version 1.2
  */
-public abstract class ChartParam {
+public abstract class ColorChartParam {
 
     /**
      * Constructor
      */
-    public ChartParam() {
+    public ColorChartParam() {
         this.threadNumber = Runtime.getRuntime().availableProcessors();
     }
 
@@ -54,7 +54,7 @@ public abstract class ChartParam {
      * @param u data array
      * @param um maximum value of data
      */
-    public ChartParam(double[][] u, double um) {
+    public ColorChartParam(double[][] u, double um) {
         this.udata = u;
         this.umax = um;
         this.threadNumber = Runtime.getRuntime().availableProcessors();

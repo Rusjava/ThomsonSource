@@ -126,7 +126,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * An auxiliary method giving the flux density in a given direction
          *
          */
-        this.fluxdata = new ChartParam() {
+        this.fluxdata = new ColorChartParam() {
             @Override
             public double func(double thetax, double thetay) {
                 Vector v, n;
@@ -142,7 +142,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * for a given X-ray photon energy
          *
          */
-        this.fluxcrossdata = new ChartParam() {
+        this.fluxcrossdata = new ColorChartParam() {
             @Override
             public double func(double e, double theta) {
                 Vector n, v;
@@ -161,7 +161,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * An auxiliary method calculating X-ray energy in a given direction
          *
          */
-        this.xenergydata = new ChartParam() {
+        this.xenergydata = new ColorChartParam() {
             @Override
             public double func(double thetax, double thetay) {
                 Vector n, v;
@@ -2772,7 +2772,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          * @param jPanel parent panel
          * @param fraction fraction of the color bar
          */
-        ColorChart(ChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
+        ColorChart(ColorChartParam data, String xlabel, String ylabel, String colorBarlabel, JPanel jPanel, double fraction, boolean slider) {
             this.chart = data.createChart(data.createDataset(slider), xlabel, ylabel);
             this.chartpanel = new ChartPanel(chart,
                     (int) (fraction * jPanel.getWidth()), (int) jPanel.getHeight(), 0, 0,
@@ -2795,7 +2795,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
          *
          * @param data
          */
-        void fullupdate(ChartParam data) {
+        void fullupdate(ColorChartParam data) {
             chart.getXYPlot().getDomainAxis().setRangeAboutValue(data.getxoffset(), data.getxsize() * data.getxstep());
             chart.getXYPlot().getRangeAxis().setRangeAboutValue(data.getyoffset(), data.getysize() * data.getystep());
             PaintScale scale = new JetPaintScale(0, data.getumax());
@@ -2848,7 +2848,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private String parametersIniFileName;
 
-    private final ChartParam fluxdata, fluxcrossdata, xenergydata;
+    private final ColorChartParam fluxdata, fluxcrossdata, xenergydata;
     private final LinearChartParam xenergycrossdata;
     private JFreeChart xenergycrosschart = null;
     private final TitledBorder xrayenergyborder;
