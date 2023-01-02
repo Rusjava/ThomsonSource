@@ -23,7 +23,7 @@ import org.la4j.vector.dense.BasicVector;
 /**
  *
  * @author Ruslan
- * @version 2.1
+ * @version 2.11
  */
 public abstract class AbstractLaserPulse implements Cloneable {
 
@@ -364,7 +364,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
      *
      */
     public final void setAverageIntensity() {
-        this.intensity = getPulseEnergy() / getLength() / Math.PI / getWidth2(0) * AbstractLaserPulse.C;
+        this.intensity = getPulseEnergy() / getLength()  / getWidth2(0) / Math.PI / Math.sqrt(Math.PI) * AbstractLaserPulse.C;
     }
 
     /**

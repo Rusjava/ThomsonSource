@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.44
+ * @version 3.45
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -120,7 +120,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             return (x[0] == 0) ? 0 : x[3] / x[0];
         });
         fn.add(x -> {
-            return (x[0] == 0) ? 0 : Math.sqrt(x[1] * x[1] + x[2] * x[2] + x[3] * x[3]) / x[0];
+            return (x[0] == 0) ? 0 : Math.sqrt(x[1] * x[1] + x[2] * x[2] + x[3] * x[3]) / Math.abs(x[0]);
         });
         /**
          * An auxiliary method giving the flux density in a given direction
@@ -2641,7 +2641,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public SwingWorker<Void, Void> worker;
         public String savetext;
         final private String[] keys;
-        public LinearChartParam chartParam;
+        public LinearChartParam linearChartParam;
         public ChartPanel chartPanel = null;
         public JFreeChart chart = null;
         public double angle = 0, angleclone, energy = 46, energyclone;
@@ -2656,7 +2656,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         public CalcBoxParam(String[] keys, List<Function<double[], Double>> trfunc) {
             super();
             this.keys = keys;
-            this.chartParam = new LinearChartParam(trfunc);
+            this.linearChartParam = new LinearChartParam(trfunc);
         }
 
         /**
@@ -2694,7 +2694,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     }
                 }
                 try {
-                    chartParam.save(file);
+                    linearChartParam.save(file);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
                             JOptionPane.ERROR_MESSAGE);
@@ -2710,9 +2710,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 /*
                  * Creating chart and plot dataset
                  */
-                chart = LinearChartParam.createLineChart(chartParam.createLineDataset(keys), plotLabels[selectedItemIndexClone], label);
-                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
-                        chartParam.getUMax() + MIN_DIF);
+                chart = LinearChartParam.createLineChart(linearChartParam.createLineDataset(keys), plotLabels[selectedItemIndexClone], label);
+                chart.getXYPlot().getRangeAxis().setRange(linearChartParam.getUMin(),
+                        linearChartParam.getUMax() + MIN_DIF);
                 chart.fireChartChanged();
                 /**
                  * Creation of the ChartPanel
@@ -2728,8 +2728,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             } else {
                 chart.getXYPlot().getDomainAxis().setRange(minValueClone, maxValueClone);
                 chart.getXYPlot().getDomainAxis().setLabel(plotLabels[selectedItemIndexClone]);
-                chart.getXYPlot().getRangeAxis().setRange(chartParam.getUMin(),
-                        chartParam.getUMax() + MIN_DIF);
+                chart.getXYPlot().getRangeAxis().setRange(linearChartParam.getUMin(),
+                        linearChartParam.getUMax() + MIN_DIF);
                 chart.getXYPlot().getRangeAxis().setLabel(label);
                 chart.fireChartChanged();
             }
@@ -3498,7 +3498,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         });
                         break;
                 }
-                brilForm.chartParam.setup(func, xsize, step, offset);
+                brilForm.linearChartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -3887,7 +3887,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     return GFValueSelectionBox.getSelectedIndex() == 1 ? gfForm.tsourceclone.getApproxGeometricFactor()
                             : gfForm.tsourceclone.getApproxGeometricFactor() * gfForm.tsourceclone.getLinearTotalFlux() * 1e-10;
                 });
-                gfForm.chartParam.setup(func, xsize, step, offset);
+                gfForm.linearChartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -4292,7 +4292,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                     });
                 }
-                polForm.chartParam.setup(func, xsize, step, offset);
+                polForm.linearChartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -4672,7 +4672,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         });
                         break;
                 }
-                brilFormNonLinear.chartParam.setup(func, xsize, step, offset);
+                brilFormNonLinear.linearChartParam.setup(func, xsize, step, offset);
                 return null;
             }
 
@@ -4820,6 +4820,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polarizationCalcStartNonLinear.setText("Terminate");
         polarizationCalcSaveNonLinear.setEnabled(false);
         polFormNonLinear.initialize(tsource);
+        ((NonLinearThomsonSource) polFormNonLinear.tsourceclone).setOrdernumber(polFormNonLinear.ordernumber);
 
         /**
          * Calculating data array. Using SwingWorker class
@@ -4839,6 +4840,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         x = xp * polFormNonLinear.conversionValues[polFormNonLinear.selectedItemIndexClone];
                         ang = polFormNonLinear.angleclone * 1e-3;
                         e = polFormNonLinear.energyclone * GaussianElectronBunch.E * 1e3;
+                        polFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                         switch (polFormNonLinear.selectedItemIndexClone) {
                             case 0:
                                 Vector dir = new BasicVector(new double[3]);
@@ -4888,7 +4890,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                                 break;
                         }
                         setStatusBar((xp - offset) / step / (xsize - 1));
-                        polFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                         //Calculating and returning the intensity multiplied Stocks parameter
                         try {
                             return polFormNonLinear.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
@@ -4899,7 +4900,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         }
                     });
                 }
-                polFormNonLinear.chartParam.setup(func, xsize, step, offset);
+                polFormNonLinear.linearChartParam.setup(func, xsize, step, offset);
                 return null;
             }
 

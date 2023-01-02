@@ -34,7 +34,7 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.41
+ * @version 1.42
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -298,7 +298,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] <= 0) {
+            if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] == 0) {
                 result[i] = 0;
             }
         }
@@ -356,8 +356,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     new UnivariatePolarizationIntegrationPolarization(coef1, coef2,
                             intratio, gamma, n, v, index), -Math.PI, Math.PI) / 2 / Math.PI;
         }
+
         //Returning the result and doing some checks
-        return (new Double(result).isNaN() || (result <= 0 && index == 0)) ? 0 : result;
+        return (new Double(result).isNaN() || (result == 0 && index == 0)) ? 0 : result;
     }
 
     /**
@@ -487,7 +488,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] <= 0) {
+            if (new Double(result[i]).isNaN() || new Double(result[0]).isNaN() || result[0] == 0) {
                 result[i] = 0;
             }
         }
@@ -509,6 +510,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 4;
         fqratio = e / ordernumber / lp.getPhotonEnergy();
+
         coef = 2 - fqratio * (1 - pr);
         if (coef <= 0) {
             //Returning zero if the expression under the root is not positive
