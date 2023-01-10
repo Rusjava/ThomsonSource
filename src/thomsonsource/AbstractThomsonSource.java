@@ -45,10 +45,15 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.34
+ * @version 1.35
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
+
+    /**
+     * The non-linear order number
+     */
+    protected int ordernumber = 1;
 
     /**
      * Constructor
@@ -421,11 +426,10 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 array[i] = 0;
             }
         }
-
         //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] == 0) {
                 array[i] = 0;
             }
         }
@@ -1347,6 +1351,24 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     public void setShiftfactor(double shift) {
         this.shiftfactor = shift;
+    }
+
+    /**
+     * Setting the non-linear order number
+     *
+     * @return non-linear order number
+     */
+    public int getOrdernumber() {
+        return ordernumber;
+    }
+
+    /**
+     * Getting the non-linear order number
+     *
+     * @param n non-linear order number to set
+     */
+    public void setOrdernumber(int n) {
+        this.ordernumber = n;
     }
 
     /**

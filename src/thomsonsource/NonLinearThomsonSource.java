@@ -34,22 +34,10 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.42
+ * @version 1.43
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
-
-    /**
-     * Constructor
-     *
-     * @param l
-     * @param b
-     * @param n - non-linear order number
-     */
-    /**
-     * The non-linear order number
-     */
-    private int ordernumber = 1;
 
     /**
      * The saturating laser intensity
@@ -62,7 +50,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     private List<Function<Double[], Double>> funcarray;
 
     /**
-     * The saturating laser intensity
+     * Constructor
      *
      * @param l - laser pulse object
      * @param b - electron bunch object
@@ -142,24 +130,6 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionEnergy(Vector n, Vector v) {
         return directionEnergyBasic(n, v, eb.getGamma(), lp.getAverageIntensity());
-    }
-
-    /**
-     * Setting the non-linear order number
-     *
-     * @return the n
-     */
-    public int getOrdernumber() {
-        return ordernumber;
-    }
-
-    /**
-     * Getting the non-linear order number
-     *
-     * @param n the n to set
-     */
-    public void setOrdernumber(int n) {
-        this.ordernumber = n;
     }
 
     /**
