@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.17
+ * @version 1.18
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2472,7 +2472,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within limits: "
                             + fmt.format(tsource.calculateAngleTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-10)
+                                    ysize * ystep) * 1e-3 / 2) * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -2911,22 +2911,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void BrilmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilmaxvalueActionPerformed
         // TODO add your handling code here:
-        brilForm.maxValue = TestValueWithMemory(0, 10000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.maxValue = TestValueWithMemory(0, 100000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueActionPerformed
 
     private void BrilminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrilminvalueActionPerformed
         // TODO add your handling code here:
-        brilForm.minValue = TestValueWithMemory(0, 10000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.minValue = TestValueWithMemory(0, 100000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueActionPerformed
 
     private void BrilminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilminvalueFocusLost
         // TODO add your handling code here:
-        brilForm.minValue = TestValueWithMemory(0, 10000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.minValue = TestValueWithMemory(0, 100000, Brilminvalue, brilForm.minValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilminvalueFocusLost
 
     private void BrilmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_BrilmaxvalueFocusLost
         // TODO add your handling code here:
-        brilForm.maxValue = TestValueWithMemory(0, 10000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
+        brilForm.maxValue = TestValueWithMemory(0, 100000, Brilmaxvalue, brilForm.maxValues[brilForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_BrilmaxvalueFocusLost
 
     private void jMenuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExitActionPerformed
@@ -2974,6 +2974,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         int ans = fo.showSaveDialog(this);
         if (ans == JFileChooser.APPROVE_OPTION) {
             pFile = fo.getSelectedFile();
+            //Checking whether the file exists
             if (pFile.exists()) {
                 if (!pFile.isFile()) {
                     //If not a file then do nothing
@@ -2988,15 +2989,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 String extension = "";
                 int ind = pFile.getName().lastIndexOf('.');
                 if (ind > -1) {
-                    //If the file has extension then get it
+                    //If the file has an extension then get it
                     extension = pFile.getName().substring(ind + 1);
                 }
                 //If the extension is not 'ini' then add the 'ini' extension to the file name
                 if (!extension.equals("ini")) {
                     try {
-
-                        pFile = (ind != -1) ? new File(pFile.getCanonicalPath().substring(0, ind + 1) + ".ini")
-                                : new File(pFile.getCanonicalPath() + ".ini");
+                        pFile = new File(pFile.getCanonicalPath() + ".ini");
                     } catch (IOException ex) {
                         //Do nothing
                     }
@@ -3335,22 +3334,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void GFminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFminvalueFocusLost
         // TODO add your handling code here:
-        gfForm.minValue = TestValueWithMemory(0, 10000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.minValue = TestValueWithMemory(0, 100000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueFocusLost
 
     private void GFminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFminvalueActionPerformed
         // TODO add your handling code here:
-        gfForm.minValue = TestValueWithMemory(0, 10000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.minValue = TestValueWithMemory(0, 100000, GFminvalue, gfForm.minValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFminvalueActionPerformed
 
     private void GFmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_GFmaxvalueFocusLost
         // TODO add your handling code here:
-        gfForm.maxValue = TestValueWithMemory(0, 10000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.maxValue = TestValueWithMemory(0, 100000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueFocusLost
 
     private void GFmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFmaxvalueActionPerformed
         // TODO add your handling code here:
-        gfForm.maxValue = TestValueWithMemory(0, 10000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
+        gfForm.maxValue = TestValueWithMemory(0, 100000, GFmaxvalue, gfForm.maxValues[gfForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_GFmaxvalueActionPerformed
 
     private void jCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadActionPerformed
@@ -3744,22 +3743,22 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polminvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polminvalueFocusLost
         // TODO add your handling code here:
-        polForm.minValue = TestValueWithMemory(0, 10000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+        polForm.minValue = TestValueWithMemory(0, 100000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polminvalueFocusLost
 
     private void polminvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polminvalueActionPerformed
         // TODO add your handling code here:
-        polForm.minValue = TestValueWithMemory(0, 10000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
+        polForm.minValue = TestValueWithMemory(0, 100000, polminvalue, polForm.minValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polminvalueActionPerformed
 
     private void polmaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polmaxvalueFocusLost
         // TODO add your handling code here:
-        polForm.maxValue = TestValueWithMemory(0, 10000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+        polForm.maxValue = TestValueWithMemory(0, 100000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polmaxvalueFocusLost
 
     private void polmaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polmaxvalueActionPerformed
         // TODO add your handling code here:
-        polForm.maxValue = TestValueWithMemory(0, 10000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
+        polForm.maxValue = TestValueWithMemory(0, 100000, polmaxvalue, polForm.maxValues[polForm.selectedItemIndex], oldStrings);
     }//GEN-LAST:event_polmaxvalueActionPerformed
 
     private void jPolCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPolCheckBoxSpreadActionPerformed
