@@ -4216,7 +4216,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
             chargevalue.setText(prop.getProperty(paramNames[1], "0"));
             ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
-            spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
+            spreadvalue.setText(Double.toString(ebunch.getDelgamma() * 200));
             ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
             elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
             ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
@@ -4236,7 +4236,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             lpulse.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
             pulserelvalue.setText(prop.getProperty(paramNames[11], "0"));
             lpulse.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
-            pulsefreqvalue.setText(prop.getProperty(paramNames[12], "0"));
+            pulsefreqvalue.setText(Double.toString(lpulse.getFq()));
             lpulse.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
             pulsedelayvalue.setText(prop.getProperty(paramNames[13], "0"));
             ebunch.getShift().set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
