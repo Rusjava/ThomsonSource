@@ -98,7 +98,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
         this.gfMonteCarloEmittanceNumberBox = getIntegerFormattedTextField(30000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-4, 1e-10, 1e-1, true);
-        this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
+        this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-100, 1e100, true);
         this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
         this.ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
         this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
