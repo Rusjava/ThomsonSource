@@ -2498,12 +2498,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eemitxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemitxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "1", oldStrings) * 1e-6);
+        ebunch.setEpsx(TestValueWithMemory(0.1, 1000, eemitxvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitxvalueFocusLost
 
     private void eemitxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemitxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setEpsx(TestValueWithMemory(0.1, 100, eemitxvalue, "1", oldStrings) * 1e-6);
+        ebunch.setEpsx(TestValueWithMemory(0.1, 1000, eemitxvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemitxvalueActionPerformed
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
@@ -3793,12 +3793,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void eemityvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eemityvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "1", oldStrings) * 1e-6);
+        ebunch.setEpsy(TestValueWithMemory(0.1, 1000, eemityvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemityvalueFocusLost
 
     private void eemityvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eemityvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setEpsy(TestValueWithMemory(0.1, 100, eemityvalue, "1", oldStrings) * 1e-6);
+        ebunch.setEpsy(TestValueWithMemory(0.1, 1000, eemityvalue, "1", oldStrings) * 1e-6);
     }//GEN-LAST:event_eemityvalueActionPerformed
 
     private void GFValueSelectionBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GFValueSelectionBoxActionPerformed
