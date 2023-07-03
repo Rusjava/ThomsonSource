@@ -2312,7 +2312,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 1000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -2322,7 +2322,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 1000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.512);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
