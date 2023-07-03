@@ -2597,12 +2597,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "1000", oldStrings));
+        lpulse.setFq(TestValueWithMemory(0, 100000000, pulsefreqvalue, "1000", oldStrings));
     }//GEN-LAST:event_pulsefreqvalueFocusLost
 
     private void pulsefreqvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulsefreqvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setFq(TestValueWithMemory(0, 100000, pulsefreqvalue, "1000", oldStrings));
+        lpulse.setFq(TestValueWithMemory(0, 100000000, pulsefreqvalue, "1000", oldStrings));
     }//GEN-LAST:event_pulsefreqvalueActionPerformed
 
     private void pulsedelayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsedelayvalueFocusLost
