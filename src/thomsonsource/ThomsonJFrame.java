@@ -1080,7 +1080,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        chargeunitlabel.setText("nQ");
+        chargeunitlabel.setText("nC");
 
         spreadlabel.setText("Gamma-spread");
 
@@ -2312,7 +2312,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.511);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -2322,7 +2322,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.511);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
@@ -3004,7 +3004,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             //Creating Properties object to store program parameters
             Properties prop = new Properties();
             try (FileWriter fw = new FileWriter(pFile, false)) {
-                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.512));
+                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.511));
                 prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * ElectronBunch.E * 1e9));
                 prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
                 prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
@@ -4211,7 +4211,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
         try {
-            ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+            ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.511);
             energyvalue.setText(prop.getProperty(paramNames[0], "0"));
             ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
             chargevalue.setText(prop.getProperty(paramNames[1], "0"));
