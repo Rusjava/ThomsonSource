@@ -1628,7 +1628,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        chargeunitlabel.setText("nQ");
+        chargeunitlabel.setText("nC");
 
         spreadlabel.setText("Gamma-spread");
 
@@ -2322,7 +2322,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2865,7 +2865,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 10000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 10000, energyvalue, "50", oldStrings) / 0.511);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -2876,7 +2876,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 10000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 10000, energyvalue, "50", oldStrings) / 0.511);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
@@ -3647,8 +3647,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 if (!extension.equals("ini")) {
                     try {
 
-                        pFile = (ind != -1) ? new File(pFile.getCanonicalPath().substring(0, ind + 1) + ".ini")
-                                : new File(pFile.getCanonicalPath() + ".ini");
+                        pFile = new File(pFile.getCanonicalPath() + ".ini");
                     } catch (IOException ex) {
                         //Do nothing
                     }

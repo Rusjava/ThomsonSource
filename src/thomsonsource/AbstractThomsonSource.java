@@ -70,7 +70,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         this.partialFlux = new DoubleAdder();
         this.ksi = new double[]{0, 0, -1};
         this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
-            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
+            "Electron_bunch_relative_energy_spread_%", "Electron_bunch_length_ps",
             "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
@@ -853,7 +853,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0});
         Vector As;
-        int lcn=0;
+        int lcn = 0;
         double prob0;
         double prob;
         double EMax;
@@ -1222,9 +1222,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
         //Creating Properties object to store program parameters
         Properties prop = new Properties();
         try (FileWriter fw = new FileWriter(file, false)) {
-            prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.512));
+            prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.511));
             prop.setProperty(paramNames[1], Double.toString(eb.getNumber() * GaussianElectronBunch.E * 1e9));
-            prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma()));
+            prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma() * 100));
             prop.setProperty(paramNames[3], Double.toString(eb.getLength() * 2 / 3e-4));
             prop.setProperty(paramNames[4], Double.toString(eb.getEpsx() * 1e6));
             prop.setProperty(paramNames[5], Double.toString(eb.getEpsy() * 1e6));
@@ -1234,7 +1234,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             prop.setProperty(paramNames[9], Double.toString(lp.getPulseEnergy() * 1e3));
             prop.setProperty(paramNames[10], Double.toString(lp.getLength() * 2 / 3e-4));
             prop.setProperty(paramNames[11], Double.toString(lp.getRlength() * 1e3));
-            prop.setProperty(paramNames[12], Double.toString(lp.getFq() * 1e-6));
+            prop.setProperty(paramNames[12], Double.toString(lp.getFq()));
             prop.setProperty(paramNames[13], Double.toString(lp.getDelay() / 3e-4));
             prop.setProperty(paramNames[14], Double.toString(eb.getShift().get(0) * 1e3));
             prop.setProperty(paramNames[15], Double.toString(eb.getShift().get(1) * 1e3));
@@ -1264,9 +1264,9 @@ public abstract class AbstractThomsonSource implements Cloneable {
             throw e;
         }
         try {
-            eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+            eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.511);
             eb.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
-            eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
+            eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")) / 100);
             eb.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
             eb.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
             eb.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
@@ -1276,7 +1276,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             lp.setPulseEnergy(Float.parseFloat(prop.getProperty(paramNames[9], "0")) * 1e-3);
             lp.setLength(Float.parseFloat(prop.getProperty(paramNames[10], "0")) / 2 * 3e-4);
             lp.setRlength(Float.parseFloat(prop.getProperty(paramNames[11], "0")) * 1e-3);
-            lp.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")) * 1e6);
+            lp.setFq(Float.parseFloat(prop.getProperty(paramNames[12], "0")));
             lp.setDelay(Float.parseFloat(prop.getProperty(paramNames[13], "0")) * 3e-4);
             Vector sht = new BasicVector(new double[3]);
             sht.set(0, Float.parseFloat(prop.getProperty(paramNames[14], "0")) * 1e-3);
