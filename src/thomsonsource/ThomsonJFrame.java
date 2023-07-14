@@ -207,7 +207,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.polForm.numberOfItems = 12;
 
         this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
-            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
+            "Electron_bunch_relative_energy_spread_%", "Electron_bunch_length_ps",
             "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
@@ -3006,7 +3006,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             try (FileWriter fw = new FileWriter(pFile, false)) {
                 prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.511));
                 prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * ElectronBunch.E * 1e9));
-                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
+                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma() * 200));
                 prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
                 prop.setProperty(paramNames[4], Double.toString(ebunch.getEpsx() * 1e6));
                 prop.setProperty(paramNames[5], Double.toString(ebunch.getEpsy() * 1e6));
@@ -4215,8 +4215,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             energyvalue.setText(prop.getProperty(paramNames[0], "0"));
             ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
             chargevalue.setText(prop.getProperty(paramNames[1], "0"));
-            ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
-            spreadvalue.setText(Double.toString(ebunch.getDelgamma() * 200));
+            ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")) / 200);
+            spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
             ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
             elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
             ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
