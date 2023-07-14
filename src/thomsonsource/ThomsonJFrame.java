@@ -103,9 +103,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.ySizeBox = getIntegerFormattedTextField(200, 1, 10000);
         this.xRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
         this.yRangeBox = getDoubleFormattedTextField(20.0, 0.0, 100.0, false);
-        this.xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000.0, false);
-        this.rayMinEnergyBox = getDoubleFormattedTextField(42.0, 0.0, 10000.0, false);
-        this.rayEnergyRangeBox = getDoubleFormattedTextField(6.0, 0.0, 1000.0, false);
+        this.xEnergyRangeBox = getDoubleFormattedTextField(2000.0, 0.0, 20000000.0, false);
+        this.rayMinEnergyBox = getDoubleFormattedTextField(42.0, 0.0, 100000.0, false);
+        this.rayEnergyRangeBox = getDoubleFormattedTextField(6.0, 0.0, 100000.0, false);
         this.threadsNumberBox = getIntegerFormattedTextField(2, 1, 100);
         this.ksi1Box = getDoubleFormattedTextField(1.0, -1.0, 1.0, false);
         this.ksi2Box = getDoubleFormattedTextField(0.0, -1.0, 1.0, false);
@@ -3463,12 +3463,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyValueFocusLost
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(0, 10000, energyValue, "46", oldStrings);
+        brilForm.energy = TestValueWithMemory(0, 100000, energyValue, "46", oldStrings);
     }//GEN-LAST:event_energyValueFocusLost
 
     private void energyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyValueActionPerformed
         // TODO add your handling code here:
-        brilForm.energy = TestValueWithMemory(0, 10000, energyValue, "46", oldStrings);
+        brilForm.energy = TestValueWithMemory(0, 100000, energyValue, "46", oldStrings);
     }//GEN-LAST:event_energyValueActionPerformed
 
     private void jMenuItemConvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemConvActionPerformed
@@ -3778,12 +3778,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void polEnergyValueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_polEnergyValueFocusLost
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(0, 10000, polEnergyValue, "46", oldStrings);
+        polForm.energy = TestValueWithMemory(0, 100000, polEnergyValue, "46", oldStrings);
     }//GEN-LAST:event_polEnergyValueFocusLost
 
     private void polEnergyValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_polEnergyValueActionPerformed
         // TODO add your handling code here:
-        polForm.energy = TestValueWithMemory(0, 10000, polEnergyValue, "46", oldStrings);
+        polForm.energy = TestValueWithMemory(0, 100000, polEnergyValue, "46", oldStrings);
     }//GEN-LAST:event_polEnergyValueActionPerformed
 
     private void jMenuItemPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPolarizationActionPerformed
