@@ -1224,7 +1224,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         try (FileWriter fw = new FileWriter(file, false)) {
             prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.511));
             prop.setProperty(paramNames[1], Double.toString(eb.getNumber() * GaussianElectronBunch.E * 1e9));
-            prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma() * 100));
+            prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma() * 200));
             prop.setProperty(paramNames[3], Double.toString(eb.getLength() * 2 / 3e-4));
             prop.setProperty(paramNames[4], Double.toString(eb.getEpsx() * 1e6));
             prop.setProperty(paramNames[5], Double.toString(eb.getEpsy() * 1e6));
@@ -1266,7 +1266,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         try {
             eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.511);
             eb.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
-            eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")) / 100);
+            eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")) / 200);
             eb.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
             eb.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
             eb.setEpsy(Float.parseFloat(prop.getProperty(paramNames[5], "0")) / 1e6);
