@@ -2508,12 +2508,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetax(TestValueWithMemory(0.1, 10000, ebetaxvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetax(TestValueWithMemory(0.1, 100000, ebetaxvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetax(TestValueWithMemory(0.1, 10000, ebetaxvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetax(TestValueWithMemory(0.1, 100000, ebetaxvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
@@ -3383,12 +3383,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(0.1, 10000, ebetayvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100000, ebetayvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(0.1, 10000, ebetayvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100000, ebetayvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
