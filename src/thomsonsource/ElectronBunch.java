@@ -297,7 +297,7 @@ public class ElectronBunch implements Cloneable {
     /**
      * Mean electron bunch gamma
      */
-    private double gamma = 50 / 0.512;
+    private double gamma = 50 / mc2;
 
     /**
      * Number of electrons in the bunch
@@ -343,5 +343,10 @@ public class ElectronBunch implements Cloneable {
      * The charge of electron
      */
     public static final double E = 1.602e-19;
+    
+    /**
+     * The mass of electron in MeV
+     */
+    public static final double mc2=0.5109989461;
 
 }
