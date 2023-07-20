@@ -30,10 +30,15 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * The charge of electron
      */
     public static final double E = 1.602e-19;
+
+    /**
+     * The mass of electron in MeV
+     */
+    public static final double mc2 = 0.5109989461;
     /**
      * Mean electron bunch gamma
      */
-    protected double gamma = 50 /0.512;
+    protected double gamma = 50 / mc2;
     /**
      * Number of electrons in the bunch
      */
@@ -328,10 +333,10 @@ public abstract class AbstractElectronBunch implements Cloneable {
      * @return width in the x direction squared
      */
     public abstract double getyWidth2(double z);
-    
+
     /**
      * Distribution of electrons by factor gamma
-     * 
+     *
      * @param g - gamma factor
      * @return
      */

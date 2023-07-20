@@ -1222,7 +1222,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         //Creating Properties object to store program parameters
         Properties prop = new Properties();
         try (FileWriter fw = new FileWriter(file, false)) {
-            prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * 0.511));
+            prop.setProperty(paramNames[0], Double.toString(eb.getGamma() * AbstractElectronBunch.mc2));
             prop.setProperty(paramNames[1], Double.toString(eb.getNumber() * GaussianElectronBunch.E * 1e9));
             prop.setProperty(paramNames[2], Double.toString(eb.getDelGamma() * 200));
             prop.setProperty(paramNames[3], Double.toString(eb.getLength() * 2 / 3e-4));
@@ -1264,7 +1264,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             throw e;
         }
         try {
-            eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.511);
+            eb.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / AbstractElectronBunch.mc2);
             eb.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / GaussianElectronBunch.E * 1e-9);
             eb.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")) / 200);
             eb.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
