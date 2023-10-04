@@ -1452,7 +1452,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="chargeunitlabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="nQ"/>
+                    <Property name="text" type="java.lang.String" value="nC"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="spreadlabel">

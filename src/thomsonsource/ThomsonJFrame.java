@@ -207,7 +207,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.polForm.numberOfItems = 12;
 
         this.paramNames = new String[]{"Electron_energy_MeV", "Electron_bunch_charge_nQ",
-            "Electron_bunch_relative_energy_spread", "Electron_bunch_length_ps",
+            "Electron_bunch_relative_energy_spread_%", "Electron_bunch_length_ps",
             "X-emittance_mm*mrad", "Y-emittance_mm*mrad", "Beta-x_function_mm", "Beta-y_function_mm", "Photon_energy_eV",
             "Pulse_energy_mJ", "Laser_pulse_length_ps", "Rayleigh_length_mm",
             "Pulse_frequency_MHz", "Delay_ps", "X-shift_mm",
@@ -1081,7 +1081,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
 
-        chargeunitlabel.setText("nQ");
+        chargeunitlabel.setText("nC");
 
         spreadlabel.setText("Gamma-spread");
 
@@ -2325,7 +2325,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / ElectronBunch.mc2);
     }//GEN-LAST:event_energyvalueActionPerformed
 
     private void phenergyvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_phenergyvalueActionPerformed
@@ -2335,7 +2335,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void energyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_energyvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / 0.512);
+        ebunch.setGamma(TestValueWithMemory(0, 3000, energyvalue, "50", oldStrings) / ElectronBunch.mc2);
     }//GEN-LAST:event_energyvalueFocusLost
 
     private void phenergyvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_phenergyvalueFocusLost
@@ -2521,12 +2521,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetaxvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetaxvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetax(TestValueWithMemory(0.1, 10000, ebetaxvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetax(TestValueWithMemory(0.1, 100000, ebetaxvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueFocusLost
 
     private void ebetaxvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetaxvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetax(TestValueWithMemory(0.1, 10000, ebetaxvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetax(TestValueWithMemory(0.1, 100000, ebetaxvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetaxvalueActionPerformed
 
     private void jSlider_pickupStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_pickupStateChanged
@@ -2600,12 +2600,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void pulserelvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulserelvalueFocusLost
         // TODO add your handling code here:
-        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "0.35", oldStrings) * 1e-3);
+        lpulse.setRlength(TestValueWithMemory(0.01, 1000, pulserelvalue, "0.35", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueFocusLost
 
     private void pulserelvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pulserelvalueActionPerformed
         // TODO add your handling code here:
-        lpulse.setRlength(TestValueWithMemory(0.01, 100, pulserelvalue, "0.35", oldStrings) * 1e-3);
+        lpulse.setRlength(TestValueWithMemory(0.01, 1000, pulserelvalue, "0.35", oldStrings) * 1e-3);
     }//GEN-LAST:event_pulserelvalueActionPerformed
 
     private void pulsefreqvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pulsefreqvalueFocusLost
@@ -3017,9 +3017,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             //Creating Properties object to store program parameters
             Properties prop = new Properties();
             try (FileWriter fw = new FileWriter(pFile, false)) {
-                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * 0.512));
+                prop.setProperty(paramNames[0], Double.toString(ebunch.getGamma() * ElectronBunch.mc2));
                 prop.setProperty(paramNames[1], Double.toString(ebunch.getNumber() * ElectronBunch.E * 1e9));
-                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma()));
+                prop.setProperty(paramNames[2], Double.toString(ebunch.getDelgamma() * 200));
                 prop.setProperty(paramNames[3], Double.toString(ebunch.getLength() * 2 / 3e-4));
                 prop.setProperty(paramNames[4], Double.toString(ebunch.getEpsx() * 1e6));
                 prop.setProperty(paramNames[5], Double.toString(ebunch.getEpsy() * 1e6));
@@ -3396,12 +3396,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void ebetayvalueFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_ebetayvalueFocusLost
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(0.1, 10000, ebetayvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100000, ebetayvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueFocusLost
 
     private void ebetayvalueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ebetayvalueActionPerformed
         // TODO add your handling code here:
-        ebunch.setBetay(TestValueWithMemory(0.1, 10000, ebetayvalue, "20", oldStrings) * 1e-3);
+        ebunch.setBetay(TestValueWithMemory(0.1, 100000, ebetayvalue, "20", oldStrings) * 1e-3);
     }//GEN-LAST:event_ebetayvalueActionPerformed
 
     private void jMenuItemNumericalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemNumericalActionPerformed
@@ -4229,12 +4229,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
         try {
-            ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / 0.512);
+            ebunch.setGamma(Float.parseFloat(prop.getProperty(paramNames[0], "0")) / ElectronBunch.mc2);
             energyvalue.setText(prop.getProperty(paramNames[0], "0"));
             ebunch.setNumber(Float.parseFloat(prop.getProperty(paramNames[1], "0")) / ElectronBunch.E * 1e-9);
             chargevalue.setText(prop.getProperty(paramNames[1], "0"));
-            ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")));
-            spreadvalue.setText(Double.toString(ebunch.getDelgamma() * 200));
+            ebunch.setDelgamma(Float.parseFloat(prop.getProperty(paramNames[2], "0")) / 200);
+            spreadvalue.setText(prop.getProperty(paramNames[2], "0"));
             ebunch.setLength(Float.parseFloat(prop.getProperty(paramNames[3], "0")) / 2 * 3e-4);
             elengthvalue.setText(prop.getProperty(paramNames[3], "0"));
             ebunch.setEpsx(Float.parseFloat(prop.getProperty(paramNames[4], "0")) / 1e6);
