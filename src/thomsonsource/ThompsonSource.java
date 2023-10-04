@@ -888,8 +888,12 @@ public class ThompsonSource implements Cloneable {
         double gamma2, th;
         th = (1 - n.innerProduct(v)) * 2;
         gamma2 = eb.getGamma() * eb.getGamma();
-        return getTotalFlux() * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
-                / Math.pow((1 + gamma2 * th), 4) * getGeometricFactor();
+        if (!IsCompton) {
+            return getTotalFlux() * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
+                    / Math.pow((1 + gamma2 * th), 4) * getGeometricFactor();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -900,12 +904,13 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionEnergy(Vector n, Vector v) {
-        double mv;
+        double mv, cs;
         mv = Math.sqrt(1.0 - 1.0 / eb.getGamma() / eb.getGamma());
+        cs = n.innerProduct(v);
         if (!IsCompton) {
-            return (1+mv) * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv);
+            return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv);
         } else {
-            return (1+mv) * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv+4*eb.getGamma()*lp.getPhotonEnergy());
+            return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (eb.mc2 * eb.E * 1e6) / eb.getGamma() * (1 + cs));
         }
     }
 
