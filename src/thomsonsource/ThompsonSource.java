@@ -910,7 +910,7 @@ public class ThompsonSource implements Cloneable {
         if (!IsCompton) {
             return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv);
         } else {
-            return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (eb.mc2 * eb.E * 1e6) / eb.getGamma() * (1 + cs));
+            return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (ElectronBunch.mc2 * ElectronBunch.E * 1e6) / eb.getGamma() * (1 + cs));
         }
     }
 
