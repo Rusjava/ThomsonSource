@@ -34,7 +34,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.73
+ * @version 2.8
  */
 public class ThompsonSource implements Cloneable {
 
@@ -139,7 +139,12 @@ public class ThompsonSource implements Cloneable {
      * Flag - whether or not the Monte-Carlo method is used to calculate the
      * directional integral
      */
-    private boolean IsMonteCarlo = false;
+    private boolean IsMonteCarlo = true;
+
+    /**
+     * Flag - whether or not the Compton cross-sections are used
+     */
+    private boolean IsCompton = false;
 
     /**
      * Flux in the phase space volume of ray generation
@@ -217,10 +222,14 @@ public class ThompsonSource implements Cloneable {
         double v = Math.sqrt(1 - 1 / gamma2);
         double v2 = v * v;
         double cs = Math.cos(maxAngle);
-        return 3.0 / 4 / gamma2 * ((1 - cs) / (1 - v * cs) / (1 - v)
-                * (5.0 / 6 + 1.0 / 6 / v2 - 1.0 / 6 / gamma2 / v2 * (1 - v2 * cs) / (1 - v) / (1 - v * cs))
-                + 1.0 / 6 / gamma2 / v2 * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
-                * getTotalFlux() * getGeometricFactor();
+        if (!IsCompton) {
+            return 3.0 / 4 / gamma2 * ((1 - cs) / (1 - v * cs) / (1 - v)
+                    * (5.0 / 6 + 1.0 / 6 / v2 - 1.0 / 6 / gamma2 / v2 * (1 - v2 * cs) / (1 - v) / (1 - v * cs))
+                    + 1.0 / 6 / gamma2 / v2 * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
+                    * getTotalFlux() * getGeometricFactor();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -308,12 +317,16 @@ public class ThompsonSource implements Cloneable {
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
         double K, th, tmp;
         th = (1 - n.innerProduct(v)) * 2;
-        K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-        tmp = getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
-                * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
-                / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
-        return new Double(tmp).isNaN() ? 0 : tmp;
+        if (!IsCompton) {
+            K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
+                    / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
+            tmp = getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+                    * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
+                    / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+            return new Double(tmp).isNaN() ? 0 : tmp;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -328,15 +341,19 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
         double[] array = new double[NUMBER_OF_POL_PARAM];
-        double K, th, m11, m22, m12, mlt, cs, sn;
+        double K, th, m11 = 1, m22 = 1, m12 = 1, mlt, cs, sn;
         th = (1 - n.innerProduct(v)) * 2;
         mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
-        K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-        m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
-                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
-        m12 = m11 * mlt;
-        m22 = m12 * mlt;
+        if (!IsCompton) {
+            K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
+                    / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
+            m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+                    * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+            m12 = m11 * mlt;
+            m22 = m12 * mlt;
+        } else {
+
+        }
         //Determine the polarization rotation angle
         double vn = v.innerProduct(n);
         double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(0) * n.get(0)));
@@ -885,7 +902,11 @@ public class ThompsonSource implements Cloneable {
     public double directionEnergy(Vector n, Vector v) {
         double mv;
         mv = Math.sqrt(1.0 - 1.0 / eb.getGamma() / eb.getGamma());
-        return 2 * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv);
+        if (!IsCompton) {
+            return (1+mv) * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv);
+        } else {
+            return (1+mv) * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv+4*eb.getGamma()*lp.getPhotonEnergy());
+        }
     }
 
     /**
@@ -1105,7 +1126,7 @@ public class ThompsonSource implements Cloneable {
         Vector r = new BasicVector(new double[]{0.0, 0.0, 0.0});
         Vector n0 = new BasicVector(new double[]{0.0, 1.0, 0.0}), As;
         double prob0, prob, EMax, MULT = 2, factor, sum = 0;
-        int lcn=0;
+        int lcn = 0;
         double[] pol, polParam;
         EMax = directionEnergy(n, n);
         factor = 32 * MULT * MULT * MULT * Math.max(eb.getxWidth(0.0), lp.getWidth(0.0)) * Math.max(eb.getyWidth(0.0), lp.getWidth(0.0))
@@ -1422,5 +1443,19 @@ public class ThompsonSource implements Cloneable {
      */
     public void setIsMonteCarlo(boolean IsMonteCarlo) {
         this.IsMonteCarlo = IsMonteCarlo;
+    }
+
+    /**
+     * @return the IsCompton
+     */
+    public boolean isIsCompton() {
+        return IsCompton;
+    }
+
+    /**
+     * @param IsCompton the IsCompton to set
+     */
+    public void setIsCompton(boolean IsCompton) {
+        this.IsCompton = IsCompton;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Ruslan Feshchenko
+ * Copyright (C) 2023 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.18
+ * @version 1.2
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -408,6 +408,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxMenuItemMonteCarlo = new javax.swing.JCheckBoxMenuItem();
+        jCheckBoxMenuItemCompton = new javax.swing.JCheckBoxMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuSkin = new javax.swing.JMenu();
         jRadioButtonMenuDefault = new javax.swing.JRadioButtonMenuItem();
@@ -1971,6 +1972,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuOptions.add(jCheckBoxMenuItemSpread);
 
+        jCheckBoxMenuItemMonteCarlo.setSelected(true);
         jCheckBoxMenuItemMonteCarlo.setText("MonteCarlo");
         jCheckBoxMenuItemMonteCarlo.setToolTipText("Is Monte-Carlo method used?");
         jCheckBoxMenuItemMonteCarlo.addActionListener(new java.awt.event.ActionListener() {
@@ -1979,6 +1981,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuOptions.add(jCheckBoxMenuItemMonteCarlo);
+
+        jCheckBoxMenuItemCompton.setSelected(true);
+        jCheckBoxMenuItemCompton.setText("Compton");
+        jCheckBoxMenuItemCompton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItemComptonActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jCheckBoxMenuItemCompton);
         jMenuOptions.add(jSeparator4);
 
         jMenuSkin.setText("Look&Feel...");
@@ -2025,7 +2036,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuHelp.add(HelpItem);
 
-        jMenuItemAbout.setText("About TSourceX");
+        jMenuItemAbout.setText("About TSourceXG");
         jMenuItemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemAboutActionPerformed(evt);
@@ -2053,6 +2064,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
                 .addContainerGap(56, Short.MAX_VALUE))
         );
+
+        getAccessibleContext().setAccessibleName("TSourceXG");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -3818,6 +3831,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         tsource.setIsMonteCarlo(jCheckBoxMenuItemMonteCarlo.isSelected());
     }//GEN-LAST:event_jCheckBoxMenuItemMonteCarloActionPerformed
 
+    private void jCheckBoxMenuItemComptonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemComptonActionPerformed
+        // TODO add your handling code here:
+        tsource.setIsCompton(jCheckBoxMenuItemCompton.isSelected());
+    }//GEN-LAST:event_jCheckBoxMenuItemComptonActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation
      */
@@ -4322,6 +4340,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField eshiftzvalue;
     private javax.swing.JFrame gfCalc;
     private javax.swing.JLabel jAngleLabel;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemCompton;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemMonteCarlo;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
