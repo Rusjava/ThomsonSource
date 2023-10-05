@@ -2976,7 +2976,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 + "<br>Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
                 + "<br>Author: " + pk.getImplementationVendor()
                 + "</html>",
-                "About TSourceX", JOptionPane.INFORMATION_MESSAGE);
+                "About TSourceXG", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed
