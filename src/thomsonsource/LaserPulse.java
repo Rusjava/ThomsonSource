@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Ruslan Feshchenko
+ * Copyright (C) 2023 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import org.la4j.vector.dense.BasicVector;
  * units
  *
  * @author Ruslan feshchenko
- * @version 2.01
+ * @version 2.1
  */
 public class LaserPulse implements Cloneable {
 

@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.2
+ * @version 1.20
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -1028,7 +1028,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("TSourceX");
+        setTitle("TSourceXG");
         setMinimumSize(new java.awt.Dimension(750, 0));
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {

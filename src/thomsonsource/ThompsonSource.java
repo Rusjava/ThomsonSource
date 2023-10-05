@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Ruslan Feshchenko
+ * Copyright (C) 2023 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.8
+ * @version 2.80
  */
 public class ThompsonSource implements Cloneable {
 
@@ -363,7 +363,7 @@ public class ThompsonSource implements Cloneable {
             m11 = getTotalFlux() * e * 3.0 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
                     * Math.pow(eb.getGamma(), 5) / Math.pow((1 + gamma2 * th + 4 * ac * eb.getGamma()), 2) / (1 + 2 * gamma * ac)
                     * Math.exp(-Math.pow((gamma - eb.getGamma()) / eb.getDelgamma() / eb.getGamma(), 2));
-            mlt = Math.pow((1 - gamma2 * th) / (1 + gamma2 * th), 2);
+            mlt = (1 - gamma2 * th) / (1 + gamma2 * th);
         }
         m12 = m11 * mlt;
         m22 = m12 * mlt;
