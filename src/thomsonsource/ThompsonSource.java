@@ -144,7 +144,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Flag - whether or not the Compton cross-sections are used
      */
-    private boolean IsCompton = false;
+    private boolean IsCompton = true;
 
     /**
      * Flux in the phase space volume of ray generation
@@ -315,7 +315,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        double K, th, tmp;
+        double K, th, tmp, ac, koef, gamma, gamma2;
         th = (1 - n.innerProduct(v)) * 2;
         if (!IsCompton) {
             K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
@@ -323,10 +323,16 @@ public class ThompsonSource implements Cloneable {
             tmp = getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
                     * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
                     / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
-            return new Double(tmp).isNaN() ? 0 : tmp;
         } else {
-            return 0;
+            ac = lp.getPhotonEnergy() / (ElectronBunch.MC2 * ElectronBunch.E * 1e6);
+            koef = 4 * lp.getPhotonEnergy() / e - th;
+            gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef;
+            gamma2 = gamma * gamma;
+            tmp = getTotalFlux() * e * 1.5 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
+                    * Math.pow(eb.getGamma(), 5) / Math.pow((1 + gamma2 * th + 4 * ac * eb.getGamma()), 2) / (1 + 2 * gamma * ac)
+                    * (1 + Math.pow((1 - gamma2 * th) / (1 + gamma2 * th), 2)) * Math.exp(-Math.pow((gamma - eb.getGamma()) / eb.getDelgamma() / eb.getGamma(), 2));
         }
+        return new Double(tmp).isNaN() ? 0 : tmp;
     }
 
     /**
@@ -341,19 +347,26 @@ public class ThompsonSource implements Cloneable {
      */
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
         double[] array = new double[NUMBER_OF_POL_PARAM];
-        double K, th, m11 = 1, m22 = 1, m12 = 1, mlt, cs, sn;
+        double K, th, m11, m22, m12, mlt, cs, sn, ac, koef, gamma, gamma2;
         th = (1 - n.innerProduct(v)) * 2;
-        mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
         if (!IsCompton) {
             K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
                     / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
             m11 = getTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
                     * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
-            m12 = m11 * mlt;
-            m22 = m12 * mlt;
+            mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
         } else {
-
+            ac = lp.getPhotonEnergy() / (ElectronBunch.MC2 * ElectronBunch.E * 1e6);
+            koef = 4 * lp.getPhotonEnergy() / e - th;
+            gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef;
+            gamma2 = gamma * gamma;
+            m11 = getTotalFlux() * e * 3.0 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
+                    * Math.pow(eb.getGamma(), 5) / Math.pow((1 + gamma2 * th + 4 * ac * eb.getGamma()), 2) / (1 + 2 * gamma * ac)
+                    * Math.exp(-Math.pow((gamma - eb.getGamma()) / eb.getDelgamma() / eb.getGamma(), 2));
+            mlt = Math.pow((1 - gamma2 * th) / (1 + gamma2 * th), 2);
         }
+        m12 = m11 * mlt;
+        m22 = m12 * mlt;
         //Determine the polarization rotation angle
         double vn = v.innerProduct(n);
         double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(0) * n.get(0)));
@@ -892,7 +905,9 @@ public class ThompsonSource implements Cloneable {
             return getTotalFlux() * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
                     / Math.pow((1 + gamma2 * th), 4) * getGeometricFactor();
         } else {
-            return 0;
+            return getTotalFlux() * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
+                    / Math.pow((1 + gamma2 * th), 2)
+                    / Math.pow((1 + gamma2 * th + 4 * lp.getPhotonEnergy() / (ElectronBunch.MC2 * ElectronBunch.E * 1e6) * eb.getGamma()), 2) * getGeometricFactor();
         }
     }
 
@@ -910,7 +925,7 @@ public class ThompsonSource implements Cloneable {
         if (!IsCompton) {
             return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv);
         } else {
-            return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (ElectronBunch.mc2 * ElectronBunch.E * 1e6) / eb.getGamma() * (1 + cs));
+            return (1 + mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (ElectronBunch.MC2 * ElectronBunch.E * 1e6) / eb.getGamma() * (1 + cs));
         }
     }
 
