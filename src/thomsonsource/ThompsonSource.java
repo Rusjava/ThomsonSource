@@ -557,21 +557,20 @@ public class ThompsonSource implements Cloneable {
             CountDownLatch lt = new CountDownLatch(threadNumber);
             for (int m = 0; m < threadNumber; m++) {
                 execs.execute(() -> {
-                    double rangle, rth, tm, psum = 0, sn;
+                    double rx, ry, rth, tm, psum = 0;
                     Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
                     //Calculating a partial sum
                     for (int p = 0; p < itNumber; p++) {
                         if (Thread.currentThread().isInterrupted()) {
                             return;
                         }
-                        rangle = 2 * Math.random() * Math.PI;
-                        rth = Math.random() * INT_RANGE * eb.getSpread();
-                        sn = Math.sin(rth);
-                        v.set(0, sn * Math.cos(rangle));
-                        v.set(1, sn * Math.sin(rangle));
-                        v.set(2, Math.cos(rth));
+                        rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
+                        ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
+                        v.set(0, rx);
+                        v.set(1, ry);
+                        v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
                         dv = v.subtract(v0);
-                        tm = sn * directionFrequencyPolarizationNoSpread(n, v, e)[ia[0]] * eb.angleDistribution(dv.get(0), dv.get(1));
+                        tm = directionFrequencyPolarizationNoSpread(n, v, e)[ia[0]] * eb.angleDistribution(dv.get(0), dv.get(1));
                         psum += new Double(tm).isNaN() ? 0 : tm;
                     }
                     //Adding to the full sum
@@ -648,7 +647,7 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
             try {
-                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.max(eb.getXSpread(), eb.getYSpread()));
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
