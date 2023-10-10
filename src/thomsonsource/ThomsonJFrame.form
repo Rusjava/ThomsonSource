@@ -1156,9 +1156,6 @@
       <Dimension value="[750, 0]"/>
     </Property>
   </Properties>
-  <AccessibilityProperties>
-    <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="TSourceXG"/>
-  </AccessibilityProperties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBarMain"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
