@@ -243,10 +243,10 @@ public class ThompsonSource implements Cloneable {
         // Atomic adder
         DoubleAdder sum = new DoubleAdder();
         double wdx, wdy, len;
-        int mult = 2;
-        wdx = mult * Math.max(eb.getxWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(0)) / 2);
-        wdy = mult * Math.max(eb.getyWidth(0.0) + Math.abs(eb.getShift().get(1)) / 2, lp.getWidth(0.0) + Math.abs(eb.getShift().get(1)) / 2);
-        len = mult * Math.max(eb.getLength() + Math.abs(eb.getShift().get(2)) / 2, lp.getLength() + Math.abs(eb.getShift().get(2)) / 2);
+        int mult = 3;
+        wdx = mult * (eb.getxWidth(0.0) * lp.getWidth(0.0) / Math.sqrt(eb.getxWidth2(0.0) + lp.getWidth2(0.0)));
+        wdy = mult * (eb.getyWidth(0.0) * lp.getWidth(0.0) / Math.sqrt(eb.getyWidth2(0.0) + lp.getWidth2(0.0)));
+        len = mult * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         final int itNumber = Math.round(getNpGeometricFactor() / threadNumber);
         /*
          Splitting the job into a number of threads
