@@ -417,9 +417,8 @@ public class ThompsonSource implements Cloneable {
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v0, n);
         try {
-            res = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                    - getShiftfactor() * SHIFT * 2 * Math.PI
-                    * (1 - Math.cos(INT_RANGE * Math.max(eb.getXSpread(), eb.getYSpread())));
+            res = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getXSpread(), INT_RANGE * eb.getXSpread())
+                    - getShiftfactor() * SHIFT * 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread();
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
@@ -506,9 +505,8 @@ public class ThompsonSource implements Cloneable {
                     //Creating a separate inegrator for each thread
                     res[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
-                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                            - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE
-                                    * Math.max(eb.getXSpread(), eb.getYSpread())));
+                            integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getXSpread(), INT_RANGE * eb.getXSpread())
+                            - getShiftfactor() * SHIFT * 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread();
                 } catch (TooManyEvaluationsException ex) {
                     res[ia[0]] = 0;
                 }
@@ -642,16 +640,16 @@ public class ThompsonSource implements Cloneable {
         }
 
         @Override
-        public double value(double phi) {
+        public double value(double x) {
             double tmp;
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
             }
             UnivariateFunction func
-                    = new UnivariateFrequencyFluxSpreadInner(phi, e, v0, n);
+                    = new UnivariateFrequencyFluxSpreadInner(x, e, v0, n);
             try {
-                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.max(eb.getXSpread(), eb.getYSpread()));
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getYSpread(), INT_RANGE * eb.getYSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -680,16 +678,16 @@ public class ThompsonSource implements Cloneable {
         }
 
         @Override
-        public double value(double phi) {
+        public double value(double x) {
             double tmp;
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
             }
             UnivariateFunction func
-                    = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
+                    = new UnivariateFrequencyPolarizationSpreadInner(x, e, v0, n, index);
             try {
-                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.max(eb.getXSpread(), eb.getYSpread()));
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getYSpread(), INT_RANGE * eb.getYSpread());
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -703,28 +701,27 @@ public class ThompsonSource implements Cloneable {
      */
     private class UnivariateFrequencyFluxSpreadInner implements UnivariateFunction {
 
-        private final double snphi, csphi, e;
+        private final double x, e;
         private final Vector n, v0;
 
-        public UnivariateFrequencyFluxSpreadInner(double phi, double e, Vector v0, Vector n) {
-            this.snphi = Math.sin(phi);
-            this.csphi = Math.cos(phi);
+        public UnivariateFrequencyFluxSpreadInner(double x, double e, Vector v0, Vector n) {
+            this.x = x;
             this.e = e;
             this.n = n;
             this.v0 = v0;
         }
 
         @Override
-        public double value(double theta) {
+        public double value(double y) {
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
             }
-            double u, sn = Math.sin(theta);
-            Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
+            double u;
+            Vector v = new BasicVector(new double[]{x, y, Math.sqrt(1 - y * y - x * x)});
             Vector dv = v.subtract(v0);
-            u = sn * (directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1))
-                    + getShiftfactor() * SHIFT);
+            u = directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1))
+                    + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }
     }
@@ -734,13 +731,12 @@ public class ThompsonSource implements Cloneable {
      */
     private class UnivariateFrequencyPolarizationSpreadInner implements UnivariateFunction {
 
-        private final double snphi, csphi, e;
+        private final double x, e;
         private final int index;
         private final Vector n, v0;
 
-        public UnivariateFrequencyPolarizationSpreadInner(double phi, double e, Vector v0, Vector n, int index) {
-            this.snphi = Math.sin(phi);
-            this.csphi = Math.cos(phi);
+        public UnivariateFrequencyPolarizationSpreadInner(double x, double e, Vector v0, Vector n, int index) {
+            this.x = x;
             this.e = e;
             this.n = n;
             this.index = index;
@@ -748,17 +744,17 @@ public class ThompsonSource implements Cloneable {
         }
 
         @Override
-        public double value(double theta) {
+        public double value(double y) {
             if (Thread.currentThread().isInterrupted()) {
                 Thread.currentThread().interrupt();
                 return 0;
             }
-            double u, sn = Math.sin(theta);
-            Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
+            double u;
+            Vector v = new BasicVector(new double[]{x, y, Math.sqrt(1 - y * y - x * x)});
             Vector dv = v.subtract(v0);
             // Normalization to the peak value
-            u = sn * (directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
-                    + getShiftfactor() * SHIFT);
+            u = directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
+                    + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }
     }
