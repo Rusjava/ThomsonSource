@@ -228,7 +228,10 @@ public class ThompsonSource implements Cloneable {
                     + 1.0 / 6 / gamma2 / v2 * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
                     * getTotalFlux() * getGeometricFactor();
         } else {
-            return 0;
+            return 3.0 / 4 / gamma2 * ((1 - cs) / (1 - v * cs) / (1 - v)
+                    * (5.0 / 6 + 1.0 / 6 / v2 - 1.0 / 6 / gamma2 / v2 * (1 - v2 * cs) / (1 - v) / (1 - v * cs))
+                    + 1.0 / 6 / gamma2 / v2 * (1 - cs * cs) / Math.pow((1 - v * cs), 3))
+                    * getTotalFlux() * getGeometricFactor();
         }
     }
 
@@ -315,12 +318,12 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, double e) {
-        double K, th, tmp, ac, koef, gamma, gamma2;
+        double K, th, res, ac, koef, gamma, gamma2;
         th = (1 - n.innerProduct(v)) * 2;
         if (!IsCompton) {
             K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
                     / 4 / Math.pow(eb.getGamma() * eb.getDelgamma(), 2);
-            tmp = getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
+            res = getTotalFlux() * e * 3.0 / 64 / Math.PI / Math.sqrt(Math.PI) / eb.getDelgamma() / eb.getGamma() / lp.getPhotonEnergy()
                     * Math.sqrt(e / lp.getPhotonEnergy()) * (Math.pow((1 - e * th / lp.getPhotonEnergy() / 2), 2) + 1)
                     / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
         } else {
@@ -328,11 +331,11 @@ public class ThompsonSource implements Cloneable {
             koef = 4 * lp.getPhotonEnergy() / e - th;
             gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef;
             gamma2 = gamma * gamma;
-            tmp = getTotalFlux() * e * 1.5 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
+            res = getTotalFlux() * e * 1.5 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
                     * Math.pow(eb.getGamma(), 5) / Math.pow((1 + gamma2 * th + 4 * ac * eb.getGamma()), 2) / (1 + 2 * gamma * ac)
                     * (1 + Math.pow((1 - gamma2 * th) / (1 + gamma2 * th), 2)) * Math.exp(-Math.pow((gamma - eb.getGamma()) / eb.getDelgamma() / eb.getGamma(), 2));
         }
-        return new Double(tmp).isNaN() ? 0 : tmp;
+        return new Double(res).isNaN() ? 0 : res;
     }
 
     /**
@@ -346,7 +349,7 @@ public class ThompsonSource implements Cloneable {
      * @return
      */
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, double e) {
-        double[] array = new double[NUMBER_OF_POL_PARAM];
+        double[] res = new double[NUMBER_OF_POL_PARAM];
         double K, th, m11, m22, m12, mlt, cs, sn, ac, koef, gamma, gamma2;
         th = (1 - n.innerProduct(v)) * 2;
         if (!IsCompton) {
@@ -380,21 +383,21 @@ public class ThompsonSource implements Cloneable {
         double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
         double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
         //Calculating Stocks parameters
-        array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[2] + sn2 * lp.getPolarization()[0]) * (m11 - m22)) / 2;
-        array[3] = (cs2 * (m22 - m11) + lp.getPolarization()[2] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
+        res[0] = (m11 + m22 - (cs2 * lp.getPolarization()[2] + sn2 * lp.getPolarization()[0]) * (m11 - m22)) / 2;
+        res[3] = (cs2 * (m22 - m11) + lp.getPolarization()[2] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
                 + lp.getPolarization()[0] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
-        array[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
+        res[1] = (sn2 * (m22 - m11) + lp.getPolarization()[0] * (sn2sn2 * (m11 + m22) + 2 * cs2cs2 * m12)
                 + lp.getPolarization()[2] * cs2sn2 * (m11 + m22 - 2 * m12)) / 2;
-        array[2] = lp.getPolarization()[1] * m12;
+        res[2] = lp.getPolarization()[1] * m12;
 
         // If the intensity is NaN, zero or less than zero then set all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
-                array[i] = 0;
+            if (new Double(res[i]).isNaN() || new Double(res[0]).isNaN() || res[0] <= 0) {
+                res[i] = 0;
             }
         }
-        return array;
+        return res;
     }
 
     /**
@@ -410,16 +413,17 @@ public class ThompsonSource implements Cloneable {
     public double directionFrequencyFluxSpreadIntegral(Vector n, Vector v0, double e) {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                 RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
-        double tmp;
+        double res;
         UnivariateFunction func
                 = new UnivariateFrequencyFluxSpreadOuter(e, v0, n);
         try {
-            tmp = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                    - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE * eb.getSpread()));
+            res = integrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
+                    - getShiftfactor() * SHIFT * 2 * Math.PI
+                    * (1 - Math.cos(INT_RANGE * Math.max(eb.getXSpread(), eb.getYSpread())));
         } catch (TooManyEvaluationsException ex) {
             return 0;
         }
-        return new Double(tmp).isNaN() ? 0 : tmp;
+        return new Double(res).isNaN() ? 0 : res;
     }
 
     /**
@@ -438,27 +442,26 @@ public class ThompsonSource implements Cloneable {
         CountDownLatch lt = new CountDownLatch(threadNumber);
         // Atomic adder
         DoubleAdder sum = new DoubleAdder();
-        double tmp;
+        double res;
         final int itNumber = Math.round(getNpEmittance() / threadNumber);
 
         // Splitting the job into a number of threads
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
-                double rangle, rth, tm, psum = 0, sn;
+                double rx, ry, tm, psum = 0;
                 Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
                 //Calculating a partial sum
                 for (int i = 0; i < itNumber; i++) {
                     if (Thread.currentThread().isInterrupted()) {
                         return;
                     }
-                    rangle = 2 * Math.random() * Math.PI;
-                    rth = Math.random() * INT_RANGE * eb.getSpread();
-                    sn = Math.sin(rth);
-                    v.set(0, sn * Math.cos(rangle));
-                    v.set(1, sn * Math.sin(rangle));
-                    v.set(2, Math.cos(rth));
+                    rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
+                    ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
+                    v.set(0, rx);
+                    v.set(1, ry);
+                    v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
                     dv = v.subtract(v0);
-                    tm = sn * directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    tm = directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1));
                     psum += new Double(tm).isNaN() ? 0 : tm;
                 }
                 sum.add(psum);
@@ -472,8 +475,8 @@ public class ThompsonSource implements Cloneable {
         }
         execs.shutdownNow();
         // Outputting the final result
-        tmp = 2 * Math.PI * INT_RANGE * eb.getSpread() * sum.sum() / itNumber / threadNumber;
-        return new Double(tmp).isNaN() ? 0 : tmp;
+        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
+        return new Double(res).isNaN() ? 0 : res;
     }
 
     /**
@@ -488,8 +491,8 @@ public class ThompsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] directionFrequencyPolarizationSpreadIntegral(final Vector n, final Vector v0, final double e) throws InterruptedException {
-        //An array for results
-        double[] array = new double[NUMBER_OF_POL_PARAM];
+        //An res for results
+        double[] res = new double[NUMBER_OF_POL_PARAM];
         //Creating a latch for threads
         CountDownLatch lt = new CountDownLatch(NUMBER_OF_POL_PARAM);
         //Creating a pool of threads for calculations
@@ -501,12 +504,13 @@ public class ThompsonSource implements Cloneable {
                 UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, ia[0]);
                 try {
                     //Creating a separate inegrator for each thread
-                    array[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
+                    res[ia[0]] = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY,
                             RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT).
                             integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, 2 * Math.PI)
-                            - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE * eb.getSpread()));
+                            - getShiftfactor() * SHIFT * 2 * Math.PI * (1 - Math.cos(INT_RANGE
+                                    * Math.max(eb.getXSpread(), eb.getYSpread())));
                 } catch (TooManyEvaluationsException ex) {
-                    array[ia[0]] = 0;
+                    res[ia[0]] = 0;
                 }
                 lt.countDown();
             });
@@ -523,11 +527,11 @@ public class ThompsonSource implements Cloneable {
         // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
-                array[i] = 0;
+            if (new Double(res[i]).isNaN() || new Double(res[0]).isNaN() || res[0] <= 0) {
+                res[i] = 0;
             }
         }
-        return array;
+        return res;
     }
 
     /**
@@ -542,8 +546,8 @@ public class ThompsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double[] directionFrequencyPolarizationSpreadMonteCarlo(final Vector n, final Vector v0, final double e) throws InterruptedException {
-        //An array for results
-        double[] array = new double[NUMBER_OF_POL_PARAM];
+        //An res for results
+        double[] res = new double[NUMBER_OF_POL_PARAM];
         //Creating a pool of threads for calculations
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         //The number of threads used to calculate Stocks parameters
@@ -587,7 +591,7 @@ public class ThompsonSource implements Cloneable {
                 throw ex;
             }
             //Outputting the result for the i-th Stocks intensity
-            array[i] = 2 * Math.PI * INT_RANGE * eb.getSpread() * sum.sum() / itNumber / threadNumber;
+            res[i] = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
         }
         //Shutting down the execution services
         execs.shutdownNow();
@@ -595,11 +599,11 @@ public class ThompsonSource implements Cloneable {
         // If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
-            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] <= 0) {
-                array[i] = 0;
+            if (new Double(res[i]).isNaN() || new Double(res[0]).isNaN() || res[0] <= 0) {
+                res[i] = 0;
             }
         }
-        return array;
+        return res;
     }
 
     /**
@@ -685,7 +689,7 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(phi, e, v0, n, index);
             try {
-                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * eb.getSpread());
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, 0.0, INT_RANGE * Math.max(eb.getXSpread(), eb.getYSpread()));
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -1135,7 +1139,7 @@ public class ThompsonSource implements Cloneable {
     /**
      * Returning a random ray
      *
-     * @return an array with ray parameters
+     * @return an res with ray parameters
      * @throws java.lang.InterruptedException
      */
     public double[] getRay() throws InterruptedException {
