@@ -34,7 +34,7 @@ import org.la4j.vector.dense.BasicVector;
  * The main class containing all physics of LEXG
  *
  * @author Ruslan Feshchenko
- * @version 2.81
+ * @version 2.82
  */
 public class ThompsonSource implements Cloneable {
 
@@ -649,7 +649,8 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyFluxSpreadInner(x, e, v0, n);
             try {
-                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getYSpread(), INT_RANGE * eb.getYSpread());
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getYSpread(), INT_RANGE * eb.getYSpread())
+                        * eb.angleXDistribution(x - v0.get(0));
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -687,7 +688,8 @@ public class ThompsonSource implements Cloneable {
             UnivariateFunction func
                     = new UnivariateFrequencyPolarizationSpreadInner(x, e, v0, n, index);
             try {
-                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getYSpread(), INT_RANGE * eb.getYSpread());
+                tmp = inergrator.integrate(MAXIMAL_NUMBER_OF_EVALUATIONS, func, -INT_RANGE * eb.getYSpread(), INT_RANGE * eb.getYSpread())
+                        * eb.angleXDistribution(x - v0.get(0));
             } catch (TooManyEvaluationsException ex) {
                 return 0;
             }
@@ -718,9 +720,9 @@ public class ThompsonSource implements Cloneable {
                 return 0;
             }
             double u;
-            Vector v = new BasicVector(new double[]{x, y, Math.sqrt(1 - y * y - x * x)});
+            Vector v = new BasicVector(new double[]{x, y, Math.sqrt(1 - x * x - y * y)});
             Vector dv = v.subtract(v0);
-            u = directionFrequencyFluxNoSpread(n, v, e) * eb.angleDistribution(dv.get(0), dv.get(1))
+            u = directionFrequencyFluxNoSpread(n, v, e) * eb.angleYDistribution(dv.get(1))
                     + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }
@@ -750,10 +752,10 @@ public class ThompsonSource implements Cloneable {
                 return 0;
             }
             double u;
-            Vector v = new BasicVector(new double[]{x, y, Math.sqrt(1 - y * y - x * x)});
+            Vector v = new BasicVector(new double[]{x, y, Math.sqrt(1 - x * x - y * y)});
             Vector dv = v.subtract(v0);
             // Normalization to the peak value
-            u = directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
+            u = directionFrequencyPolarizationNoSpread(n, v, e)[index] * eb.angleYDistribution(dv.get(1))
                     + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }
