@@ -24,7 +24,7 @@ import org.la4j.vector.dense.BasicVector;
  * system of units
  *
  * @author Ruslan Feshchenko
- * @version 2.1
+ * @version 2.2
  */
 public class ElectronBunch implements Cloneable {
 
@@ -278,6 +278,28 @@ public class ElectronBunch implements Cloneable {
      */
     public double getSpread() {
         return Math.sqrt(getXSpread() * getYSpread());
+    }
+    
+     /**
+     * The angular distribution of electrons in the bunch in x direction
+     *
+     * @param thetax
+     * @return
+     */
+    public double angleXDistribution(double thetax) {
+        double dpx = getXSpread();
+        return Math.exp(-Math.pow(thetax / dpx, 2))/ dpx / Math.sqrt(Math.PI);
+    }
+    
+     /**
+     * The angular distribution of electrons in the bunch in y direction
+     *
+     * @param thetay
+     * @return
+     */
+    public double angleYDistribution(double thetay) {
+        double dpy = getYSpread();
+        return Math.exp(-Math.pow(thetay / dpy, 2))/ dpy / Math.sqrt(Math.PI);
     }
 
     /**
