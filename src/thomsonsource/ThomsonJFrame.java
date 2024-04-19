@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Ruslan Feshchenko
+ * Copyright (C) 2024 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ import shadowfileconverter.ShadowFiles;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 1.21
+ * @version 1.3
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
