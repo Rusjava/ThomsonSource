@@ -326,7 +326,7 @@ public class ThompsonSource implements Cloneable {
         } else {
             ac = 0;
         }
-        koef = 2 * (1 - csphi) * lp.getPhotonEnergy() / e - th2;
+        koef = 2 * (1 + csphi) * lp.getPhotonEnergy() / e - th2;
         gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef;
         gamma2 = gamma * gamma;
         res = getTotalFlux() * e * 1.5 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
@@ -356,7 +356,7 @@ public class ThompsonSource implements Cloneable {
         } else {
             ac = 0;
         }
-        koef = 2 * (1 - csphi) * lp.getPhotonEnergy() / e - th;
+        koef = 2 * (1 + csphi) * lp.getPhotonEnergy() / e - th;
         gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef;
         gamma2 = gamma * gamma;
         m11 = getTotalFlux() * e * 3.0 / Math.pow(Math.PI, 1.5) / eb.getDelgamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
@@ -921,9 +921,9 @@ public class ThompsonSource implements Cloneable {
         csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
         cs = n.innerProduct(v);
         if (!IsCompton) {
-            return (1 - csphi * mv) * lp.getPhotonEnergy() / (1 - cs * mv);
+            return (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - cs * mv);
         } else {
-            return (1 - csphi * mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (ElectronBunch.MC2 * ElectronBunch.E * 1e6) / eb.getGamma() * (1 + cs));
+            return (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (ElectronBunch.MC2 * ElectronBunch.E * 1e6) / eb.getGamma() * (1 + cs));
         }
     }
 
