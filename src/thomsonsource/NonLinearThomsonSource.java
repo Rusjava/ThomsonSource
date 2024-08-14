@@ -79,7 +79,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
-        if (gamma == 0) {
+        if (gamma < 1) {
             //Returning zero if gamma is zero
             return 0;
         } else {
@@ -157,11 +157,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double directionEnergyBasic(Vector n, Vector v, double gamma, double inten) {
-        double mv, M, pr;
+        double mv, csphi, M, pr;
         mv = Math.sqrt(1.0 - 1.0 / gamma / gamma);
         pr = n.innerProduct(v);
+        csphi = v.innerProduct(lp.getDirection());
         M = inten / sIntensity * (1 + pr) * (1 - mv) / 4;
-        return ordernumber * (1 + mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
+        return ordernumber * (1 + csphi * mv)  * lp.getPhotonEnergy() / (1 - pr * mv + M);
     }
 
     /**
@@ -175,8 +176,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double directionFluxBasic(Vector n, Vector v, double xenergy, double gamma, double inten) {
-        //If gamma is zero (negative expression under the root) then return zero
-        if (gamma == 0) {
+        //If gamma is less than unity (negative expression under the root) then return zero
+        if (gamma < 1) {
             return 0;
         }
         //If gamma is not zero then proceed
@@ -224,8 +225,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double[] directionPolarizationBasic(Vector n, Vector v, double xenergy, double gamma, double inten) {
-        //If gamma is zero (negative expression under the root) then return zero
-        if (gamma == 0) {
+        //If gamma is less than unity (negative expression under the root) then return zero
+        if (gamma < 1) {
             return new double[]{0, 0, 0, 0};
         }
         //If gamma is not zero then proceed

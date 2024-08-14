@@ -117,14 +117,14 @@ public abstract class AbstractElectronBunch implements Cloneable {
     }
 
     /**
-     * @return the delgamma
+     * @return the delGamma
      */
     public double getDelGamma() {
         return delgamma;
     }
 
     /**
-     * @param delgamma the delgamma to set
+     * @param delgamma the delGamma to set
      */
     public void setDelgamma(double delgamma) {
         this.delgamma = delgamma;
