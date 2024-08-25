@@ -46,7 +46,7 @@ public abstract class AbstractLaserPulse implements Cloneable {
     /**
      * Laser pulse semi-length, m
      */
-    private double length = 1.5e-3;
+    private double length = 1.5e-3; // 5 ps
     /**
      * Mean direction of the laser pulse
      */
@@ -75,12 +75,12 @@ public abstract class AbstractLaserPulse implements Cloneable {
     private double p;
     private Vector[] A1;
     private Vector[] A2;
-    private double intensity = 1; //Average laser pulse intensity
+    private double intensity; //Average laser pulse intensity
     protected double rk;
 
     public AbstractLaserPulse() {
         this.photonenergy = 1.204 * GaussianElectronBunch.E;
-        setPulseEnergy(0.1);
+        setPulseEnergy(0.1); //Setting pulse energy at 100 mJ
         this.rk = HC / photonenergy;
         this.direction = new BasicVector(new double[]{0.0, Math.sin(0.052), Math.cos(0.052)});
         this.KA1 = new double[2];

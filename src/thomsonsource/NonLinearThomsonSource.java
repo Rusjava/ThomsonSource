@@ -162,7 +162,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         csphi = v.innerProduct(lp.getDirection());
         M = inten / sIntensity * (1 + pr) * (1 - mv) / 4;
-        return ordernumber * (1 + csphi * mv)  * lp.getPhotonEnergy() / (1 - pr * mv + M);
+        return ordernumber * (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
     }
 
     /**
