@@ -162,7 +162,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         pr = n.innerProduct(v);
         csphi = v.innerProduct(lp.getDirection());
         M = inten / sIntensity * (1 + pr) * (1 - mv) / 4;
-        return ordernumber * (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
+        return ordernumber * (1 + csphi * mv)  * lp.getPhotonEnergy() / (1 - pr * mv + M);
     }
 
     /**
@@ -477,10 +477,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGamma(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqratio, coef, csphi;
+        double rho, pr, fqratio, coef;
         pr = n.innerProduct(v);
-        csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
-        rho = inten / sIntensity / 2;
+        rho = inten / sIntensity * (1 + pr) / 4;
         fqratio = e / ordernumber / lp.getPhotonEnergy();
 
         coef = 2 - fqratio * (1 - pr);
@@ -488,8 +487,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Returning zero if the expression under the root is not positive
             return 0;
         } else {
-            return Math.sqrt(fqratio * (rho * (1 + pr) + 1 + csphi)
-                    / (2 * (1 + csphi) * coef));
+            return (fqratio * (pr + rho) + 1)
+                    / Math.sqrt(fqratio * (1 + 2 * rho + pr) * coef);
         }
     }
 
@@ -504,18 +503,17 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGammaDerivative(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqratio, coef, csphi;
+        double rho, pr, fqration, coef;
         pr = n.innerProduct(v);
-        csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
-        rho = inten / sIntensity / 2;
-        fqratio = e / ordernumber / lp.getPhotonEnergy();
-        coef = 2 - fqratio * (1 - pr);
+        rho = inten / sIntensity * (1 + pr) / 4;
+        fqration = e / ordernumber / lp.getPhotonEnergy();
+        coef = 2 - fqration * (1 - pr);
         if (coef <= 0) {
             //Returning unit if the expression under the root is not positive
             return 1;
         } else {
-            return 2 * Math.sqrt((1 + csphi) / (1 + csphi + (1 + pr) * rho))
-                    * (calculateGamma(n, v, e, inten) - fqratio * (1 - pr) / (1 + csphi));
+            return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) * fqration)
+                    * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
         }
     }
 
