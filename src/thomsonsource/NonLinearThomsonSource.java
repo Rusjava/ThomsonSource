@@ -477,9 +477,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGamma(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqratio, coef;
+        double rho, pr, fqratio, coef, csphi;
         pr = n.innerProduct(v);
-        rho = inten / sIntensity * (1 + pr) / 4;
+        csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
+        rho = inten / sIntensity * (1 + pr) / 2 / (1 + csphi);
         fqratio = e / ordernumber / lp.getPhotonEnergy();
 
         coef = 2 - fqratio * (1 - pr);
@@ -503,9 +504,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGammaDerivative(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqration, coef;
+        double rho, pr, fqration, coef, csphi;
+        csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
         pr = n.innerProduct(v);
-        rho = inten / sIntensity * (1 + pr) / 4;
+        rho = inten / sIntensity * (1 + pr) / 2 / (1 + csphi);
         fqration = e / ordernumber / lp.getPhotonEnergy();
         coef = 2 - fqration * (1 - pr);
         if (coef <= 0) {
