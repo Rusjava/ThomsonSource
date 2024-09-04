@@ -34,7 +34,7 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.43
+ * @version 1.5
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -483,13 +483,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         rho = inten / sIntensity * (1 + pr) / 2 / (1 + csphi);
         fqratio = e / ordernumber / lp.getPhotonEnergy();
 
-        coef = 2 - fqratio * (1 - pr);
+        coef = 1 + csphi - fqratio * (1 - pr);
         if (coef <= 0) {
             //Returning zero if the expression under the root is not positive
-            return 0;
+            return 1;
         } else {
-            return (fqratio * (pr + rho) + 1)
-                    / Math.sqrt(fqratio * (1 + 2 * rho + pr) * coef);
+            return (fqratio * (pr + rho) + csphi)
+                    / Math.sqrt((fqratio * (1 + 2 * rho + pr) + csphi - 1) * coef);
         }
     }
 
@@ -504,18 +504,18 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGammaDerivative(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqration, coef, csphi;
+        double rho, pr, fqratio, coef, csphi;
         csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
         pr = n.innerProduct(v);
         rho = inten / sIntensity * (1 + pr) / 2 / (1 + csphi);
-        fqration = e / ordernumber / lp.getPhotonEnergy();
-        coef = 2 - fqration * (1 - pr);
+        fqratio = e / ordernumber / lp.getPhotonEnergy();
+        coef = 1 + csphi - fqratio * (1 - pr);
         if (coef <= 0) {
             //Returning unit if the expression under the root is not positive
             return 1;
         } else {
-            return Math.sqrt((1 + 2 * rho + pr) * (2 - fqration * (1 - pr)) * fqration)
-                    * (2 - fqration * (1 - pr)) / (fqration * (1 + rho) - 1);
+            return Math.pow(coef * (fqratio * (1 + 2 * rho + pr) + 1 - csphi), 1.5)
+                    / (fqratio * (1 + rho) - 1) / (csphi + pr + rho * (1 + csphi)) / fqratio;
         }
     }
 
