@@ -25,7 +25,7 @@ import org.la4j.Vector;
  * The main class containing all physics of LEXG in linear approximation
  *
  * @author Ruslan Feshchenko
- * @version 3.1
+ * @version 3.2
  */
 public class LinearThomsonSource extends AbstractThomsonSource {
 
