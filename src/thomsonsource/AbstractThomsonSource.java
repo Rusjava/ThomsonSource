@@ -303,7 +303,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double directionFrequencyFlux(Vector n, Vector v, Vector r, double e) throws InterruptedException {
-        return iseSpread() ? directionFrequencyFluxSpread(n, v, r, e) : directionFrequencyFluxNoSpread(n, v, r, e);
+        return iseSpread() ? (isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, r, e) : directionFrequencyFluxSpreadIntegral(n, v, r, e)) : directionFrequencyFluxNoSpread(n, v, r, e);
     }
 
     /**
@@ -390,7 +390,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     
-    public double directionFrequencyFluxSpread(Vector n, Vector v0, Vector r, double e) throws InterruptedException {
+    public double directionFrequencyFluxSpreadIntegral(Vector n, Vector v0, Vector r, double e) throws InterruptedException {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, r, n);
         double tmp;
@@ -406,6 +406,62 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         return new Double(tmp).isNaN() ? 0 : tmp;
     }
+    
+    /**
+     * A method calculating the flux density in a given direction for a given
+     * X-ray photon energy taking into account electron transversal momentum
+     * spread and using the Monte-Carlo method
+     *
+     * @param n observation direction
+     * @param v0 normalized mean electron velocity
+     * @param e X-ray energy
+     * @return
+     */
+
+
+public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector r, double e) {
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        // We need to synchronize threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
+        // Atomic adder
+        DoubleAdder sum = new DoubleAdder();
+        double res;
+        final int itNumber = Math.round(getNpEmittance() / threadNumber);
+
+        // Splitting the job into a number of threads
+        for (int m = 0; m < threadNumber; m++) {
+            execs.execute(() -> {
+                double rx, ry, tm, psum = 0;
+                Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                //Calculating a partial sum
+                for (int i = 0; i < itNumber; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
+                    ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
+                    v.set(0, rx);
+                    v.set(1, ry);
+                    v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
+                    dv = v.subtract(v0);
+                    tm = directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    psum += new Double(tm).isNaN() ? 0 : tm;
+                }
+                sum.add(psum);
+                lt.countDown();
+            });
+        }
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        execs.shutdownNow();
+        // Outputting the final result
+        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
+        return new Double(res).isNaN() ? 0 : res;
+    }
+
 
     /**
      * A method calculating the full polarization tensor density in a given
@@ -1180,6 +1236,25 @@ public abstract class AbstractThomsonSource implements Cloneable {
     public int getThreadNumber() {
         return threadNumber;
     }
+    
+    /**
+     * Getting the IsMonteCarlo flag
+     *
+     * @return the IsMonteCarlo
+     */
+    public boolean isIsMonteCarlo() {
+        return IsMonteCarlo;
+    }
+
+    /**
+     * Setting the IsMonteCarlo flag
+     *
+     * @param IsMonteCarlo the IsMonteCarlo to set
+     */
+    public void setIsMonteCarlo(boolean IsMonteCarlo) {
+        this.IsMonteCarlo = IsMonteCarlo;
+    }
+
 
     /**
      * Calculation of random amplitudes and phases for an arbitrary state of
