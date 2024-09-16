@@ -168,7 +168,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * Counter of rays
      */
     private AtomicInteger rayCounter;
-
+/**
+     * Flag - whether or not the Monte-Carlo method is used to calculate the
+     * directional integral
+     */
+    private boolean IsMonteCarlo = true;
     /**
      * A pointer for laser pulse
      */
@@ -385,6 +389,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
+    
     public double directionFrequencyFluxSpread(Vector n, Vector v0, Vector r, double e) throws InterruptedException {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, r, n);
