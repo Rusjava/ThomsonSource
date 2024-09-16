@@ -168,11 +168,15 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * Counter of rays
      */
     private AtomicInteger rayCounter;
-/**
+    /**
      * Flag - whether or not the Monte-Carlo method is used to calculate the
      * directional integral
      */
     private boolean IsMonteCarlo = true;
+    /**
+     * Number of points in Monte Carlo calculation of the emittance averaging
+     */
+    private int npEmittance = 30000;
     /**
      * A pointer for laser pulse
      */
@@ -303,7 +307,39 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @throws java.lang.InterruptedException
      */
     public double directionFrequencyFlux(Vector n, Vector v, Vector r, double e) throws InterruptedException {
-        return iseSpread() ? (isIsMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, r, e) : directionFrequencyFluxSpreadIntegral(n, v, r, e)) : directionFrequencyFluxNoSpread(n, v, r, e);
+        return iseSpread() ? (isMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, r, e) : directionFrequencyFluxSpreadIntegral(n, v, r, e)) : directionFrequencyFluxNoSpread(n, v, r, e);
+    }
+
+    /**
+     * A method calculating the flux density in a given direction for a given
+     * X-ray photon energy taking into account transversal electron velocity
+     * spread
+     *
+     * @param n viewing direction
+     * @param v normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyFluxSpread(Vector n, Vector v, Vector r, double e) throws InterruptedException {
+        return isMonteCarlo() ? directionFrequencyFluxSpreadMonteCarlo(n, v, r, e) : directionFrequencyFluxSpreadIntegral(n, v, r, e);
+    }
+
+    /**
+     * A method calculating the full polarization tensor density in a given
+     * direction for a given X-ray photon energy taking into account the
+     * electron transversal pulse spread
+     *
+     * @param n viewing direction
+     * @param v0 normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final Vector r, final double e) throws InterruptedException {
+        return isMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, r, e) : directionFrequencyPolarizationSpreadIntegral(n, v, r, e);
     }
 
     /**
@@ -389,7 +425,6 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    
     public double directionFrequencyFluxSpreadIntegral(Vector n, Vector v0, Vector r, double e) throws InterruptedException {
         BaseAbstractUnivariateIntegrator integrator = new RombergIntegrator(getPrecision(), RombergIntegrator.DEFAULT_ABSOLUTE_ACCURACY, RombergIntegrator.DEFAULT_MIN_ITERATIONS_COUNT, RombergIntegrator.ROMBERG_MAX_ITERATIONS_COUNT);
         UnivariateFunction func = new UnivariateFrequencyFluxSpreadOuter(e, v0, r, n);
@@ -406,7 +441,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         }
         return new Double(tmp).isNaN() ? 0 : tmp;
     }
-    
+
     /**
      * A method calculating the flux density in a given direction for a given
      * X-ray photon energy taking into account electron transversal momentum
@@ -417,9 +452,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param e X-ray energy
      * @return
      */
-
-
-public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector r, double e) {
+    public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector r, double e) {
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         // We need to synchronize threads
         CountDownLatch lt = new CountDownLatch(threadNumber);
@@ -462,11 +495,10 @@ public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector
         return new Double(res).isNaN() ? 0 : res;
     }
 
-
     /**
      * A method calculating the full polarization tensor density in a given
      * direction for a given X-ray photon energy taking into account the
-     * electron transversal pulse spread
+     * electron transversal pulse spread using integration
      *
      * @param n viewing direction
      * @param v0 normalized electron velocity
@@ -475,7 +507,41 @@ public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v0, final Vector r, final double e) throws InterruptedException {
+    public double[] directionFrequencyPolarizationSpreadIntegral(final Vector n, final Vector v0, final Vector r, final double e) throws InterruptedException {
+        //An array for results
+        double[] array = new double[NUMBER_OF_POL_PARAM];
+        //Calculating the polarization tensor elements
+        for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
+            try {
+                //Calculating elements of polarization matrix
+                array[i] = directionFrequencyPolarizationSpread(n, v0, r, e, i);
+            } catch (TooManyEvaluationsException ex) {
+                array[i] = 0;
+            }
+        }
+        //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
+        // If a Stocks intensity is NaN then set it to zero
+        for (int i = 1; i < NUMBER_OF_POL_PARAM; i++) {
+            if (new Double(array[i]).isNaN() || new Double(array[0]).isNaN() || array[0] == 0) {
+                array[i] = 0;
+            }
+        }
+        return array;
+    }
+
+    /**
+     * A method calculating the full polarization tensor density in a given
+     * direction for a given X-ray photon energy taking into account the
+     * electron transversal pulse spread using Monte-Carlo method
+     *
+     * @param n viewing direction
+     * @param v0 normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double[] directionFrequencyPolarizationSpreadMonteCarlo(final Vector n, final Vector v0, final Vector r, final double e) throws InterruptedException {
         //An array for results
         double[] array = new double[NUMBER_OF_POL_PARAM];
         //Calculating the polarization tensor elements
@@ -1236,13 +1302,13 @@ public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector
     public int getThreadNumber() {
         return threadNumber;
     }
-    
+
     /**
      * Getting the IsMonteCarlo flag
      *
      * @return the IsMonteCarlo
      */
-    public boolean isIsMonteCarlo() {
+    public boolean isMonteCarlo() {
         return IsMonteCarlo;
     }
 
@@ -1254,7 +1320,6 @@ public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector
     public void setIsMonteCarlo(boolean IsMonteCarlo) {
         this.IsMonteCarlo = IsMonteCarlo;
     }
-
 
     /**
      * Calculation of random amplitudes and phases for an arbitrary state of
@@ -1449,6 +1514,24 @@ public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector
      */
     public void setOrdernumber(int n) {
         this.ordernumber = n;
+    }
+
+    /**
+     * Getting the number of points in the emittance Monte-Carlo integration
+     *
+     * @return the npEmittance
+     */
+    public int getNpEmittance() {
+        return npEmittance;
+    }
+
+    /**
+     * Setting the number of points in the emittance Monte-Carlo integration
+     *
+     * @param npEmittance the npEmittance to set
+     */
+    public void setNpEmittance(int npEmittance) {
+        this.npEmittance = npEmittance;
     }
 
     /**
