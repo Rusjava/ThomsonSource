@@ -95,7 +95,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //Calculating factor gamma
         double gamma = calculateGamma(n, v, e, intensity);
         double factor = eb.gammaDistribution(gamma) / calculateGammaDerivative(n, v, e, intensity);
-        if (gamma == 0) {
+        if (new Double(gamma).isNaN() || gamma == 0) {
             //Returning zero if gamma is zero
             return new double[]{1, 0, 0, 0};
         } else {

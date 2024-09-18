@@ -45,7 +45,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.35
+ * @version 1.4
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -344,6 +344,23 @@ public abstract class AbstractThomsonSource implements Cloneable {
 
     /**
      * A method calculating the Stocks parameters density in a given direction
+     * for a given X-ray photon energy taking into account the electron
+     * transversal pulse spread
+     *
+     * @param n viewing direction
+     * @param v0 normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @param index
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyPolarizationSpread(final Vector n, final Vector v, final Vector r, final double e, int index) throws InterruptedException {
+        return isMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, r, e, index) : directionFrequencyPolarizationSpreadIntegral(n, v, r, e, index);
+    }
+
+    /**
+     * A method calculating the Stocks parameters density in a given direction
      * for a given X-ray photon energy
      *
      * @param n viewing direction
@@ -514,7 +531,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             try {
                 //Calculating elements of polarization matrix
-                array[i] = directionFrequencyPolarizationSpread(n, v0, r, e, i);
+                array[i] = directionFrequencyPolarizationSpreadIntegral(n, v0, r, e, i);
             } catch (TooManyEvaluationsException ex) {
                 array[i] = 0;
             }
@@ -548,7 +565,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         for (int i = 0; i < NUMBER_OF_POL_PARAM; i++) {
             try {
                 //Calculating elements of polarization matrix
-                array[i] = directionFrequencyPolarizationSpread(n, v0, r, e, i);
+                array[i] = directionFrequencyPolarizationSpreadMonteCarlo(n, v0, r, e, i);
             } catch (TooManyEvaluationsException ex) {
                 array[i] = 0;
             }
@@ -566,7 +583,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
     /**
      * A multi-threaded method calculating a Stocks parameter density in a given
      * direction for a given X-ray photon energy taking into account the
-     * electron transversal pulse spread
+     * electron transversal pulse spread using integration
      *
      * @param n viewing direction
      * @param v0 normalized electron velocity
@@ -576,7 +593,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyPolarizationSpread(final Vector n, final Vector v0, final Vector r,
+    public double directionFrequencyPolarizationSpreadIntegral(final Vector n, final Vector v0, final Vector r,
             final double e, int index) throws InterruptedException {
         //The function to integrate
         UnivariateFunction func = new UnivariateFrequencyPolarizationSpreadOuter(e, v0, n, r, index);
@@ -594,6 +611,73 @@ public abstract class AbstractThomsonSource implements Cloneable {
         } catch (TooManyEvaluationsException ex) {
             res = 0;
         }
+        return new Double(res).isNaN() ? 0 : res;
+    }
+
+    /**
+     * A multi-threaded method calculating a Stocks parameter density in a given
+     * direction for a given X-ray photon energy taking into account the
+     * electron transversal pulse spread using Monte-Carlo method
+     *
+     * @param n viewing direction
+     * @param v0 normalized electron velocity
+     * @param r spatial position
+     * @param e X-ray energy
+     * @param index polarization matrix element
+     * @return
+     * @throws java.lang.InterruptedException
+     */
+    public double directionFrequencyPolarizationSpreadMonteCarlo(final Vector n, final Vector v0, final Vector r, final double e, int index) throws InterruptedException {
+        //An res for results
+        double res;
+        //Creating a pool of threads for calculations
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        //The number of threads used to calculate Stocks parameters
+        final int itNumber = Math.round(getNpEmittance() / threadNumber);
+        //Calculating the polarization tensor elements
+
+        // An atomic adder
+        DoubleAdder sum = new DoubleAdder();
+        //Creating a latch for the threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
+        for (int m = 0; m < threadNumber; m++) {
+            execs.execute(() -> {
+                double rx, ry, rth, tm, psum = 0;
+                Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                //Calculating a partial sum
+                for (int p = 0; p < itNumber; p++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
+                    ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
+                    v.set(0, rx);
+                    v.set(1, ry);
+                    v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
+                    dv = v.subtract(v0);
+                    tm = directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1));
+                    psum += new Double(tm).isNaN() ? 0 : tm;
+                }
+                //Adding to the full sum
+                sum.add(psum);
+                //Counting down the latch
+                lt.countDown();
+            });
+
+            //Waiting for an interruption and shuting down threads if interrupted
+            try {
+                lt.await();
+            } catch (InterruptedException ex) {
+                execs.shutdownNow();
+                throw ex;
+            }
+        }
+        //Outputting the result for the i-th2 Stocks intensity
+        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
+
+        //Shutting down the execution services
+        execs.shutdownNow();
+
         return new Double(res).isNaN() ? 0 : res;
     }
 
