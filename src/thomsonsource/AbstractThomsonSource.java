@@ -1401,7 +1401,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param IsMonteCarlo the IsMonteCarlo to set
      */
-    public void setIsMonteCarlo(boolean IsMonteCarlo) {
+    public void setMonteCarlo(boolean IsMonteCarlo) {
         this.IsMonteCarlo = IsMonteCarlo;
     }
 

@@ -494,6 +494,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItemOrderNumber = new javax.swing.JMenuItem();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
+        jCheckBoxMenuItemMonteCarlo = new javax.swing.JCheckBoxMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuSkin = new javax.swing.JMenu();
         jRadioButtonMenuDefault = new javax.swing.JRadioButtonMenuItem();
@@ -2497,6 +2498,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuBarMain.add(jMenuShadow);
 
         jMenuOptions.setText("Options");
+        jMenuOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuOptionsActionPerformed(evt);
+            }
+        });
 
         jMenuItemLaserPolarization.setText("Laser polarization...");
         jMenuItemLaserPolarization.addActionListener(new java.awt.event.ActionListener() {
@@ -2541,6 +2547,10 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuOptions.add(jCheckBoxMenuItemSpread);
+
+        jCheckBoxMenuItemMonteCarlo.setSelected(true);
+        jCheckBoxMenuItemMonteCarlo.setText("MonteCarlo");
+        jMenuOptions.add(jCheckBoxMenuItemMonteCarlo);
         jMenuOptions.add(jSeparator4);
 
         jMenuSkin.setText("Look&Feel...");
@@ -4143,7 +4153,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jRadioButtonMenuNimbusItemStateChanged
 
     private void jMenuItemLaserPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLaserPolarizationActionPerformed
-        // Setting up laser polarization state
+        // Setting up the laser polarization state
         String warning = "";
         double p2;
         JPanel panel = new JPanel();
@@ -4999,6 +5009,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 10, OrderNumberNonLinear, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberNonLinearActionPerformed
 
+    private void jMenuOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuOptionsActionPerformed
+        // TODO add your handling code here:
+        tsource.setMonteCarlo(jCheckBoxSpread.isSelected());
+        tsourcelinear.setMonteCarlo(jCheckBoxSpread.isSelected());
+    }//GEN-LAST:event_jMenuOptionsActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation for linear and non-linear sources
      */
@@ -5178,6 +5194,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JFrame gfCalc;
     private javax.swing.JLabel jAngleLabel;
     private javax.swing.JLabel jAngleLabelNonLinear;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemMonteCarlo;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
     private javax.swing.JCheckBox jCheckBoxSpreadNonLinear;
