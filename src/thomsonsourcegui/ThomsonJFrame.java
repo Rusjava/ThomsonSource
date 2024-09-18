@@ -89,6 +89,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.rayXAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
         this.rayYAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
+        this.gfMonteCarloEmittanceNumberBox = getIntegerFormattedTextField(30000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-3, 1e-10, 1e-1, true);
         this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
         this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
@@ -2868,7 +2869,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
-            gfMonteCarloNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
+            gfMonteCarloNumberBox, gfMonteCarloEmittanceNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
             yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box, orderNumberBox;
     List<Function<double[], Double>> fn;
     private File bFile = null, pFile = null;
@@ -4006,6 +4007,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in the Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
+            "<html>Number of points in the Monte Carlo<br/> averaging over electron directions:</html>", gfMonteCarloEmittanceNumberBox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
             "<html>Multiplication factor for numerical shift<br/> in integrals:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
@@ -4017,11 +4019,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             tsource.setShiftfactor((double) shiftFactorBox.getValue());
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsource.setThreadNumber((int) threadsNumberBox.getValue());
+            tsource.setNpEmittance((int) gfMonteCarloEmittanceNumberBox.getValue());
             //Linear source
             tsourcelinear.setPrecision((double) numericallPrecisionBox.getValue());
             tsourcelinear.setShiftfactor((double) shiftFactorBox.getValue());
             tsourcelinear.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsourcelinear.setThreadNumber((int) threadsNumberBox.getValue());
+            tsourcelinear.setNpEmittance((int) gfMonteCarloEmittanceNumberBox.getValue());
             //ChatParam
             fluxdata.setThreadNumber((int) threadsNumberBox.getValue());
             fluxcrossdata.setThreadNumber((int) threadsNumberBox.getValue());
