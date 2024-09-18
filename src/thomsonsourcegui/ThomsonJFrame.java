@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.5
+ * @version 3.6
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2549,7 +2549,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuOptions.add(jCheckBoxMenuItemSpread);
 
         jCheckBoxMenuItemMonteCarlo.setSelected(true);
-        jCheckBoxMenuItemMonteCarlo.setText("MonteCarlo");
+        jCheckBoxMenuItemMonteCarlo.setText("Monte-Carlo");
         jMenuOptions.add(jCheckBoxMenuItemMonteCarlo);
         jMenuOptions.add(jSeparator4);
 
