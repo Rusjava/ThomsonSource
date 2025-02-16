@@ -1029,7 +1029,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
         //Transforming coordinates between laser and electron beam frames
         Vector rph = lp.getTransformedCoordinates(r);
 
-        //Defining the upper nad lower integration limits
+        //Defining the upper and lower integration limits
         double semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
         double shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (r.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                 / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
