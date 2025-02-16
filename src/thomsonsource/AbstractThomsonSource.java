@@ -169,8 +169,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     private AtomicInteger rayCounter;
     /**
-     * Flag - whether or not the Monte-Carlo method is used to calculate the
-     * directional integral
+     * Flag - whether or not the Monte-Carlo method is used to do the
+     * emittance averaging
      */
     private boolean IsMonteCarlo = true;
     /**

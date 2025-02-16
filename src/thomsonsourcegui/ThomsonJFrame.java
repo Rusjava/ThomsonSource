@@ -2323,7 +2323,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -2550,6 +2550,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
         jCheckBoxMenuItemMonteCarlo.setSelected(true);
         jCheckBoxMenuItemMonteCarlo.setText("Monte-Carlo");
+        jCheckBoxMenuItemMonteCarlo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItemMonteCarloActionPerformed(evt);
+            }
+        });
         jMenuOptions.add(jCheckBoxMenuItemMonteCarlo);
         jMenuOptions.add(jSeparator4);
 
@@ -5017,6 +5022,12 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         tsource.setMonteCarlo(jCheckBoxSpread.isSelected());
         tsourcelinear.setMonteCarlo(jCheckBoxSpread.isSelected());
     }//GEN-LAST:event_jMenuOptionsActionPerformed
+
+    private void jCheckBoxMenuItemMonteCarloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemMonteCarloActionPerformed
+        // TODO add your handling code here:
+        tsource.setMonteCarlo(jCheckBoxMenuItemSpread.isSelected());
+        tsourcelinear.setMonteCarlo(jCheckBoxMenuItemSpread.isSelected());
+    }//GEN-LAST:event_jCheckBoxMenuItemMonteCarloActionPerformed
 
     /*
      * Setting up polarization of X-ray radiation for linear and non-linear sources
