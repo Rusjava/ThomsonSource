@@ -332,7 +332,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * electron transversal pulse spread
      *
      * @param n viewing direction
-     * @param v0 normalized electron velocity
+     * @param v
      * @param r spatial position
      * @param e X-ray energy
      * @return
@@ -348,7 +348,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * transversal pulse spread
      *
      * @param n viewing direction
-     * @param v0 normalized electron velocity
+     * @param v
      * @param r spatial position
      * @param e X-ray energy
      * @param index
@@ -466,6 +466,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      *
      * @param n observation direction
      * @param v0 normalized mean electron velocity
+     * @param r
      * @param e X-ray energy
      * @return
      */

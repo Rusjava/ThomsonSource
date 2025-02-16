@@ -773,7 +773,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilmaxvaluelabelNonLinear.setText("Max value");
 
         jCheckBoxSpreadNonLinear.setText("Spread");
-        jCheckBoxSpreadNonLinear.setEnabled(false);
         jCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxSpreadNonLinearActionPerformed(evt);
@@ -2324,7 +2323,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel_sh, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                            .addComponent(jPanel_exec, javax.swing.GroupLayout.PREFERRED_SIZE, 192, Short.MAX_VALUE))
+                            .addComponent(jPanel_exec, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
