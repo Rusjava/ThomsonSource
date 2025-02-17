@@ -134,7 +134,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-6 * 1e-7  * tsource.directionFlux(n, v);
+                return 1e-6 * 1e-7 * tsource.directionFlux(n, v);
             }
         };
         fluxdata.setSliderposition(50);
@@ -2977,7 +2977,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             * 1e3, 0.0, (x) -> {
                                 setStatusBar((int) (x / 4 + 50));
                             });
-                    xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
+                    xenergycrossdata.setup(xenergydata.getudata(), Math.round(xenergydata.getSliderposition() * xsize / 100),
                             false, ysize, ystep, -ystep * ysize / 2);
                     setStatusBar((int) 100);
                 } catch (InterruptedException e) {
@@ -3047,7 +3047,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within limits: "
                             + fmt.format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-10)
+                                    ysize * ystep) * 1e-3 / 2) * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3708,7 +3708,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         tsourceRayClone.calculateLinearTotalFlux();
         rayWorking = true;
         Format fmt = new DecimalFormat("###.######");
-        
+
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -3758,7 +3758,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jRayProgressBar.setValue(status);
                     }
                     jLabelPartialFlux.setText("Flux: " + fmt.format(tsourceRayClone.getPartialFlux() * 1e-8)
-                        + " 10\u2078 s\u207B\u00B9");
+                            + " 10\u2078 s\u207B\u00B9");
                 });
             }
         };
@@ -4457,7 +4457,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceCalcStartNonLinear.setText("Terminate");
         BrillianceCalcSaveNonLinear.setEnabled(false);
         brilFormNonLinear.initialize(tsource);
-        
+
         /**
          * Calculating data array. Using SwingWorker class
          */
