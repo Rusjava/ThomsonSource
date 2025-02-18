@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.61
+ * @version 3.62
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -1575,7 +1575,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("TSourceNX");
+        setTitle("TSourceNXE");
         setMinimumSize(new java.awt.Dimension(750, 0));
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {

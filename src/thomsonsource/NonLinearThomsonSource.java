@@ -19,6 +19,10 @@ package thomsonsource;
 import electronbunch.AbstractElectronBunch;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.DoubleAdder;
 import java.util.function.Function;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
@@ -28,6 +32,7 @@ import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.la4j.Matrix;
 import org.la4j.Vectors;
 import org.la4j.vector.dense.BasicVector;
+import static thomsonsource.AbstractThomsonSource.INT_RANGE;
 import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 import static thomsonsource.AbstractThomsonSource.SHIFT;
 
@@ -538,6 +543,10 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
+        //If Monte-Carlo use special function
+        if (this.isMonteCarlo()) {
+            directionFrequencyBrillianceSpreadMonteCarlo(r0, n, v, e);
+        }
         //Creating an anonymous class for the integrand
         UnivariateFunction func = (double x) -> {
             if (n.get(0) + n.get(1) + n.get(2) == 0) {
@@ -554,6 +563,50 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //Checking if NaN and setting to zero
         double result = directionIntegralBasic(r0, n, func, ordernumber);
         return new Double(result).isNaN() ? 0 : result;
+    }
+    
+    //Private method for 4D MonterCarlo integration
+    private double directionFrequencyBrillianceSpreadMonteCarlo(Vector r, Vector n, Vector v0, double e) throws InterruptedException {
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        // We need to synchronize threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
+        // Atomic adder
+        DoubleAdder sum = new DoubleAdder();
+        double res;
+        final int itNumber = Math.round(getNpEmittance() / threadNumber);
+
+        // Splitting the job into a number of threads
+        for (int m = 0; m < threadNumber; m++) {
+            execs.execute(() -> {
+                double rx, ry, tm, psum = 0;
+                Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+                //Calculating a partial sum
+                for (int i = 0; i < itNumber; i++) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
+                    ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
+                    v.set(0, rx);
+                    v.set(1, ry);
+                    v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
+                    dv = v.subtract(v0);
+                    tm = directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    psum += new Double(tm).isNaN() ? 0 : tm;
+                }
+                sum.add(psum);
+                lt.countDown();
+            });
+        }
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        execs.shutdownNow();
+        // Outputting the final result
+        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
+        return new Double(res).isNaN() ? 0 : res;
     }
 
     @Override
