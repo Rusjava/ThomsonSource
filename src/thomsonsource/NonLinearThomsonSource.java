@@ -39,7 +39,7 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.5
+ * @version 1.6
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {

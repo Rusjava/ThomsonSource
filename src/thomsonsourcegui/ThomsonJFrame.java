@@ -2602,7 +2602,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         });
         jMenuHelp.add(HelpItem);
 
-        jMenuItemAbout.setText("About TSourceNX");
+        jMenuItemAbout.setText("About TSourceNXE");
         jMenuItemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemAboutActionPerformed(evt);
@@ -3630,7 +3630,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 + "<br>Build date: " + DateFormat.getDateInstance(DateFormat.LONG).format(dt)
                 + "<br>Author: " + pk.getImplementationVendor()
                 + "</html>",
-                "About TSourceNX", JOptionPane.INFORMATION_MESSAGE);
+                "About TSourceNXE", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemSaveParamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveParamActionPerformed

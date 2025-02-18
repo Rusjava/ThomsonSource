@@ -1781,7 +1781,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemAbout">
               <Properties>
-                <Property name="text" type="java.lang.String" value="About TSourceNX"/>
+                <Property name="text" type="java.lang.String" value="About TSourceNXE"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemAboutActionPerformed"/>
