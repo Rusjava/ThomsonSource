@@ -564,34 +564,60 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double result = directionIntegralBasic(r0, n, func, ordernumber);
         return new Double(result).isNaN() ? 0 : result;
     }
-    
+
     //Private method for 4D MonterCarlo integration
-    private double directionFrequencyBrillianceSpreadMonteCarlo(Vector r, Vector n, Vector v0, double e) throws InterruptedException {
+    private double directionFrequencyBrillianceSpreadMonteCarlo(Vector r0, Vector n, Vector v0, double e) throws InterruptedException {
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         // We need to synchronize threads
         CountDownLatch lt = new CountDownLatch(threadNumber);
         // Atomic adder
         DoubleAdder sum = new DoubleAdder();
         double res;
-        final int itNumber = Math.round(getNpEmittance() / threadNumber);
+        final int itNumber = 10 * Math.round(getNpEmittance() / threadNumber);
+
+        //Defining the upper and lower integration limits of the time integral
+        double t_semilength = INT_RANGE * eb.getLength() * lp.getLength() / Math.sqrt(eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+
+        //Defining the upper and lower integration limits of the direction integral
+        double semiwidth = INT_RANGE * lp.getLength() * lp.getWidth(0)
+                / Math.sqrt(Math.pow(lp.getLength() * n.get(0), 2) + lp.getWidth2(0) * Math.pow(n.get(2), 2)) / 2 / Math.sqrt(ordernumber);
 
         // Splitting the job into a number of threads
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
-                double rx, ry, tm, psum = 0;
+                double rx, ry, time, tm, psum = 0;
                 Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
+
                 //Calculating a partial sum
                 for (int i = 0; i < itNumber; i++) {
                     if (Thread.currentThread().isInterrupted()) {
                         return;
                     }
+
+                    //Setting random direction position
+                    double dr = r0.fold(Vectors.mkEuclideanNormAccumulator()) + 2 * semiwidth * Math.random();
+                    Vector r = r0.add(n.multiply(dr));
+                    Vector rh = lp.getTransformedCoordinates(r);
+
+                    //Setting random angles
                     rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
                     ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
+
+                    //Setting random times
+                    double t_shft = ((rh.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (r.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                            / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
+                    time = t_shft - t_semilength + 2 * Math.random() * t_semilength;
+                    Vector rhh = rh.copy();
+                    rhh.set(2, rhh.get(2) - time);
+                    Vector re = r.copy();
+                    re.set(2, re.get(2) - time);
+                    rhh.set(2, rh.get(2) - time);
+
                     v.set(0, rx);
                     v.set(1, ry);
                     v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
                     dv = v.subtract(v0);
-                    tm = directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    tm = directionFrequencyFluxNoSpread(n, v, rhh, e) * eb.lSpatialDistribution(re) * lp.lSpatialDistribution(rhh) * eb.angleDistribution(dv.get(0), dv.get(1));
                     psum += new Double(tm).isNaN() ? 0 : tm;
                 }
                 sum.add(psum);
@@ -605,7 +631,8 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         }
         execs.shutdownNow();
         // Outputting the final result
-        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
+        res = 2 * semiwidth * 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)))
+                * sum.sum() * lp.tSpatialDistribution(lp.getTransformedCoordinates(r0)) * eb.tSpatialDistribution(r0) / itNumber / threadNumber;
         return new Double(res).isNaN() ? 0 : res;
     }
 
