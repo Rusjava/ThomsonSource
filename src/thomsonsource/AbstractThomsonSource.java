@@ -338,7 +338,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double[] directionFrequencyPolarizationSpread(final Vector n, final Vector v, final Vector r, final double e) throws InterruptedException {
+    public double[] directionFrequencyPolarizationSpread(Vector n, Vector v, Vector r, double e) throws InterruptedException {
         return isMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, r, e) : directionFrequencyPolarizationSpreadIntegral(n, v, r, e);
     }
 
@@ -355,7 +355,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyPolarizationSpread(final Vector n, final Vector v, final Vector r, final double e, int index) throws InterruptedException {
+    public double directionFrequencyPolarizationSpread(Vector n, Vector v, Vector r, double e, int index) throws InterruptedException {
         return isMonteCarlo() ? directionFrequencyPolarizationSpreadMonteCarlo(n, v, r, e, index) : directionFrequencyPolarizationSpreadIntegral(n, v, r, e, index);
     }
 
