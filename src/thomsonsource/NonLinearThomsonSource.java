@@ -545,7 +545,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         //If Monte-Carlo use special function
         if (this.isMonteCarlo()) {
-            directionFrequencyBrillianceSpreadMonteCarlo(r0, n, v, e);
+            return directionFrequencyBrillianceSpreadMonteCarlo(r0, n, v, e);
         }
         //Creating an anonymous class for the integrand
         UnivariateFunction func = (double x) -> {
@@ -595,29 +595,29 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                     }
 
                     //Setting random direction position
-                    double dr = r0.fold(Vectors.mkEuclideanNormAccumulator()) + 2 * semiwidth * Math.random();
+                    double dr = r0.fold(Vectors.mkEuclideanNormAccumulator()) + semiwidth * (2 * Math.random() - 1);
                     Vector r = r0.add(n.multiply(dr));
-                    Vector rh = lp.getTransformedCoordinates(r);
+                    Vector re, rphh, rph = lp.getTransformedCoordinates(r);
 
                     //Setting random angles
                     rx = (2 * Math.random() - 1) * INT_RANGE * eb.getXSpread();
                     ry = (2 * Math.random() - 1) * INT_RANGE * eb.getYSpread();
 
-                    //Setting random times
-                    double t_shft = ((rh.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (r.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
+                    //Setting random time
+                    double t_shft = ((rph.get(2) - lp.getDelay()) * eb.getLength() * eb.getLength() + (r.get(2) - eb.getShift().get(2)) * lp.getLength() * lp.getLength())
                             / (eb.getLength() * eb.getLength() + lp.getLength() * lp.getLength());
                     time = t_shft - t_semilength + 2 * Math.random() * t_semilength;
-                    Vector rhh = rh.copy();
-                    rhh.set(2, rhh.get(2) - time);
-                    Vector re = r.copy();
+                    rphh = rph.copy();
+                    rphh.set(2, rphh.get(2) - time);
+                    re = r.copy();
                     re.set(2, re.get(2) - time);
-                    rhh.set(2, rh.get(2) - time);
 
                     v.set(0, rx);
                     v.set(1, ry);
                     v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
                     dv = v.subtract(v0);
-                    tm = directionFrequencyFluxNoSpread(n, v, rhh, e) * eb.lSpatialDistribution(re) * lp.lSpatialDistribution(rhh) * eb.angleDistribution(dv.get(0), dv.get(1));
+                    tm = directionFrequencyFluxNoSpread(n, v, rphh, e) * eb.lSpatialDistribution(re) * lp.lSpatialDistribution(rphh) * eb.angleDistribution(dv.get(0), dv.get(1))
+                            * lp.tSpatialDistribution(rph) * eb.tSpatialDistribution(r);
                     psum += new Double(tm).isNaN() ? 0 : tm;
                 }
                 sum.add(psum);
@@ -630,9 +630,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             Thread.currentThread().interrupt();
         }
         execs.shutdownNow();
-        // Outputting the final result
-        res = 2 * semiwidth * 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * 2.0 * Math.PI * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)))
-                * sum.sum() * lp.tSpatialDistribution(lp.getTransformedCoordinates(r0)) * eb.tSpatialDistribution(r0) / itNumber / threadNumber;
+        // Outputting the final normalized result
+        res = 32 * Math.PI * semiwidth * t_semilength * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * Math.sqrt((lp.getWidth2(0.0) + eb.getxWidth2(0.0)) * (lp.getWidth2(0.0) + eb.getyWidth2(0.0)))
+                * sum.sum() / itNumber / threadNumber;
         return new Double(res).isNaN() ? 0 : res;
     }
 
