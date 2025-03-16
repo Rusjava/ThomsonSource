@@ -112,13 +112,11 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e, int index) {
         double intensity, gamma;
-
         //If vector r is null then use average intensity
         intensity = (r == null) ? lp.getAverageIntensity() : lp.getIntensity(r);
-
         //Calculating factor gamma
         gamma = calculateGamma(n, v, e, intensity);
-        if (new Double(gamma).isNaN() || gamma == 0) {
+        if (new Double(gamma).isNaN() || gamma <= 0) {
             //Returning zero if gamma is zero or NaN
             return 0;
         } else {

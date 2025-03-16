@@ -169,8 +169,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
      */
     private AtomicInteger rayCounter;
     /**
-     * Flag - whether or not the Monte-Carlo method is used to do the
-     * emittance averaging
+     * Flag - whether or not the Monte-Carlo method is used to do the emittance
+     * averaging
      */
     private boolean IsMonteCarlo = true;
     /**
@@ -650,10 +650,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
         DoubleAdder sum = new DoubleAdder();
         //Creating a latch for the threads
         CountDownLatch lt = new CountDownLatch(threadNumber);
-        
+
         for (int m = 0; m < threadNumber; m++) {
-            System.out.println(m);
-            try {
             execs.execute(() -> {
                 double rx, ry, tm, psum = 0;
                 Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
@@ -670,27 +668,23 @@ public abstract class AbstractThomsonSource implements Cloneable {
                     dv = v.subtract(v0);
                     tm = directionFrequencyPolarizationNoSpread(n, v, r, e, index) * eb.angleDistribution(dv.get(0), dv.get(1));
                     psum += new Double(tm).isNaN() ? 0 : tm;
-                }
-                //Adding to the full sum
+                }   //Adding to the full sum
                 sum.add(psum);
                 //Counting down the latch
                 lt.countDown();
-            }); }
-            catch (Exception ex) {
-                System.out.println(ex);
-            }
-            
-            //Waiting for an interruption and shuting down threads if interrupted
-            try {
-                lt.await();
-            } catch (InterruptedException ex) {
-                execs.shutdownNow();
-                throw ex;
-            }
+            });
         }
+        //Waiting for an interruption and shuting down threads if interrupted
+        try {
+            lt.await();
+        } catch (InterruptedException ex) {
+            execs.shutdownNow();
+            throw ex;
+        }
+
         //Shutting down the execution services
         execs.shutdownNow();
-        
+
         //Outputting the result for the i-th2 Stocks intensity
         res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
         return new Double(res).isNaN() ? 0 : res;

@@ -224,7 +224,7 @@ public class LinearChartParam {
     }
 
     /**
-     * Getting the data if no function is specified and if specified then using it calculate them
+     * Getting the data if no transform function is specified and if specified then using it to calculate them
      */
     private double getTransformedData(int k, int i) {
         //If trasformation functions are not defined then just return data
