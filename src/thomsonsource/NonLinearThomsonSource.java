@@ -544,7 +544,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyBrillianceSpread(Vector r0, Vector n, Vector v, double e) throws InterruptedException {
         //If Monte-Carlo use special function
-        if (this.isMonteCarlo()) {
+        if (isMonteCarlo()) {
             return directionFrequencyBrillianceSpreadMonteCarlo(r0, n, v, e);
         }
         //Creating an anonymous class for the integrand
@@ -587,7 +587,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             execs.execute(() -> {
                 double dr, rx, ry, time, tm, psum = 0;
                 Vector r, re, rph, rphh, dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
-
+                
                 //Calculating a partial sum
                 for (int i = 0; i < itNumber; i++) {
                     if (Thread.currentThread().isInterrupted()) {
@@ -677,7 +677,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double directionFrequencyBrilliancePolarizationSpread(Vector r0, Vector n, Vector v, double e, int index) throws InterruptedException {
         //If Monte-Carlo use special function
-        if (this.isMonteCarlo()) {
+        if (isMonteCarlo()) {
             return directionFrequencyBrilliancePolarizationSpreadMonteCarlo(r0, n, v, e, index);
         }
         //Creating an anonymous class for the integrand

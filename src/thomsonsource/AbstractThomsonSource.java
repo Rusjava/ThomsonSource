@@ -469,15 +469,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @param r
      * @param e X-ray energy
      * @return
+     * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyFluxSpreadMonteCarlo(Vector n, Vector v0, Vector r, double e) {
-        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
-        // We need to synchronize threads
-        CountDownLatch lt = new CountDownLatch(threadNumber);
-        // Atomic adder
-        DoubleAdder sum = new DoubleAdder();
+    public double directionFrequencyFluxSpreadMonteCarlo(final Vector n, final Vector v0, final Vector r, final double e) throws InterruptedException {
+        //An res for results
         double res;
+        //Creating a pool of threads for calculations
+        ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
+        //The number of threads used to calculate Stocks parameters
         final int itNumber = Math.round(getNpEmittance() / threadNumber);
+
+        // An atomic adder
+        DoubleAdder sum = new DoubleAdder();
+        //Creating a latch for the threads
+        CountDownLatch lt = new CountDownLatch(threadNumber);
 
         // Splitting the job into a number of threads
         for (int m = 0; m < threadNumber; m++) {
@@ -498,15 +503,20 @@ public abstract class AbstractThomsonSource implements Cloneable {
                     tm = directionFrequencyFluxNoSpread(n, v, r, e) * eb.angleDistribution(dv.get(0), dv.get(1));
                     psum += new Double(tm).isNaN() ? 0 : tm;
                 }
+                //Adding to the full sum
                 sum.add(psum);
+                //Counting down the latch
                 lt.countDown();
             });
         }
+        //Waiting for an interruption and shuting down threads if interrupted
         try {
             lt.await();
         } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
+            execs.shutdownNow();
+            throw ex;
         }
+        //Shutting down the execution services
         execs.shutdownNow();
         // Outputting the final result
         res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
@@ -628,22 +638,22 @@ public abstract class AbstractThomsonSource implements Cloneable {
      * @return
      * @throws java.lang.InterruptedException
      */
-    public double directionFrequencyPolarizationSpreadMonteCarlo(final Vector n, final Vector v0, final Vector r, final double e, int index) throws InterruptedException {
+    public double directionFrequencyPolarizationSpreadMonteCarlo(final Vector n, final Vector v0, final Vector r, final double e, final int index) throws InterruptedException {
         //An res for results
         double res;
         //Creating a pool of threads for calculations
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
         //The number of threads used to calculate Stocks parameters
         final int itNumber = Math.round(getNpEmittance() / threadNumber);
-        //Calculating the polarization tensor elements
 
         // An atomic adder
         DoubleAdder sum = new DoubleAdder();
         //Creating a latch for the threads
         CountDownLatch lt = new CountDownLatch(threadNumber);
+        
         for (int m = 0; m < threadNumber; m++) {
             execs.execute(() -> {
-                double rx, ry, rth, tm, psum = 0;
+                double rx, ry, tm, psum = 0;
                 Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
                 //Calculating a partial sum
                 for (int p = 0; p < itNumber; p++) {
@@ -656,7 +666,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
                     v.set(1, ry);
                     v.set(2, Math.sqrt(1 - rx * rx - ry * ry));
                     dv = v.subtract(v0);
-                    tm = directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1));
+                    tm = directionFrequencyPolarizationNoSpread(n, v, r, e, index) * eb.angleDistribution(dv.get(0), dv.get(1));
                     psum += new Double(tm).isNaN() ? 0 : tm;
                 }
                 //Adding to the full sum
@@ -664,7 +674,6 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 //Counting down the latch
                 lt.countDown();
             });
-
             //Waiting for an interruption and shuting down threads if interrupted
             try {
                 lt.await();
@@ -673,12 +682,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 throw ex;
             }
         }
-        //Outputting the result for the i-th2 Stocks intensity
-        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
-
         //Shutting down the execution services
         execs.shutdownNow();
-
+        
+        //Outputting the result for the i-th2 Stocks intensity
+        res = 4 * INT_RANGE * INT_RANGE * eb.getXSpread() * eb.getYSpread() * sum.sum() / itNumber / threadNumber;
         return new Double(res).isNaN() ? 0 : res;
     }
 
@@ -1755,7 +1763,7 @@ public abstract class AbstractThomsonSource implements Cloneable {
             double u, sn = Math.sin(theta);
             Vector v = new BasicVector(new double[]{sn * csphi, sn * snphi, Math.cos(theta)});
             Vector dv = v.subtract(v0);
-            u = sn * directionFrequencyPolarizationNoSpread(n, v, r, e)[index] * eb.angleDistribution(dv.get(0), dv.get(1))
+            u = sn * directionFrequencyPolarizationNoSpread(n, v, r, e, index) * eb.angleDistribution(dv.get(0), dv.get(1))
                     + getShiftfactor() * SHIFT;
             return new Double(u).isNaN() ? 0 : u;
         }

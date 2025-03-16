@@ -95,7 +95,6 @@ public class LinearThomsonSource extends AbstractThomsonSource {
                 array[i] = 0;
             }
         }
-
         return array;
     }
 

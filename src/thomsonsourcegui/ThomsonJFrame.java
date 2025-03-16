@@ -3969,7 +3969,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_GFmaxvalueActionPerformed
 
     private void jCheckBoxSpreadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxSpreadActionPerformed
-        // Cheking spread check box
+        // Checking spread check box
         brilForm.espread = jCheckBoxSpread.isSelected();
     }//GEN-LAST:event_jCheckBoxSpreadActionPerformed
 
@@ -4908,7 +4908,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         //Calculating and returning the intensity multiplied Stocks parameter
                         try {
-                            return polFormNonLinear.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{Math.sin(ang),
+                            return polFormNonLinear.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
                                 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
@@ -5019,14 +5019,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
 
     private void jMenuOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuOptionsActionPerformed
         // TODO add your handling code here:
-        tsource.setMonteCarlo(jCheckBoxSpread.isSelected());
-        tsourcelinear.setMonteCarlo(jCheckBoxSpread.isSelected());
+        
     }//GEN-LAST:event_jMenuOptionsActionPerformed
 
     private void jCheckBoxMenuItemMonteCarloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemMonteCarloActionPerformed
         // TODO add your handling code here:
-        tsource.setMonteCarlo(jCheckBoxMenuItemSpread.isSelected());
-        tsourcelinear.setMonteCarlo(jCheckBoxMenuItemSpread.isSelected());
+        tsource.setMonteCarlo(jCheckBoxMenuItemMonteCarlo.isSelected());
+        tsourcelinear.setMonteCarlo(jCheckBoxMenuItemMonteCarlo.isSelected());
     }//GEN-LAST:event_jCheckBoxMenuItemMonteCarloActionPerformed
 
     /*
