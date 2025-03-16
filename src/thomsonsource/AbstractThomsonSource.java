@@ -652,6 +652,8 @@ public abstract class AbstractThomsonSource implements Cloneable {
         CountDownLatch lt = new CountDownLatch(threadNumber);
         
         for (int m = 0; m < threadNumber; m++) {
+            System.out.println(m);
+            try {
             execs.execute(() -> {
                 double rx, ry, tm, psum = 0;
                 Vector dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
@@ -673,7 +675,11 @@ public abstract class AbstractThomsonSource implements Cloneable {
                 sum.add(psum);
                 //Counting down the latch
                 lt.countDown();
-            });
+            }); }
+            catch (Exception ex) {
+                System.out.println(ex);
+            }
+            
             //Waiting for an interruption and shuting down threads if interrupted
             try {
                 lt.await();

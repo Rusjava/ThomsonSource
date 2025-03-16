@@ -4302,7 +4302,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         //Calculating and returning an intensity multiplied Stocks parameter
                         try {
                             return polForm.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}),
-                                    new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
+                                    new BasicVector(new double[]{0, 0, 1}), new BasicVector(new double[]{0, 0, 0}), e, ia[0]);
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
                             return 0.0;
