@@ -4663,9 +4663,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             try {
-                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                return brilFormNonLinear.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                        e) * normfactor;
+                                        e, 0) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;

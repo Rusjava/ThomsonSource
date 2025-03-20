@@ -250,7 +250,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
         coef2 = xenergy / lp.getPhotonEnergy() * intratio
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
-        coef3 = -getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
+        coef3 = getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
@@ -313,7 +313,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
         coef2 = xenergy / lp.getPhotonEnergy() * intratio
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
-        coef3 = -getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
+        coef3 = getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
         //Checking if the radiation is fully poolarized and then just calculating intensity
         if (K1[0] == 0 && K2[0] == 0) {
@@ -392,13 +392,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double[] directionPolarizationBasicAuxiliary(double cf1, double cf2, double intratio, Vector n, Vector[] B, double gamma, Vector v) {
-        double K1, K2, a1, a2, a3, gamma2, mv, pr, sq, sqratio;
+        double K1, K2, a1, a2, a3, gamma2, mv, pr, sq, sqrtratio;
         //Auxialiry parameters
         gamma2 = gamma * gamma;
         mv = Math.sqrt(1.0 - 1.0 / gamma2);//Dimesionaless speed
         pr = n.innerProduct(v);
         sq = Math.sqrt(1.0 - pr * pr);
-        sqratio = Math.sqrt(intratio);
+        sqrtratio = Math.sqrt(intratio);
         //Arrays for real and imagenary parts of polarization vectors
         Vector pol1 = new BasicVector(new double[]{0, 0});
         Vector pol2 = new BasicVector(new double[]{0, 0});
@@ -443,12 +443,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             //Calculating orthogonal polarization vectors
             pol1.set(0, -e1.innerProduct(B[0]) * f[2] - e1.innerProduct(B[1]) * f[4]);
             pol2.set(0, -e1.innerProduct(B[0]) * f[3] - e1.innerProduct(B[1]) * f[5]);
-            pol1.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqratio
+            pol1.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[0] / sqrtratio
                     + (e2.innerProduct(B[0]) * f[2] + e2.innerProduct(B[1]) * f[4])
-                    - (K1 - K2) / 4 / gamma / sqratio / (1 + mv) * f[6] * sq);
-            pol2.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqratio
+                    - sqrtratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[6] * sq);
+            pol2.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqrtratio
                     + (e2.innerProduct(B[0]) * f[3] + e2.innerProduct(B[1]) * f[5])
-                    - sqratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[7] * sq);
+                    - sqrtratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[7] * sq);
             //Transforming pol1 and pol2 into the initial coordinate system
             T = get2DTransform(e1, e0);
             pol1 = T.multiply(pol1);
@@ -457,7 +457,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             result[0] = (pol1.get(0) * pol1.get(0) + pol2.get(0) * pol2.get(0) + pol1.get(1) * pol1.get(1) + pol2.get(1) * pol2.get(1)) / 2;
             result[1] = pol1.get(0) * pol1.get(1) + pol2.get(0) * pol2.get(1);
             result[2] = pol2.get(0) * pol1.get(1) - pol1.get(0) * pol2.get(1);
-            result[3] = (pol1.get(1) * pol1.get(1) + pol2.get(1) * pol2.get(1) - pol1.get(0) * pol1.get(0) - pol2.get(0) * pol2.get(0)) / 2;
+            result[3] = (pol1.get(0) * pol1.get(0) + pol2.get(0) * pol2.get(0) - pol1.get(1) * pol1.get(1) - pol2.get(1) * pol2.get(1)) / 2;
         }
         //If the intensity is NaN, zero or less than zero then all Stocks intensities to zero
         // If a Stocks intensity is NaN then set it to zero
@@ -585,7 +585,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             execs.execute(() -> {
                 double dr, rx, ry, time, tm, psum = 0;
                 Vector r, re, rph, rphh, dv, v = new BasicVector(new double[]{0.0, 0.0, 0.0});
-                
+
                 //Calculating a partial sum
                 for (int i = 0; i < itNumber; i++) {
                     if (Thread.currentThread().isInterrupted()) {
@@ -695,7 +695,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double result = directionIntegralBasic(r0, n, func, ordernumber);
         return new Double(result).isNaN() ? 0 : result;
     }
-    
+
     //A private method for 4D MonterCarlo integration of polarization
     private double directionFrequencyBrilliancePolarizationSpreadMonteCarlo(Vector r0, Vector n, Vector v0, double e, int index) throws InterruptedException {
         ExecutorService execs = Executors.newFixedThreadPool(threadNumber);
