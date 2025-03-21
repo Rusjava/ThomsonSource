@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 4.00
+ * @version 4.01
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -4663,9 +4663,9 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             brilFormNonLinear.tsourceclone.calculateLinearTotalFlux();
                             setStatusBar((xp - offset) / step / (xsize - 1));
                             try {
-                                return brilFormNonLinear.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
+                                return brilFormNonLinear.tsourceclone.directionFrequencyBrilliance(new BasicVector(new double[]{0.0, 0.0, 0.0}),
                                         new BasicVector(new double[]{Math.sin(ang), 0, Math.cos(ang)}), new BasicVector(new double[]{0.0, 0.0, 1.0}),
-                                        e, 0) * normfactor;
+                                        e) * normfactor;
                             } catch (InterruptedException ex) {
                                 Thread.currentThread().interrupt();
                                 return 0.0;
@@ -4908,8 +4908,8 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         //Calculating and returning the intensity multiplied Stocks parameter
                         try {
-                            return polFormNonLinear.tsourceclone.directionFrequencyPolarization(new BasicVector(new double[]{Math.sin(ang),
-                                0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), null, e, ia[0]);
+                            return polFormNonLinear.tsourceclone.directionFrequencyPolarizationBrilliance(null, new BasicVector(new double[]{Math.sin(ang),
+                                0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), e, ia[0]);
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
                             return 0.0;

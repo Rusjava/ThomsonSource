@@ -19,13 +19,14 @@ package thomsonsource;
 import electronbunch.AbstractElectronBunch;
 import laserpulse.AbstractLaserPulse;
 import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.la4j.Matrix;
 import org.la4j.Vector;
 
 /**
  * The main class containing all physics of LEXG in linear approximation
  *
  * @author Ruslan Feshchenko
- * @version 3.2
+ * @version 3.21
  */
 public class LinearThomsonSource extends AbstractThomsonSource {
 
@@ -69,17 +70,12 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         m12 = m11 * mlt;
         m22 = m12 * mlt;
         //Determine the polarization rotation angle
-        double vn = v.innerProduct(n);
-        double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(0) * n.get(0)));
-        if (norm != 0) {
-            cs = (v.get(0) - n.get(0) * vn) / norm;
-            sn = (n.get(1) * v.get(2) - n.get(2) * v.get(1)) / norm;
-        } else {
-            cs = 1;
-            sn = 0;
-        }
-        double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
+        Matrix T=get2DTransform(v, n);
+        cs = T.get(0,0);
+        sn = T.get(0,1);
+                double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
         double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
+        
         //Calculating Stocks parameters multiplied by intensity
         array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[2] + sn2 * lp.getPolarization()[0]) * (m11 - m22)) / 2;
         array[3] = (cs2 * (m22 - m11) + lp.getPolarization()[2] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)

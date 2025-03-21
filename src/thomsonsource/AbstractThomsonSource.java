@@ -45,7 +45,7 @@ import shadowfileconverter.ShadowFiles;
  * An abstract class for Thomson source. Methods that calculated scattering by
  * one electron need to be defined.
  *
- * @version 1.41
+ * @version 1.42
  * @author Ruslan Feshchenko
  */
 public abstract class AbstractThomsonSource implements Cloneable {
@@ -1247,16 +1247,24 @@ public abstract class AbstractThomsonSource implements Cloneable {
     }
 
     /**
-     * Returning the matrix of 2D rotation based on two unity vectors
+     * Returning the matrix of 2D rotation from the v-n plane to the y-z plane
      *
-     * @param n vector 1
-     * @param n0 vector 2
+     * @param v velocity vector
+     * @param n direction vector
      * @return transformation matrix
      */
-    protected Matrix get2DTransform(Vector n, Vector n0) {
+    protected Matrix get2DTransform(Vector v, Vector n) {
         Matrix I = Matrix.identity(2);
-        double cs = n.innerProduct(n0);
-        double sn = Math.sqrt(1 - cs * cs);
+        double cs, sn, vn = v.innerProduct(n);
+        double norm = Math.sqrt((1 - vn * vn) * (1 - n.get(0) * n.get(0)));
+        if (norm != 0) {
+            cs = (v.get(0) - n.get(0) * vn) / norm;
+            sn = (n.get(1) * v.get(2) - n.get(2) * v.get(1)) / norm;
+        } else {
+            cs = 1;
+            sn = 0;
+        }
+    
         I = I.multiply(cs);
         I.set(0, 1, sn);
         I.set(1, 0, -sn);
