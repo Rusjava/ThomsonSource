@@ -4908,7 +4908,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         setStatusBar((xp - offset) / step / (xsize - 1));
                         //Calculating and returning the intensity multiplied Stocks parameter
                         try {
-                            return polFormNonLinear.tsourceclone.directionFrequencyPolarizationBrilliance(null, new BasicVector(new double[]{Math.sin(ang),
+                            return polFormNonLinear.tsourceclone.directionFrequencyPolarizationBrilliance(new BasicVector(new double[]{0, 0, 0}), new BasicVector(new double[]{Math.sin(ang),
                                 0, Math.cos(ang)}), new BasicVector(new double[]{0, 0, 1}), e, ia[0]);
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
