@@ -173,12 +173,12 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      *
      * @param n
      * @param v
-     * @param xenergy
+     * @param e
      * @param gamma
      * @param inten
      * @return
      */
-    private double directionFluxBasic(Vector n, Vector v, double xenergy, double gamma, double inten) {
+    private double directionFluxBasic(Vector n, Vector v, double e, double gamma, double inten) {
         //If gamma is less than unity (negative expression under the root) then return zero
         if (gamma < 1) {
             return 0;
@@ -196,9 +196,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //Parameter of non-linearity
         M = intratio * (1 + pr) / 4 * (1 - mv);
         //Coefficients
-        coef1 = xenergy / lp.getPhotonEnergy()
+        coef1 = e / lp.getPhotonEnergy()
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
-        coef2 = xenergy / lp.getPhotonEnergy() * intratio
+        coef2 = e / lp.getPhotonEnergy() * intratio
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
         coef3 = -getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
@@ -284,13 +284,13 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      *
      * @param n
      * @param v
-     * @param xenergy
+     * @param e
      * @param gamma
      * @param inten
      * @param index
      * @return
      */
-    private double directionPolarizationBasic(Vector n, Vector v, double xenergy, double gamma, double inten, int index) {
+    private double directionPolarizationBasic(Vector n, Vector v, double e, double gamma, double inten, int index) {
         //If gamma is zero (negative expression under the root) then return zero
         if (gamma == 0) {
             return 0;
@@ -309,9 +309,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         //Parameter of non-linearity
         M = intratio * (1 + pr) / 4 * (1 - mv);
         //Coefficients
-        coef1 = xenergy / lp.getPhotonEnergy()
+        coef1 = e / lp.getPhotonEnergy()
                 * Math.sqrt(intratio) / (1 + mv) / gamma;
-        coef2 = xenergy / lp.getPhotonEnergy() * intratio
+        coef2 = e / lp.getPhotonEnergy() * intratio
                 * (1 + pr) / Math.pow(gamma * (1 + mv), 2) / 8;
         coef3 = getLinearTotalFlux() * ordernumber * 3 / 2 / Math.PI
                 / Math.pow((1 - pr * mv) * (1 + M), 2) / gamma2;
