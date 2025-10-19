@@ -39,7 +39,7 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.61
+ * @version 1.62
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -449,7 +449,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
             pol2.set(1, gamma * (mv - intratio * (K1 + K2) / 4 / gamma2 / (1 + mv)) * sq * f[1] / sqrtratio
                     + (e2.innerProduct(B[0]) * f[3] + e2.innerProduct(B[1]) * f[5])
                     - sqrtratio * (K1 - K2) / 4 / gamma / (1 + mv) * f[7] * sq);
-            
+
             //Transforming pol1 and pol2 into the initial coordinate system
             T = get2DTransform(v, n);
             pol1 = T.transpose().multiply(pol1);
@@ -785,7 +785,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func);
+        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
     }
 
     @Override
@@ -814,7 +814,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func);
+        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
     }
 
     @Override
@@ -839,7 +839,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func);
+        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
     }
 
     @Override
@@ -873,7 +873,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func);
+        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
     }
 
     /**

@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 4.01
+ * @version 4.02
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -2457,7 +2457,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemUnPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemLinearPolarized);
-        jRadioButtonMenuItemLinearPolarized.setSelected(true);
         jRadioButtonMenuItemLinearPolarized.setText("Linear");
         jRadioButtonMenuItemLinearPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -2476,6 +2475,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuPolarization.add(jRadioButtonMenuItemCircularPolarized);
 
         buttonGroupPolarization.add(jRadioButtonMenuItemAutoPolarized);
+        jRadioButtonMenuItemAutoPolarized.setSelected(true);
         jRadioButtonMenuItemAutoPolarized.setText("Automatic");
         jRadioButtonMenuItemAutoPolarized.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
