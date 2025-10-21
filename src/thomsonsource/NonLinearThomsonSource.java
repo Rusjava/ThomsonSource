@@ -785,7 +785,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -814,7 +814,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -839,7 +839,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
+        return timeIntegralBasic(r, n, func);
     }
 
     @Override
@@ -873,7 +873,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         };
 
         //Returning the result
-        return timeIntegralBasic(r, n, func) * eb.tSpatialDistribution(r) * lp.tSpatialDistribution(rph);
+        return timeIntegralBasic(r, n, func);
     }
 
     /**
