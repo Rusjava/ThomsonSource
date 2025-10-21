@@ -3700,7 +3700,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jRayProgressBar.setValue(0);
         jRayStopButton.setEnabled(true);
         try {
-            tsourceRayClone = (AbstractThomsonSource) tsourcelinear.clone();
+            tsourceRayClone = (AbstractThomsonSource) tsource.clone();
         } catch (CloneNotSupportedException ex) {
 
         }
