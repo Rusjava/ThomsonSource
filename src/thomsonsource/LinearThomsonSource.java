@@ -26,7 +26,7 @@ import org.la4j.Vector;
  * The main class containing all physics of LEXG in linear approximation
  *
  * @author Ruslan Feshchenko
- * @version 3.21
+ * @version 3.3
  */
 public class LinearThomsonSource extends AbstractThomsonSource {
 
@@ -44,10 +44,12 @@ public class LinearThomsonSource extends AbstractThomsonSource {
 
     @Override
     public double directionFrequencyFluxNoSpread(Vector n, Vector v, Vector r, double e) {
-        double th2, csphi, res, gamma, gamma2;
+        double th2, csphi, res, gamma, gamma2, koef, ac;
         th2 = (1 - n.innerProduct(v)) * 2;
         csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
-        gamma = 1 / Math.sqrt(2 * (1 + csphi) * lp.getPhotonEnergy() / e - th2);
+        ac = lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6);
+        koef = 2 * (1 + csphi) * lp.getPhotonEnergy() / e - th2;
+        gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef; // Taking into account Compton effect
         gamma2 = gamma * gamma;
 
         res = getLinearTotalFlux() * e * 1.5 / Math.pow(Math.PI, 1.5) / eb.getDelGamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
@@ -60,22 +62,28 @@ public class LinearThomsonSource extends AbstractThomsonSource {
     @Override
     public double[] directionFrequencyPolarizationNoSpread(Vector n, Vector v, Vector r, double e) {
         double[] array = new double[NUMBER_OF_POL_PARAM];
-        double K, th, m11, m22, m12, mlt, cs, sn;
-        th = (1 - n.innerProduct(v)) * 2;
-        mlt = 1 - e * th / lp.getPhotonEnergy() / 2;
-        K = Math.pow((Math.sqrt(e / lp.getPhotonEnergy() / (1 - e * th / lp.getPhotonEnergy() / 4)) - 2 * eb.getGamma()), 2)
-                / 4 / Math.pow(eb.getGamma() * eb.getDelGamma(), 2);
-        m11 = getLinearTotalFlux() * e * 3.0 / 32 / Math.PI / Math.sqrt(Math.PI) / eb.getDelGamma() / eb.getGamma() / lp.getPhotonEnergy()
-                * Math.sqrt(e / lp.getPhotonEnergy()) / Math.sqrt(1 - e * th / lp.getPhotonEnergy() / 4) * Math.exp(-K);
+        double th2, m11, m22, m12, mlt, cs, sn, koef, ac, gamma, gamma2, csphi;
+
+        th2 = (1 - n.innerProduct(v)) * 2;
+        csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
+        ac = lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6);
+        koef = 2 * (1 + csphi) * lp.getPhotonEnergy() / e - th2;
+        gamma = (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef; // Taking into account Compton effect
+        gamma2 = gamma * gamma;
+
+        mlt = (1 - gamma2 * th2) / (1 + gamma2 * th2);
+        m11 = getLinearTotalFlux() * e * 3.0 / Math.pow(Math.PI, 1.5) / eb.getDelGamma() / eb.getGamma() * lp.getPhotonEnergy() / Math.pow(e, 2)
+                * Math.pow(eb.getGamma(), 5) / Math.pow((1 + gamma2 * th2 + 4 * ac * eb.getGamma()), 2) / (1 + 2 * gamma * ac)
+                * Math.exp(-Math.pow((gamma - eb.getGamma()) / eb.getDelGamma() / eb.getGamma(), 2));
         m12 = m11 * mlt;
         m22 = m12 * mlt;
         //Determine the polarization rotation angle
-        Matrix T=get2DTransform(v, n);
-        cs = T.get(0,0);
-        sn = T.get(0,1);
-                double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
+        Matrix T = get2DTransform(v, n);
+        cs = T.get(0, 0);
+        sn = T.get(0, 1);
+        double cs2 = 2 * cs * cs - 1, sn2 = 2 * sn * cs;
         double cs2cs2 = cs2 * cs2, sn2sn2 = sn2 * sn2, cs2sn2 = sn2 * cs2;
-        
+
         //Calculating Stocks parameters multiplied by intensity
         array[0] = (m11 + m22 - (cs2 * lp.getPolarization()[2] + sn2 * lp.getPolarization()[0]) * (m11 - m22)) / 2;
         array[3] = (cs2 * (m22 - m11) + lp.getPolarization()[2] * (cs2cs2 * (m11 + m22) + 2 * sn2sn2 * m12)
@@ -100,15 +108,18 @@ public class LinearThomsonSource extends AbstractThomsonSource {
         th = (1 - n.innerProduct(v)) * 2;
         gamma2 = eb.getGamma() * eb.getGamma();
         return getLinearTotalFlux() * 3.0 / 2 / Math.PI * gamma2 * (1 + Math.pow(th * gamma2, 2))
-                / Math.pow((1 + gamma2 * th), 4) * getGeometricFactor();
+                / Math.pow((1 + gamma2 * th), 2)
+                / Math.pow((1 + gamma2 * th + 4 * lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6) * eb.getGamma()), 2)
+                * getGeometricFactor();
     }
 
     @Override
     public double directionEnergy(Vector n, Vector v) {
-        double mv, csphi;
+        double mv, csphi, cs;
         mv = Math.sqrt(1.0 - 1.0 / eb.getGamma() / eb.getGamma());
+        cs = n.innerProduct(v);
         csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
-        return (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - n.innerProduct(v) * mv);
+        return (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - cs * mv + lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6) / eb.getGamma() * (1 + cs));
 
     }
 

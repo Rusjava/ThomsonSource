@@ -39,7 +39,7 @@ import static thomsonsource.AbstractThomsonSource.SHIFT;
 /**
  * The main class containing all physics of LEXG in non-linear case
  *
- * @version 1.62
+ * @version 1.7
  * @author Ruslan Feshchenko
  */
 public final class NonLinearThomsonSource extends AbstractThomsonSource {
@@ -163,9 +163,9 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
         double mv, csphi, M, pr;
         mv = Math.sqrt(1.0 - 1.0 / gamma / gamma);
         pr = n.innerProduct(v);
-        csphi = v.innerProduct(lp.getDirection());
+        csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
         M = inten / sIntensity * (1 + pr) * (1 - mv) / 4;
-        return ordernumber * (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - pr * mv + M);
+        return ordernumber * (1 + csphi * mv) * lp.getPhotonEnergy() / (1 - pr * mv + M + lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6) / eb.getGamma() * (1 + pr));
     }
 
     /**
