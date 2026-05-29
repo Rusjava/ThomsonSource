@@ -472,7 +472,7 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
 
     /**
      * A method calculating required gamma factor as function of X-ray energy,
-     * laser intensity and other parameters
+     * laser intensity and other parameters with account of the Compton effect
      *
      * @param n
      * @param v
@@ -481,25 +481,21 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGamma(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqratio, coef, csphi;
-        pr = n.innerProduct(v);
+        double rho, csphi, th2, ac, koef;
+        th2 = (1 - n.innerProduct(v)) * 2;
         csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
-        rho = inten / sIntensity * (1 + pr) / 2 / (1 + csphi);
-        fqratio = e / ordernumber / lp.getPhotonEnergy();
+        ac = lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6);
+        koef = 2 * (1 + csphi) * lp.getPhotonEnergy() / e - th2;
 
-        coef = 1 + csphi - fqratio * (1 - pr);
-        if (coef <= 0) {
-            //Returning zero if the expression under the root is not positive
-            return 1;
-        } else {
-            return (fqratio * (pr + rho) + csphi)
-                    / Math.sqrt((fqratio * (1 + 2 * rho + pr) + csphi - 1) * coef);
-        }
+        rho = inten / sIntensity / 2;
+        ac = ac / Math.sqrt(1 + rho); // Intensity normilzed values
+
+        return Math.sqrt(1 + rho) * (2 * ac + Math.sqrt(4 * ac * ac + koef)) / koef;
     }
 
     /**
      * A method calculating derivative of X-ray energy by gamma factor
-     * normalized by X-ray energy
+     * normalized by X-ray energy with acoounting for the Compton effect
      *
      * @param n
      * @param v
@@ -508,19 +504,16 @@ public final class NonLinearThomsonSource extends AbstractThomsonSource {
      * @return
      */
     private double calculateGammaDerivative(Vector n, Vector v, double e, double inten) {
-        double rho, pr, fqratio, coef, csphi;
+        double rho, fqratio, csphi, ac, gamma;
         csphi = v.innerProduct(lp.getDirection()); // Cosine of the angle between the laser pulse and electron bunch
-        pr = n.innerProduct(v);
-        rho = inten / sIntensity * (1 + pr) / 2 / (1 + csphi);
+        ac = lp.getPhotonEnergy() / (AbstractElectronBunch.mc2 * AbstractElectronBunch.E * 1e6);
+
+        rho = inten / sIntensity / 2;
+        ac = ac / Math.sqrt(1 + rho); // Intensity normilzed values
+        gamma = calculateGamma(n, v, e, inten) / Math.sqrt(1 + rho);
         fqratio = e / ordernumber / lp.getPhotonEnergy();
-        coef = 1 + csphi - fqratio * (1 - pr);
-        if (coef <= 0) {
-            //Returning unit if the expression under the root is not positive
-            return 1;
-        } else {
-            return Math.pow(coef * (fqratio * (1 + 2 * rho + pr) + 1 - csphi), 1.5)
-                    / (fqratio * (1 + rho) - 1) / (csphi + pr + rho * (1 + csphi)) / fqratio;
-        }
+
+        return fqratio / (1 + csphi) / Math.pow(gamma, 3) * (1 + 2 * gamma * ac);
     }
 
     @Override
