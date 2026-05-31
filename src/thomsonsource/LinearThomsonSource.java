@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Ruslan Feshchenko
+ * Copyright (C) 2026 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import org.la4j.Matrix;
 import org.la4j.Vector;
 
 /**
- * The main class containing all physics of LEXG in linear approximation
+ * The main class containing all physics of LEXG in linear approximation with Compton effect
  *
  * @author Ruslan Feshchenko
  * @version 3.3

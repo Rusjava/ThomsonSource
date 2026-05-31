@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Ruslan
+ * Copyright (C) 2026 Ruslan
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import static thomsonsource.AbstractThomsonSource.MAXIMAL_NUMBER_OF_EVALUATIONS;
 import static thomsonsource.AbstractThomsonSource.SHIFT;
 
 /**
- * The main class containing all physics of LEXG in non-linear case
+ * The main class containing all physics of LEXG in non-linear case with Compton effect
  *
  * @version 1.7
  * @author Ruslan Feshchenko

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Ruslan Feshchenko
+ * Copyright (C) 2026 Ruslan Feshchenko
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 4.02
+ * @version 5.00
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
