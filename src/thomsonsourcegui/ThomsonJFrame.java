@@ -64,7 +64,7 @@ import thomsonsource.NonLinearThomsonSource;
  * The GUI for non-linear Thomson source program
  *
  * @author Ruslan Feshchenko
- * @version 3.46
+ * @version 3.61
  */
 public class ThomsonJFrame extends javax.swing.JFrame {
 
@@ -89,6 +89,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         this.rayXAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
         this.rayYAngleRangeBox = getDoubleFormattedTextField(0.1, 0.0, 100.0, false);
         this.gfMonteCarloNumberBox = getIntegerFormattedTextField(50000, 1, 100000000);
+        this.gfMonteCarloEmittanceNumberBox = getIntegerFormattedTextField(30000, 1, 100000000);
         this.numericallPrecisionBox = getDoubleFormattedTextField(1e-3, 1e-10, 1e-1, true);
         this.shiftFactorBox = getDoubleFormattedTextField(1.0, 1e-20, 1e20, true);
         this.xSizeBox = getIntegerFormattedTextField(300, 1, 10000);
@@ -133,7 +134,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                 v = new BasicVector(new double[]{0.0, 0.0, 1.0});
                 n = new BasicVector(new double[]{thetax * 1e-3, thetay * 1e-3, 1.0});
                 n = n.divide(n.fold(Vectors.mkEuclideanNormAccumulator()));
-                return 1e-6 * 1e-7  * tsource.directionFlux(n, v);
+                return 1e-6 * 1e-7 * tsource.directionFlux(n, v);
             }
         };
         fluxdata.setSliderposition(50);
@@ -494,6 +495,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItemOrderNumber = new javax.swing.JMenuItem();
         jCheckBoxMenuItemSpread = new javax.swing.JCheckBoxMenuItem();
+        jCheckBoxMenuItemMonteCarlo = new javax.swing.JCheckBoxMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jMenuSkin = new javax.swing.JMenu();
         jRadioButtonMenuDefault = new javax.swing.JRadioButtonMenuItem();
@@ -771,7 +773,6 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrilmaxvaluelabelNonLinear.setText("Max value");
 
         jCheckBoxSpreadNonLinear.setText("Spread");
-        jCheckBoxSpreadNonLinear.setEnabled(false);
         jCheckBoxSpreadNonLinear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxSpreadNonLinearActionPerformed(evt);
@@ -2497,6 +2498,11 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         jMenuBarMain.add(jMenuShadow);
 
         jMenuOptions.setText("Options");
+        jMenuOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuOptionsActionPerformed(evt);
+            }
+        });
 
         jMenuItemLaserPolarization.setText("Laser polarization...");
         jMenuItemLaserPolarization.addActionListener(new java.awt.event.ActionListener() {
@@ -2541,6 +2547,15 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             }
         });
         jMenuOptions.add(jCheckBoxMenuItemSpread);
+
+        jCheckBoxMenuItemMonteCarlo.setSelected(true);
+        jCheckBoxMenuItemMonteCarlo.setText("Monte-Carlo");
+        jCheckBoxMenuItemMonteCarlo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItemMonteCarloActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jCheckBoxMenuItemMonteCarlo);
         jMenuOptions.add(jSeparator4);
 
         jMenuSkin.setText("Look&Feel...");
@@ -2858,7 +2873,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private SwingWorker<Void, Void> mainWorker, rayWorker;
     private Map<JTextField, String> oldStrings;
     JFormattedTextField rayNumberBox, rayXAngleRangeBox, rayYAngleRangeBox, rayMinEnergyBox, rayEnergyRangeBox,
-            gfMonteCarloNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
+            gfMonteCarloNumberBox, gfMonteCarloEmittanceNumberBox, numericallPrecisionBox, shiftFactorBox, xSizeBox, ySizeBox, xRangeBox,
             yRangeBox, xEnergyRangeBox, threadsNumberBox, ksi1Box, ksi2Box, ksi3Box, orderNumberBox;
     List<Function<double[], Double>> fn;
     private File bFile = null, pFile = null;
@@ -2962,7 +2977,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             * 1e3, 0.0, (x) -> {
                                 setStatusBar((int) (x / 4 + 50));
                             });
-                    xenergycrossdata.setup(xenergydata.getudata(), xenergydata.getSliderposition(),
+                    xenergycrossdata.setup(xenergydata.getudata(), Math.round(xenergydata.getSliderposition() * xsize / 100),
                             false, ysize, ystep, -ystep * ysize / 2);
                     setStatusBar((int) 100);
                 } catch (InterruptedException e) {
@@ -3032,7 +3047,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                     totalFluxAngleLabel.setText("Within limits: "
                             + fmt.format(tsource.calculateAngleLinearTotalFlux(Math.max(xsize * xstep,
-                                            ysize * ystep) * 1e-3 / 2) * 1e-10)
+                                    ysize * ystep) * 1e-3 / 2) * 1e-10)
                             + "\u00B710\u00B9\u2070\u00B7ph\u00B7s\u207B\u00B9");
                 }
                 startbutton.setText("Start");
@@ -3693,7 +3708,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         tsourceRayClone.calculateLinearTotalFlux();
         rayWorking = true;
         Format fmt = new DecimalFormat("###.######");
-        
+
         rayWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -3743,7 +3758,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
                         jRayProgressBar.setValue(status);
                     }
                     jLabelPartialFlux.setText("Flux: " + fmt.format(tsourceRayClone.getPartialFlux() * 1e-8)
-                        + " 10\u2078 s\u207B\u00B9");
+                            + " 10\u2078 s\u207B\u00B9");
                 });
             }
         };
@@ -3996,6 +4011,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         // Dispalying a window to enter numerical parameters
         Object[] message = {
             "<html>Number of points in the Monte Carlo<br/> calculation of the geometric factor:</html>", gfMonteCarloNumberBox,
+            "<html>Number of points in the Monte Carlo<br/> averaging over electron directions:</html>", gfMonteCarloEmittanceNumberBox,
             "<html>Relative precision of <br/> the numerical integration in<br/> calculations of the brilliance and polarization:</html>", numericallPrecisionBox,
             "<html>Multiplication factor for numerical shift<br/> in integrals:</html>", shiftFactorBox,
             "<html>Number of used threads:</html>", threadsNumberBox
@@ -4007,11 +4023,13 @@ public class ThomsonJFrame extends javax.swing.JFrame {
             tsource.setShiftfactor((double) shiftFactorBox.getValue());
             tsource.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsource.setThreadNumber((int) threadsNumberBox.getValue());
+            tsource.setNpEmittance((int) gfMonteCarloEmittanceNumberBox.getValue());
             //Linear source
             tsourcelinear.setPrecision((double) numericallPrecisionBox.getValue());
             tsourcelinear.setShiftfactor((double) shiftFactorBox.getValue());
             tsourcelinear.setNpGeometricFactor((int) gfMonteCarloNumberBox.getValue());
             tsourcelinear.setThreadNumber((int) threadsNumberBox.getValue());
+            tsourcelinear.setNpEmittance((int) gfMonteCarloEmittanceNumberBox.getValue());
             //ChatParam
             fluxdata.setThreadNumber((int) threadsNumberBox.getValue());
             fluxcrossdata.setThreadNumber((int) threadsNumberBox.getValue());
@@ -4143,7 +4161,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jRadioButtonMenuNimbusItemStateChanged
 
     private void jMenuItemLaserPolarizationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLaserPolarizationActionPerformed
-        // Setting up laser polarization state
+        // Setting up the laser polarization state
         String warning = "";
         double p2;
         JPanel panel = new JPanel();
@@ -4439,7 +4457,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         BrillianceCalcStartNonLinear.setText("Terminate");
         BrillianceCalcSaveNonLinear.setEnabled(false);
         brilFormNonLinear.initialize(tsource);
-        
+
         /**
          * Calculating data array. Using SwingWorker class
          */
@@ -4999,6 +5017,18 @@ public class ThomsonJFrame extends javax.swing.JFrame {
         polFormNonLinear.ordernumber = (int) Math.floor(TestValueWithMemory(1, 10, OrderNumberNonLinear, "1", oldStrings));
     }//GEN-LAST:event_OrderNumberNonLinearActionPerformed
 
+    private void jMenuOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuOptionsActionPerformed
+        // TODO add your handling code here:
+        tsource.setMonteCarlo(jCheckBoxSpread.isSelected());
+        tsourcelinear.setMonteCarlo(jCheckBoxSpread.isSelected());
+    }//GEN-LAST:event_jMenuOptionsActionPerformed
+
+    private void jCheckBoxMenuItemMonteCarloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemMonteCarloActionPerformed
+        // TODO add your handling code here:
+        tsource.setMonteCarlo(jCheckBoxMenuItemSpread.isSelected());
+        tsourcelinear.setMonteCarlo(jCheckBoxMenuItemSpread.isSelected());
+    }//GEN-LAST:event_jCheckBoxMenuItemMonteCarloActionPerformed
+
     /*
      * Setting up polarization of X-ray radiation for linear and non-linear sources
      */
@@ -5178,6 +5208,7 @@ public class ThomsonJFrame extends javax.swing.JFrame {
     private javax.swing.JFrame gfCalc;
     private javax.swing.JLabel jAngleLabel;
     private javax.swing.JLabel jAngleLabelNonLinear;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemMonteCarlo;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemSpread;
     private javax.swing.JCheckBox jCheckBoxSpread;
     private javax.swing.JCheckBox jCheckBoxSpreadNonLinear;
